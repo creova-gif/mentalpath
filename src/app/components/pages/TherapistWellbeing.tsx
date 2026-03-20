@@ -289,7 +289,7 @@ export function TherapistWellbeing() {
             7-day free trial. Canadian servers. PHIPA-compliant from minute one. All features included.
           </p>
           <a
-            href="/signup"
+            href="/onboarding"
             className="inline-block px-10 py-4 bg-[#4A7C6F] text-white rounded-lg text-[15px] font-medium hover:bg-[#6B9E8F] transition-colors"
           >
             Start your free trial →
