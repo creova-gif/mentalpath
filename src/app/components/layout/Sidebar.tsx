@@ -1,5 +1,5 @@
 import { NavLink, Link } from 'react-router';
-import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail } from 'lucide-react';
+import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -47,6 +47,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavItem to="/dashboard/clients" icon={Users} label="Clients" badge="23" onClick={onClose} />
             <NavItem to="/dashboard/notes" icon={FileText} label="Session Notes" badge="3" onClick={onClose} />
             <NavItem to="/dashboard/billing" icon={CreditCard} label="Billing" onClick={onClose} />
+            <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label="Insurance Receipts" onClick={onClose} />
+            <NavItem to="/dashboard/group-practice" icon={Building2} label="Group Practice" onClick={onClose} />
             <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label="Cultural Templates" onClick={onClose} />
           </div>
 
@@ -57,6 +59,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label="Outcome Measures" onClick={onClose} />
             <NavItem to="/dashboard/waitlist" icon={UserPlus} label="Waitlist" onClick={onClose} />
             <NavItem to="/dashboard/resources" icon={BookOpen} label="Resources" onClick={onClose} />
+            <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label="Your Wellbeing" onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">

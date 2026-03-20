@@ -35,6 +35,8 @@ import { ForChiropractors } from "./components/pages/ForChiropractors";
 import { ForPhysiotherapists } from "./components/pages/ForPhysiotherapists";
 import { ForMassageTherapists } from "./components/pages/ForMassageTherapists";
 import { ForNaturopaths } from "./components/pages/ForNaturopaths";
+import { GroupPractice } from "./components/pages/GroupPractice";
+import { InsuranceReceipts } from "./components/pages/InsuranceReceipts";
 
 // Simple error boundary fallback
 function ErrorBoundary() {
@@ -145,6 +147,8 @@ const router = createBrowserRouter([
       { path: "outcome-measures", element: <OutcomeMeasures /> },
       { path: "waitlist", element: <Waitlist /> },
       { path: "therapist-wellbeing", element: <TherapistWellbeing /> },
+      { path: "group-practice", element: <GroupPractice /> },
+      { path: "insurance-receipts", element: <InsuranceReceipts /> },
       { path: "resources", element: <Resources /> },
       { path: "faq", element: <FAQ /> },
       { path: "support", element: <Support /> },
