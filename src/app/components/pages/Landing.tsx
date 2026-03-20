@@ -127,7 +127,7 @@ export function Landing() {
           </p>
           
           <div className="flex items-center gap-4 mb-10">
-            <Link to="/dashboard" className="bg-[var(--sage)] text-white px-7 py-3.5 rounded-[10px] text-[15px] font-medium no-underline hover:bg-[var(--sage-deep)] transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(74,124,111,0.25)]">
+            <Link to="/onboarding" className="bg-[var(--sage)] text-white px-7 py-3.5 rounded-[10px] text-[15px] font-medium no-underline hover:bg-[var(--sage-deep)] transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(74,124,111,0.25)]">
               {t('hero.cta')}
             </Link>
             <a href="#features" className="text-[var(--ink-soft)] text-[15px] no-underline flex items-center gap-1.5 hover:text-[var(--sage)] transition-colors">
@@ -428,7 +428,7 @@ export function Landing() {
                   </li>
                 ))}
               </ul>
-              <Link to="/dashboard" className="block w-full py-3.5 rounded-[10px] text-[15px] font-medium text-center bg-transparent border-[1.5px] border-[var(--sage)] text-[var(--sage)] no-underline hover:bg-[var(--sage-pale)] transition-colors">
+              <Link to="/onboarding" className="block w-full py-3.5 rounded-[10px] text-[15px] font-medium text-center bg-transparent border-[1.5px] border-[var(--sage)] text-[var(--sage)] no-underline hover:bg-[var(--sage-pale)] transition-colors">
                 Get started free
               </Link>
             </div>
@@ -453,7 +453,7 @@ export function Landing() {
                   </li>
                 ))}
               </ul>
-              <Link to="/dashboard" className="block w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-center bg-white text-[var(--sage-deep)] no-underline hover:bg-[var(--sage-pale)] transition-colors shadow-sm">
+              <Link to="/onboarding" className="block w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-center bg-white text-[var(--sage-deep)] no-underline hover:bg-[var(--sage-pale)] transition-colors shadow-sm">
                 Start 7-day free trial
               </Link>
             </div>
@@ -477,7 +477,7 @@ export function Landing() {
                   </li>
                 ))}
               </ul>
-              <Link to="/dashboard" className="block w-full py-3.5 rounded-[10px] text-[15px] font-medium text-center bg-[var(--ink)] text-white no-underline hover:bg-[var(--sage-deep)] transition-colors">
+              <Link to="/onboarding" className="block w-full py-3.5 rounded-[10px] text-[15px] font-medium text-center bg-[var(--ink)] text-white no-underline hover:bg-[var(--sage-deep)] transition-colors">
                 Start free trial
               </Link>
             </div>
@@ -548,7 +548,7 @@ export function Landing() {
             placeholder="your.email@example.com" 
             className="flex-1 px-4 py-3 rounded-[9px] border border-white/20 bg-white/[0.08] text-white text-[15px] outline-none focus:border-[var(--sage-light)] transition-colors placeholder:text-white/40"
           />
-          <Link to="/dashboard" className="bg-white text-[var(--sage-deep)] px-7 py-3 rounded-[9px] text-[15px] font-medium no-underline hover:bg-[var(--sage-pale)] transition-colors whitespace-nowrap">
+          <Link to="/onboarding" className="bg-white text-[var(--sage-deep)] px-7 py-3 rounded-[9px] text-[15px] font-medium no-underline hover:bg-[var(--sage-pale)] transition-colors whitespace-nowrap">
             Start trial →
           </Link>
         </div>

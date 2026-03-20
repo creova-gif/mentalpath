@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { NoteModal } from '../modals/NoteModal';
 
 const dueNotes = [
@@ -16,6 +17,7 @@ const completedNotes = [
 ];
 
 export function SessionNotes() {
+  const navigate = useNavigate();
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   return (
@@ -23,7 +25,7 @@ export function SessionNotes() {
       <div className="flex justify-between items-center mb-5">
         <div className="text-sm text-[var(--ink-muted)]">3 notes due within 24hrs · 47 completed notes</div>
         <button
-          onClick={() => setSelectedClient('')}
+          onClick={() => navigate('/session-note-editor')}
           className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
         >
           <Plus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -51,7 +53,10 @@ export function SessionNotes() {
                     <div className="text-sm font-medium text-[var(--ink)]">{note.name}</div>
                     <div className="text-xs text-[var(--ink-muted)]">{note.time} · {note.type}</div>
                   </div>
-                  <button className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setSelectedClient(note.name); }}
+                    className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
+                  >
                     Write note
                   </button>
                 </div>
@@ -82,7 +87,10 @@ export function SessionNotes() {
                       </span>
                     </div>
                   </div>
-                  <button className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]">
+                  <button
+                    onClick={() => setSelectedClient(note.name)}
+                    className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
+                  >
                     View
                   </button>
                 </div>

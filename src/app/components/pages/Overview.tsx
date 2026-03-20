@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { NoteModal } from '../modals/NoteModal';
 
 export function Overview() {
+  const navigate = useNavigate();
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   const sessions = [
@@ -47,7 +49,7 @@ export function Overview() {
               <span className="hidden sm:inline">Today's sessions — Monday March 16</span>
               <span className="sm:hidden">Today's sessions</span>
             </span>
-            <button className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-none border-none px-2 py-1 rounded-[5px] transition-all duration-150 hover:bg-[var(--sage-pale)]">
+            <button onClick={() => navigate('/dashboard/calendar')} className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-none border-none px-2 py-1 rounded-[5px] transition-all duration-150 hover:bg-[var(--sage-pale)]">
               <span className="hidden sm:inline">View calendar</span>
               <span className="sm:hidden">Calendar</span>
             </button>
@@ -56,6 +58,7 @@ export function Overview() {
             {sessions.map((session, i) => (
               <div
                 key={i}
+                onClick={() => navigate('/dashboard/clients')}
                 className={`flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5 py-3 sm:py-3.5 border-t border-[var(--border)] cursor-pointer transition-all duration-100 hover:bg-[var(--warm)] ${
                   i === 0 ? 'border-t-0' : ''
                 } ${session.status === 'now' ? 'bg-[var(--sage)]/[0.04]' : ''}`}
@@ -76,7 +79,7 @@ export function Overview() {
                 )}
                 {session.status === 'note-due' && (
                   <button
-                    onClick={() => setSelectedClient(session.name)}
+                    onClick={(e) => { e.stopPropagation(); setSelectedClient(session.name); }}
                     className="px-2 sm:px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)] flex-shrink-0"
                   >
                     <span className="hidden sm:inline">Add note</span>
