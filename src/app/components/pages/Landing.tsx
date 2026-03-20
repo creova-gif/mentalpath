@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../LanguageSwitcher';
 import { SEO, addStructuredData, mentalPathSchema } from '../../utils/seo';
+import { useUser } from '../../context/UserContext';
 
 const PROFESSIONS = [
   { num: '01', name: 'Therapists & Psychotherapists', path: '/for-therapists', count: '25,000', college: 'CRPO · ACPRO · OPA', tags: ['Psychotherapy notes', 'Trauma-informed templates', 'Outcome tracking', 'Secure messaging', 'AI note drafting'], accent: '#4a7c6f' },
@@ -91,6 +92,7 @@ export function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
+  const { user } = useUser();
 
   useEffect(() => {
     const cleanup = addStructuredData(mentalPathSchema);
@@ -179,15 +181,26 @@ export function Landing() {
 
         <div className="hidden md:flex items-center gap-3">
           <LanguageSwitcher />
-          <Link to="/login" style={{ fontSize: 14, color: 'rgba(245,240,232,0.45)', textDecoration: 'none', padding: '8px 14px' }}>
-            {t('nav.signIn')}
-          </Link>
-          <Link to="/onboarding" style={{ fontSize: 14, fontWeight: 500, background: '#4a7c6f', color: 'white', textDecoration: 'none', padding: '9px 20px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'background 0.2s' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#3d6b5e')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#4a7c6f')}
-          >
-            {t('nav.signUpFree')}
-          </Link>
+          {user ? (
+            <Link to="/dashboard" style={{ fontSize: 14, fontWeight: 500, background: '#4a7c6f', color: 'white', textDecoration: 'none', padding: '9px 20px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'background 0.2s' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#3d6b5e')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#4a7c6f')}
+            >
+              {t('nav.dashboard')} →
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" style={{ fontSize: 14, color: 'rgba(245,240,232,0.45)', textDecoration: 'none', padding: '8px 14px' }}>
+                {t('nav.signIn')}
+              </Link>
+              <Link to="/onboarding" style={{ fontSize: 14, fontWeight: 500, background: '#4a7c6f', color: 'white', textDecoration: 'none', padding: '9px 20px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'background 0.2s' }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#3d6b5e')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#4a7c6f')}
+              >
+                {t('nav.signUpFree')}
+              </Link>
+            </>
+          )}
         </div>
 
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2" style={{ color: '#f5f0e8', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle menu">
@@ -220,7 +233,7 @@ export function Landing() {
               { label: t('nav.compliance'), href: '#compliance', anchor: true },
               { label: t('nav.pricing'), href: '/subscribe', anchor: false },
               { label: t('nav.clientPortal'), href: '/client-portal', anchor: false },
-              { label: t('nav.dashboard'), href: '/login', anchor: false },
+              { label: t('nav.dashboard'), href: user ? '/dashboard' : '/login', anchor: false },
             ].map((item, i) => item.anchor ? (
               <a key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '18px 0', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ fontSize: 11, fontWeight: 600, width: 20, color: '#4a7c6f' }}>0{i + 1}</span>
@@ -238,8 +251,8 @@ export function Landing() {
             <div style={{ marginBottom: 16 }}>
               <LanguageSwitcher />
             </div>
-            <Link to="/onboarding" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '16px 0', borderRadius: 12, background: '#4a7c6f', color: 'white', textDecoration: 'none', fontSize: 15, fontWeight: 500 }}>
-              {t('nav.signUpFree')}
+            <Link to={user ? '/dashboard' : '/onboarding'} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '16px 0', borderRadius: 12, background: '#4a7c6f', color: 'white', textDecoration: 'none', fontSize: 15, fontWeight: 500 }}>
+              {user ? t('nav.dashboard') : t('nav.signUpFree')}
               <svg viewBox="0 0 16 16" style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
             </Link>
             <p style={{ textAlign: 'center', fontSize: 12, marginTop: 12, color: 'rgba(245,240,232,0.28)' }}>
