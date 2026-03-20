@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from 'react-router';
-import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart, LogOut, CreditCard as PlanIcon } from 'lucide-react';
+import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart, LogOut, Dumbbell, GitBranch, DollarSign } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 
 interface SidebarProps {
@@ -20,6 +20,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const isGroup = subscription?.type === 'group' || subscription?.type === 'enterprise';
   const isTrial = subscription?.isTrial;
   const trialDays = subscription?.trialDaysRemaining ?? 0;
+  const isMusculoskeletal = user?.profession === 'Physiotherapist' || user?.profession === 'Chiropractor' || user?.profession === 'Registered Massage Therapist';
 
   return (
     <>
@@ -70,6 +71,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavItem to="/dashboard/clinical-tools" icon={Clipboard} label="Clinical Tools" onClick={onClose} />
             <NavItem to="/dashboard/session-prep" icon={Activity} label="Session Prep" onClick={onClose} />
             <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label="Outcome Measures" onClick={onClose} />
+            {isMusculoskeletal && <NavItem to="/dashboard/treatment-courses" icon={GitBranch} label="Treatment Courses" onClick={onClose} />}
+            {isMusculoskeletal && <NavItem to="/dashboard/hep-builder" icon={Dumbbell} label="HEP Builder" onClick={onClose} />}
             <NavItem to="/dashboard/waitlist" icon={UserPlus} label="Waitlist" onClick={onClose} />
             <NavItem to="/dashboard/resources" icon={BookOpen} label="Resources" onClick={onClose} />
             <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label="Your Wellbeing" onClick={onClose} />
@@ -89,6 +92,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           <div className="py-4 px-3">
             <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/30 px-2 mb-1">Help</div>
+            <NavItem to="/dashboard/cost-savings" icon={DollarSign} label="What you save" onClick={onClose} />
             <NavItem to="/dashboard/faq" icon={HelpCircle} label="FAQ" onClick={onClose} />
             <NavItem to="/dashboard/support" icon={Mail} label="Support" onClick={onClose} />
           </div>

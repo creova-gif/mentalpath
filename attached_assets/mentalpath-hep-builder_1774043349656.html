@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Home Exercise Program</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--green:#1D9E75;--amber:#BA7517;--blue:#185FA5;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);display:flex;flex-direction:column;}
+button,input,select,textarea{font-family:inherit;}
+
+.topbar{background:var(--ink);height:52px;display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.tb-mark{width:26px;height:26px;background:var(--sage);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.tb-logo{font-family:var(--font-d);font-size:16px;color:white;}
+.tb-sp{flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.btn-sage{background:var(--sage);color:white;}
+.btn-ghost{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);}
+
+.shell{display:grid;grid-template-columns:340px 1fr;flex:1;overflow:hidden;}
+
+/* LIBRARY PANEL */
+.library{background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.lib-head{padding:14px 16px;border-bottom:1px solid var(--border);}
+.lib-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px;}
+.lib-search{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--warm);outline:none;transition:border-color 0.15s;}
+.lib-search:focus{border-color:var(--sage);background:white;}
+.lib-cats{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.cat-btn{padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:white;font-size:11px;font-weight:500;color:var(--ink-muted);cursor:pointer;transition:all 0.15s;}
+.cat-btn.on{background:var(--sage);border-color:var(--sage);color:white;}
+.lib-list{overflow-y:auto;flex:1;}
+.ex-item{padding:12px 16px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background 0.15s;display:flex;align-items:flex-start;gap:10px;}
+.ex-item:hover{background:var(--sage-pale);}
+.ex-item.added{background:#e8f4f0;}
+.ex-icon{width:36px;height:36px;border-radius:8px;background:var(--warm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
+.ex-info{flex:1;}
+.ex-name{font-size:13px;font-weight:500;color:var(--ink);}
+.ex-cat{font-size:11px;color:var(--ink-muted);margin-top:1px;}
+.ex-defaults{font-size:11px;color:var(--sage);margin-top:3px;font-weight:500;}
+.add-btn{width:24px;height:24px;border-radius:50%;background:var(--sage);color:white;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:all 0.15s;}
+.add-btn:hover{background:var(--sage-deep);transform:scale(1.1);}
+.add-btn.done{background:var(--green);}
+
+/* BUILDER PANEL */
+.builder{display:flex;flex-direction:column;overflow:hidden;}
+.builder-top{background:white;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.bt-left{display:flex;align-items:center;gap:10px;}
+.bt-client{font-size:14px;font-weight:500;color:var(--ink);}
+.bt-detail{font-size:12px;color:var(--ink-muted);}
+.builder-body{flex:1;overflow-y:auto;padding:20px;}
+.hep-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.hm-field{background:white;border:1px solid var(--border);border-radius:8px;padding:10px 13px;}
+.hm-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);margin-bottom:4px;}
+.hm-val{font-size:13px;font-weight:500;color:var(--ink);}
+.hm-select{width:100%;border:none;background:transparent;font-size:13px;font-weight:500;color:var(--ink);outline:none;cursor:pointer;}
+.exercises-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.exercise-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ec-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.ec-num{width:24px;height:24px;border-radius:50%;background:var(--sage);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.ec-name{font-size:14px;font-weight:500;color:var(--ink);flex:1;}
+.ec-remove{width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,0.06);color:var(--ink-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s;}
+.ec-remove:hover{background:#fde8e8;color:#791F1F;}
+.ec-body{display:grid;grid-template-columns:repeat(4,1fr) 2fr;gap:0;}
+.ec-param{padding:10px 14px;border-right:0.5px solid var(--border);}
+.ec-param:last-child{border-right:none;}
+.ec-p-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.4px;color:var(--ink-muted);margin-bottom:4px;}
+.ec-p-input{width:60px;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:14px;font-weight:500;color:var(--ink);outline:none;background:var(--warm);}
+.ec-p-input:focus{border-color:var(--sage);background:white;}
+.ec-p-unit{font-size:11px;color:var(--ink-muted);margin-top:3px;}
+.ec-instructions{padding:10px 14px;font-size:12px;color:var(--ink-muted);line-height:1.5;background:var(--warm);}
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink-muted);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-title{font-size:14px;font-weight:500;color:var(--ink-soft);margin-bottom:4px;}
+.preview-wrap{background:var(--sage-pale);border:1px solid rgba(74,124,111,0.2);border-radius:11px;padding:14px 16px;margin-top:8px;}
+.prev-title{font-size:12px;font-weight:500;color:var(--sage-deep);margin-bottom:4px;}
+.prev-sub{font-size:12px;color:var(--sage-deep);line-height:1.5;opacity:0.8;}
+.send-row{background:white;border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.sr-summary{flex:1;font-size:13px;color:var(--ink-muted);}
+.sr-summary strong{color:var(--ink);font-weight:500;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-logo">MentalPath</span>
+  <span style="font-size:12px;color:rgba(255,255,255,0.4);">Home Exercise Program — Priya Kapoor · Rotator cuff · Session 4</span>
+  <div class="tb-sp"></div>
+  <button class="btn btn-ghost">Preview PDF</button>
+  <button class="btn btn-sage" onclick="sendToPortal()">Send to client portal →</button>
+</div>
+
+<div class="shell">
+
+  <!-- EXERCISE LIBRARY -->
+  <div class="library">
+    <div class="lib-head">
+      <div class="lib-title">Exercise library</div>
+      <input class="lib-search" placeholder="Search exercises..." id="searchInput" oninput="filterExercises(this.value)">
+      <div class="lib-cats">
+        <button class="cat-btn on" onclick="filterCat('all',this)">All</button>
+        <button class="cat-btn" onclick="filterCat('cervical',this)">Cervical</button>
+        <button class="cat-btn" onclick="filterCat('shoulder',this)">Shoulder</button>
+        <button class="cat-btn" onclick="filterCat('lumbar',this)">Lumbar</button>
+        <button class="cat-btn" onclick="filterCat('hip',this)">Hip/Knee</button>
+        <button class="cat-btn" onclick="filterCat('core',this)">Core</button>
+      </div>
+    </div>
+    <div class="lib-list" id="libList"></div>
+  </div>
+
+  <!-- HEP BUILDER -->
+  <div class="builder">
+    <div class="builder-top">
+      <div class="bt-left">
+        <div>
+          <div class="bt-client">Priya Kapoor — HEP</div>
+          <div class="bt-detail">Rotator cuff syndrome (R) · Session 4 of 8 · Mar 16, 2026</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--sage-deep);background:var(--sage-pale);padding:5px 12px;border-radius:6px;" id="exerciseCount">0 exercises added</div>
+    </div>
+
+    <div class="builder-body">
+      <div class="hep-meta">
+        <div class="hm-field"><div class="hm-label">Frequency</div><select class="hm-select"><option>Daily</option><option>Twice daily</option><option>3× per week</option><option>Every other day</option></select></div>
+        <div class="hm-field"><div class="hm-label">Duration</div><select class="hm-select"><option>4 weeks</option><option>2 weeks</option><option>6 weeks</option><option>8 weeks</option></select></div>
+        <div class="hm-field"><div class="hm-label">Review date</div><div class="hm-val">Apr 13, 2026</div></div>
+        <div class="hm-field"><div class="hm-label">Portal access</div><select class="hm-select"><option>Enabled</option><option>PDF only</option></select></div>
+      </div>
+
+      <div class="exercises-list" id="exercisesList">
+        <!-- Exercises added here -->
+      </div>
+
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">💪</div>
+        <div class="empty-title">No exercises added yet</div>
+        <div style="font-size:13px;color:var(--ink-muted);max-width:280px;margin:0 auto;">Search or browse the library on the left and click + to add exercises to this program.</div>
+      </div>
+
+      <div class="preview-wrap" id="previewWrap" style="display:none;">
+        <div class="prev-title">📱 How your client sees this</div>
+        <div class="prev-sub">This HEP will appear in Priya's client portal with step-by-step instructions. She'll receive a notification when it's issued. You can track whether she's viewed it. You can update exercises between sessions without re-issuing — she sees changes automatically.</div>
+      </div>
+    </div>
+
+    <div class="send-row">
+      <div class="sr-summary" id="srSummary"><strong>No exercises added</strong> — add exercises from the library to build the program</div>
+      <button class="btn" style="background:white;border:1px solid var(--bmed);color:var(--ink-soft);">Save draft</button>
+      <button class="btn btn-sage" onclick="sendToPortal()" id="sendBtn" disabled>Send to portal →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EXERCISES = [
+  {id:'e1',name:'Pendulum',cat:'shoulder',icon:'⚡',defaults:'3 × 30 sec',sets:3,reps:1,hold:30,rest:30,
+   instructions:'Lean forward, arm hanging freely. Let arm swing in small circles. Use body weight only — no active arm movement.'},
+  {id:'e2',name:'Scapular Retraction',cat:'shoulder',icon:'💪',defaults:'3 × 15 reps',sets:3,reps:15,hold:5,rest:30,
+   instructions:'Sitting upright, squeeze shoulder blades together and slightly down. Do not shrug. Hold 5 seconds, then release.'},
+  {id:'e3',name:'Theraband External Rotation',cat:'shoulder',icon:'🏋️',defaults:'3 × 12 reps',sets:3,reps:12,hold:2,rest:30,
+   instructions:'Band at elbow height, elbow at 90°. Rotate arm outward against resistance. Keep elbow close to side. Slowly return.'},
+  {id:'e4',name:'Doorway Chest Stretch',cat:'shoulder',icon:'🚪',defaults:'3 × 30 sec',sets:3,reps:1,hold:30,rest:15,
+   instructions:'Stand in doorway, arms at 90°. Step forward until chest stretch felt. Do not lean forward at waist. Breathe and hold.'},
+  {id:'e5',name:'Theraband Row',cat:'shoulder',icon:'🎯',defaults:'3 × 12 reps',sets:3,reps:12,hold:2,rest:30,
+   instructions:'Band at chest height. Pull back, keeping elbow at 90°. Squeeze shoulder blade at end range. Slowly return.'},
+  {id:'e6',name:'Chin Tuck',cat:'cervical',icon:'🧠',defaults:'3 × 10 reps × 5s hold',sets:3,reps:10,hold:5,rest:10,
+   instructions:'Sitting tall, gently tuck chin straight back — not down. Hold. Slowly release. Keep eyes level throughout.'},
+  {id:'e7',name:'Cervical Side Bend',cat:'cervical',icon:'↔️',defaults:'3 × 30 sec each side',sets:3,reps:1,hold:30,rest:15,
+   instructions:'Tilt ear toward shoulder until light stretch felt. Breathe and hold. Return to centre. Repeat other side.'},
+  {id:'e8',name:'Cat-Cow',cat:'lumbar',icon:'🐱',defaults:'1 × 10 reps',sets:1,reps:10,hold:3,rest:10,
+   instructions:'On hands and knees. Inhale: arch back, lift head (cow). Exhale: round back, tuck chin (cat). Move slowly.'},
+  {id:'e9',name:'Bird Dog',cat:'core',icon:'🦅',defaults:'3 × 8 each side',sets:3,reps:8,hold:5,rest:15,
+   instructions:'On hands and knees. Extend opposite arm and leg. Hold. Keep hips level throughout. Slowly return and repeat.'},
+  {id:'e10',name:'Clam Shell',cat:'hip',icon:'🦪',defaults:'3 × 15 reps',sets:3,reps:15,hold:2,rest:20,
+   instructions:'Side lying, hips at 45°, knees bent. Rotate top knee up without rolling pelvis back. Slowly lower.'},
+  {id:'e11',name:'Terminal Knee Extension',cat:'hip',icon:'🦵',defaults:'3 × 15 reps × 3s hold',sets:3,reps:15,hold:3,rest:20,
+   instructions:'Band behind knee, slight bend. Press knee straight against resistance. Hold. Keep heel on ground. Slowly return.'},
+  {id:'e12',name:'Ankle Alphabet',cat:'lumbar',icon:'🦶',defaults:'1 set × 1 rep',sets:1,reps:1,hold:0,rest:0,
+   instructions:'Seated, foot elevated. Trace full alphabet with big toe. Move only ankle — keep leg still. Do both feet.'},
+];
+
+let addedExercises = [];
+let currentCat = 'all';
+
+function renderLib(exercises) {
+  const list = document.getElementById('libList');
+  list.innerHTML = exercises.map(ex => {
+    const isAdded = addedExercises.some(a => a.id === ex.id);
+    return `
+      <div class="ex-item${isAdded?' added':''}" id="lib-${ex.id}">
+        <div class="ex-icon">${ex.icon}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-cat">${ex.cat}</div>
+          <div class="ex-defaults">${ex.defaults}</div>
+        </div>
+        <button class="add-btn${isAdded?' done':''}" onclick="addExercise('${ex.id}')" ${isAdded?'disabled':''}>
+          ${isAdded ? '✓' : '+'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterExercises(q) {
+  const filtered = EXERCISES.filter(ex => {
+    const matchQuery = !q || ex.name.toLowerCase().includes(q.toLowerCase());
+    const matchCat = currentCat === 'all' || ex.cat === currentCat || (currentCat === 'hip' && (ex.cat === 'hip' || ex.cat === 'knee'));
+    return matchQuery && matchCat;
+  });
+  renderLib(filtered);
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  filterExercises(document.getElementById('searchInput').value);
+}
+
+function addExercise(id) {
+  const ex = EXERCISES.find(e => e.id === id);
+  if (!ex || addedExercises.some(a => a.id === id)) return;
+  addedExercises.push({...ex});
+  renderBuilder();
+  renderLib(EXERCISES.filter(ex => {
+    const matchCat = currentCat === 'all' || ex.cat === currentCat;
+    return matchCat;
+  }));
+}
+
+function removeExercise(id) {
+  addedExercises = addedExercises.filter(a => a.id !== id);
+  renderBuilder();
+  filterExercises(document.getElementById('searchInput').value);
+}
+
+function renderBuilder() {
+  const list = document.getElementById('exercisesList');
+  const empty = document.getElementById('emptyState');
+  const preview = document.getElementById('previewWrap');
+  const count = document.getElementById('exerciseCount');
+  const summary = document.getElementById('srSummary');
+  const sendBtn = document.getElementById('sendBtn');
+
+  count.textContent = `${addedExercises.length} exercise${addedExercises.length !== 1 ? 's' : ''} added`;
+  sendBtn.disabled = addedExercises.length === 0;
+
+  if (addedExercises.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    preview.style.display = 'none';
+    summary.innerHTML = '<strong>No exercises added</strong> — add exercises from the library';
+    return;
+  }
+
+  empty.style.display = 'none';
+  preview.style.display = 'block';
+  summary.innerHTML = `<strong>${addedExercises.length} exercises</strong> · Daily · 4 weeks · Will appear in Priya's portal immediately`;
+
+  list.innerHTML = addedExercises.map((ex, i) => `
+    <div class="exercise-card">
+      <div class="ec-head">
+        <div class="ec-num">${i+1}</div>
+        <div class="ec-name">${ex.name}</div>
+        <button class="ec-remove" onclick="removeExercise('${ex.id}')">×</button>
+      </div>
+      <div class="ec-body">
+        <div class="ec-param">
+          <div class="ec-p-label">Sets</div>
+          <input class="ec-p-input" type="number" value="${ex.sets}" min="1" max="10">
+          <div class="ec-p-unit">sets</div>
+        </div>
+        <div class="ec-param">
+          <div class="ec-p-label">Reps</div>
+          <input class="ec-p-input" type="number" value="${ex.reps}" min="1" max="30">
+          <div class="ec-p-unit">reps</div>
+        </div>
+        <div class="ec-param">
+          <div class="ec-p-label">Hold</div>
+          <input class="ec-p-input" type="number" value="${ex.hold}" min="0" max="120">
+          <div class="ec-p-unit">seconds</div>
+        </div>
+        <div class="ec-param">
+          <div class="ec-p-label">Rest</div>
+          <input class="ec-p-input" type="number" value="${ex.rest}" min="0" max="120">
+          <div class="ec-p-unit">seconds</div>
+        </div>
+        <div class="ec-param" style="border-right:none;">
+          <div class="ec-p-label">Instructions</div>
+          <textarea style="width:100%;border:none;background:transparent;font-size:12px;color:var(--ink-soft);resize:none;outline:none;line-height:1.5;min-height:44px;" readonly>${ex.instructions}</textarea>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function sendToPortal() {
+  if (addedExercises.length === 0) return;
+  const btn = document.getElementById('sendBtn');
+  btn.textContent = '✓ Sent to Priya\'s portal';
+  btn.style.background = 'var(--green)';
+  btn.disabled = true;
+  document.getElementById('srSummary').innerHTML = '<strong>✓ HEP issued</strong> · Priya will see this in her client portal and receive a notification.';
+}
+
+// Init
+renderLib(EXERCISES);
+// Pre-add 2 exercises for demo
+setTimeout(() => { addExercise('e1'); addExercise('e2'); addExercise('e3'); }, 100);
+</script>
+</body>
+</html>

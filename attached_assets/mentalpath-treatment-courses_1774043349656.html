@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Treatment courses</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--red:#c0392b;--green:#1D9E75;--amber:#BA7517;--blue:#185FA5;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);}
+button,select{font-family:inherit;}
+
+.topbar{background:var(--ink);height:52px;display:flex;align-items:center;padding:0 24px;gap:12px;}
+.tb-mark{width:26px;height:26px;background:var(--sage);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.tb-logo{font-family:var(--font-d);font-size:16px;color:white;}
+.tb-badge{font-size:11px;padding:3px 9px;border-radius:4px;background:rgba(74,124,111,0.3);color:var(--sage-light);font-weight:500;}
+.tb-sp{flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.btn-sage{background:var(--sage);color:white;}
+.btn-ghost{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);}
+
+.view-bar{background:white;border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:0;justify-content:space-between;}
+.vb-left{display:flex;}
+.vb-tab{padding:13px 16px;font-size:13px;color:var(--ink-muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.vb-tab.on{color:var(--sage-deep);border-bottom-color:var(--sage);font-weight:500;}
+.vb-right{display:flex;gap:8px;align-items:center;padding:8px 0;}
+.filter-select{padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:white;font-size:12px;color:var(--ink-soft);cursor:pointer;outline:none;}
+
+/* ALERT STRIP */
+.alert-strip{background:#FFF8E8;border-bottom:1px solid rgba(186,117,23,0.2);padding:9px 24px;display:flex;align-items:center;gap:10px;font-size:13px;color:#633806;}
+.alert-strip svg{width:15px;height:15px;fill:none;stroke:var(--amber);stroke-width:1.5;flex-shrink:0;}
+.alert-link{color:var(--amber);font-weight:500;cursor:pointer;text-decoration:underline;}
+
+/* STAT STRIP */
+.stat-strip{padding:16px 24px;display:flex;gap:12px;background:white;border-bottom:1px solid var(--border);}
+.ss{background:var(--warm);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;min-width:110px;}
+.ss-n{font-family:var(--font-d);font-size:22px;color:var(--ink);line-height:1;}
+.ss-l{font-size:11px;color:var(--ink-muted);margin-top:3px;}
+.ss-d{font-size:10px;font-weight:500;margin-top:2px;}
+
+/* COURSE CARDS */
+.content{padding:20px 24px;}
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.course-card{background:white;border:1px solid var(--border);border-radius:13px;overflow:hidden;transition:box-shadow 0.15s;}
+.course-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.cc-top{padding:15px 17px;border-bottom:1px solid var(--border);}
+.cc-client{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cc-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.cc-name{font-size:14px;font-weight:500;color:var(--ink);}
+.cc-diag{font-size:12px;color:var(--ink-muted);}
+.cc-status{margin-left:auto;}
+.status-badge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;}
+.sb-active{background:var(--sage-pale);color:var(--sage-deep);}
+.sb-review{background:#faeeda;color:#633806;}
+.sb-overdue{background:#fde8e8;color:#791F1F;}
+.sb-done{background:var(--warm);color:var(--ink-muted);}
+
+/* PROGRESS BAR */
+.progress-section{padding:14px 17px;border-bottom:0.5px solid var(--border);}
+.prog-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.prog-title{font-size:12px;font-weight:500;color:var(--ink);}
+.prog-nums{font-size:13px;font-weight:500;color:var(--ink);}
+.prog-track{height:6px;background:var(--warm);border-radius:3px;overflow:hidden;margin-bottom:5px;}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.4s;}
+.prog-milestones{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-muted);}
+
+/* OUTCOME BARS */
+.outcomes-row{display:flex;gap:10px;padding:10px 17px;background:var(--warm);align-items:center;border-bottom:0.5px solid var(--border);}
+.or-item{display:flex;align-items:center;gap:6px;font-size:12px;}
+.or-label{color:var(--ink-muted);}
+.or-before{color:var(--ink-muted);font-weight:500;}
+.or-arrow{color:var(--ink-muted);}
+.or-after{font-weight:500;}
+
+/* NEXT ACTIONS */
+.actions-row{padding:10px 17px;display:flex;gap:6px;flex-wrap:wrap;}
+.action-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;color:var(--ink-soft);cursor:pointer;background:white;transition:all 0.15s;}
+.action-chip:hover{background:var(--sage-pale);border-color:var(--sage-light);color:var(--sage-deep);}
+.action-chip svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.action-chip.urgent{background:#fde8e8;border-color:#f09595;color:#791F1F;}
+.action-chip.urgent:hover{background:#f9d0d0;}
+
+/* REVIEW PANEL */
+.review-banner{background:var(--sage);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.rb-text{flex:1;}
+.rb-title{font-size:14px;font-weight:500;color:white;margin-bottom:2px;}
+.rb-sub{font-size:12px;color:rgba(255,255,255,0.7);}
+.rb-btn{padding:8px 16px;background:white;color:var(--sage-deep);border:none;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;flex-shrink:0;}
+
+/* END OF DAY */
+.eod-wrap{background:white;border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+.eod-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.eod-title{font-family:var(--font-d);font-size:18px;color:var(--ink);}
+.eod-total{font-size:14px;font-weight:500;color:var(--sage-deep);}
+.eod-row{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:0.5px solid var(--border);}
+.eod-row:last-child{border-bottom:none;}
+.eod-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.eod-client{flex:1;}
+.eod-name{font-size:14px;font-weight:500;color:var(--ink);}
+.eod-detail{font-size:12px;color:var(--ink-muted);}
+.eod-amount{font-size:15px;font-weight:500;color:var(--ink);margin-right:8px;}
+.eod-invoice-btn{padding:7px 14px;border:1px solid var(--bmed);border-radius:7px;background:white;font-size:12px;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.eod-invoice-btn:hover{background:var(--sage-pale);border-color:var(--sage-light);color:var(--sage-deep);}
+.eod-invoice-btn.sent{background:#e8f4f0;border-color:var(--sage-light);color:var(--sage-deep);}
+.eod-footer{padding:14px 20px;background:var(--warm);display:flex;align-items:center;justify-content:space-between;}
+.eod-summary{font-size:13px;color:var(--ink-muted);}
+.invoice-all-btn{padding:10px 24px;background:var(--sage);color:white;border:none;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.invoice-all-btn:hover{background:var(--sage-deep);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-logo">MentalPath</span>
+  <span class="tb-badge">Dr. Jane Smith · Physiotherapist · CPT</span>
+  <div class="tb-sp"></div>
+  <button class="btn btn-ghost">+ New course</button>
+  <button class="btn btn-sage">Today's billing →</button>
+</div>
+
+<div class="view-bar">
+  <div class="vb-left">
+    <button class="vb-tab on" onclick="show('courses',this)">Treatment courses (8)</button>
+    <button class="vb-tab" onclick="show('eod',this)">End-of-day billing</button>
+    <button class="vb-tab" onclick="show('reviews',this)">Reviews due (3)</button>
+  </div>
+  <div class="vb-right">
+    <select class="filter-select"><option>All statuses</option><option>Active</option><option>Review due</option><option>Overdue</option><option>Completed</option></select>
+    <select class="filter-select"><option>All areas</option><option>Cervical</option><option>Lumbar</option><option>Shoulder</option><option>Knee</option></select>
+  </div>
+</div>
+
+<div class="alert-strip">
+  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+  3 clients are due for treatment plan reassessment this week. <span class="alert-link" onclick="show('reviews',document.querySelectorAll('.vb-tab')[2])">Review now →</span>
+</div>
+
+<div class="stat-strip">
+  <div class="ss"><div class="ss-n">8</div><div class="ss-l">Active courses</div></div>
+  <div class="ss"><div class="ss-n" style="color:var(--amber)">3</div><div class="ss-l">Review due</div><div class="ss-d" style="color:var(--amber)">This week</div></div>
+  <div class="ss"><div class="ss-n" style="color:var(--green)">4</div><div class="ss-l">On track</div><div class="ss-d" style="color:var(--green)">↑ all improving</div></div>
+  <div class="ss"><div class="ss-n">62</div><div class="ss-l">Sessions this month</div></div>
+  <div class="ss"><div class="ss-n">$7,440</div><div class="ss-l">Revenue (Mar)</div></div>
+</div>
+
+<!-- ════ TREATMENT COURSES ════ -->
+<div id="view-courses" class="content">
+  <div class="course-grid">
+
+    <!-- Card 1: Review due -->
+    <div class="course-card">
+      <div class="cc-top">
+        <div class="cc-client">
+          <div class="cc-av" style="background:#FAECE7;color:#8B2E12">MS</div>
+          <div>
+            <div class="cc-name">Marcus Silva</div>
+            <div class="cc-diag">M54.5 — Lumbar disc herniation · L4-L5</div>
+          </div>
+          <div class="cc-status"><span class="status-badge sb-review">Review due</span></div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="prog-label">
+          <span class="prog-title">Session progress</span>
+          <span class="prog-nums">8 of 12</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:67%;background:var(--amber)"></div></div>
+        <div class="prog-milestones"><span>Start</span><span>↑ reassess · session 8</span><span>12</span></div>
+      </div>
+      <div class="outcomes-row">
+        <div class="or-item"><span class="or-label">Oswestry</span><span class="or-before">46%</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--amber)">28%</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">NPRS</span><span class="or-before">7/10</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--amber)">4/10</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">PSFS</span><span class="or-before">3.5</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--sage)">6.0</span></div>
+      </div>
+      <div class="actions-row">
+        <button class="action-chip urgent"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>Reassess now</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Write note</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M9 11l3 3L22 4"/></svg>Issue HEP</button>
+      </div>
+    </div>
+
+    <!-- Card 2: Active, on track -->
+    <div class="course-card">
+      <div class="cc-top">
+        <div class="cc-client">
+          <div class="cc-av" style="background:#E6F1FB;color:#0C447C">PK</div>
+          <div>
+            <div class="cc-name">Priya Kapoor</div>
+            <div class="cc-diag">M75.1 — Rotator cuff syndrome · Right shoulder</div>
+          </div>
+          <div class="cc-status"><span class="status-badge sb-active">Active</span></div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="prog-label">
+          <span class="prog-title">Session progress</span>
+          <span class="prog-nums">4 of 8</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:50%;background:var(--sage)"></div></div>
+        <div class="prog-milestones"><span>Start</span><span>Midpoint</span><span>8</span></div>
+      </div>
+      <div class="outcomes-row">
+        <div class="or-item"><span class="or-label">DASH</span><span class="or-before">54</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--green)">31</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">NPRS</span><span class="or-before">8/10</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--sage)">3/10</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">ROM</span><span class="or-after" style="color:var(--sage)">↑ 40°</span></div>
+      </div>
+      <div class="actions-row">
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Write note</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M9 11l3 3L22 4"/></svg>Update HEP</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M4 6h16M4 12h16M4 18h7"/></svg>Issue receipt</button>
+      </div>
+    </div>
+
+    <!-- Card 3: Overdue -->
+    <div class="course-card" style="border-color:rgba(192,57,43,0.25)">
+      <div class="cc-top">
+        <div class="cc-client">
+          <div class="cc-av" style="background:#fde8e8;color:#791F1F">TN</div>
+          <div>
+            <div class="cc-name">Thomas Nguyen</div>
+            <div class="cc-diag">M23.2 — Medial meniscus tear · Right knee</div>
+          </div>
+          <div class="cc-status"><span class="status-badge sb-overdue">Overdue — missed 2</span></div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="prog-label">
+          <span class="prog-title">Session progress</span>
+          <span class="prog-nums">6 of 10</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:60%;background:var(--red)"></div></div>
+        <div class="prog-milestones"><span>Start</span><span>⚠ 2 missed</span><span>10</span></div>
+      </div>
+      <div class="outcomes-row">
+        <div class="or-item"><span class="or-label">NPRS</span><span class="or-before">6/10</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--amber)">4/10</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">Berg Balance</span><span class="or-before">38</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--amber)">44</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">Last seen</span><span class="or-after" style="color:var(--red)">18 days ago</span></div>
+      </div>
+      <div class="actions-row">
+        <button class="action-chip urgent"><svg viewBox="0 0 16 16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg>Contact client</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Write note</button>
+      </div>
+    </div>
+
+    <!-- Card 4: Active, early -->
+    <div class="course-card">
+      <div class="cc-top">
+        <div class="cc-client">
+          <div class="cc-av" style="background:#EEEDFE;color:#3C3489">AB</div>
+          <div>
+            <div class="cc-name">Aisha Boateng</div>
+            <div class="cc-diag">G54.2 — Cervical radiculopathy · C6</div>
+          </div>
+          <div class="cc-status"><span class="status-badge sb-active">Active</span></div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="prog-label">
+          <span class="prog-title">Session progress</span>
+          <span class="prog-nums">2 of 8</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:25%;background:var(--sage)"></div></div>
+        <div class="prog-milestones"><span>Start</span><span>Midpoint</span><span>8</span></div>
+      </div>
+      <div class="outcomes-row">
+        <div class="or-item"><span class="or-label">NPRS</span><span class="or-before">8/10</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--amber)">6/10</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">PSFS</span><span class="or-before">2.5</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--amber)">4.0</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">Next</span><span class="or-after" style="color:var(--ink-muted)">Mar 18</span></div>
+      </div>
+      <div class="actions-row">
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Write note</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M9 11l3 3L22 4"/></svg>Issue HEP</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Receipt</button>
+      </div>
+    </div>
+
+    <!-- Card 5: Near discharge -->
+    <div class="course-card" style="border-color:rgba(74,124,111,0.3)">
+      <div class="cc-top">
+        <div class="cc-client">
+          <div class="cc-av" style="background:#e8f0ed;color:var(--sage-deep)">JL</div>
+          <div>
+            <div class="cc-name">James Liu</div>
+            <div class="cc-diag">S83.5 — Lateral ankle sprain · Left ankle</div>
+          </div>
+          <div class="cc-status"><span class="status-badge sb-active" style="background:#d4e8d4;color:#1a5a1a">Discharge ready</span></div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="prog-label">
+          <span class="prog-title">Session progress</span>
+          <span class="prog-nums">6 of 6</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="prog-milestones"><span>Start</span><span>All goals met ✓</span><span>6 ✓</span></div>
+      </div>
+      <div class="outcomes-row">
+        <div class="or-item"><span class="or-label">NPRS</span><span class="or-before">7/10</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--green)">1/10</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">Berg</span><span class="or-before">41</span><span class="or-arrow">→</span><span class="or-after" style="color:var(--green)">54</span></div>
+        <div class="or-item" style="margin-left:12px;"><span class="or-label">Return to sport</span><span class="or-after" style="color:var(--green)">✓ Cleared</span></div>
+      </div>
+      <div class="actions-row">
+        <button class="action-chip" style="background:var(--sage-pale);border-color:var(--sage-light);color:var(--sage-deep)">Write discharge summary</button>
+        <button class="action-chip"><svg viewBox="0 0 16 16"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Final receipt</button>
+      </div>
+    </div>
+
+    <!-- New course CTA -->
+    <div style="background:white;border:1.5px dashed var(--sage-light);border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;cursor:pointer;min-height:200px;transition:all 0.15s;" onmouseover="this.style.background='var(--sage-pale)'" onmouseout="this.style.background='white'">
+      <div style="font-size:28px;margin-bottom:10px;">+</div>
+      <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;">Start a new treatment course</div>
+      <div style="font-size:12px;color:var(--ink-muted);">Set diagnosis, goals, session count, and outcome measures in 60 seconds</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════ END OF DAY BILLING ════ -->
+<div id="view-eod" class="content" style="display:none">
+  <div style="font-family:var(--font-d);font-size:22px;color:var(--ink);margin-bottom:4px;">End-of-day billing</div>
+  <div style="font-size:13px;color:var(--ink-muted);margin-bottom:18px;">Monday, March 16 · 5 sessions completed · $600 to invoice · Takes 30 seconds</div>
+  <div class="eod-wrap">
+    <div class="eod-head">
+      <div class="eod-title">Today's sessions</div>
+      <div class="eod-total">$600.00 pending</div>
+    </div>
+    <div class="eod-row">
+      <div class="eod-av" style="background:#FAECE7;color:#8B2E12">MS</div>
+      <div class="eod-client"><div class="eod-name">Marcus Silva</div><div class="eod-detail">9:00am · 50 min · Session 8 of 12 · Lumbar</div></div>
+      <div class="eod-amount">$120</div>
+      <button class="eod-invoice-btn" onclick="markSent(this)">Generate + send →</button>
+    </div>
+    <div class="eod-row">
+      <div class="eod-av" style="background:#E6F1FB;color:#0C447C">PK</div>
+      <div class="eod-client"><div class="eod-name">Priya Kapoor</div><div class="eod-detail">10:00am · 50 min · Session 4 of 8 · Shoulder</div></div>
+      <div class="eod-amount">$120</div>
+      <button class="eod-invoice-btn" onclick="markSent(this)">Generate + send →</button>
+    </div>
+    <div class="eod-row">
+      <div class="eod-av" style="background:#EEEDFE;color:#3C3489">AB</div>
+      <div class="eod-client"><div class="eod-name">Aisha Boateng</div><div class="eod-detail">1:00pm · 50 min · Session 2 of 8 · Cervical</div></div>
+      <div class="eod-amount">$120</div>
+      <button class="eod-invoice-btn" onclick="markSent(this)">Generate + send →</button>
+    </div>
+    <div class="eod-row">
+      <div class="eod-av" style="background:#e8f0ed;color:var(--sage-deep)">JL</div>
+      <div class="eod-client"><div class="eod-name">James Liu</div><div class="eod-detail">2:00pm · 50 min · Session 6 of 6 · Ankle (final)</div></div>
+      <div class="eod-amount">$120</div>
+      <button class="eod-invoice-btn" onclick="markSent(this)">Generate + send →</button>
+    </div>
+    <div class="eod-row">
+      <div class="eod-av" style="background:#faeeda;color:#633806">RN</div>
+      <div class="eod-client"><div class="eod-name">Riya Nair</div><div class="eod-detail">3:00pm · 50 min · Intake assessment · Knee</div></div>
+      <div class="eod-amount">$120</div>
+      <button class="eod-invoice-btn" onclick="markSent(this)">Generate + send →</button>
+    </div>
+    <div class="eod-footer">
+      <div class="eod-summary" id="eodSummary">0 of 5 invoices sent</div>
+      <button class="invoice-all-btn" onclick="invoiceAll()">Send all 5 invoices at once →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ REVIEWS DUE ════ -->
+<div id="view-reviews" class="content" style="display:none">
+  <div class="review-banner">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    <div class="rb-text">
+      <div class="rb-title">3 clients are due for formal treatment plan reassessment</div>
+      <div class="rb-sub">College standards require documentation when extending, modifying or closing a course of treatment.</div>
+    </div>
+    <button class="rb-btn">Review all three →</button>
+  </div>
+  <div class="course-grid">
+    <div class="course-card">
+      <div class="cc-top">
+        <div class="cc-client">
+          <div class="cc-av" style="background:#FAECE7;color:#8B2E12">MS</div>
+          <div><div class="cc-name">Marcus Silva</div><div class="cc-diag">Session 8 of 12 · Reassessment overdue</div></div>
+          <div class="cc-status"><span class="status-badge sb-overdue">Act now</span></div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div style="font-size:13px;color:var(--ink-soft);line-height:1.6;">Original goals: Return to running 5km, reduce Oswestry to under 20%. Current: 28% (from 46%). Recommend: <strong>extend 4 sessions</strong> to consolidate gains and complete strength program.</div>
+      </div>
+      <div class="actions-row">
+        <button class="action-chip urgent">Extend course (+4 sessions)</button>
+        <button class="action-chip">Discharge</button>
+        <button class="action-chip">Refer onward</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.getElementById('view-courses').style.display='none';
+  document.getElementById('view-eod').style.display='none';
+  document.getElementById('view-reviews').style.display='none';
+  document.getElementById('view-'+id).style.display='block';
+  document.querySelectorAll('.vb-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+let sentCount = 0;
+function markSent(btn) {
+  btn.textContent = '✓ Sent';
+  btn.classList.add('sent');
+  btn.disabled = true;
+  sentCount++;
+  document.getElementById('eodSummary').textContent = `${sentCount} of 5 invoices sent`;
+}
+function invoiceAll() {
+  document.querySelectorAll('.eod-invoice-btn').forEach(btn => {
+    btn.textContent = '✓ Sent';
+    btn.classList.add('sent');
+    btn.disabled = true;
+  });
+  sentCount = 5;
+  document.getElementById('eodSummary').textContent = 'All 5 invoices sent ✓';
+  document.querySelector('.invoice-all-btn').textContent = 'All done — $600 invoiced ✓';
+  document.querySelector('.invoice-all-btn').style.background = 'var(--green)';
+}
+</script>
+</body>
+</html>

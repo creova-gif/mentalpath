@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — New patient intake</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.09);--bmed:rgba(0,0,0,0.13);--red:#c0392b;--green:#1D9E75;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);min-height:100vh;}
+button,input,select,textarea{font-family:inherit;}
+
+/* HEADER */
+.intake-header{background:var(--sage-deep);padding:24px 28px;}
+.ih-logo{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+.ih-lm{width:26px;height:26px;background:rgba(255,255,255,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.ih-lm svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.ih-ln{font-family:var(--font-d);font-size:15px;color:white;}
+.ih-practice{font-family:var(--font-d);font-size:24px;color:white;margin-bottom:4px;}
+.ih-creds{font-size:13px;color:rgba(255,255,255,0.65);}
+.ih-notice{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:rgba(255,255,255,0.45);}
+.ih-notice svg{width:11px;height:11px;fill:none;stroke:rgba(255,255,255,0.5);stroke-width:1.5;}
+
+/* PROFESSION SWITCHER (demo only) */
+.prof-switch{background:var(--ink);padding:8px 28px;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4);}
+.ps-label{flex-shrink:0;}
+.ps-btn{padding:5px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;background:transparent;color:rgba(255,255,255,0.55);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.ps-btn.on{background:rgba(74,124,111,0.4);border-color:var(--sage-light);color:white;}
+
+/* PROGRESS */
+.progress-bar-wrap{background:white;padding:12px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;}
+.pb-steps{display:flex;gap:0;flex:1;}
+.pb-step{flex:1;display:flex;align-items:center;}
+.pb-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;transition:all 0.2s;}
+.pb-dot.done{background:var(--sage);color:white;}
+.pb-dot.on{background:var(--ink);color:white;}
+.pb-dot.off{background:rgba(0,0,0,0.07);color:var(--ink-muted);}
+.pb-line{flex:1;height:1px;background:var(--border);}
+.pb-line.done{background:var(--sage);}
+.pb-label{font-size:11px;color:var(--ink-muted);white-space:nowrap;}
+
+/* FORM */
+.form-wrap{max-width:640px;margin:0 auto;padding:28px 20px 80px;}
+.section-head{font-family:var(--font-d);font-size:20px;color:var(--ink);margin-bottom:4px;}
+.section-sub{font-size:13px;color:var(--ink-muted);margin-bottom:22px;line-height:1.55;}
+.step-form{display:none;}
+.step-form.on{display:block;}
+
+.field{margin-bottom:16px;}
+label{display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-bottom:5px;}
+.req{color:var(--sage);}
+input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bmed);background:white;color:var(--ink);font-size:14px;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(74,124,111,0.08);}
+textarea{resize:vertical;min-height:72px;line-height:1.6;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* PAIN SCALE */
+.pain-scale{display:flex;gap:5px;margin-top:4px;}
+.ps-num{flex:1;aspect-ratio:1;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--ink-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.ps-num:hover{border-color:var(--sage-light);}
+.ps-num.on{background:var(--sage);border-color:var(--sage);color:white;}
+.ps-num.moderate{background:#faeeda;border-color:#BA7517;color:#633806;}
+.ps-num.moderate.on{background:#BA7517;color:white;}
+.ps-num.high{background:#fde8e8;border-color:#c0392b;color:#791F1F;}
+.ps-num.high.on{background:#c0392b;color:white;}
+.ps-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-muted);margin-top:4px;}
+
+/* MULTICHECK */
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px;}
+.check-item{display:flex;align-items:center;gap:8px;padding:9px 12px;background:white;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;}
+.check-item:hover{border-color:var(--sage-light);}
+.check-item.on{background:var(--sage-pale);border-color:var(--sage);}
+.ci-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.check-item.on .ci-box{background:var(--sage);border-color:var(--sage);}
+.ci-box svg{width:9px;height:9px;fill:none;stroke:white;stroke-width:2.5;opacity:0;}
+.check-item.on .ci-box svg{opacity:1;}
+.ci-label{font-size:13px;color:var(--ink-soft);}
+.check-item.on .ci-label{color:var(--sage-deep);}
+
+/* YES/NO */
+.yn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.yn-btn{padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--ink-muted);cursor:pointer;background:white;text-align:center;transition:all 0.15s;}
+.yn-btn:hover{border-color:var(--sage-light);}
+.yn-btn.yes.on{background:var(--sage-pale);border-color:var(--sage);color:var(--sage-deep);}
+.yn-btn.no.on{background:var(--warm);border-color:var(--bmed);color:var(--ink);}
+
+/* CONSENT */
+.consent-item{display:flex;gap:10px;padding:13px 0;border-bottom:0.5px solid var(--border);cursor:pointer;align-items:flex-start;}
+.consent-item:last-child{border-bottom:none;}
+.consent-checkbox{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--bmed);background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.15s;}
+.consent-item.on .consent-checkbox{background:var(--sage);border-color:var(--sage);}
+.consent-checkbox svg{width:10px;height:10px;fill:none;stroke:white;stroke-width:2.5;opacity:0;}
+.consent-item.on .consent-checkbox svg{opacity:1;}
+.consent-text{font-size:13px;color:var(--ink-soft);line-height:1.55;}
+.consent-req{font-size:10px;font-weight:500;color:var(--sage);margin-top:2px;}
+
+/* NAV */
+.form-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.fn-hint{font-size:12px;color:var(--ink-muted);}
+.nav-btns{display:flex;gap:8px;}
+.nav-back{padding:12px 20px;border:1px solid var(--bmed);border-radius:9px;background:white;font-size:14px;font-weight:500;color:var(--ink-soft);cursor:pointer;}
+.nav-next{padding:12px 28px;border:none;border-radius:9px;background:var(--sage);font-size:14px;font-weight:500;color:white;cursor:pointer;transition:background 0.15s;}
+.nav-next:hover{background:var(--sage-deep);}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:40px 20px;}
+.suc-icon{width:64px;height:64px;background:var(--sage-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.suc-icon svg{width:28px;height:28px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.suc-title{font-family:var(--font-d);font-size:26px;color:var(--ink);margin-bottom:8px;}
+.suc-sub{font-size:14px;color:var(--ink-muted);line-height:1.65;max-width:360px;margin:0 auto 24px;}
+.portal-btn{display:inline-block;padding:13px 32px;background:var(--sage);color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.portal-btn:hover{background:var(--sage-deep);}
+</style>
+</head>
+<body>
+
+<div class="intake-header">
+  <div class="ih-logo">
+    <div class="ih-lm"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+    <span class="ih-ln">MentalPath</span>
+  </div>
+  <div class="ih-practice" id="headerPractice">Northside Chiropractic Clinic</div>
+  <div class="ih-creds" id="headerCreds">Dr. Jane Smith, DC · College of Chiropractors of Ontario · CCO-009834</div>
+  <div class="ih-notice"><svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>Your information is kept strictly confidential and stored on Canadian servers (PHIPA)</div>
+</div>
+
+<div class="prof-switch">
+  <span class="ps-label">Preview as:</span>
+  <button class="ps-btn on" onclick="switchProf('chiro',this)">Chiropractic</button>
+  <button class="ps-btn" onclick="switchProf('physio',this)">Physiotherapy</button>
+  <button class="ps-btn" onclick="switchProf('rmt',this)">RMT</button>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="pb-steps" id="progressSteps"></div>
+</div>
+
+<div class="form-wrap" id="formWrap"></div>
+
+<div class="form-nav">
+  <div class="fn-hint" id="fnHint">Step 1 of 4</div>
+  <div class="nav-btns">
+    <button class="nav-back" id="backBtn" onclick="goBack()" style="display:none">← Back</button>
+    <button class="nav-next" id="nextBtn" onclick="goNext()">Continue →</button>
+  </div>
+</div>
+
+<script>
+const FORMS = {
+  chiro: {
+    practice:'Northside Chiropractic Clinic',
+    creds:'Dr. Jane Smith, DC · College of Chiropractors of Ontario · CCO-009834',
+    title:'Chiropractic New Patient Intake',
+    college:'CCO Standard',
+    steps:['Chief Complaint','Health History','Functional Impact','Consent'],
+    sections:[
+      {
+        head:'What brings you in today?',
+        sub:'Tell us about your main concern. This helps Dr. Smith prepare for your visit.',
+        fields:[
+          {type:'textarea',label:'Chief complaint',req:true,placeholder:'Describe your main concern — location, what happened, how long it\'s been bothering you...'},
+          {type:'date',label:'When did this start?'},
+          {type:'select',label:'How did this occur?',options:['Gradual onset','Acute injury / fall','Motor vehicle accident','Work injury','Sports injury','Unknown','Other']},
+          {type:'scale',label:'Pain intensity right now',id:'painScale'},
+          {type:'multicheck',label:'Describe your pain',options:['Sharp','Dull','Aching','Burning','Throbbing','Shooting','Stabbing','Constant','Intermittent']},
+          {type:'textarea',label:'What makes it worse?',placeholder:'Certain movements, sitting, standing, driving...'},
+          {type:'textarea',label:'What makes it better?',placeholder:'Rest, heat, ice, movement...'},
+        ]
+      },
+      {
+        head:'Your health history',
+        sub:'This helps us understand your full health picture and ensure treatment is safe for you.',
+        fields:[
+          {type:'yesno',label:'Have you seen a chiropractor before?'},
+          {type:'yesno',label:'Have you had X-rays of this area?'},
+          {type:'textarea',label:'Any surgeries? (area, approximate year)',placeholder:'e.g. Left knee replacement 2019, appendix removed 2008'},
+          {type:'textarea',label:'Current medications and supplements',placeholder:'Include all prescription medications, over-the-counter, vitamins, supplements...'},
+          {type:'yesno',label:'Have you been diagnosed with osteoporosis?'},
+          {type:'yesno',label:'Are you currently on blood thinners?'},
+          {type:'textarea',label:'Any other health conditions we should know about?',placeholder:'Diabetes, heart conditions, cancer, neurological conditions...'},
+        ]
+      },
+      {
+        head:'How is this affecting your life?',
+        sub:'Understanding the functional impact helps us set meaningful goals for your care.',
+        fields:[
+          {type:'yesno',label:'Has this affected your ability to work?'},
+          {type:'yesno',label:'Is your sleep affected?'},
+          {type:'textarea',label:'What activities are you unable to do because of this?',placeholder:'Exercise, driving, work tasks, hobbies, caring for family...'},
+          {type:'multicheck',label:'Goals for chiropractic care',options:['Reduce pain','Return to work','Return to sport/activity','Improve posture','Better sleep','Reduce medication','Prevent recurrence','Other']},
+          {type:'textarea',label:'Anything else you\'d like Dr. Smith to know before your first visit?',placeholder:'Optional — anything that helps us serve you better'},
+        ]
+      },
+      {
+        head:'Informed consent',
+        sub:'Please read and acknowledge the following before your first visit.',
+        consent:true,
+        fields:[
+          {type:'consent',label:'I consent to chiropractic assessment and treatment. I understand I may withdraw consent at any time, and that chiropractic treatment involves physical contact and joint manipulation.',req:true},
+          {type:'consent',label:'I consent to spinal X-rays if deemed clinically necessary by Dr. Smith to support diagnosis and treatment planning.'},
+          {type:'consent',label:'I have read and understood the Privacy Notice. I consent to my health information being collected, stored, and used for my treatment in compliance with PHIPA.',req:true},
+          {type:'consent',label:'I consent to receiving appointment reminders and health information via email and/or SMS. I understand I can opt out at any time.'},
+        ]
+      }
+    ]
+  },
+  physio: {
+    practice:'Riverside Physiotherapy',
+    creds:'Sarah Chen, PT, MSc · College of Physiotherapists of Ontario · CPT-012847',
+    title:'Physiotherapy New Patient Intake',
+    college:'CPT Standard',
+    steps:['Your Injury','Previous Care','Your Goals','Consent'],
+    sections:[
+      {
+        head:'Tell us about your injury or concern',
+        sub:'The more detail you can share, the better Sarah can prepare for your assessment.',
+        fields:[
+          {type:'textarea',label:'What brings you to physiotherapy today?',req:true,placeholder:'Describe your main concern — what happened, when, how it feels...'},
+          {type:'multicheck',label:'Area(s) affected',options:['Neck','Upper back','Lower back','Shoulder (L)','Shoulder (R)','Elbow (L)','Elbow (R)','Wrist/Hand','Hip (L)','Hip (R)','Knee (L)','Knee (R)','Ankle/Foot (L)','Ankle/Foot (R)','Other']},
+          {type:'date',label:'When did this start?'},
+          {type:'select',label:'Cause',options:['Sudden injury','Gradual / overuse','Post-surgery','Motor vehicle accident','Workplace injury','Sport or exercise','Repetitive strain','Unknown']},
+          {type:'scale',label:'Current pain level',id:'painScale'},
+          {type:'textarea',label:'What makes it worse?',placeholder:'Certain movements, positions, activities...'},
+          {type:'textarea',label:'What makes it better?',placeholder:'Rest, heat, ice, stretching, medication...'},
+        ]
+      },
+      {
+        head:'Previous treatment',
+        sub:'This helps us build on what\'s worked before and avoid repeating what hasn\'t.',
+        fields:[
+          {type:'yesno',label:'Have you had physiotherapy for this before?'},
+          {type:'multicheck',label:'Imaging already completed',options:['None','X-ray','MRI','CT scan','Ultrasound','Other']},
+          {type:'yesno',label:'Have you seen a specialist (orthopaedic surgeon, neurologist, etc.)?'},
+          {type:'textarea',label:'Current medications',placeholder:'Prescription, over-the-counter, supplements...'},
+          {type:'textarea',label:'Relevant health conditions',placeholder:'Diabetes, heart conditions, osteoporosis, neurological conditions...'},
+        ]
+      },
+      {
+        head:'Your goals',
+        sub:'Physiotherapy works best when we know what matters to you.',
+        fields:[
+          {type:'textarea',label:'What do you want to be able to do when you\'re better?',req:true,placeholder:'Return to running, go back to work, pick up my kids, play golf — be specific'},
+          {type:'yesno',label:'Is return to work a goal?'},
+          {type:'yesno',label:'Is return to sport or specific activity a goal?'},
+          {type:'textarea',label:'Is there anything else you\'d like Sarah to know?',placeholder:'Optional'},
+        ]
+      },
+      {
+        head:'Informed consent',
+        sub:'Please read and acknowledge the following.',
+        consent:true,
+        fields:[
+          {type:'consent',label:'I consent to physiotherapy assessment and treatment, including manual therapy, exercise prescription, and therapeutic modalities.',req:true},
+          {type:'consent',label:'I understand that physiotherapy involves hands-on treatment and physical contact, and that I can withdraw consent at any time.'},
+          {type:'consent',label:'I have read and understood the Privacy Notice. I consent to my health information being stored and used for my treatment in compliance with PHIPA.',req:true},
+          {type:'consent',label:'I consent to receiving appointment reminders via email and/or SMS.'},
+        ]
+      }
+    ]
+  },
+  rmt: {
+    practice:'Harmony Massage Therapy',
+    creds:'Michael Torres, RMT · College of Massage Therapists of Ontario · CMTO-007291',
+    title:'RMT New Client Intake',
+    college:'CMTO Standard',
+    steps:['Visit Purpose','Health Screen','Preferences','Consent'],
+    sections:[
+      {
+        head:'Why are you visiting today?',
+        sub:'This helps Michael understand what you\'re hoping to get from your session.',
+        fields:[
+          {type:'multicheck',label:'Reason for visit',options:['Relaxation','Muscle tension / tightness','Pain relief','Injury recovery','Headaches','Stress reduction','Post-surgery','Athletic recovery','Prenatal massage','Workplace injury','Other']},
+          {type:'textarea',label:'Specific areas you\'d like focused on',placeholder:'Upper back, neck, shoulders, lower back...'},
+          {type:'scale',label:'Discomfort level right now (0 = none)',id:'painScale'},
+        ]
+      },
+      {
+        head:'Quick health screening',
+        sub:'This is required by the CMTO to ensure massage therapy is safe for you. All answers are confidential.',
+        fields:[
+          {type:'textarea',label:'Any skin conditions? (rash, open wounds, recent tattoos/piercings)',placeholder:'None, or describe...'},
+          {type:'yesno',label:'Any history of blood clots (DVT) or clotting disorders?'},
+          {type:'yesno',label:'Are you currently receiving treatment for cancer?'},
+          {type:'yesno',label:'Are you pregnant or recently postpartum?'},
+          {type:'yesno',label:'Do you have osteoporosis?'},
+          {type:'textarea',label:'Medications that affect sensation, bleeding, or bruising?',placeholder:'Blood thinners, steroids, neuropathy medications...'},
+          {type:'textarea',label:'Any allergies (oils, lotions, latex)?',placeholder:'None, or describe...'},
+        ]
+      },
+      {
+        head:'Your preferences',
+        sub:'Every client is different. Let us know what makes your session best.',
+        fields:[
+          {type:'select',label:'Preferred pressure',options:['Light','Medium','Deep','Deep — as tolerated','Varies by area','Not sure — therapist\'s discretion']},
+          {type:'select',label:'Draping preference',options:['Full draping (standard)','Comfortable with therapist guidance']},
+          {type:'yesno',label:'Do you prefer music during the session?'},
+          {type:'textarea',label:'Any areas you prefer NOT to be worked on?',placeholder:'Optional — e.g. feet, abdomen...'},
+          {type:'textarea',label:'Anything else that would help us give you a better experience?',placeholder:'Optional'},
+        ]
+      },
+      {
+        head:'Informed consent',
+        sub:'CMTO standards require informed consent before each treatment.',
+        consent:true,
+        fields:[
+          {type:'consent',label:'I consent to massage therapy assessment and treatment. I understand I may modify or withdraw consent at any time, including during treatment.',req:true},
+          {type:'consent',label:'I understand that massage therapy involves hands-on physical contact and that I may choose to stop treatment at any point without negative consequences.'},
+          {type:'consent',label:'I consent to my health information being collected and stored by this practice in compliance with PHIPA. I understand my information will not be shared without my consent except as required by law.',req:true},
+          {type:'consent',label:'I consent to appointment reminders via email and/or SMS.'},
+        ]
+      }
+    ]
+  }
+};
+
+let currentProf = 'chiro';
+let currentStep = 0;
+let consentStates = {};
+
+function switchProf(p, btn) {
+  currentProf = p;
+  currentStep = 0;
+  consentStates = {};
+  document.querySelectorAll('.ps-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const d = FORMS[p];
+  document.getElementById('headerPractice').textContent = d.practice;
+  document.getElementById('headerCreds').textContent = d.creds;
+  render();
+}
+
+function render() {
+  const d = FORMS[currentProf];
+  const steps = d.steps;
+  // Progress
+  const prog = document.getElementById('progressSteps');
+  prog.innerHTML = steps.map((s,i) => `
+    <div class="pb-step">
+      <div class="pb-dot ${i < currentStep ? 'done' : i === currentStep ? 'on' : 'off'}">${i < currentStep ? '✓' : i+1}</div>
+      ${i < steps.length-1 ? `<div class="pb-line${i < currentStep ? ' done':''}"></div>` : ''}
+    </div>
+  `).join('');
+
+  // Hint
+  document.getElementById('fnHint').textContent = `Step ${currentStep+1} of ${steps.length} — ${steps[currentStep]}`;
+  document.getElementById('backBtn').style.display = currentStep === 0 ? 'none' : '';
+  document.getElementById('nextBtn').textContent = currentStep === steps.length-1 ? 'Submit intake →' : 'Continue →';
+
+  if (currentStep >= d.sections.length) {
+    renderSuccess();
+    return;
+  }
+
+  const sec = d.sections[currentStep];
+  const wrap = document.getElementById('formWrap');
+
+  let html = `<div class="step-form on">
+    <div class="section-head">${sec.head}</div>
+    <div class="section-sub">${sec.sub}</div>
+  `;
+
+  sec.fields.forEach((f, fi) => {
+    html += `<div class="field">`;
+    if (f.type === 'scale') {
+      html += `<label>${f.label}</label><div class="pain-scale">`;
+      for (let n = 0; n <= 10; n++) {
+        const cls = n >= 7 ? 'high' : n >= 4 ? 'moderate' : '';
+        html += `<div class="ps-num ${cls}" onclick="selectScale(this,${n})">${n}</div>`;
+      }
+      html += `</div><div class="ps-labels"><span>0 — no pain</span><span>5 — moderate</span><span>10 — worst</span></div>`;
+    } else if (f.type === 'multicheck') {
+      html += `<label>${f.label}${f.req?'<span class="req"> *</span>':''}</label><div class="check-grid">`;
+      f.options.forEach(opt => {
+        html += `<div class="check-item" onclick="this.classList.toggle('on')"><div class="ci-box"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="ci-label">${opt}</span></div>`;
+      });
+      html += `</div>`;
+    } else if (f.type === 'yesno') {
+      html += `<label>${f.label}</label><div class="yn-row">
+        <div class="yn-btn yes" onclick="toggleYN(this,'yes')">Yes</div>
+        <div class="yn-btn no" onclick="toggleYN(this,'no')">No</div>
+      </div>`;
+    } else if (f.type === 'consent') {
+      const cid = `c${fi}`;
+      html += `<div class="consent-item" id="${cid}" onclick="toggleConsent('${cid}')">
+        <div class="consent-checkbox"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div>
+        <div><div class="consent-text">${f.label}</div>${f.req?'<div class="consent-req">Required</div>':''}</div>
+      </div>`;
+    } else if (f.type === 'textarea') {
+      html += `<label>${f.label}${f.req?'<span class="req"> *</span>':''}</label><textarea placeholder="${f.placeholder||''}" rows="3"></textarea>`;
+    } else if (f.type === 'date') {
+      html += `<label>${f.label}</label><input type="date">`;
+    } else if (f.type === 'select') {
+      html += `<label>${f.label}</label><select><option value="">Select...</option>${f.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
+    } else {
+      html += `<label>${f.label}${f.req?'<span class="req"> *</span>':''}</label><input type="text" placeholder="${f.placeholder||''}">`;
+    }
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  wrap.innerHTML = html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderSuccess() {
+  const d = FORMS[currentProf];
+  document.getElementById('formWrap').innerHTML = `
+    <div class="success-wrap">
+      <div class="suc-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="suc-title">All done — thank you.</div>
+      <div class="suc-sub">Your intake form has been securely submitted to ${d.practice}. Your information is stored on Canadian servers in compliance with PHIPA. You'll receive a confirmation email shortly.</div>
+      <button class="portal-btn" onclick="window.location='mentalpath-client-portal-full.html'">Open your client portal →</button>
+    </div>
+  `;
+  document.getElementById('fnHint').textContent = 'Intake complete';
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+function selectScale(el, n) {
+  el.closest('.pain-scale').querySelectorAll('.ps-num').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function toggleYN(el, val) {
+  const row = el.closest('.yn-row');
+  row.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function toggleConsent(id) {
+  document.getElementById(id).classList.toggle('on');
+}
+
+function goNext() {
+  const d = FORMS[currentProf];
+  if (currentStep >= d.sections.length - 1) {
+    currentStep++;
+    render();
+    return;
+  }
+  currentStep++;
+  render();
+}
+
+function goBack() {
+  if (currentStep > 0) { currentStep--; render(); }
+}
+
+render();
+</script>
+</body>
+</html>

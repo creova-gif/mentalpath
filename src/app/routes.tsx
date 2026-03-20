@@ -37,6 +37,10 @@ import { ForMassageTherapists } from "./components/pages/ForMassageTherapists";
 import { ForNaturopaths } from "./components/pages/ForNaturopaths";
 import { GroupPractice } from "./components/pages/GroupPractice";
 import { InsuranceReceipts } from "./components/pages/InsuranceReceipts";
+import { CostSavings } from "./components/pages/CostSavings";
+import { HEPBuilder } from "./components/pages/HEPBuilder";
+import { TreatmentCourses } from "./components/pages/TreatmentCourses";
+import { ProfessionIntake } from "./components/pages/ProfessionIntake";
 
 // Simple error boundary fallback
 function ErrorBoundary() {
@@ -118,6 +122,11 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
   },
   {
+    path: "/intake",
+    element: <ProfessionIntake />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
     path: "/session-note-editor",
     element: <SessionNoteEditor />,
     errorElement: <ErrorBoundary />,
@@ -149,6 +158,9 @@ const router = createBrowserRouter([
       { path: "therapist-wellbeing", element: <TherapistWellbeing /> },
       { path: "group-practice", element: <GroupPractice /> },
       { path: "insurance-receipts", element: <InsuranceReceipts /> },
+      { path: "treatment-courses", element: <TreatmentCourses /> },
+      { path: "hep-builder", element: <HEPBuilder /> },
+      { path: "cost-savings", element: <CostSavings /> },
       { path: "resources", element: <Resources /> },
       { path: "faq", element: <FAQ /> },
       { path: "support", element: <Support /> },

@@ -53,6 +53,12 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         return 'Resources';
       case '/dashboard/therapist-wellbeing':
         return 'Your Wellbeing';
+      case '/dashboard/treatment-courses':
+        return 'Treatment Courses';
+      case '/dashboard/hep-builder':
+        return 'HEP Builder';
+      case '/dashboard/cost-savings':
+        return 'What You Save';
       case '/dashboard/faq':
         return 'FAQ';
       case '/dashboard/support':
