@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { useUser, DEMO_ACCOUNTS } from '../../context/UserContext';
 
 const professionEmoji: Record<string, string> = {
@@ -45,12 +45,12 @@ export function Login() {
 
       {/* LEFT PANEL */}
       <div className="hidden md:flex flex-col justify-between" style={{ width: '45%', background: '#1a2e28', padding: '40px 48px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{ width: 36, height: 36, background: 'var(--sage)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: 'none', stroke: 'white', strokeWidth: 2 }}><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg>
           </div>
           <span style={{ color: 'white', fontSize: 16, fontWeight: 500 }}>MentalPath</span>
-        </div>
+        </Link>
 
         <div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 34, color: 'white', lineHeight: 1.2, marginBottom: 12 }}>
@@ -81,12 +81,12 @@ export function Login() {
         <div style={{ width: '100%', maxWidth: 420 }}>
 
           {/* Mobile-only logo */}
-          <div className="flex items-center gap-2.5 mb-8 md:hidden">
+          <Link to="/" className="flex items-center gap-2.5 mb-8 md:hidden" style={{ textDecoration: 'none' }}>
             <div style={{ width: 32, height: 32, background: 'var(--sage)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: 'none', stroke: 'white', strokeWidth: 2 }}><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg>
             </div>
             <span style={{ color: 'var(--ink)', fontSize: 15, fontWeight: 500 }}>MentalPath</span>
-          </div>
+          </Link>
 
           <div style={{ marginBottom: 24 }}>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink)', marginBottom: 6 }}>Welcome back</h1>
