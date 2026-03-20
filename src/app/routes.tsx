@@ -1,4 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
+import { BookingPage } from "./components/pages/BookingPage";
+import { ClientProfile } from "./components/pages/ClientProfile";
+import { SessionNoteEditor } from "./components/pages/SessionNoteEditor";
 import { Landing } from "./components/pages/Landing";
 import { ClientPortal } from "./components/pages/ClientPortal";
 import { ClientPortalFull } from "./components/pages/ClientPortalFull";
@@ -94,6 +97,21 @@ const router = createBrowserRouter([
   {
     path: "/ai-test",
     element: <AITest />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/book",
+    element: <BookingPage />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/session-note-editor",
+    element: <SessionNoteEditor />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/clients/:clientId",
+    element: <ClientProfile />,
     errorElement: <ErrorBoundary />,
   },
   // Dashboard with all nested routes

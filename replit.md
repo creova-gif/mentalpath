@@ -40,6 +40,13 @@ utils/supabase/     # Supabase configuration
 - Build command: `npm run build`
 - Public directory: `dist`
 
+## Pages
+- `/` - Landing page
+- `/book` - Public therapist booking page (5-step flow: session type, date/time, about you, consent, confirmation)
+- `/dashboard/clients/:clientId` - Full client profile (7 tabs: overview, notes, invoices, outcomes, treatment, intake, safety)
+- `/session-note-editor` - Session note editor (DAP/SOAP/BIRP/Progress formats, AI assist, lock & finalise)
+- `/dashboard/*` - Dashboard routes (clients, notes, billing, calendar, messages, etc.)
+
 ## Key Notes
 - Canadian market focus: PHIPA compliance, Ontario CRPO standards, CAD currency
 - AI generates clinical notes in DAP, SOAP, BIRP, and Progress formats

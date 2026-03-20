@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Amara Mensah</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--red:#c0392b;--green:#1D9E75;--amber:#BA7517;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);}
+button,input,select{font-family:inherit;}
+
+/* HEADER */
+.client-header{background:white;border-bottom:1px solid var(--border);padding:20px 28px;}
+.ch-back{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-muted);cursor:pointer;border:none;background:none;padding:0;margin-bottom:16px;}
+.ch-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;}
+.ch-main{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.ch-profile{display:flex;align-items:center;gap:16px;}
+.ch-av{width:56px;height:56px;border-radius:50%;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:18px;color:var(--sage-deep);flex-shrink:0;}
+.ch-name{font-family:var(--font-d);font-size:24px;color:var(--ink);margin-bottom:4px;}
+.ch-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.meta-chip{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;}
+.mc-active{background:var(--sage-pale);color:var(--sage-deep);}
+.mc-sessions{background:var(--warm);color:var(--ink-muted);}
+.mc-since{background:var(--warm);color:var(--ink-muted);}
+.mc-rate{background:#faeeda;color:#633806;}
+.ch-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.btn-primary{background:var(--sage);color:white;}
+.btn-primary:hover{background:var(--sage-deep);}
+.btn-ghost{background:white;border:1px solid var(--bmed);color:var(--ink-soft);}
+.btn-ghost:hover{background:var(--warm);}
+
+/* STAT ROW */
+.stat-strip{background:white;border-bottom:1px solid var(--border);display:flex;padding:0 28px;}
+.ss-stat{padding:14px 24px;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.ss-stat:last-child{border-right:none;}
+.ss-n{font-family:var(--font-d);font-size:24px;color:var(--ink);line-height:1;}
+.ss-l{font-size:11px;color:var(--ink-muted);margin-top:3px;}
+.ss-d{font-size:11px;font-weight:500;margin-top:2px;}
+
+/* TABS */
+.tabs-row{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;overflow-x:auto;}
+.tab{padding:12px 18px;font-size:13px;color:var(--ink-muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.tab.on{color:var(--sage-deep);border-bottom-color:var(--sage);font-weight:500;}
+.tab:hover:not(.on){color:var(--ink-soft);}
+
+/* CONTENT */
+.content{padding:24px 28px;max-width:1200px;}
+.pg{display:none;}
+.pg.on{display:block;}
+
+/* OVERVIEW */
+.overview-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+.card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.card-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:13px;font-weight:500;color:var(--ink);}
+.card-body{padding:14px 16px;}
+.info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+.info-row:last-child{border-bottom:none;}
+.ir-label{color:var(--ink-muted);}
+.ir-val{color:var(--ink);font-weight:500;text-align:right;}
+.tag-list{display:flex;flex-wrap:wrap;gap:5px;}
+.tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;}
+.tag-sage{background:var(--sage-pale);color:var(--sage-deep);}
+.tag-blue{background:#E6F1FB;color:#0C447C;}
+.tag-amber{background:#faeeda;color:#633806;}
+.outcome-bars{display:flex;flex-direction:column;gap:10px;}
+.ob-row{display:flex;align-items:center;gap:10px;}
+.ob-label{font-size:12px;color:var(--ink-muted);min-width:60px;}
+.ob-track{flex:1;height:6px;background:var(--warm);border-radius:3px;overflow:hidden;}
+.ob-fill{height:100%;border-radius:3px;background:var(--sage);}
+.ob-score{font-size:12px;font-weight:500;color:var(--ink);min-width:40px;text-align:right;}
+.ob-trend{font-size:11px;font-weight:500;min-width:36px;}
+.full-span{grid-column:1/-1;}
+
+/* NOTES LIST */
+.notes-list{display:flex;flex-direction:column;gap:8px;}
+.note-item{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.15s;}
+.note-item:hover{border-color:var(--sage-light);background:var(--sage-pale);}
+.ni-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.ni-session{font-size:13px;font-weight:500;color:var(--ink);}
+.ni-date{font-size:12px;color:var(--ink-muted);}
+.ni-badges{display:flex;gap:6px;}
+.ni-format{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;background:var(--sage-pale);color:var(--sage-deep);}
+.ni-locked{font-size:10px;padding:2px 7px;border-radius:3px;background:#fde8e8;color:#791F1F;}
+.ni-preview{font-size:13px;color:var(--ink-muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* INVOICES */
+.invoice-table{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);padding:10px 16px;background:var(--warm);}
+td{padding:11px 16px;border-top:0.5px solid var(--border);font-size:13px;color:var(--ink-soft);vertical-align:middle;}
+tr:hover td{background:var(--warm);}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;}
+.bg-g{background:#e8f4f0;color:var(--sage-deep);}
+.bg-a{background:#faeeda;color:#633806;}
+.action-link{color:var(--sage);font-size:12px;font-weight:500;background:none;border:none;cursor:pointer;padding:0;}
+
+/* OUTCOME CHART */
+.chart-card{grid-column:1/-1;background:white;border:1px solid var(--border);border-radius:12px;padding:18px;}
+.chart-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:14px;}
+.chart-legend{display:flex;gap:14px;margin-bottom:12px;}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-muted);}
+.cl-dot{width:8px;height:8px;border-radius:50%;}
+.mini-chart{height:80px;display:flex;align-items:flex-end;gap:24px;padding-bottom:20px;position:relative;}
+.mc-series{display:flex;gap:4px;align-items:flex-end;}
+.mc-bar{width:18px;border-radius:3px 3px 0 0;}
+.mc-point{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.mc-session{font-size:10px;color:var(--ink-muted);}
+
+/* EMPTY STATE */
+.empty{padding:32px;text-align:center;color:var(--ink-muted);}
+.empty-icon{font-size:28px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div class="client-header">
+  <button class="ch-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>All clients</button>
+  <div class="ch-main">
+    <div class="ch-profile">
+      <div class="ch-av">AM</div>
+      <div>
+        <div class="ch-name">Amara Mensah</div>
+        <div class="ch-meta">
+          <span class="meta-chip mc-active">Active client</span>
+          <span class="meta-chip mc-sessions">15 sessions</span>
+          <span class="meta-chip mc-since">Since Nov 2025</span>
+          <span class="meta-chip mc-rate">$140 / session</span>
+        </div>
+      </div>
+    </div>
+    <div class="ch-actions">
+      <button class="btn btn-ghost"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6M10 14L21 3"/></svg>Open portal</button>
+      <button class="btn btn-ghost"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>New invoice</button>
+      <button class="btn btn-primary" onclick="window.location='session-note-editor.html'"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>New session note</button>
+    </div>
+  </div>
+</div>
+
+<div class="stat-strip">
+  <div class="ss-stat">
+    <div class="ss-n">15</div>
+    <div class="ss-l">Sessions</div>
+    <div class="ss-d" style="color:var(--sage)">↑ 5 this month</div>
+  </div>
+  <div class="ss-stat">
+    <div class="ss-n">$2,100</div>
+    <div class="ss-l">Total billed</div>
+    <div class="ss-d" style="color:var(--green)">$2,100 paid</div>
+  </div>
+  <div class="ss-stat">
+    <div class="ss-n">3</div>
+    <div class="ss-l">PHQ-9 score</div>
+    <div class="ss-d" style="color:var(--green)">↓ from 10 at intake</div>
+  </div>
+  <div class="ss-stat">
+    <div class="ss-n">7/10</div>
+    <div class="ss-l">Last wellbeing</div>
+    <div class="ss-d" style="color:var(--green)">↑ +2 this week</div>
+  </div>
+  <div class="ss-stat">
+    <div class="ss-n">0</div>
+    <div class="ss-l">No-shows</div>
+    <div class="ss-d" style="color:var(--sage)">Perfect attendance</div>
+  </div>
+  <div class="ss-stat">
+    <div class="ss-n">Mar 31</div>
+    <div class="ss-l">Next session</div>
+    <div class="ss-d" style="color:var(--ink-muted)">Session 16 · Video</div>
+  </div>
+</div>
+
+<div class="tabs-row">
+  <button class="tab on" onclick="go('overview',this)">Overview</button>
+  <button class="tab" onclick="go('notes',this)">Session notes (15)</button>
+  <button class="tab" onclick="go('invoices',this)">Invoices (15)</button>
+  <button class="tab" onclick="go('outcomes',this)">Outcome measures</button>
+  <button class="tab" onclick="go('treatment',this)">Treatment plan</button>
+  <button class="tab" onclick="go('intake',this)">Intake form</button>
+  <button class="tab" onclick="go('safety',this)">Safety plan</button>
+</div>
+
+<div class="content">
+
+  <!-- ═══ OVERVIEW ═══ -->
+  <div id="pg-overview" class="pg on">
+    <div class="overview-grid">
+      <!-- Profile -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Profile</div><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px;">Edit</button></div>
+        <div class="card-body">
+          <div class="info-row"><span class="ir-label">Full name</span><span class="ir-val">Amara Mensah</span></div>
+          <div class="info-row"><span class="ir-label">Date of birth</span><span class="ir-val">March 15, 1991 (35)</span></div>
+          <div class="info-row"><span class="ir-label">Email</span><span class="ir-val" style="font-size:12px">amara.m@email.com</span></div>
+          <div class="info-row"><span class="ir-label">Phone</span><span class="ir-val">(416) 555-0142</span></div>
+          <div class="info-row"><span class="ir-label">Pronouns</span><span class="ir-val">She / her</span></div>
+          <div class="info-row"><span class="ir-label">Emergency contact</span><span class="ir-val">Kwame M. (brother)</span></div>
+          <div class="info-row"><span class="ir-label">Sliding scale</span><span class="ir-val">No — full rate</span></div>
+          <div class="info-row"><span class="ir-label">Consent signed</span><span class="ir-val" style="color:var(--green)">✓ Nov 15, 2025</span></div>
+        </div>
+      </div>
+
+      <!-- Cultural context -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Cultural context</div></div>
+        <div class="card-body">
+          <div class="info-row"><span class="ir-label">Background</span><span class="ir-val">Ghanaian-Canadian</span></div>
+          <div class="info-row"><span class="ir-label">Languages</span><span class="ir-val">English, Twi</span></div>
+          <div class="info-row"><span class="ir-label">Religion / spirituality</span><span class="ir-val">Christian (active)</span></div>
+          <div class="info-row"><span class="ir-label">Immigration status</span><span class="ir-val">Canadian citizen</span></div>
+          <div style="margin-top:10px;"><div class="ir-label" style="margin-bottom:6px;">Context tags</div>
+            <div class="tag-list">
+              <span class="tag tag-sage">Racialized stress</span>
+              <span class="tag tag-blue">Newcomer (2nd gen)</span>
+              <span class="tag tag-amber">Workplace trauma</span>
+              <span class="tag tag-sage">Anti-racism framework</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outcome snapshot -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Outcome snapshot</div><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px;">View all</button></div>
+        <div class="card-body">
+          <div class="outcome-bars">
+            <div class="ob-row">
+              <span class="ob-label">PHQ-9</span>
+              <div class="ob-track"><div class="ob-fill" style="width:11%"></div></div>
+              <span class="ob-score">3/27</span>
+              <span class="ob-trend" style="color:var(--green)">↓ 70%</span>
+            </div>
+            <div class="ob-row">
+              <span class="ob-label">GAD-7</span>
+              <div class="ob-track"><div class="ob-fill" style="width:19%"></div></div>
+              <span class="ob-score">4/21</span>
+              <span class="ob-trend" style="color:var(--green)">↓ 50%</span>
+            </div>
+            <div class="ob-row">
+              <span class="ob-label">Wellbeing</span>
+              <div class="ob-track"><div class="ob-fill" style="width:70%"></div></div>
+              <span class="ob-score">7/10</span>
+              <span class="ob-trend" style="color:var(--green)">↑ +2</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+            <div style="font-size:12px;font-weight:500;color:var(--sage-deep);margin-bottom:4px;">Overall trajectory</div>
+            <div style="font-size:12px;color:var(--ink-muted);line-height:1.5;">Strong improvement across all measures since intake. PHQ-9 moved from Moderate (10) to Minimal (3) — clinically significant change.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Upcoming appointments</div><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px;">+ New</button></div>
+        <div class="card-body">
+          <div class="info-row"><span class="ir-label">Session 16</span><span class="ir-val">Mar 31 · 10:00am · Video</span></div>
+          <div class="info-row"><span class="ir-label">Session 17 (poss.)</span><span class="ir-val">Apr 14 · Discharge TBC</span></div>
+          <div style="margin-top:10px;padding:10px;background:var(--sage-pale);border-radius:8px;font-size:12px;color:var(--sage-deep);line-height:1.5;">
+            Treatment plan review complete. Discharge criteria substantially met. Discuss final session at Session 16.
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Recent activity</div></div>
+        <div class="card-body">
+          <div class="info-row"><span class="ir-label" style="font-size:12px;">Mar 16 · Session 15</span><span class="ir-val" style="font-size:12px;color:var(--sage)">Note saved (draft)</span></div>
+          <div class="info-row"><span class="ir-label" style="font-size:12px;">Mar 16 · Check-in</span><span class="ir-val" style="font-size:12px;">Wellbeing: 7/10</span></div>
+          <div class="info-row"><span class="ir-label" style="font-size:12px;">Mar 10 · INV-0031</span><span class="ir-val" style="font-size:12px;color:var(--green)">Paid $140</span></div>
+          <div class="info-row"><span class="ir-label" style="font-size:12px;">Mar 10 · PHQ-9</span><span class="ir-val" style="font-size:12px;">Score: 3 (Minimal)</span></div>
+          <div class="info-row"><span class="ir-label" style="font-size:12px;">Mar 10 · Session 14</span><span class="ir-val" style="font-size:12px;">Note locked</span></div>
+        </div>
+      </div>
+
+      <!-- Treatment goals -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Treatment goals</div><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px;">View plan</button></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:500;color:var(--ink);">Grounding techniques</span><span style="color:var(--green);font-weight:500;">✓ Met</span></div>
+              <div style="height:4px;background:var(--warm);border-radius:2px;overflow:hidden;"><div style="height:100%;width:100%;background:var(--green);border-radius:2px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:500;color:var(--ink);">Externalise racism — reduce self-blame</span><span style="color:var(--sage);font-weight:500;">90%</span></div>
+              <div style="height:4px;background:var(--warm);border-radius:2px;overflow:hidden;"><div style="height:100%;width:90%;background:var(--sage);border-radius:2px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:500;color:var(--ink);">Rebuild professional identity</span><span style="color:var(--sage);font-weight:500;">80%</span></div>
+              <div style="height:4px;background:var(--warm);border-radius:2px;overflow:hidden;"><div style="height:100%;width:80%;background:var(--sage);border-radius:2px;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ NOTES ═══ -->
+  <div id="pg-notes" class="pg">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+      <button class="btn btn-primary" onclick="window.location='session-note-editor.html'"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>New session note</button>
+    </div>
+    <div class="notes-list">
+      <div class="note-item" style="border-left:3px solid var(--amber)">
+        <div class="ni-head">
+          <div><span class="ni-session">Session 15</span> <span class="ni-date">· March 16, 2026 · 50 min · Video</span></div>
+          <div class="ni-badges"><span class="ni-format">DAP</span><span class="ni-locked" style="background:#faeeda;color:#633806;">Draft</span></div>
+        </div>
+        <div class="ni-preview">Client presented as engaged and reflective. Reported completing the journaling exercise between sessions, noting it helped her identify and name emotions in real time...</div>
+      </div>
+      <div class="note-item">
+        <div class="ni-head">
+          <div><span class="ni-session">Session 14</span> <span class="ni-date">· March 10, 2026 · 50 min · Video</span></div>
+          <div class="ni-badges"><span class="ni-format">DAP</span><span class="ni-locked">Locked</span></div>
+        </div>
+        <div class="ni-preview">Explored workplace microaggression incident using anti-racism framework. Demonstrated strong externalisation skills and showed reduced self-blame compared to early sessions...</div>
+      </div>
+      <div class="note-item">
+        <div class="ni-head">
+          <div><span class="ni-session">Session 13</span> <span class="ni-date">· March 3, 2026 · 50 min · Video</span></div>
+          <div class="ni-badges"><span class="ni-format">DAP</span><span class="ni-locked">Locked</span></div>
+        </div>
+        <div class="ni-preview">Session focused on somatic responses to hypervigilance at work. Introduced body scan technique. Client receptive and practiced grounding...</div>
+      </div>
+      <div class="note-item">
+        <div class="ni-head">
+          <div><span class="ni-session">Session 12</span> <span class="ni-date">· Feb 24, 2026 · 50 min · Video</span></div>
+          <div class="ni-badges"><span class="ni-format">DAP</span><span class="ni-locked">Locked</span></div>
+        </div>
+        <div class="ni-preview">Cultural genogram exercise initiated. Explored family-of-origin patterns and their intersection with current workplace dynamics...</div>
+      </div>
+      <div class="note-item">
+        <div class="ni-head">
+          <div><span class="ni-session">Sessions 1–11</span> <span class="ni-date">· Nov 2025 – Feb 2026</span></div>
+          <div class="ni-badges"><span class="ni-format">DAP</span><span class="ni-locked">All locked</span></div>
+        </div>
+        <div class="ni-preview">11 earlier session notes — all locked and archived. Click to expand...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INVOICES ═══ -->
+  <div id="pg-invoices" class="pg">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="font-size:13px;color:var(--ink-muted);">$2,100 invoiced · $2,100 paid · $0 outstanding</div>
+      <button class="btn btn-primary">+ New invoice</button>
+    </div>
+    <div class="invoice-table">
+      <table>
+        <thead><tr><th>Invoice</th><th>Session</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td>INV-0031</td><td>Session 14</td><td>Mar 10</td><td style="font-weight:500">$140.00</td><td><span class="badge bg-g">Paid</span></td><td><button class="action-link">PDF</button> · <button class="action-link">Email</button></td></tr>
+          <tr><td>INV-0028</td><td>Session 13</td><td>Mar 3</td><td style="font-weight:500">$140.00</td><td><span class="badge bg-g">Paid</span></td><td><button class="action-link">PDF</button></td></tr>
+          <tr><td>INV-0024</td><td>Session 12</td><td>Feb 24</td><td style="font-weight:500">$140.00</td><td><span class="badge bg-g">Paid</span></td><td><button class="action-link">PDF</button></td></tr>
+          <tr><td>INV-0020</td><td>Session 11</td><td>Feb 17</td><td style="font-weight:500">$140.00</td><td><span class="badge bg-g">Paid</span></td><td><button class="action-link">PDF</button></td></tr>
+          <tr><td colspan="6" style="text-align:center;color:var(--ink-muted);padding:12px;font-size:12px;">+ 11 earlier invoices · All paid · $1,540 total</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ OUTCOMES ═══ -->
+  <div id="pg-outcomes" class="pg">
+    <div class="overview-grid">
+      <div class="chart-card full-span">
+        <div class="chart-title">PHQ-9 & GAD-7 over time — Sessions 1 to 14</div>
+        <div class="chart-legend">
+          <div class="cl-item"><div class="cl-dot" style="background:var(--sage)"></div>PHQ-9 (depression)</div>
+          <div class="cl-item"><div class="cl-dot" style="background:#BA7517"></div>GAD-7 (anxiety)</div>
+        </div>
+        <div style="height:100px;background:white;border-radius:8px;border:1px solid var(--border);padding:12px;display:flex;align-items:flex-end;gap:16px;">
+          <svg width="100%" height="76" viewBox="0 0 600 76" preserveAspectRatio="none">
+            <line x1="0" y1="0" x2="600" y2="0" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="0" y1="25" x2="600" y2="25" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="0" y1="50" x2="600" y2="50" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="0" y1="76" x2="600" y2="76" stroke="var(--border)" stroke-width="0.5"/>
+            <!-- PHQ: 10→7→3 sessions 1,5,14 -->
+            <polyline points="0,48 160,62 600,69" fill="none" stroke="#4a7c6f" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="0" cy="48" r="4" fill="#4a7c6f"/><circle cx="160" cy="62" r="4" fill="#4a7c6f"/>
+            <circle cx="600" cy="69" r="5" fill="#4a7c6f" stroke="white" stroke-width="2"/>
+            <!-- GAD: 8→7→4 -->
+            <polyline points="0,55 160,58 600,65" fill="none" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="0" cy="55" r="4" fill="#BA7517"/><circle cx="160" cy="58" r="4" fill="#BA7517"/>
+            <circle cx="600" cy="65" r="5" fill="#BA7517" stroke="white" stroke-width="2"/>
+          </svg>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--ink-muted);">
+          <span>Session 1 (intake)</span><span>Session 5</span><span>Session 14 (latest)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TREATMENT ═══ -->
+  <div id="pg-treatment" class="pg">
+    <div class="card" style="max-width:700px;">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Treatment plan — Active</div>
+          <div style="font-size:11px;color:var(--ink-muted);margin-top:2px;">Created Jan 15, 2026 · Version 1 · Review due Jun 16</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;">Edit plan</button>
+      </div>
+      <div class="card-body">
+        <div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Presenting problem</div><div style="font-size:13px;color:var(--ink-soft);line-height:1.65;">Client presents with race-based traumatic stress symptoms related to repeated workplace microaggressions and systemic racism in a professional context. Experiences somatic responses, intrusive memories of specific incidents, and progressive avoidance of workplace interactions.</div></div>
+        <div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Interventions</div><div style="display:flex;flex-wrap:wrap;gap:6px;"><span class="tag tag-sage">Cultural Formulation Interview</span><span class="tag tag-sage">Anti-oppressive practice</span><span class="tag tag-sage">Somatic grounding</span><span class="tag tag-sage">Narrative therapy</span></div></div>
+        <div><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Discharge criteria</div><div style="font-size:13px;color:var(--ink-soft);line-height:1.65;">Client achieves sustained wellbeing scores ≥7 for 4+ consecutive sessions, reports successful application of anti-racism framework in daily life, demonstrates stable professional identity, and both client and therapist agree treatment goals have been met.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INTAKE ═══ -->
+  <div id="pg-intake" class="pg">
+    <div class="card" style="max-width:700px;">
+      <div class="card-head"><div class="card-title">Intake form — Racialized stress template</div><div style="font-size:11px;color:var(--ink-muted);">Completed Nov 15, 2025 · e-signed · IP logged</div></div>
+      <div class="card-body">
+        <div class="info-row"><span class="ir-label">Racial identity</span><span class="ir-val">Ghanaian-Canadian, Black</span></div>
+        <div class="info-row"><span class="ir-label">Racism experienced</span><span class="ir-val" style="text-align:right;max-width:260px;">Workplace microaggressions, hiring discrimination, institutional racism</span></div>
+        <div class="info-row"><span class="ir-label">PHQ-9 at intake</span><span class="ir-val">10 (Moderate)</span></div>
+        <div class="info-row"><span class="ir-label">GAD-7 at intake</span><span class="ir-val">8 (Moderate)</span></div>
+        <div class="info-row"><span class="ir-label">Therapy goals (self-reported)</span><span class="ir-val" style="text-align:right;max-width:260px;">Process workplace racism, reduce anxiety, rebuild confidence</span></div>
+        <div class="info-row"><span class="ir-label">Consent: general</span><span class="ir-val" style="color:var(--green);">✓ Signed Nov 15, 2025</span></div>
+        <div class="info-row"><span class="ir-label">Consent: PHIPA disclosure</span><span class="ir-val" style="color:var(--green);">✓ Signed</span></div>
+        <div class="info-row"><span class="ir-label">Consent: telehealth</span><span class="ir-val" style="color:var(--green);">✓ Signed</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SAFETY ═══ -->
+  <div id="pg-safety" class="pg">
+    <div class="card" style="max-width:700px;">
+      <div class="card-head"><div class="card-title">Crisis safety plan — Active · Version 2</div><div style="font-size:11px;color:var(--ink-muted);">Reviewed with client Mar 10, 2026</div></div>
+      <div class="card-body">
+        <div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Warning signs</div><div style="font-size:13px;color:var(--ink-soft);line-height:1.65;">Withdrawing from friends · Stopping enjoyable activities · Racing thoughts at night · Feeling like a burden</div></div>
+        <div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Internal coping strategies</div><div style="font-size:13px;color:var(--ink-soft);line-height:1.65;">5-4-3-2-1 grounding · Box breathing · Walk outside · Journaling</div></div>
+        <div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Support people</div><div style="font-size:13px;color:var(--ink-soft);line-height:1.65;">Sister — Abena (416-555-0122) · Friend — Yaa (647-555-0189)</div></div>
+        <div><div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--sage);margin-bottom:6px;">Crisis lines</div><div style="font-size:13px;color:var(--ink-soft);line-height:1.65;">Crisis Services Canada: 1-833-456-4566 · Kids Help Phone: 1-800-668-6868 · 911</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function go(id, btn) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
