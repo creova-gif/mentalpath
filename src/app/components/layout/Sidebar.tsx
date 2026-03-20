@@ -28,11 +28,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />
       )}
 
-      <aside className={`
+      <aside
+        aria-label="Main navigation"
+        className={`
         w-[230px] bg-[var(--ink)] fixed top-0 left-0 bottom-0 z-50 flex flex-col transition-transform duration-300
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <button onClick={onClose} className="md:hidden absolute top-4 right-4 text-white/70 hover:text-white">
+        <button onClick={onClose} aria-label="Close navigation" className="md:hidden absolute top-4 right-4 text-white/70 hover:text-white">
           <X className="w-5 h-5" />
         </button>
 
@@ -124,6 +126,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <button
             onClick={handleLogout}
             title="Sign out"
+            aria-label="Sign out"
             className="text-white/30 hover:text-white/70 transition-colors flex-shrink-0 bg-transparent border-none cursor-pointer p-1"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -145,13 +148,18 @@ function NavItem({ to, icon: Icon, label, badge, onClick }: { to: string; icon: 
           isActive ? 'bg-[var(--sage)] text-white' : 'hover:bg-white/[0.07] hover:text-white/85'
         }`
       }
+      aria-label={label}
     >
-      <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
-      <span className="truncate">{label}</span>
-      {badge && (
-        <span className="ml-auto bg-[var(--sage-light)] text-white text-[10px] px-1.5 py-0.5 rounded-lg font-medium flex-shrink-0">
-          {badge}
-        </span>
+      {({ isActive }) => (
+        <>
+          <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} aria-hidden="true" />
+          <span className="truncate">{label}</span>
+          {badge && (
+            <span className="ml-auto bg-[var(--sage-light)] text-white text-[10px] px-1.5 py-0.5 rounded-lg font-medium flex-shrink-0" aria-label={`${badge} items`}>
+              {badge}
+            </span>
+          )}
+        </>
       )}
     </NavLink>
   );

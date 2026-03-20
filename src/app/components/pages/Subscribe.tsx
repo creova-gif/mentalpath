@@ -226,11 +226,13 @@ export function Subscribe() {
           </p>
 
           {/* Profession pills */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 24 }}>
+          <div role="group" aria-label="Select your profession" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 24 }}>
             {PROFESSIONS.map(p => (
               <button
                 key={p.id}
                 onClick={() => setProf(p.id)}
+                aria-pressed={prof === p.id}
+                aria-label={p.label}
                 style={{
                   padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 500,
                   cursor: 'pointer', transition: 'all 0.15s',
@@ -432,6 +434,8 @@ export function Subscribe() {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                  aria-controls={`faq-answer-${i}`}
                   style={{
                     width: '100%', padding: '14px 0',
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -442,15 +446,20 @@ export function Subscribe() {
                 >
                   {item.q}
                   {openFaq === i
-                    ? <ChevronUp size={16} color="rgba(232,237,233,0.4)" style={{ flexShrink: 0 }} />
-                    : <ChevronDown size={16} color="rgba(232,237,233,0.25)" style={{ flexShrink: 0 }} />
+                    ? <ChevronUp size={16} color="rgba(232,237,233,0.4)" style={{ flexShrink: 0 }} aria-hidden="true" />
+                    : <ChevronDown size={16} color="rgba(232,237,233,0.25)" style={{ flexShrink: 0 }} aria-hidden="true" />
                   }
                 </button>
                 {openFaq === i && (
-                  <div style={{
-                    paddingBottom: 14, fontSize: 13,
-                    color: 'rgba(232,237,233,0.5)', lineHeight: 1.65,
-                  }}>
+                  <div
+                    id={`faq-answer-${i}`}
+                    role="region"
+                    aria-label={item.q}
+                    style={{
+                      paddingBottom: 14, fontSize: 13,
+                      color: 'rgba(232,237,233,0.5)', lineHeight: 1.65,
+                    }}
+                  >
                     {item.a}
                   </div>
                 )}
@@ -477,13 +486,15 @@ export function Subscribe() {
                 30-day free trial active
               </div>
               {/* Plan tabs */}
-              <div style={{
+              <div role="tablist" aria-label="Billing plan" style={{
                 display: 'flex', background: '#191e1b', borderRadius: 8,
                 padding: 3, marginBottom: 14,
               }}>
                 {(['solo', 'group'] as const).map(p => (
                   <button
                     key={p}
+                    role="tab"
+                    aria-selected={plan === p}
                     onClick={() => setPlan(p)}
                     style={{
                       flex: 1, padding: '8px', borderRadius: 6, border: 'none',

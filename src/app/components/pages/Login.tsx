@@ -150,15 +150,18 @@ export function Login() {
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <form onSubmit={handleSubmit} aria-label="Sign in to MentalPath" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: 5 }}>Work email</label>
+              <label htmlFor="login-email" style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: 5 }}>Work email</label>
               <input
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={e => { setEmail(e.target.value); setError(''); }}
                 placeholder="you@practice.ca"
                 autoComplete="email"
+                aria-required="true"
+                aria-invalid={!!error}
                 required
                 style={{ width: '100%', padding: '10px 13px', borderRadius: 9, border: `1px solid ${error ? '#c0392b' : 'var(--bmed)'}`, background: 'white', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit' }}
                 onFocus={e => { if (!error) e.target.style.borderColor = 'var(--sage)'; }}
@@ -168,16 +171,19 @@ export function Login() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>Password</label>
-                <button type="button" style={{ fontSize: 12, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Forgot password?</button>
+                <label htmlFor="login-password" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>Password</label>
+                <button type="button" aria-label="Forgot your password?" style={{ fontSize: 12, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Forgot password?</button>
               </div>
               <div style={{ position: 'relative' }}>
                 <input
+                  id="login-password"
                   type={showPw ? 'text' : 'password'}
                   value={password}
                   onChange={e => { setPassword(e.target.value); setError(''); }}
                   placeholder="••••••••"
                   autoComplete="current-password"
+                  aria-required="true"
+                  aria-invalid={!!error}
                   required
                   style={{ width: '100%', padding: '10px 40px 10px 13px', borderRadius: 9, border: `1px solid ${error ? '#c0392b' : 'var(--bmed)'}`, background: 'white', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit' }}
                   onFocus={e => { if (!error) e.target.style.borderColor = 'var(--sage)'; }}
@@ -186,6 +192,8 @@ export function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPw(s => !s)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                  aria-pressed={showPw}
                   style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 2 }}
                 >
                   {showPw ? (
@@ -198,7 +206,7 @@ export function Login() {
             </div>
 
             {error && (
-              <div style={{ background: '#fde8e8', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 8, padding: '10px 13px', fontSize: 13, color: '#791F1F' }}>
+              <div role="alert" aria-live="assertive" style={{ background: '#fde8e8', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 8, padding: '10px 13px', fontSize: 13, color: '#791F1F' }}>
                 {error}
               </div>
             )}
