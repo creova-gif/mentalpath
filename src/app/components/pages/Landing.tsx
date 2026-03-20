@@ -107,7 +107,7 @@ export function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen grid md:grid-cols-2 items-center pt-20 pb-[60px] px-[5vw] gap-[60px] relative overflow-hidden">
+      <section className="md:min-h-screen grid md:grid-cols-2 items-center pt-16 md:pt-20 pb-10 md:pb-[60px] px-[5vw] gap-8 md:gap-[60px] relative overflow-hidden">
         <div className="absolute top-[-20%] right-[-10%] w-[55%] h-[90%] bg-[radial-gradient(ellipse_at_center,var(--sage-pale)_0%,transparent_70%)] pointer-events-none hidden md:block"/>
         
         <div className="relative z-10">
@@ -126,7 +126,7 @@ export function Landing() {
             {t('hero.subtitle')}
           </p>
           
-          <div className="flex items-center gap-4 mb-10">
+          <div className="flex flex-wrap items-center gap-3 mb-8 md:mb-10">
             <Link to="/onboarding" className="bg-[var(--sage)] text-white px-7 py-3.5 rounded-[10px] text-[15px] font-medium no-underline hover:bg-[var(--sage-deep)] transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(74,124,111,0.25)]">
               {t('hero.cta')}
             </Link>
@@ -138,11 +138,11 @@ export function Landing() {
             </a>
           </div>
           
-          <div className="flex items-center gap-2 text-[13px] text-[var(--ink-muted)]">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-[var(--ink-muted)]">
             <span>{t('hero.footer.noCreditCard')}</span>
-            <span className="w-1 h-1 bg-[var(--ink-muted)] rounded-full"/>
+            <span className="w-1 h-1 bg-[var(--ink-muted)] rounded-full hidden sm:block"/>
             <span>{t('hero.footer.canadianServers')}</span>
-            <span className="w-1 h-1 bg-[var(--ink-muted)] rounded-full"/>
+            <span className="w-1 h-1 bg-[var(--ink-muted)] rounded-full hidden sm:block"/>
             <span>{t('hero.footer.cancelAnytime')}</span>
           </div>
         </div>
@@ -238,7 +238,7 @@ export function Landing() {
       </div>
 
       {/* Problem Section */}
-      <section className="bg-[var(--ink)] text-white py-[100px] px-[5vw]" id="problem">
+      <section className="bg-[var(--ink)] text-white py-14 md:py-[100px] px-[5vw]" id="problem">
         <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage-light)] mb-3">The real problem</div>
         <h2 className="font-[var(--font-display)] text-[clamp(30px,3.5vw,44px)] leading-[1.15] tracking-[-0.5px] mb-4">
           Your US therapy software<br/>is <em className="italic text-[var(--sage-light)]">putting you at risk</em>
@@ -272,7 +272,7 @@ export function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-[var(--white)] py-[100px] px-[5vw]" id="features">
+      <section className="bg-[var(--white)] py-14 md:py-[100px] px-[5vw]" id="features">
         <div className="max-w-[1200px]">
           <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage)] mb-3">What MentalPath does</div>
           <h2 className="font-[var(--font-display)] text-[clamp(30px,3.5vw,44px)] leading-[1.15] tracking-[-0.5px] mb-4">
@@ -333,7 +333,7 @@ export function Landing() {
       </section>
 
       {/* Compliance Section */}
-      <section className="bg-[var(--warm)] py-[100px] px-[5vw]" id="compliance">
+      <section className="bg-[var(--warm)] py-14 md:py-[100px] px-[5vw]" id="compliance">
         <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage)] mb-3">Built for Canada</div>
         <h2 className="font-[var(--font-display)] text-[clamp(30px,3.5vw,44px)] leading-[1.15] tracking-[-0.5px] mb-4">
           Compliance isn't a feature.<br/><em className="italic text-[var(--sage)]">It's the foundation.</em>
@@ -342,7 +342,7 @@ export function Landing() {
           Every architectural decision was made with PHIPA, PIPEDA, and College requirements in mind. Not retrofitted — built-in from day one.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-[60px] items-center">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-[60px] items-center">
           <div className="space-y-5">
             {[
               {
@@ -398,7 +398,7 @@ export function Landing() {
       </section>
 
       {/* Pricing Section */}
-      <section className="bg-[var(--white)] py-[100px] px-[5vw]" id="pricing">
+      <section className="bg-[var(--white)] py-14 md:py-[100px] px-[5vw]" id="pricing">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage)] mb-3">Simple pricing</div>
           <h2 className="font-[var(--font-display)] text-[clamp(30px,3.5vw,44px)] leading-[1.15] tracking-[-0.5px] mb-4">
@@ -486,7 +486,7 @@ export function Landing() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-[var(--sage-pale)] py-[100px] px-[5vw]">
+      <section className="bg-[var(--sage-pale)] py-14 md:py-[100px] px-[5vw]">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage)] mb-3">From practitioners</div>
           <h2 className="font-[var(--font-display)] text-[clamp(30px,3.5vw,44px)] leading-[1.15] tracking-[-0.5px] mb-4">
@@ -535,7 +535,7 @@ export function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[var(--sage-deep)] text-center py-[100px] px-[5vw]">
+      <section className="bg-[var(--sage-deep)] text-center py-14 md:py-[100px] px-[5vw]">
         <h2 className="font-[var(--font-display)] text-[clamp(32px,4vw,48px)] leading-[1.15] text-white mb-4">
           Ready to focus on <em className="italic text-[var(--sage-light)]">therapy,</em><br/>not admin?
         </h2>
