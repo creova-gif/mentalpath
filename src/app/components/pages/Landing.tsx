@@ -52,91 +52,92 @@ export function Landing() {
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Mobile Menu — full-screen overlay */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-[200] md:hidden flex flex-col" style={{background: 'var(--ink)'}}>
-            {/* Decorative glow */}
-            <div className="absolute top-[-80px] right-[-60px] w-[320px] h-[320px] rounded-full pointer-events-none" style={{background: 'radial-gradient(ellipse at center, rgba(74,124,111,0.35) 0%, transparent 70%)'}}/>
-            <div className="absolute bottom-[-60px] left-[-40px] w-[200px] h-[200px] rounded-full pointer-events-none" style={{background: 'radial-gradient(ellipse at center, rgba(74,124,111,0.18) 0%, transparent 70%)'}}/>
-
-            {/* Top bar */}
-            <div className="relative z-10 flex items-center justify-between px-6 h-16 border-b" style={{borderColor: 'rgba(255,255,255,0.08)'}}>
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'var(--sage)'}}>
-                  <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-none stroke-white stroke-[1.8] [stroke-linecap:round]">
-                    <path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/>
-                    <path d="M8 11h8M8 14h5"/>
-                  </svg>
-                </div>
-                <span className="text-white text-lg tracking-[-0.3px]" style={{fontFamily: 'var(--font-display)'}}>MentalPath</span>
-              </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-lg transition-colors" style={{color: 'rgba(255,255,255,0.5)'}}>
-                <X className="w-6 h-6"/>
-              </button>
-            </div>
-
-            {/* Nav links */}
-            <div className="relative z-10 flex-1 flex flex-col justify-center px-8 gap-1">
-              {[
-                { label: t('nav.features'), href: '#features', isAnchor: true },
-                { label: t('nav.compliance'), href: '#compliance', isAnchor: true },
-                { label: t('nav.pricing'), href: '#pricing', isAnchor: true },
-                { label: t('nav.clientPortal'), href: '/client-portal', isAnchor: false },
-                { label: t('nav.dashboard'), href: '/login', isAnchor: false },
-              ].map((item, i) => (
-                item.isAnchor ? (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="group flex items-center gap-4 py-4 no-underline border-b"
-                    style={{borderColor: 'rgba(255,255,255,0.07)'}}
-                  >
-                    <span className="text-xs font-medium w-5 tabular-nums" style={{color: 'var(--sage-light)'}}>0{i + 1}</span>
-                    <span className="text-2xl font-light tracking-[-0.5px] transition-colors" style={{color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-display)'}}>{item.label}</span>
-                    <svg viewBox="0 0 16 16" className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="1.5" style={{color: 'var(--sage-light)'}}>
-                      <path d="M3 8h10M9 4l4 4-4 4"/>
-                    </svg>
-                  </a>
-                ) : (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="group flex items-center gap-4 py-4 no-underline border-b"
-                    style={{borderColor: 'rgba(255,255,255,0.07)'}}
-                  >
-                    <span className="text-xs font-medium w-5 tabular-nums" style={{color: 'var(--sage-light)'}}>0{i + 1}</span>
-                    <span className="text-2xl font-light tracking-[-0.5px] transition-colors" style={{color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-display)'}}>{item.label}</span>
-                    <svg viewBox="0 0 16 16" className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="1.5" style={{color: 'var(--sage-light)'}}>
-                      <path d="M3 8h10M9 4l4 4-4 4"/>
-                    </svg>
-                  </Link>
-                )
-              ))}
-            </div>
-
-            {/* Bottom CTA */}
-            <div className="relative z-10 px-8 pb-10 pt-6 border-t" style={{borderColor: 'rgba(255,255,255,0.08)'}}>
-              <div className="mb-4">
-                <LanguageSwitcher />
-              </div>
-              <Link
-                to="/onboarding"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-medium no-underline transition-all"
-                style={{background: 'var(--sage)', color: 'white'}}
-              >
-                {t('nav.signUpFree')}
-                <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M3 8h10M9 4l4 4-4 4"/>
-                </svg>
-              </Link>
-              <p className="text-center text-xs mt-3" style={{color: 'rgba(255,255,255,0.3)'}}>PHIPA-compliant · Canadian servers</p>
-            </div>
-          </div>
-        )}
       </nav>
+
+      {/* Mobile Menu — full-screen overlay (outside nav to avoid backdrop-blur stacking context) */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[200] md:hidden flex flex-col" style={{background: '#1a1a18'}}>
+          {/* Decorative glow */}
+          <div className="absolute top-[-80px] right-[-60px] w-[320px] h-[320px] rounded-full pointer-events-none" style={{background: 'radial-gradient(ellipse at center, rgba(74,124,111,0.35) 0%, transparent 70%)'}}/>
+          <div className="absolute bottom-[-60px] left-[-40px] w-[200px] h-[200px] rounded-full pointer-events-none" style={{background: 'radial-gradient(ellipse at center, rgba(74,124,111,0.18) 0%, transparent 70%)'}}/>
+
+          {/* Top bar */}
+          <div className="relative z-10 flex items-center justify-between px-6 h-16 border-b" style={{borderColor: 'rgba(255,255,255,0.08)'}}>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'var(--sage)'}}>
+                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-none stroke-white stroke-[1.8] [stroke-linecap:round]">
+                  <path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/>
+                  <path d="M8 11h8M8 14h5"/>
+                </svg>
+              </div>
+              <span className="text-white text-lg tracking-[-0.3px]" style={{fontFamily: 'var(--font-display)'}}>MentalPath</span>
+            </div>
+            <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-lg transition-colors" style={{color: 'rgba(255,255,255,0.5)'}}>
+              <X className="w-6 h-6"/>
+            </button>
+          </div>
+
+          {/* Nav links */}
+          <div className="relative z-10 flex-1 flex flex-col justify-center px-8 gap-1">
+            {[
+              { label: t('nav.features'), href: '#features', isAnchor: true },
+              { label: t('nav.compliance'), href: '#compliance', isAnchor: true },
+              { label: t('nav.pricing'), href: '#pricing', isAnchor: true },
+              { label: t('nav.clientPortal'), href: '/client-portal', isAnchor: false },
+              { label: t('nav.dashboard'), href: '/login', isAnchor: false },
+            ].map((item, i) => (
+              item.isAnchor ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="group flex items-center gap-4 py-4 no-underline border-b"
+                  style={{borderColor: 'rgba(255,255,255,0.07)'}}
+                >
+                  <span className="text-xs font-medium w-5 tabular-nums" style={{color: 'var(--sage-light)'}}>0{i + 1}</span>
+                  <span className="text-2xl font-light tracking-[-0.5px]" style={{color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-display)'}}>{item.label}</span>
+                  <svg viewBox="0 0 16 16" className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="1.5" style={{color: 'var(--sage-light)'}}>
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                  </svg>
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="group flex items-center gap-4 py-4 no-underline border-b"
+                  style={{borderColor: 'rgba(255,255,255,0.07)'}}
+                >
+                  <span className="text-xs font-medium w-5 tabular-nums" style={{color: 'var(--sage-light)'}}>0{i + 1}</span>
+                  <span className="text-2xl font-light tracking-[-0.5px]" style={{color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-display)'}}>{item.label}</span>
+                  <svg viewBox="0 0 16 16" className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="1.5" style={{color: 'var(--sage-light)'}}>
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                  </svg>
+                </Link>
+              )
+            ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="relative z-10 px-8 pb-10 pt-6 border-t" style={{borderColor: 'rgba(255,255,255,0.08)'}}>
+            <div className="mb-4">
+              <LanguageSwitcher />
+            </div>
+            <Link
+              to="/onboarding"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-medium no-underline transition-all"
+              style={{background: 'var(--sage)', color: 'white'}}
+            >
+              {t('nav.signUpFree')}
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M3 8h10M9 4l4 4-4 4"/>
+              </svg>
+            </Link>
+            <p className="text-center text-xs mt-3" style={{color: 'rgba(255,255,255,0.3)'}}>PHIPA-compliant · Canadian servers</p>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="md:min-h-screen grid md:grid-cols-2 items-center pt-16 md:pt-20 pb-10 md:pb-[60px] px-[5vw] gap-8 md:gap-[60px] relative overflow-hidden">
