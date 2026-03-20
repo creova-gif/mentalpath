@@ -30,6 +30,11 @@ import { OutcomeMeasures } from "./components/pages/OutcomeMeasures";
 import { Waitlist } from "./components/pages/Waitlist";
 import { TherapistWellbeing } from "./components/pages/TherapistWellbeing";
 import { Resources } from "./components/pages/Resources";
+import { ForTherapists } from "./components/pages/ForTherapists";
+import { ForChiropractors } from "./components/pages/ForChiropractors";
+import { ForPhysiotherapists } from "./components/pages/ForPhysiotherapists";
+import { ForMassageTherapists } from "./components/pages/ForMassageTherapists";
+import { ForNaturopaths } from "./components/pages/ForNaturopaths";
 
 // Simple error boundary fallback
 function ErrorBoundary() {
@@ -145,6 +150,11 @@ const router = createBrowserRouter([
       { path: "support", element: <Support /> },
     ],
   },
+  { path: "/for-therapists", element: <ForTherapists />, errorElement: <ErrorBoundary /> },
+  { path: "/for-chiropractors", element: <ForChiropractors />, errorElement: <ErrorBoundary /> },
+  { path: "/for-physiotherapists", element: <ForPhysiotherapists />, errorElement: <ErrorBoundary /> },
+  { path: "/for-massage-therapists", element: <ForMassageTherapists />, errorElement: <ErrorBoundary /> },
+  { path: "/for-naturopaths", element: <ForNaturopaths />, errorElement: <ErrorBoundary /> },
   // Catch-all redirect to landing page
   {
     path: "*",

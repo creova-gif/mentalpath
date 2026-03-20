@@ -238,6 +238,48 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Profession Selector */}
+      <section className="bg-[var(--white)] py-12 md:py-16 px-[5vw] border-b border-[var(--border)]">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center mb-8 md:mb-10">
+            <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage)] mb-2">Who it's built for</div>
+            <h2 className="font-[var(--font-display)] text-[clamp(22px,2.5vw,32px)] text-[var(--ink)] tracking-[-0.5px]">Every regulated Canadian health practitioner</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[
+              { name: 'Therapists &\nPsychotherapists', path: '/for-therapists', count: '~25,000', icon: <path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/>, icon2: <path d="M8 11h8M8 14h5"/> },
+              { name: 'Chiropractors', path: '/for-chiropractors', count: '~9,000', icon: <path d="M12 2C8 2 6 6 6 10s2 5 3 6l-1 4h8l-1-4c1-1 3-2 3-6s-2-8-6-8z"/>, icon2: <path d="M9 14c0 2 1.5 3 3 3s3-1 3-3"/> },
+              { name: 'Physiotherapists', path: '/for-physiotherapists', count: '~18,000', icon: <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>, icon2: null },
+              { name: 'Massage Therapists', path: '/for-massage-therapists', count: '~15,000', icon: <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>, icon2: null },
+              { name: 'Naturopathic Doctors', path: '/for-naturopaths', count: '~3,500', icon: <><path d="M12 2a7 7 0 100 14A7 7 0 0012 2z"/><path d="M12 6v6l4 2"/></>, icon2: null },
+            ].map((p) => (
+              <Link
+                key={p.path}
+                to={p.path}
+                className="group flex flex-col gap-3 p-5 rounded-xl border border-[var(--border)] hover:border-[var(--sage)] hover:bg-[var(--sage-pale)] transition-all no-underline"
+              >
+                <div className="w-9 h-9 rounded-lg bg-[var(--sage-pale)] group-hover:bg-white flex items-center justify-center transition-colors">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-[var(--sage)] stroke-[1.6] [stroke-linecap:round]">
+                    {p.icon}
+                    {p.icon2}
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-[var(--ink)] leading-[1.3] whitespace-pre-line">{p.name}</div>
+                  <div className="text-xs text-[var(--ink-muted)] mt-0.5">{p.count} in Canada</div>
+                </div>
+                <div className="flex items-center gap-1 text-xs font-medium text-[var(--sage)] mt-auto">
+                  See how it works
+                  <svg viewBox="0 0 16 16" className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                  </svg>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Compliance Strip */}
       <div className="bg-[var(--sage-pale)] py-3.5 px-[5vw] flex items-center justify-center gap-10 flex-wrap border-t border-b border-[rgba(74,124,111,0.12)]">
         <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--sage-deep)]">
@@ -274,7 +316,7 @@ export function Landing() {
       <section className="bg-[var(--ink)] text-white py-14 md:py-[100px] px-[5vw]" id="problem">
         <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage-light)] mb-3">The real problem</div>
         <h2 className="font-[var(--font-display)] text-[clamp(30px,3.5vw,44px)] leading-[1.15] tracking-[-0.5px] mb-4">
-          Your US therapy software<br/>is <em className="italic text-[var(--sage-light)]">putting you at risk</em>
+          Your US practice software<br/>is <em className="italic text-[var(--sage-light)]">putting you at risk</em>
         </h2>
         <p className="text-base font-light text-white/60 max-w-[520px] leading-[1.65] mb-[60px]">
           TherapyNotes, TheraNest, SimplePractice — built for American practitioners, storing your clients' most sensitive data on US servers. Your College doesn't accept that.

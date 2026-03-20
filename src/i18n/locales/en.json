@@ -8,14 +8,14 @@
     "signUpFree": "Sign Up Free"
   },
   "hero": {
-    "badge": "Made for Canadian therapists · PHIPA compliant",
+    "badge": "Made for Canadian practitioners · PHIPA compliant",
     "title": {
       "line1": "Less admin.",
       "line2": "More",
       "line2Italic": "presence",
       "line3": "with your clients."
     },
-    "subtitle": "Practice management built for Canadian therapists, psychotherapists, and social workers. PHIPA-compliant, culturally-informed, and priced for solo practitioners.",
+    "subtitle": "Practice management built for Canadian health practitioners — therapists, chiropractors, physiotherapists, RMTs, and more. PHIPA-compliant and priced for solo practice.",
     "cta": "Start your free trial →",
     "seeHow": "See how it works",
     "footer": {
@@ -45,7 +45,7 @@
   "problemSection": {
     "tag": "The real problem",
     "title": {
-      "line1": "Your US therapy software",
+      "line1": "Your US practice software",
       "line2": "is",
       "line2Italic": "putting you at risk"
     },
