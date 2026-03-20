@@ -99,7 +99,7 @@ export function Overview() {
     return 'Good evening';
   })();
 
-  const firstName = user?.firstName ?? 'Doctor';
+  const firstName = user?.firstName ?? 'there';
 
   return (
     <>

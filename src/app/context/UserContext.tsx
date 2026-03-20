@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 export type Profession =
   | 'Registered Psychotherapist'
@@ -180,20 +180,17 @@ const UserContext = createContext<UserContextType | null>(null);
 
 const STORAGE_KEY = 'mentalpath_user_email';
 
-export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
-
-  useEffect(() => {
+function getStoredAccount() {
+  try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const account = DEMO_ACCOUNTS.find(a => a.email === saved);
-      if (account) {
-        setUser(account.profile);
-        setSubscriptionState(account.subscription);
-      }
-    }
-  }, []);
+    if (saved) return DEMO_ACCOUNTS.find(a => a.email === saved) ?? null;
+  } catch {}
+  return null;
+}
+
+export function UserProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<UserProfile | null>(() => getStoredAccount()?.profile ?? null);
+  const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(() => getStoredAccount()?.subscription ?? null);
 
   const login = (email: string, password: string): 'ok' | 'bad_credentials' => {
     const account = DEMO_ACCOUNTS.find(
