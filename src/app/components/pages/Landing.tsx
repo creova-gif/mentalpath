@@ -36,9 +36,9 @@ export function Landing() {
           <a href="#compliance" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.compliance')}</a>
           <a href="#pricing" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.pricing')}</a>
           <Link to="/client-portal" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.clientPortal')}</Link>
-          <Link to="/dashboard" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.dashboard')}</Link>
+          <Link to="/login" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.dashboard')}</Link>
           <LanguageSwitcher />
-          <Link to="/signup" className="bg-[var(--sage)] text-white px-5 py-2.5 rounded-lg text-sm font-medium no-underline hover:bg-[var(--sage-deep)] transition-all hover:-translate-y-px">
+          <Link to="/onboarding" className="bg-[var(--sage)] text-white px-5 py-2.5 rounded-lg text-sm font-medium no-underline hover:bg-[var(--sage-deep)] transition-all hover:-translate-y-px">
             {t('nav.signUpFree')}
           </Link>
         </div>
@@ -85,7 +85,7 @@ export function Landing() {
                 {t('nav.clientPortal')}
               </Link>
               <Link 
-                to="/dashboard" 
+                to="/login" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-base text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors py-2"
               >
@@ -95,7 +95,7 @@ export function Landing() {
                 <LanguageSwitcher />
               </div>
               <Link 
-                to="/signup" 
+                to="/onboarding" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="bg-[var(--sage)] text-white px-5 py-3 rounded-lg text-base font-medium no-underline hover:bg-[var(--sage-deep)] transition-all text-center mt-2"
               >

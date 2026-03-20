@@ -248,7 +248,7 @@ export function Onboarding() {
               </button>
 
               <div className="text-center mt-4 text-[13px] text-[var(--ink-muted)]">
-                Already have an account? <a href="/dashboard" className="text-[var(--sage)] font-medium hover:text-[var(--sage-deep)]">Sign in</a>
+                Already have an account? <a href="/login" className="text-[var(--sage)] font-medium hover:text-[var(--sage-deep)]">Sign in</a>
               </div>
             </div>
           )}

@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { BookingPage } from "./components/pages/BookingPage";
 import { ClientProfile } from "./components/pages/ClientProfile";
 import { SessionNoteEditor } from "./components/pages/SessionNoteEditor";
+import { Login } from "./components/pages/Login";
 import { Landing } from "./components/pages/Landing";
 import { ClientPortal } from "./components/pages/ClientPortal";
 import { ClientPortalFull } from "./components/pages/ClientPortalFull";
@@ -47,6 +48,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Landing />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
     errorElement: <ErrorBoundary />,
   },
   {
