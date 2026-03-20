@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Home Exercise Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1210; --surface:#161918; --surface-2:#1d2220; --surface-3:#242c28;
+  --sage:#4fb896; --sage-dim:#2a5e48; --sage-pale:rgba(79,184,150,0.1); --sage-bright:#6dd9b2;
+  --cream:#e6ede8; --cream-dim:#8a9e90; --cream-faint:rgba(230,237,232,0.06);
+  --amber:#d4893a; --red:#e05252; --green:#22c98a;
+  --border:rgba(230,237,232,0.08); --border-2:rgba(230,237,232,0.12);
+  --font-d:'Fraunces',serif; --font-b:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-b);background:var(--bg);color:var(--cream);display:flex;flex-direction:column;}
+button,input,select,textarea{font-family:inherit;}
+
+/* ── TOP ── */
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;}
+.tb-logo{font-family:var(--font-d);font-size:16px;color:var(--cream);}
+.tb-mark{width:26px;height:26px;background:var(--sage-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:13px;height:13px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.tb-context{font-size:12px;color:var(--cream-dim);}
+.tb-context strong{color:var(--cream);}
+.tb-sp{flex:1;}
+.sent-indicator{font-size:12px;font-weight:500;color:var(--sage);opacity:0;transition:opacity 0.3s;display:flex;align-items:center;gap:5px;}
+.sent-indicator.show{opacity:1;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.btn-ghost{background:var(--cream-faint);color:var(--cream-dim);}
+.btn-ghost:hover{background:rgba(230,237,232,0.1);color:var(--cream);}
+.btn-sage{background:var(--sage-dim);color:var(--sage);}
+.btn-sage:hover{background:var(--sage);color:var(--bg);}
+.btn-sage:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* ── SHELL ── */
+.shell{display:grid;grid-template-columns:300px 1fr 280px;flex:1;overflow:hidden;min-height:0;}
+
+/* ── LIBRARY ── */
+.library{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.lib-search-bar{padding:12px 14px;border-bottom:1px solid var(--border);}
+.lib-search{width:100%;padding:8px 12px;border:1px solid var(--border-2);border-radius:8px;background:var(--surface-2);color:var(--cream);font-size:13px;outline:none;transition:border-color 0.15s;}
+.lib-search:focus{border-color:var(--sage-dim);}
+.lib-search::placeholder{color:var(--cream-dim);}
+.area-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border);}
+.at{padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:transparent;font-size:11px;font-weight:500;color:var(--cream-dim);cursor:pointer;transition:all 0.15s;}
+.at.on{background:var(--sage-pale);border-color:var(--sage-dim);color:var(--sage);}
+.lib-list{overflow-y:auto;flex:1;}
+.ex-item{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;display:flex;align-items:center;gap:10px;}
+.ex-item:hover{background:var(--surface-2);}
+.ex-item.added{background:rgba(79,184,150,0.05);}
+.ex-body-icon{width:32px;height:32px;border-radius:7px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.ex-name{font-size:12px;font-weight:500;color:var(--cream);}
+.ex-area{font-size:10px;color:var(--cream-dim);margin-top:1px;text-transform:uppercase;letter-spacing:0.5px;}
+.ex-defaults{font-size:10px;color:var(--sage);margin-top:2px;}
+.add-pill{width:22px;height:22px;border-radius:50%;background:var(--sage-dim);border:none;color:var(--sage);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.15s;line-height:1;}
+.add-pill:hover{background:var(--sage);color:var(--bg);transform:scale(1.1);}
+.add-pill.added{background:rgba(79,184,150,0.15);color:var(--sage-bright);cursor:default;transform:none;}
+.quick-presets{padding:10px 12px;border-bottom:1px solid var(--border);}
+.qp-label{font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--cream-dim);margin-bottom:6px;}
+.preset-btn{display:block;width:100%;padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;font-size:11px;font-weight:500;color:var(--cream-dim);text-align:left;margin-bottom:4px;cursor:pointer;transition:all 0.15s;}
+.preset-btn:hover{background:var(--sage-pale);border-color:var(--sage-dim);color:var(--sage);}
+
+/* ── BUILDER ── */
+.builder{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.builder-meta{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 18px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;flex-shrink:0;}
+.bm-field{display:flex;flex-direction:column;gap:3px;}
+.bm-label{font-size:9px;font-weight:500;letter-spacing:0.7px;text-transform:uppercase;color:var(--cream-dim);}
+.bm-select{background:var(--surface-2);border:1px solid var(--border-2);border-radius:6px;color:var(--cream);font-size:12px;font-weight:500;padding:5px 8px;outline:none;cursor:pointer;transition:border-color 0.15s;}
+.bm-select:focus{border-color:var(--sage-dim);}
+.builder-body{flex:1;overflow-y:auto;padding:16px 18px;}
+.empty-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:14px;opacity:0.5;}
+.empty-icon{font-size:48px;}
+.empty-title{font-size:15px;font-weight:500;color:var(--cream-dim);}
+.empty-sub{font-size:12px;color:rgba(230,237,232,0.35);max-width:240px;line-height:1.6;}
+.ex-cards{display:flex;flex-direction:column;gap:8px;}
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;transition:all 0.2s;}
+.ex-card:hover{border-color:var(--border-2);}
+.ec-row{display:flex;align-items:center;gap:10px;padding:11px 14px;}
+.ec-num{width:22px;height:22px;border-radius:50%;background:var(--sage-dim);color:var(--sage);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.ec-name{font-size:13px;font-weight:500;color:var(--cream);flex:1;}
+.ec-area-tag{font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--surface-3);color:var(--cream-dim);}
+.ec-rm{width:20px;height:20px;border-radius:50%;border:none;background:rgba(224,82,82,0.1);color:var(--red);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.ec-rm:hover{background:var(--red);color:white;}
+.ec-params{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;background:var(--surface-2);border-top:1px solid var(--border);}
+.ec-param{padding:8px 12px;border-right:1px solid var(--border);text-align:center;}
+.ec-param:last-child{border-right:none;}
+.ec-p-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--cream-dim);margin-bottom:4px;}
+.ec-p-input{width:52px;background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--cream);font-size:14px;font-weight:500;text-align:center;padding:4px;outline:none;transition:border-color 0.15s;}
+.ec-p-input:focus{border-color:var(--sage-dim);}
+.ec-p-unit{font-size:9px;color:var(--cream-dim);margin-top:3px;}
+.ec-instruct{padding:8px 14px;font-size:11px;color:var(--cream-dim);line-height:1.55;border-top:1px solid var(--border);background:rgba(79,184,150,0.03);}
+.builder-footer{background:var(--surface);border-top:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.count-badge{font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;background:var(--sage-pale);color:var(--sage);flex-shrink:0;}
+.bf-summary{flex:1;font-size:12px;color:var(--cream-dim);}
+
+/* ── PREVIEW PANEL ── */
+.preview-panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.pp-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.pp-title{font-size:12px;font-weight:500;color:var(--cream);}
+.pp-sub{font-size:10px;color:var(--cream-dim);margin-top:2px;}
+.phone-wrap{flex:1;overflow-y:auto;padding:12px;display:flex;justify-content:center;}
+.phone-frame{width:220px;background:#1a1a1a;border-radius:20px;overflow:hidden;border:2px solid #333;box-shadow:0 20px 60px rgba(0,0,0,0.6);}
+.phone-notch{height:20px;background:#111;display:flex;align-items:center;justify-content:center;}
+.phone-notch::after{content:'';width:50px;height:4px;background:#222;border-radius:2px;}
+.phone-screen{background:#f5f5f0;min-height:380px;}
+.ps-header{background:#2d5048;padding:12px 14px;}
+.ps-h-label{font-size:9px;color:rgba(255,255,255,0.5);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;}
+.ps-h-name{font-size:14px;font-weight:500;color:white;margin-top:2px;}
+.ps-h-meta{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.ps-body{padding:10px;}
+.ps-ex{background:white;border-radius:7px;margin-bottom:7px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.ps-ex-name{font-size:11px;font-weight:500;color:#1a1a18;padding:8px 10px 4px;}
+.ps-ex-params{display:flex;gap:0;border-top:0.5px solid #f0efe9;}
+.ps-ex-p{flex:1;padding:5px;text-align:center;border-right:0.5px solid #f0efe9;}
+.ps-ex-p:last-child{border-right:none;}
+.ps-ex-p-n{font-size:12px;font-weight:500;color:#4a7c6f;}
+.ps-ex-p-l{font-size:8px;color:#9a9a90;}
+.ps-empty{text-align:center;padding:40px 20px;font-size:11px;color:#9a9a90;}
+.pp-portal-note{padding:10px 14px;background:rgba(79,184,150,0.07);border-top:1px solid var(--border);font-size:11px;color:var(--cream-dim);line-height:1.55;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-logo">MentalPath</span>
+  <span class="tb-context"><strong>Priya Kapoor</strong> · HEP · Session 4 of 8 · Rotator cuff R</span>
+  <div class="tb-sp"></div>
+  <div class="sent-indicator" id="sentIndicator">✓ Sent to Priya's portal</div>
+  <button class="btn btn-ghost">Preview PDF</button>
+  <button class="btn btn-sage" id="sendBtn" onclick="sendToPortal()" disabled>Send to client portal →</button>
+</div>
+
+<div class="shell">
+
+  <!-- LIBRARY -->
+  <div class="library">
+    <div class="quick-presets">
+      <div class="qp-label">Quick presets</div>
+      <button class="preset-btn" onclick="loadPreset('shoulder')">💪 Shoulder rehab starter (3 exercises)</button>
+      <button class="preset-btn" onclick="loadPreset('lumbar')">🦴 Lumbar stability basics (4 exercises)</button>
+      <button class="preset-btn" onclick="loadPreset('cervical')">🧠 Cervical posture program (3 exercises)</button>
+    </div>
+    <div class="lib-search-bar">
+      <input class="lib-search" id="searchInput" placeholder="Search exercises..." oninput="filterEx(this.value)">
+    </div>
+    <div class="area-tabs" id="areaTabs">
+      <button class="at on" onclick="filterArea('all',this)">All</button>
+      <button class="at" onclick="filterArea('shoulder',this)">Shoulder</button>
+      <button class="at" onclick="filterArea('cervical',this)">Cervical</button>
+      <button class="at" onclick="filterArea('lumbar',this)">Lumbar</button>
+      <button class="at" onclick="filterArea('hip',this)">Hip / Knee</button>
+      <button class="at" onclick="filterArea('core',this)">Core</button>
+    </div>
+    <div class="lib-list" id="libList"></div>
+  </div>
+
+  <!-- BUILDER -->
+  <div class="builder">
+    <div class="builder-meta">
+      <div class="bm-field"><div class="bm-label">Frequency</div><select class="bm-select"><option>Daily</option><option>Twice daily</option><option>3× per week</option><option>Every other day</option></select></div>
+      <div class="bm-field"><div class="bm-label">Duration</div><select class="bm-select"><option>4 weeks</option><option>2 weeks</option><option>6 weeks</option><option>8 weeks</option></select></div>
+      <div class="bm-field"><div class="bm-label">Review date</div><select class="bm-select"><option>Apr 13, 2026</option><option>Mar 30, 2026</option><option>Apr 30, 2026</option></select></div>
+      <div class="bm-field"><div class="bm-label">Portal</div><select class="bm-select"><option>Enabled</option><option>PDF only</option></select></div>
+    </div>
+    <div class="builder-body" id="builderBody">
+      <div class="empty-wrap" id="emptyState">
+        <div class="empty-icon">💪</div>
+        <div class="empty-title">Add exercises from the library</div>
+        <div class="empty-sub">Search or browse on the left, or pick a quick preset. Exercises appear here — adjust sets, reps, and hold times.</div>
+      </div>
+      <div class="ex-cards" id="exCards" style="display:none;"></div>
+    </div>
+    <div class="builder-footer">
+      <div class="count-badge" id="countBadge">0 exercises</div>
+      <div class="bf-summary" id="bfSummary">Add exercises to build the program</div>
+      <button class="btn btn-ghost">Save draft</button>
+      <button class="btn btn-sage" id="sendBtn2" onclick="sendToPortal()" disabled>Send to portal →</button>
+    </div>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <div class="preview-panel">
+    <div class="pp-head">
+      <div>
+        <div class="pp-title">Client portal preview</div>
+        <div class="pp-sub">Exactly what Priya sees on her phone</div>
+      </div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="ps-header">
+            <div class="ps-h-label">Home Exercise Program</div>
+            <div class="ps-h-name">Priya Kapoor</div>
+            <div class="ps-h-meta">Dr. Sarah Chen · Daily · 4 weeks · Mar 16</div>
+          </div>
+          <div class="ps-body" id="phoneBody">
+            <div class="ps-empty">No exercises added yet. Build your program on the left.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pp-portal-note">
+      Client receives push notification when HEP is sent. You can see if they've viewed it. Exercises update live — no need to resend when you modify.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const EXERCISES = [
+  {id:'p1',name:'Pendulum',area:'shoulder',icon:'💫',sets:3,reps:1,hold:30,rest:0,instructions:'Lean forward with arm hanging freely. Let arm swing in small circles — use gravity, no active arm movement.'},
+  {id:'p2',name:'Scapular Retraction',area:'shoulder',icon:'🎯',sets:3,reps:15,hold:5,rest:30,instructions:'Sit tall. Squeeze shoulder blades together and slightly down. Do not shrug. Hold 5 seconds.'},
+  {id:'p3',name:'Theraband External Rotation',area:'shoulder',icon:'🔄',sets:3,reps:12,hold:2,rest:30,instructions:'Band at elbow height. Rotate arm outward keeping elbow at 90° close to body. Slowly return.'},
+  {id:'p4',name:'Doorway Chest Stretch',area:'shoulder',icon:'🚪',sets:3,reps:1,hold:30,rest:15,instructions:'Arms at 90° in doorway. Step forward until chest stretch felt. Do not lean forward at waist.'},
+  {id:'p5',name:'Theraband Row',area:'shoulder',icon:'💪',sets:3,reps:12,hold:2,rest:30,instructions:'Band at chest height. Pull back keeping elbow at 90°. Squeeze shoulder blade. Slowly return.'},
+  {id:'p6',name:'Side-lying External Rotation',area:'shoulder',icon:'↗️',sets:3,reps:12,hold:2,rest:30,instructions:'Lie on uninvolved side. Elbow bent to 90°. Rotate top arm up toward ceiling. Slowly lower.'},
+  {id:'c1',name:'Chin Tuck',area:'cervical',icon:'🧠',sets:3,reps:10,hold:5,rest:10,instructions:'Sit tall. Gently tuck chin straight back — not down. Hold. Keep eyes level throughout.'},
+  {id:'c2',name:'Cervical Side Bend',area:'cervical',icon:'↔️',sets:3,reps:1,hold:30,rest:15,instructions:'Tilt ear toward shoulder until gentle stretch felt. Breathe and hold. Repeat other side.'},
+  {id:'c3',name:'Cervical Rotation',area:'cervical',icon:'🔀',sets:3,reps:1,hold:20,rest:10,instructions:'Slowly rotate head to look over shoulder. Hold at end range. Return to centre. Other side.'},
+  {id:'l1',name:'Cat-Cow',area:'lumbar',icon:'🐱',sets:1,reps:10,hold:3,rest:10,instructions:'On hands and knees. Inhale: arch back, lift head. Exhale: round back, tuck chin. Move slowly.'},
+  {id:'l2',name:'McKenzie Press Up',area:'lumbar',icon:'⬆️',sets:5,reps:10,hold:2,rest:15,instructions:'Lie face down, palms beside shoulders. Push upper body up keeping hips on floor.'},
+  {id:'l3',name:'Knee to Chest',area:'lumbar',icon:'🦵',sets:3,reps:1,hold:30,rest:10,instructions:'Lie on back. Bring one knee to chest, holding behind the knee. Gentle pull. Hold and release.'},
+  {id:'h1',name:'Clam Shell',area:'hip',icon:'🦪',sets:3,reps:15,hold:2,rest:20,instructions:'Side lying, hips at 45°. Rotate top knee up without rolling pelvis back. Slowly lower.'},
+  {id:'h2',name:'Terminal Knee Extension',area:'hip',icon:'🦵',sets:3,reps:15,hold:3,rest:20,instructions:'Band behind knee, slight bend. Press knee straight against resistance. Hold. Slowly return.'},
+  {id:'h3',name:'Straight Leg Raise',area:'hip',icon:'⬆️',sets:3,reps:12,hold:2,rest:20,instructions:'Lie on back, one knee bent. Tighten quad of straight leg. Raise to height of bent knee.'},
+  {id:'o1',name:'Bird Dog',area:'core',icon:'🦅',sets:3,reps:8,hold:5,rest:15,instructions:'Hands and knees. Extend opposite arm and leg simultaneously. Hold. Keep hips level.'},
+  {id:'o2',name:'Dead Bug',area:'core',icon:'🐛',sets:3,reps:8,hold:3,rest:15,instructions:'On back, arms and knees at 90°. Lower opposite arm and leg toward floor. Keep back flat.'},
+];
+
+const PRESETS = {
+  shoulder: ['p1','p2','p3'],
+  lumbar: ['l1','l2','l3','o1'],
+  cervical: ['c1','c2','c3'],
+};
+
+let addedIds = [];
+let currentArea = 'all';
+
+function renderLib(exs) {
+  document.getElementById('libList').innerHTML = exs.map(ex => {
+    const isAdded = addedIds.includes(ex.id);
+    return `
+      <div class="ex-item${isAdded?' added':''}">
+        <div class="ex-body-icon">${ex.icon}</div>
+        <div style="flex:1">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-area">${ex.area}</div>
+          <div class="ex-defaults">${ex.sets}×${ex.reps}${ex.hold>0?' · '+ex.hold+'s hold':''}</div>
+        </div>
+        <button class="add-pill${isAdded?' added':''}" onclick="addEx('${ex.id}')" ${isAdded?'disabled':''} title="${isAdded?'Added':'Add to program'}">
+          ${isAdded ? '✓' : '+'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterEx(q) {
+  renderLib(EXERCISES.filter(ex => {
+    const mq = !q || ex.name.toLowerCase().includes(q.toLowerCase());
+    const ma = currentArea === 'all' || ex.area === currentArea;
+    return mq && ma;
+  }));
+}
+
+function filterArea(area, btn) {
+  currentArea = area;
+  document.querySelectorAll('.at').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  filterEx(document.getElementById('searchInput').value);
+}
+
+function addEx(id) {
+  if (addedIds.includes(id)) return;
+  addedIds.push(id);
+  renderBuilder();
+  filterEx(document.getElementById('searchInput').value);
+}
+
+function removeEx(id) {
+  addedIds = addedIds.filter(i => i !== id);
+  renderBuilder();
+  filterEx(document.getElementById('searchInput').value);
+}
+
+function loadPreset(key) {
+  const ids = PRESETS[key] || [];
+  ids.forEach(id => { if (!addedIds.includes(id)) addedIds.push(id); });
+  renderBuilder();
+  filterEx('');
+}
+
+function renderBuilder() {
+  const body = document.getElementById('builderBody');
+  const empty = document.getElementById('emptyState');
+  const cards = document.getElementById('exCards');
+  const count = document.getElementById('countBadge');
+  const summary = document.getElementById('bfSummary');
+  const sendBtn = document.getElementById('sendBtn');
+  const sendBtn2 = document.getElementById('sendBtn2');
+
+  const n = addedIds.length;
+  count.textContent = `${n} exercise${n !== 1 ? 's' : ''}`;
+  sendBtn.disabled = n === 0;
+  sendBtn2.disabled = n === 0;
+
+  if (n === 0) {
+    empty.style.display = 'flex';
+    cards.style.display = 'none';
+    summary.textContent = 'Add exercises to build the program';
+    renderPhone([]);
+    return;
+  }
+
+  empty.style.display = 'none';
+  cards.style.display = 'flex';
+  summary.textContent = `Daily · 4 weeks · Live in Priya's portal when sent`;
+
+  const exData = addedIds.map(id => EXERCISES.find(e => e.id === id)).filter(Boolean);
+  cards.innerHTML = exData.map((ex, i) => `
+    <div class="ex-card">
+      <div class="ec-row">
+        <div class="ec-num">${i+1}</div>
+        <div class="ec-name">${ex.name}</div>
+        <span class="ec-area-tag">${ex.area}</span>
+        <button class="ec-rm" onclick="removeEx('${ex.id}')">×</button>
+      </div>
+      <div class="ec-params">
+        <div class="ec-param">
+          <div class="ec-p-label">Sets</div>
+          <input class="ec-p-input" type="number" value="${ex.sets}" min="1" max="10" oninput="syncPreview()">
+          <div class="ec-p-unit">sets</div>
+        </div>
+        <div class="ec-param">
+          <div class="ec-p-label">Reps</div>
+          <input class="ec-p-input" type="number" value="${ex.reps}" min="1" max="30" oninput="syncPreview()">
+          <div class="ec-p-unit">reps</div>
+        </div>
+        <div class="ec-param">
+          <div class="ec-p-label">Hold</div>
+          <input class="ec-p-input" type="number" value="${ex.hold}" min="0" max="120" oninput="syncPreview()">
+          <div class="ec-p-unit">sec</div>
+        </div>
+        <div class="ec-param">
+          <div class="ec-p-label">Rest</div>
+          <input class="ec-p-input" type="number" value="${ex.rest}" min="0" max="120" oninput="syncPreview()">
+          <div class="ec-p-unit">sec</div>
+        </div>
+      </div>
+      <div class="ec-instruct">${ex.instructions}</div>
+    </div>
+  `).join('');
+
+  renderPhone(exData);
+}
+
+function syncPreview() {
+  const inputs = document.querySelectorAll('.ex-card');
+  const updated = [];
+  inputs.forEach((card, i) => {
+    const id = addedIds[i];
+    const ex = EXERCISES.find(e => e.id === id);
+    if (!ex) return;
+    const nums = card.querySelectorAll('.ec-p-input');
+    updated.push({...ex, sets: nums[0]?.value||ex.sets, reps: nums[1]?.value||ex.reps, hold: nums[2]?.value||ex.hold});
+  });
+  renderPhone(updated);
+}
+
+function renderPhone(exs) {
+  const body = document.getElementById('phoneBody');
+  if (!exs.length) {
+    body.innerHTML = '<div class="ps-empty">No exercises added yet.</div>';
+    return;
+  }
+  body.innerHTML = exs.map(ex => `
+    <div class="ps-ex">
+      <div class="ps-ex-name">${ex.icon} ${ex.name}</div>
+      <div class="ps-ex-params">
+        <div class="ps-ex-p"><div class="ps-ex-p-n">${ex.sets}</div><div class="ps-ex-p-l">sets</div></div>
+        <div class="ps-ex-p"><div class="ps-ex-p-n">${ex.reps}</div><div class="ps-ex-p-l">reps</div></div>
+        ${parseInt(ex.hold)>0 ? `<div class="ps-ex-p"><div class="ps-ex-p-n">${ex.hold}s</div><div class="ps-ex-p-l">hold</div></div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function sendToPortal() {
+  const btn = document.getElementById('sendBtn');
+  const btn2 = document.getElementById('sendBtn2');
+  btn.textContent = '✓ Sent'; btn.disabled = true; btn.style.background = 'var(--sage)'; btn.style.color = 'var(--bg)';
+  btn2.textContent = '✓ Sent'; btn2.disabled = true;
+  document.getElementById('sentIndicator').classList.add('show');
+}
+
+renderLib(EXERCISES);
+setTimeout(() => { loadPreset('shoulder'); }, 50);
+</script>
+</body>
+</html>

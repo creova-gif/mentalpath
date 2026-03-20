@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — One subscription. Everything.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,500&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #0d0f0e;
+  --night-2: #161917;
+  --night-3: #1e2220;
+  --sage: #4a9e87;
+  --sage-bright: #5dc4a4;
+  --sage-dim: #2d6b5a;
+  --sage-glow: rgba(74,158,135,0.12);
+  --cream: #f0ebe0;
+  --cream-dim: #d4cfc4;
+  --red-muted: #c0392b;
+  --amber: #c8860a;
+  --green-bright: #22c98a;
+  --border-night: rgba(255,255,255,0.07);
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Instrument Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--night); color: var(--cream); overflow-x: hidden; }
+button { font-family: inherit; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(74,158,135,0.15) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 28px;
+  border: 1px solid var(--sage-dim); border-radius: 20px; padding: 6px 16px;
+}
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--sage-bright); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero-h1 {
+  font-family: var(--font-display); font-weight: 300;
+  font-size: clamp(44px, 8vw, 96px);
+  line-height: 0.95; letter-spacing: -2px;
+  color: var(--cream); margin-bottom: 24px;
+}
+.hero-h1 em { font-style: italic; color: var(--sage); }
+.hero-h1 .strike {
+  position: relative; display: inline-block; color: rgba(240,235,224,0.3);
+}
+.hero-h1 .strike::after {
+  content: '';
+  position: absolute; left: -4px; right: -4px;
+  height: 3px; background: var(--red-muted);
+  top: 50%; transform: rotate(-2deg);
+}
+.hero-sub {
+  font-size: 18px; color: rgba(240,235,224,0.55);
+  max-width: 480px; margin: 0 auto 48px; line-height: 1.65;
+}
+
+/* SAVINGS HERO NUMBER */
+.savings-hero {
+  background: var(--night-2); border: 1px solid var(--border-night);
+  border-radius: 20px; padding: 32px 40px; margin-bottom: 40px;
+  position: relative; overflow: hidden;
+}
+.savings-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--sage-glow) 0%, transparent 50%);
+}
+.sh-label { font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--sage); margin-bottom: 10px; }
+.sh-number {
+  font-family: var(--font-display); font-size: 80px; font-weight: 300;
+  color: var(--cream); line-height: 1;
+  display: flex; align-items: flex-start; gap: 4px;
+}
+.sh-number .currency { font-size: 40px; margin-top: 12px; color: var(--sage); }
+.sh-number .amount { transition: all 0.4s; }
+.sh-period { font-size: 16px; color: rgba(240,235,224,0.4); margin-top: 8px; }
+.sh-breakdown { display: flex; gap: 28px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-night); }
+.sh-bd { text-align: center; }
+.sh-bd-n { font-family: var(--font-display); font-size: 28px; color: var(--cream); }
+.sh-bd-l { font-size: 11px; color: rgba(240,235,224,0.4); margin-top: 3px; }
+
+/* PROFESSION TABS */
+.prof-tabs {
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 60px;
+}
+.pt {
+  padding: 9px 18px; border-radius: 10px;
+  border: 1px solid var(--border-night); background: var(--night-2);
+  font-size: 13px; font-weight: 500; color: rgba(240,235,224,0.4);
+  cursor: pointer; transition: all 0.2s;
+}
+.pt:hover { border-color: var(--sage-dim); color: rgba(240,235,224,0.7); }
+.pt.on { background: var(--sage-dim); border-color: var(--sage); color: white; }
+.pt .emoji { margin-right: 6px; }
+
+/* ── TOOLS GRAVEYARD ── */
+.graveyard { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+.section-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 20px; text-align: center;
+}
+.gy-title {
+  font-family: var(--font-display); font-weight: 300;
+  font-size: clamp(28px, 4vw, 46px);
+  color: var(--cream); text-align: center; margin-bottom: 8px; line-height: 1.1;
+}
+.gy-sub { font-size: 15px; color: rgba(240,235,224,0.45); text-align: center; margin-bottom: 40px; }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.tool-card {
+  background: var(--night-2); border: 1px solid var(--border-night);
+  border-radius: 13px; padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.tool-card::before {
+  content: 'REPLACED';
+  position: absolute; right: -24px; top: 10px;
+  background: var(--red-muted); color: white;
+  font-size: 9px; font-weight: 600; letter-spacing: 1px;
+  padding: 2px 28px; transform: rotate(35deg);
+  opacity: 0; transition: opacity 0.2s;
+}
+.tool-card:hover::before { opacity: 1; }
+.tc-icon {
+  width: 38px; height: 38px; border-radius: 9px;
+  background: var(--night-3); display: flex; align-items: center;
+  justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.tc-name { font-size: 14px; font-weight: 500; color: var(--cream); }
+.tc-cat { font-size: 11px; color: rgba(240,235,224,0.4); margin-top: 2px; }
+.tc-cost { margin-left: auto; font-size: 15px; font-weight: 500; color: var(--red-muted); flex-shrink: 0; }
+.tc-note { font-size: 10px; color: rgba(240,235,224,0.3); margin-top: 2px; text-align: right; }
+
+.vs-row {
+  display: flex; align-items: center; gap: 20px;
+  background: var(--night-2); border-radius: 13px;
+  padding: 20px 24px; margin-top: 14px;
+  border: 1px solid var(--border-night);
+}
+.vs-old { flex: 1; }
+.vs-old-label { font-size: 11px; color: rgba(240,235,224,0.4); margin-bottom: 4px; }
+.vs-old-num { font-family: var(--font-display); font-size: 36px; color: var(--red-muted); line-height: 1; text-decoration: line-through; opacity: 0.7; }
+.vs-arrow { font-size: 24px; color: rgba(240,235,224,0.2); }
+.vs-new { flex: 1; }
+.vs-new-label { font-size: 11px; color: var(--sage); margin-bottom: 4px; }
+.vs-new-num { font-family: var(--font-display); font-size: 36px; color: var(--sage-bright); line-height: 1; }
+.vs-savings-box {
+  background: rgba(34,201,138,0.1); border: 1px solid rgba(34,201,138,0.25);
+  border-radius: 10px; padding: 14px 20px; text-align: center; flex-shrink: 0;
+}
+.vsb-n { font-family: var(--font-display); font-size: 26px; color: var(--green-bright); }
+.vsb-l { font-size: 11px; color: rgba(34,201,138,0.6); margin-top: 2px; }
+
+/* ── TIME SAVINGS ── */
+.time-section { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.time-card {
+  background: var(--night-2); border: 1px solid var(--border-night);
+  border-radius: 14px; padding: 22px 24px;
+}
+.tc-before-after { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.tba-pill {
+  font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 4px;
+}
+.before { background: rgba(192,57,43,0.15); color: #e67e7e; }
+.after { background: rgba(74,158,135,0.15); color: var(--sage-bright); }
+.tc-task { font-size: 15px; font-weight: 500; color: var(--cream); margin-bottom: 8px; }
+.tc-times { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(240,235,224,0.5); }
+.tc-old-time { text-decoration: line-through; color: rgba(192,57,43,0.7); }
+.tc-new-time { color: var(--sage-bright); font-weight: 500; }
+.tc-saved { font-size: 12px; color: rgba(240,235,224,0.35); margin-top: 4px; }
+
+/* ── IMPOSSIBLE ELSEWHERE ── */
+.impossible-section { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+.impossible-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.imp-card {
+  background: var(--night-2); border: 1px solid var(--border-night);
+  border-radius: 14px; padding: 22px;
+  position: relative; overflow: hidden;
+  transition: all 0.2s;
+}
+.imp-card:hover { border-color: var(--sage-dim); transform: translateY(-2px); }
+.imp-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, var(--sage), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.imp-card:hover::after { opacity: 1; }
+.imp-icon { font-size: 26px; margin-bottom: 12px; }
+.imp-title { font-size: 14px; font-weight: 500; color: var(--cream); margin-bottom: 6px; line-height: 1.3; }
+.imp-desc { font-size: 12px; color: rgba(240,235,224,0.45); line-height: 1.6; }
+.imp-badge {
+  display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 3px;
+  background: rgba(74,158,135,0.15); color: var(--sage); margin-bottom: 10px;
+}
+
+/* ── BILL ESTIMATOR ── */
+.estimator { padding: 80px 20px; max-width: 700px; margin: 0 auto; text-align: center; }
+.est-title { font-family: var(--font-display); font-size: 36px; font-weight: 300; color: var(--cream); margin-bottom: 8px; }
+.est-sub { font-size: 14px; color: rgba(240,235,224,0.45); margin-bottom: 36px; }
+.est-inputs { background: var(--night-2); border: 1px solid var(--border-night); border-radius: 16px; padding: 28px; margin-bottom: 20px; }
+.ei-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-night); }
+.ei-row:last-child { border-bottom: none; }
+.ei-label { font-size: 14px; color: var(--cream); }
+.ei-sub { font-size: 12px; color: rgba(240,235,224,0.35); margin-top: 2px; }
+.ei-control { display: flex; align-items: center; gap: 10px; }
+.ei-input {
+  width: 70px; padding: 7px 12px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.12); background: var(--night-3);
+  color: var(--cream); font-size: 14px; font-weight: 500; text-align: center;
+  outline: none; transition: border-color 0.15s;
+}
+.ei-input:focus { border-color: var(--sage); }
+.ei-unit { font-size: 12px; color: rgba(240,235,224,0.4); }
+.est-result {
+  background: linear-gradient(135deg, var(--sage-dim), #1a4a3a);
+  border-radius: 14px; padding: 24px 28px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+}
+.er-label { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+.er-num { font-family: var(--font-display); font-size: 36px; color: white; }
+
+/* ── CTA ── */
+.cta-section { padding: 100px 20px; text-align: center; }
+.cta-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 60px); font-weight: 300; color: var(--cream); margin-bottom: 16px; line-height: 1.1; }
+.cta-title em { font-style: italic; color: var(--sage); }
+.cta-sub { font-size: 16px; color: rgba(240,235,224,0.45); margin-bottom: 36px; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 40px; border-radius: 12px;
+  background: var(--sage); color: white;
+  border: none; font-size: 16px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.cta-btn:hover { background: var(--sage-bright); transform: translateY(-1px); }
+.cta-note { font-size: 12px; color: rgba(240,235,224,0.3); margin-top: 14px; }
+
+/* DIVIDER */
+.divider { width: 60px; height: 1px; background: var(--border-night); margin: 0 auto; }
+
+/* FADE IN */
+.fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+.fade-in:nth-child(2) { transition-delay: 0.1s; }
+.fade-in:nth-child(3) { transition-delay: 0.2s; }
+
+@media (max-width: 768px) {
+  .impossible-grid { grid-template-columns: 1fr 1fr; }
+  .time-grid { grid-template-columns: 1fr; }
+  .vs-row { flex-direction: column; gap: 12px; }
+  .sh-breakdown { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-eyebrow">For Canadian regulated health professionals</div>
+  <h1 class="hero-h1">
+    Stop paying<br>
+    <span class="strike">five bills</span><br>
+    for <em>one practice.</em>
+  </h1>
+  <p class="hero-sub">Every tool you're using — scheduling, invoicing, notes, reminders, HEPs, outcomes, portals — is already in MentalPath. For $49 a month.</p>
+
+  <div class="savings-hero">
+    <div class="sh-label">Your estimated monthly savings</div>
+    <div class="sh-number">
+      <span class="currency">$</span>
+      <span class="amount" id="heroAmount">201</span>
+    </div>
+    <div class="sh-period">per month · <span id="heroAnnual">$2,412 saved every year</span></div>
+    <div class="sh-breakdown">
+      <div class="sh-bd"><div class="sh-bd-n" id="bOldCost">$250</div><div class="sh-bd-l">old stack / mo</div></div>
+      <div class="sh-bd" style="color:rgba(240,235,224,0.2)"><div style="font-size:24px; margin-top:4px;">→</div></div>
+      <div class="sh-bd"><div class="sh-bd-n" id="bNewCost" style="color:var(--sage-bright)">$49</div><div class="sh-bd-l">MentalPath / mo</div></div>
+      <div style="width:1px;background:var(--border-night)"></div>
+      <div class="sh-bd"><div class="sh-bd-n" id="bTools" style="color:var(--cream)">6</div><div class="sh-bd-l">tools replaced</div></div>
+      <div class="sh-bd"><div class="sh-bd-n" id="bTimeSaved" style="color:var(--sage)">4h</div><div class="sh-bd-l">hours saved / wk</div></div>
+    </div>
+  </div>
+
+  <div class="prof-tabs">
+    <button class="pt on" onclick="selectProf('physio',this)"><span class="emoji">⚡</span>Physiotherapist</button>
+    <button class="pt" onclick="selectProf('chiro',this)"><span class="emoji">🦴</span>Chiropractor</button>
+    <button class="pt" onclick="selectProf('rmt',this)"><span class="emoji">💆</span>RMT</button>
+    <button class="pt" onclick="selectProf('psychotherapist',this)"><span class="emoji">🧠</span>Psychotherapist</button>
+    <button class="pt" onclick="selectProf('ot',this)"><span class="emoji">🔧</span>Occupational Therapist</button>
+    <button class="pt" onclick="selectProf('naturopath',this)"><span class="emoji">🌿</span>Naturopath</button>
+  </div>
+</section>
+
+<!-- ── TOOLS GRAVEYARD ── -->
+<section class="graveyard">
+  <div class="section-label">What you're replacing</div>
+  <h2 class="gy-title">Your current stack.<br><em>Priced out.</em></h2>
+  <p class="gy-sub">This is what you're paying right now — across multiple logins, multiple invoices, and multiple support queues.</p>
+  <div class="tools-grid" id="toolsGrid"></div>
+  <div class="vs-row">
+    <div class="vs-old">
+      <div class="vs-old-label">What you pay today</div>
+      <div class="vs-old-num" id="vsOld">$250/mo</div>
+    </div>
+    <div class="vs-arrow">→</div>
+    <div class="vs-new">
+      <div class="vs-new-label">MentalPath</div>
+      <div class="vs-new-num">$49/mo</div>
+    </div>
+    <div class="vs-savings-box">
+      <div class="vsb-n" id="vsSaving">$201</div>
+      <div class="vsb-l">saved per month</div>
+      <div style="font-size:18px; font-weight:500; color:var(--green-bright); margin-top:4px;" id="vsAnnual">$2,412/yr</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TIME SAVINGS ── -->
+<section class="time-section">
+  <div style="text-align:center; margin-bottom:40px;">
+    <div class="section-label">Beyond money</div>
+    <h2 style="font-family:var(--font-display); font-size:clamp(28px,4vw,44px); font-weight:300; color:var(--cream); line-height:1.1;">4 hours back.<br><em>Every week.</em></h2>
+    <p style="font-size:15px; color:rgba(240,235,224,0.45); margin-top:12px;">Time is the real cost. Here's what MentalPath eliminates.</p>
+  </div>
+  <div class="time-grid" id="timeGrid"></div>
+</section>
+
+<!-- ── IMPOSSIBLE ELSEWHERE ── -->
+<section class="impossible-section">
+  <div style="text-align:center; margin-bottom:40px;">
+    <div class="section-label" id="impossibleLabel">Things Cliniko can't do. Jane can't do. Anyone else can't do.</div>
+    <h2 style="font-family:var(--font-display); font-size:clamp(28px,4vw,44px); font-weight:300; color:var(--cream); line-height:1.1;">Only in<br><em>MentalPath.</em></h2>
+  </div>
+  <div class="impossible-grid" id="impossibleGrid"></div>
+</section>
+
+<!-- ── BILL ESTIMATOR ── -->
+<section class="estimator">
+  <div class="section-label">Live calculator</div>
+  <h2 class="est-title">See your exact numbers.</h2>
+  <p class="est-sub">Adjust these to match your practice — watch your savings update in real time.</p>
+  <div class="est-inputs">
+    <div class="ei-row">
+      <div><div class="ei-label">Sessions per week</div><div class="ei-sub">Your average weekly client sessions</div></div>
+      <div class="ei-control"><input class="ei-input" id="sessPerWeek" type="number" value="20" min="1" max="60" oninput="calcEstimate()"><span class="ei-unit">sessions</span></div>
+    </div>
+    <div class="ei-row">
+      <div><div class="ei-label">Session rate</div><div class="ei-sub">CAD per session</div></div>
+      <div class="ei-control"><span style="color:rgba(240,235,224,0.4);font-size:14px;">$</span><input class="ei-input" id="sessionRate" type="number" value="120" min="50" max="300" oninput="calcEstimate()"><span class="ei-unit">CAD</span></div>
+    </div>
+    <div class="ei-row">
+      <div><div class="ei-label">Admin hours per week</div><div class="ei-sub">Notes, invoicing, reminders, forms</div></div>
+      <div class="ei-control"><input class="ei-input" id="adminHours" type="number" value="5" min="1" max="20" oninput="calcEstimate()"><span class="ei-unit">hours</span></div>
+    </div>
+  </div>
+  <div class="est-result">
+    <div>
+      <div class="er-label">Monthly savings on subscriptions</div>
+      <div class="er-num" id="estSaving">$201</div>
+    </div>
+    <div>
+      <div class="er-label">Hours saved per week</div>
+      <div class="er-num" id="estTime">4h</div>
+    </div>
+    <div>
+      <div class="er-label">Time value recovered/yr</div>
+      <div class="er-num" id="estTimeValue">$24,960</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="divider" style="margin-bottom:60px;"></div>
+  <h2 class="cta-title">Your first client<br>can book in <em>5 minutes.</em></h2>
+  <p class="cta-sub">No credit card until your 30-day trial ends. Full access from minute one.<br>Canadian servers. PHIPA compliant. All features included.</p>
+  <button class="cta-btn">Start free trial →</button>
+  <div class="cta-note">$49/month after trial · ca-central-1 AWS · 0 security vulnerabilities · PHIPA</div>
+</section>
+
+<script>
+const DATA = {
+  physio: {
+    tools:[
+      {icon:'📅', name:'Cliniko', cat:'Scheduling + notes + intake', cost:74, note:'Hosted in Australia — not PHIPA-compliant'},
+      {icon:'💰', name:'QuickBooks Simple Start', cat:'Invoicing + T2125', cost:35},
+      {icon:'💪', name:'PhysiApp', cat:'Home exercise programs', cost:45, note:'HEP delivery — most physios pay this monthly'},
+      {icon:'📋', name:'JotForm (PHIPA tier)', cat:'Digital intake forms', cost:27},
+      {icon:'🔐', name:'Healthie', cat:'Secure client portal', cost:49},
+      {icon:'📹', name:'Zoom Pro', cat:'Video telehealth', cost:21},
+    ],
+    mentalpath: 49,
+    timeSaved: 5,
+    impossible:[
+      {icon:'📊',badge:'OUTCOMES',title:'Oswestry · DASH · NPRS · PSFS · Berg',desc:'Full musculoskeletal outcome library, built in. No extra app. Trend charts per client per course.'},
+      {icon:'🔄',badge:'COURSES',title:'Treatment course progress dashboard',desc:'Session 4 of 8. Who needs reassessment. Who\'s near discharge. No other tool shows this.'},
+      {icon:'🤖',badge:'AI',title:'CPT-standard SOAP note AI drafting',desc:'S/O/A/P filled in seconds from your dictation. No other scheduling tool has this.'},
+      {icon:'🏥',badge:'BILLING',title:'Extended health receipts (5 insurers)',desc:'Blue Cross, Sun Life, Manulife, Green Shield, Canada Life. Profession codes pre-filled.'},
+      {icon:'🇨🇦',badge:'PHIPA',title:'100% Canadian infrastructure',desc:'Cliniko is Australian. Healthie is American. MentalPath runs on AWS ca-central-1 exclusively.'},
+      {icon:'💡',badge:'UNIQUE',title:'AI HEP prescription builder',desc:'Issue home exercises directly to client portal. No PDF emails. No PhysiApp subscription.'},
+    ],
+    time:[
+      {task:'Writing a session note',before:'12 min',after:'3 min',saved:'9 min / session',impact:'Save 3 hours per 20-session week'},
+      {task:'Generating + sending invoices',before:'3 min each',after:'30 sec all',saved:'End-of-day billing',impact:'One tap — all today\'s sessions invoiced'},
+      {task:'Building a home exercise program',before:'15 min (PDF/app)',after:'2 min',saved:'13 min / HEP',impact:'Directly to client portal, no email'},
+      {task:'Chasing unsigned intake forms',before:'15 min / new client',after:'Automatic',saved:'Fully automated',impact:'Sent on booking. Signed before visit.'},
+    ]
+  },
+  chiro: {
+    tools:[
+      {icon:'📅', name:'Cliniko', cat:'Scheduling + notes + intake', cost:74, note:'Australian servers — not PHIPA-compliant'},
+      {icon:'💰', name:'QuickBooks', cat:'Invoicing', cost:35},
+      {icon:'💪', name:'PhysiApp', cat:'Home exercise programs', cost:45, note:'Many chiros pay this separately for HEP delivery'},
+      {icon:'📋', name:'JotForm', cat:'Digital intake forms', cost:27},
+      {icon:'🔐', name:'Healthie', cat:'Client portal', cost:49},
+      {icon:'📹', name:'Doxy.me', cat:'Video sessions', cost:20},
+    ],
+    mentalpath: 49, timeSaved: 4,
+    impossible:[
+      {icon:'🦴',badge:'CCO',title:'CCO-standard SOAP templates',desc:'Pre-configured to College standards. Open and start writing. Spinal segments, ortho tests, palpation — all in the prompts.'},
+      {icon:'📊',badge:'OUTCOMES',title:'Oswestry · NPRS · PSFS',desc:'Track disability and pain scores per treatment course. Trend against CCO documentation standards.'},
+      {icon:'🤖',badge:'AI',title:'AI SOAP note drafting',desc:'CCO-compliant SOAP in seconds. No other chiro software does this.'},
+      {icon:'🏥',badge:'BILLING',title:'Extended health receipts',desc:'Blue Cross, Sun Life, Manulife, Green Shield, Canada Life. CCO provider number on every receipt.'},
+      {icon:'🔄',badge:'COURSES',title:'Treatment course dashboard',desc:'Every active course tracked: session X of Y, reassessment due, near-discharge flags. Built for chiro workflows.'},
+      {icon:'🇨🇦',badge:'PHIPA',title:'Canadian servers only',desc:'Cliniko is Australian. MentalPath is AWS ca-central-1, Montreal + Calgary. PHIPA-compliant from day one.'},
+    ],
+    time:[
+      {task:'Writing a SOAP note',before:'10 min',after:'2 min',saved:'8 min / session',impact:'Save 2.5 hours per 20-session week'},
+      {task:'Generating extended health receipts',before:'5 min each',after:'30 sec',saved:'~90 min / week',impact:'Correct insurer codes pre-filled'},
+      {task:'Building a home exercise program',before:'10 min',after:'2 min',saved:'8 min / HEP',impact:'Exercise library with chiro-specific exercises'},
+      {task:'Checking treatment course progress',before:'Manual review',after:'Dashboard view',saved:'20 min / day',impact:'Every client\'s session X of Y at a glance'},
+    ]
+  },
+  rmt: {
+    tools:[
+      {icon:'📅', name:'Jane App', cat:'Scheduling + intake', cost:74, note:'Most popular among Canadian RMTs'},
+      {icon:'💰', name:'QuickBooks', cat:'Invoicing', cost:35},
+      {icon:'📂', name:'Google Drive / Dropbox', cat:'Document storage', cost:14, note:'Manual — no automation, no compliance'},
+      {icon:'💳', name:'Square (higher fees)', cat:'Payment processing overhead', cost:25, note:'~2% extra vs integrated billing'},
+      {icon:'📅', name:'Calendly', cat:'Standalone online booking', cost:19},
+    ],
+    mentalpath: 49, timeSaved: 3,
+    impossible:[
+      {icon:'📋',badge:'CMTO',title:'CMTO-standard intake form',desc:'Skin conditions, pregnancy, blood clots, pressure preference, allergies. Pre-built, CMTO-compliant.'},
+      {icon:'🏥',badge:'BILLING',title:'Extended health receipts in 30 seconds',desc:'CMTO provider number, service code, HST calculated. Client submits to their insurer.'},
+      {icon:'🤖',badge:'AI',title:'AI SOAP note drafting',desc:'Jane has no AI. MentalPath fills in subjective, objective, assessment, plan from your prompts.'},
+      {icon:'💆',badge:'WELLBEING',title:'Therapist wellbeing check-ins',desc:'No RMT tool asks how you\'re doing. Weekly VT monitoring, private, never audited.'},
+      {icon:'📊',badge:'OUTCOMES',title:'NPRS + PSFS outcomes',desc:'Track client progress between sessions. Show treatment value to clients and insurers.'},
+      {icon:'🇨🇦',badge:'PHIPA',title:'Canadian infrastructure',desc:'Jane is Canadian ✓. But your Google Drive, Dropbox, and Calendly are not PHIPA-compliant.'},
+    ],
+    time:[
+      {task:'Writing a SOAP note after session',before:'8 min',after:'2 min',saved:'6 min / session',impact:'AI fills it — you review and lock'},
+      {task:'Generating extended health receipt',before:'3 min each',after:'30 sec',saved:'~1 hour / week',impact:'Client gets it before they leave'},
+      {task:'Sending appointment reminders',before:'Manual / unreliable',after:'Automatic',saved:'Fully automated',impact:'SMS + email, 24h and 2h before'},
+      {task:'New client intake form',before:'Paper / email PDF',after:'Sent on booking',saved:'15 min per new client',impact:'CMTO-compliant, e-signed before visit'},
+    ]
+  },
+  psychotherapist: {
+    tools:[
+      {icon:'📅', name:'Jane App', cat:'Scheduling + intake', cost:74, note:'Most popular among Canadian therapists'},
+      {icon:'💰', name:'QuickBooks', cat:'Invoicing + T2125', cost:35},
+      {icon:'📊', name:'Owl Practice', cat:'PHQ-9 / GAD-7 outcomes only', cost:29, note:'Separate subscription just for outcome tracking'},
+      {icon:'📹', name:'Zoom Pro', cat:'Video telehealth', cost:21},
+      {icon:'📧', name:'Mailchimp', cat:'Client reminders', cost:18},
+    ],
+    mentalpath: 49, timeSaved: 4,
+    impossible:[
+      {icon:'🤖',badge:'AI',title:'AI DAP/SOAP/BIRP/Progress drafting',desc:'Jane has zero AI. Every note is typed by hand. MentalPath writes the first draft.'},
+      {icon:'🫀',badge:'UNIQUE',title:'Therapist wellbeing monitoring',desc:'Weekly VT check-in with AI reflection. ProQOL-5 indicators. Private, never exported. Nothing else has this.'},
+      {icon:'🌍',badge:'CULTURAL',title:'Cultural intake templates',desc:'BIPOC, newcomer, Indigenous, LGBTQ2S+. 7 templates seeded, ready immediately. Not available in any competitor.'},
+      {icon:'📊',badge:'OUTCOMES',title:'PHQ-9 + GAD-7 + WHODAS built in',desc:'Owl Practice charges $29/month just for this. In MentalPath it\'s included with trend charts + session annotations.'},
+      {icon:'📋',badge:'T2125',title:'Auto-generated T2125 year-end summary',desc:'Statement of business activities generated from your invoices. No accountant needed for this step.'},
+      {icon:'🇨🇦',badge:'PHIPA',title:'Canadian servers — every component',desc:'Owl Practice, Zoom, and Mailchimp are all US-hosted. MentalPath is AWS ca-central-1 exclusively.'},
+    ],
+    time:[
+      {task:'Writing a session note',before:'15 min',after:'4 min',saved:'11 min / session',impact:'AI draft → review → lock. Never start from blank.'},
+      {task:'Sending PHQ-9 / GAD-7',before:'Manual + Owl ($29/mo)',after:'One click',saved:'Time + $29/month',impact:'Sent from client profile, scores auto-graphed'},
+      {task:'Generating T2125 tax summary',before:'3+ hours (manual)',after:'Instant',saved:'3+ hours per year',impact:'Every invoice already in the system'},
+      {task:'Sending intake forms',before:'Email PDF',after:'Sent on booking',saved:'15 min per new client',impact:'CRPO-standard, e-signed before first session'},
+    ]
+  },
+  ot: {
+    tools:[
+      {icon:'📅', name:'SimplePractice', cat:'Full practice management', cost:109, note:'US-hosted — not PHIPA-compliant'},
+      {icon:'💰', name:'QuickBooks', cat:'Invoicing', cost:35},
+      {icon:'📋', name:'JotForm', cat:'Intake forms', cost:27},
+    ],
+    mentalpath: 49, timeSaved: 3,
+    impossible:[
+      {icon:'🇨🇦',badge:'PHIPA',title:'Actually PHIPA-compliant',desc:'SimplePractice is US-hosted and explicitly states it follows HIPAA, not PHIPA. Every Canadian OT using it is at risk.'},
+      {icon:'📊',badge:'OUTCOMES',title:'WHODAS + COPM + FIM built in',desc:'OT-specific outcome measures, not just PHQ-9. Pre-configured based on your College.'},
+      {icon:'🤖',badge:'AI',title:'AI SOAP + DAP note drafting',desc:'SimplePractice has no AI. MentalPath writes the first draft of every note.'},
+      {icon:'🏥',badge:'BILLING',title:'Extended health + OHIP receipts',desc:'Both billing streams for OT. Correct codes per insurer. Generated in 30 seconds.'},
+      {icon:'🔄',badge:'COURSES',title:'Treatment course management',desc:'Set goals, track sessions, flag reassessment dates. Built for OT episodic care workflows.'},
+      {icon:'💊',badge:'COTO',title:'COTO-standard documentation',desc:'Note templates pre-configured to College of Occupational Therapists of Ontario standards.'},
+    ],
+    time:[
+      {task:'Writing a session note',before:'12 min',after:'3 min',saved:'9 min / session',impact:'AI draft → review → lock'},
+      {task:'PHIPA compliance audit prep',before:'Manual documentation',after:'Audit log + checklist',saved:'Hours per year',impact:'Append-only audit log, always current'},
+      {task:'Generating OHIP/EHB receipts',before:'Manual, two systems',after:'One click',saved:'~2 hours / week',impact:'Both billing types from one invoice screen'},
+      {task:'Sending outcome questionnaires',before:'Paper or separate app',after:'Portal',saved:'15 min per measure',impact:'Client completes on phone, scores auto-populated'},
+    ]
+  },
+  naturopath: {
+    tools:[
+      {icon:'📅', name:'Practice Better', cat:'Scheduling + protocols', cost:89, note:'US-hosted — not PHIPA-compliant'},
+      {icon:'💰', name:'QuickBooks', cat:'Invoicing', cost:35},
+      {icon:'📋', name:'JotForm', cat:'Intake forms', cost:27},
+    ],
+    mentalpath: 49, timeSaved: 3,
+    impossible:[
+      {icon:'🇨🇦',badge:'PHIPA',title:'Canadian infrastructure',desc:'Practice Better is US-hosted. MentalPath runs exclusively on AWS ca-central-1. PHIPA-compliant from day one.'},
+      {icon:'🤖',badge:'AI',title:'AI SOAP note drafting',desc:'Practice Better has no AI. MentalPath fills in your notes. You review and lock.'},
+      {icon:'📋',badge:'CONO',title:'CONO-standard intake templates',desc:'Comprehensive health history, medications, supplements, lifestyle, chief complaint. Seeded and ready.'},
+      {icon:'🏥',badge:'BILLING',title:'Extended health receipts',desc:'Blue Cross, Sun Life, Manulife. CONO provider number on every receipt.'},
+      {icon:'📊',badge:'OUTCOMES',title:'PHQ-9 + GAD-7 outcomes',desc:'Track mental health alongside physical. Practice Better doesn\'t include outcome measures.'},
+      {icon:'🫀',badge:'UNIQUE',title:'Practitioner wellbeing check-ins',desc:'Integrative practitioners carry heavy emotional load too. Weekly VT monitoring, just for you.'},
+    ],
+    time:[
+      {task:'Writing a SOAP note',before:'10 min',after:'2 min',saved:'8 min / session'},
+      {task:'Generating extended health receipt',before:'3 min each',after:'30 sec'},
+      {task:'New patient intake',before:'Paper / email',after:'Sent on booking'},
+      {task:'Sending appointment reminders',before:'Manual',after:'Automatic'},
+    ]
+  }
+};
+
+let currentProf = 'physio';
+
+function selectProf(id, btn) {
+  currentProf = id;
+  document.querySelectorAll('.pt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+function animateNumber(el, to) {
+  const from = parseInt(el.textContent.replace(/[^0-9]/g,'')) || 0;
+  const start = performance.now();
+  const dur = 400;
+  function step(now) {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(from + (to - from) * ease);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function render() {
+  const d = DATA[currentProf];
+  const oldTotal = d.tools.reduce((s, t) => s + t.cost, 0);
+  const saving = oldTotal - d.mentalpath;
+  const annual = saving * 12;
+
+  // Hero numbers
+  animateNumber(document.getElementById('heroAmount'), saving);
+  document.getElementById('heroAnnual').textContent = `$${annual.toLocaleString()} saved every year`;
+  document.getElementById('bOldCost').textContent = `$${oldTotal}`;
+  document.getElementById('bTimeSaved').textContent = `${d.timeSaved}h`;
+  document.getElementById('vsOld').textContent = `$${oldTotal}/mo`;
+  document.getElementById('vsSaving').textContent = `$${saving}`;
+  document.getElementById('vsAnnual').textContent = `$${annual.toLocaleString()}/yr`;
+
+  // Tools
+  document.getElementById('toolsGrid').innerHTML = d.tools.map(t => `
+    <div class="tool-card">
+      <div class="tc-icon">${t.icon}</div>
+      <div style="flex:1">
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-cat">${t.cat}</div>
+        ${t.note ? `<div style="font-size:10px;color:rgba(240,235,224,0.3);margin-top:2px;">${t.note}</div>` : ''}
+      </div>
+      <div>
+        <div class="tc-cost">$${t.cost}/mo</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Time
+  document.getElementById('timeGrid').innerHTML = (d.time || []).map(t => `
+    <div class="time-card fade-in">
+      <div class="tc-before-after">
+        <span class="tba-pill before">Before</span>
+        <span class="tba-pill after">After MentalPath</span>
+      </div>
+      <div class="tc-task">${t.task}</div>
+      <div class="tc-times">
+        <span class="tc-old-time">${t.before}</span>
+        <span style="color:rgba(240,235,224,0.2)">→</span>
+        <span class="tc-new-time">${t.after}</span>
+      </div>
+      ${t.impact ? `<div class="tc-saved">${t.impact}</div>` : ''}
+    </div>
+  `).join('');
+
+  // Impossible
+  const impLabel = {
+    physio:'Things Cliniko can\'t do',
+    chiro:'Things Cliniko can\'t do',
+    rmt:'Things Jane can\'t do',
+    psychotherapist:'Things Jane can\'t do',
+    ot:'Things SimplePractice can\'t do',
+    naturopath:'Things Practice Better can\'t do'
+  };
+  document.getElementById('impossibleLabel').textContent = impLabel[currentProf] || 'What only MentalPath offers';
+  document.getElementById('impossibleGrid').innerHTML = d.impossible.map(x => `
+    <div class="imp-card fade-in">
+      <div class="imp-badge">${x.badge}</div>
+      <div class="imp-icon">${x.icon}</div>
+      <div class="imp-title">${x.title}</div>
+      <div class="imp-desc">${x.desc}</div>
+    </div>
+  `).join('');
+
+  calcEstimate();
+
+  // Animate fade-ins
+  setTimeout(() => {
+    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+  }, 100);
+}
+
+function calcEstimate() {
+  const sessions = parseInt(document.getElementById('sessPerWeek').value) || 20;
+  const rate = parseInt(document.getElementById('sessionRate').value) || 120;
+  const adminHrs = parseInt(document.getElementById('adminHours').value) || 5;
+  const d = DATA[currentProf];
+  const oldTotal = d.tools.reduce((s,t) => s+t.cost, 0);
+  const saving = oldTotal - d.mentalpath;
+  const timeSavedPerWeek = Math.min(adminHrs * 0.7, 8);
+  const hourlyRate = rate / 1; // approx value per hour
+  const timeValueYr = Math.round(timeSavedPerWeek * 50 * hourlyRate);
+  document.getElementById('estSaving').textContent = `$${saving}`;
+  document.getElementById('estTime').textContent = `${timeSavedPerWeek.toFixed(1)}h`;
+  document.getElementById('estTimeValue').textContent = `$${timeValueYr.toLocaleString()}`;
+}
+
+// IntersectionObserver for fade-ins
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+render();
+</script>
+</body>
+</html>

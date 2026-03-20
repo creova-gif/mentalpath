@@ -5,6 +5,211 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../LanguageSwitcher';
 import { SEO, addStructuredData, mentalPathSchema } from '../../utils/seo';
 
+const PROFESSIONS = [
+  {
+    num: '01',
+    name: 'Therapists & Psychotherapists',
+    path: '/for-therapists',
+    count: '25,000',
+    college: 'CRPO · ACPRO · OPA',
+    tags: ['Psychotherapy notes', 'Trauma-informed templates', 'Outcome tracking', 'Secure messaging', 'AI note drafting'],
+    accent: '#4a7c6f',
+  },
+  {
+    num: '02',
+    name: 'Chiropractors',
+    path: '/for-chiropractors',
+    count: '9,000',
+    college: 'CCBC · CCO · NBCE',
+    tags: ['SOAP + AMPS notes', 'DC billing codes', 'Treatment courses', 'HEP Builder', 'Radiograph notes'],
+    accent: '#5a8a7a',
+  },
+  {
+    num: '03',
+    name: 'Physiotherapists',
+    path: '/for-physiotherapists',
+    count: '18,000',
+    college: 'CPO · CPTA · CAPT',
+    tags: ['ICF-aligned notes', 'HEP Builder', 'Oswestry · DASH · NPRS', 'Treatment plans', 'Direct billing'],
+    accent: '#6a9885',
+  },
+  {
+    num: '04',
+    name: 'Registered Massage Therapists',
+    path: '/for-massage-therapists',
+    count: '15,000',
+    college: 'CMTO · MTABC · RMTBC',
+    tags: ['RMT SOAP notes', 'Insurance receipts', 'Consent forms', 'Outcome measures', 'Client portal'],
+    accent: '#7aab95',
+  },
+  {
+    num: '05',
+    name: 'Naturopathic Doctors',
+    path: '/for-naturopaths',
+    count: '3,500',
+    college: 'CONO · CNPBC · AANP',
+    tags: ['Integrative notes', 'Supplement tracking', 'Lab result logging', 'Patient education', 'Secure messaging'],
+    accent: '#8abda8',
+  },
+];
+
+function ProfessionShowcase() {
+  const [active, setActive] = useState<string | null>(null);
+
+  return (
+    <section
+      style={{ background: '#0f1f1a' }}
+      className="py-16 md:py-20 px-[5vw] border-b border-white/5"
+    >
+      <div className="max-w-[1200px] mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 md:mb-12">
+          <div>
+            <div className="text-[10px] tracking-[2px] uppercase font-semibold mb-3" style={{ color: '#4a7c6f' }}>
+              Who it&apos;s built for
+            </div>
+            <h2
+              className="text-[clamp(26px,3.5vw,46px)] leading-[1.1] tracking-[-1px]"
+              style={{ fontFamily: 'var(--font-display)', color: '#f5f0e8' }}
+            >
+              Every regulated Canadian<br className="hidden sm:block" /> health practitioner
+            </h2>
+          </div>
+          <div className="text-[13px] leading-relaxed max-w-[280px]" style={{ color: 'rgba(245,240,232,0.45)' }}>
+            College-compliant tools, billing codes, and clinical templates — built specifically for your profession.
+          </div>
+        </div>
+
+        {/* Editorial rows */}
+        <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+          {PROFESSIONS.map((p, i) => {
+            const isActive = active === p.num;
+            return (
+              <div
+                key={p.num}
+                onMouseEnter={() => setActive(p.num)}
+                onMouseLeave={() => setActive(null)}
+                style={{ borderColor: 'rgba(255,255,255,0.07)' }}
+                className="border-b"
+              >
+                <Link
+                  to={p.path}
+                  className="no-underline block"
+                >
+                  <div
+                    className="flex items-center gap-4 md:gap-8 py-5 md:py-6 transition-all duration-200"
+                    style={{ paddingLeft: 0 }}
+                  >
+                    {/* Index */}
+                    <span
+                      className="text-[11px] font-mono tabular-nums flex-shrink-0 w-6"
+                      style={{ color: isActive ? 'rgba(74,124,111,0.9)' : 'rgba(255,255,255,0.15)' }}
+                    >
+                      {p.num}
+                    </span>
+
+                    {/* Profession name */}
+                    <div className="flex-1 min-w-0">
+                      <div
+                        className="text-[clamp(17px,2.1vw,26px)] leading-tight tracking-[-0.3px] transition-colors duration-200"
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          color: isActive ? '#f5f0e8' : 'rgba(245,240,232,0.65)',
+                        }}
+                      >
+                        {p.name}
+                      </div>
+
+                      {/* Expanding tag row */}
+                      <div
+                        className="overflow-hidden transition-all duration-300 ease-out"
+                        style={{ maxHeight: isActive ? '60px' : '0px', opacity: isActive ? 1 : 0 }}
+                      >
+                        <div className="flex flex-wrap gap-1.5 pt-3">
+                          {p.tags.map(tag => (
+                            <span
+                              key={tag}
+                              className="text-[11px] px-2.5 py-1 rounded-full font-medium"
+                              style={{
+                                background: 'rgba(74,124,111,0.18)',
+                                color: '#8abda8',
+                                border: '1px solid rgba(74,124,111,0.25)',
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right side info */}
+                    <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0">
+                      <div
+                        className="text-[11px] transition-colors duration-200"
+                        style={{ color: isActive ? 'rgba(245,240,232,0.4)' : 'rgba(255,255,255,0.15)' }}
+                      >
+                        {p.college}
+                      </div>
+                      <div
+                        className="text-[13px] font-medium transition-colors duration-200"
+                        style={{ color: isActive ? 'rgba(245,240,232,0.7)' : 'rgba(255,255,255,0.25)' }}
+                      >
+                        ~{p.count} in Canada
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div
+                      className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full border transition-all duration-200"
+                      style={{
+                        borderColor: isActive ? 'rgba(74,124,111,0.6)' : 'rgba(255,255,255,0.08)',
+                        background: isActive ? 'rgba(74,124,111,0.15)' : 'transparent',
+                      }}
+                    >
+                      <svg
+                        viewBox="0 0 16 16"
+                        className="w-3.5 h-3.5 transition-transform duration-200"
+                        style={{ transform: isActive ? 'translateX(1px)' : 'none' }}
+                        fill="none"
+                        stroke={isActive ? '#8abda8' : 'rgba(255,255,255,0.2)'}
+                        strokeWidth="1.5"
+                      >
+                        <path d="M3 8h10M9 4l4 4-4 4"/>
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mt-10 flex items-center justify-between flex-wrap gap-4">
+          <p className="text-[13px]" style={{ color: 'rgba(245,240,232,0.3)' }}>
+            OTs, Dietitians, Speech-Language Pathologists, and more — coming soon.
+          </p>
+          <Link
+            to="/login"
+            className="no-underline inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2.5 rounded-lg transition-all duration-150"
+            style={{
+              background: 'rgba(74,124,111,0.2)',
+              color: '#8abda8',
+              border: '1px solid rgba(74,124,111,0.3)',
+            }}
+          >
+            Start your free trial
+            <svg viewBox="0 0 16 16" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M3 8h10M9 4l4 4-4 4"/>
+            </svg>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
@@ -238,47 +443,8 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Profession Selector */}
-      <section className="bg-[var(--white)] py-12 md:py-16 px-[5vw] border-b border-[var(--border)]">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-8 md:mb-10">
-            <div className="text-xs font-medium tracking-[1.2px] uppercase text-[var(--sage)] mb-2">Who it's built for</div>
-            <h2 className="font-[var(--font-display)] text-[clamp(22px,2.5vw,32px)] text-[var(--ink)] tracking-[-0.5px]">Every regulated Canadian health practitioner</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {[
-              { name: 'Therapists &\nPsychotherapists', path: '/for-therapists', count: '~25,000', icon: <path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/>, icon2: <path d="M8 11h8M8 14h5"/> },
-              { name: 'Chiropractors', path: '/for-chiropractors', count: '~9,000', icon: <path d="M12 2C8 2 6 6 6 10s2 5 3 6l-1 4h8l-1-4c1-1 3-2 3-6s-2-8-6-8z"/>, icon2: <path d="M9 14c0 2 1.5 3 3 3s3-1 3-3"/> },
-              { name: 'Physiotherapists', path: '/for-physiotherapists', count: '~18,000', icon: <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>, icon2: null },
-              { name: 'Massage Therapists', path: '/for-massage-therapists', count: '~15,000', icon: <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>, icon2: null },
-              { name: 'Naturopathic Doctors', path: '/for-naturopaths', count: '~3,500', icon: <><path d="M12 2a7 7 0 100 14A7 7 0 0012 2z"/><path d="M12 6v6l4 2"/></>, icon2: null },
-            ].map((p) => (
-              <Link
-                key={p.path}
-                to={p.path}
-                className="group flex flex-col gap-3 p-5 rounded-xl border border-[var(--border)] hover:border-[var(--sage)] hover:bg-[var(--sage-pale)] transition-all no-underline"
-              >
-                <div className="w-9 h-9 rounded-lg bg-[var(--sage-pale)] group-hover:bg-white flex items-center justify-center transition-colors">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-[var(--sage)] stroke-[1.6] [stroke-linecap:round]">
-                    {p.icon}
-                    {p.icon2}
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-[var(--ink)] leading-[1.3] whitespace-pre-line">{p.name}</div>
-                  <div className="text-xs text-[var(--ink-muted)] mt-0.5">{p.count} in Canada</div>
-                </div>
-                <div className="flex items-center gap-1 text-xs font-medium text-[var(--sage)] mt-auto">
-                  See how it works
-                  <svg viewBox="0 0 16 16" className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M3 8h10M9 4l4 4-4 4"/>
-                  </svg>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Profession Showcase — editorial list */}
+      <ProfessionShowcase />
 
       {/* Compliance Strip */}
       <div className="bg-[var(--sage-pale)] py-3.5 px-[5vw] flex items-center justify-center gap-10 flex-wrap border-t border-b border-[rgba(74,124,111,0.12)]">
