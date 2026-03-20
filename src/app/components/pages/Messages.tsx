@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Lock, Send } from 'lucide-react';
+import { Search, Lock, Send, ArrowLeft } from 'lucide-react';
 
 const clients = [
   { id: 1, initials: 'AM', name: 'Amara Mensah', preview: 'Thank you for today\'s session...', time: '2:45 PM', unread: 0, color: 'bg-[#d4e8e4] text-[var(--sage-deep)]' },
@@ -19,20 +19,24 @@ const messagesData = [
 export function Messages() {
   const [selectedClient, setSelectedClient] = useState(clients[1]);
   const [messageText, setMessageText] = useState('');
+  const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
 
   const handleSend = () => {
     if (messageText.trim()) {
-      // In production, send message to backend
-      console.log('Sending message:', messageText);
       setMessageText('');
     }
   };
 
+  const selectClient = (client: typeof clients[0]) => {
+    setSelectedClient(client);
+    setMobileView('chat');
+  };
+
   return (
     <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 150px)' }}>
-      <div className="grid grid-cols-[280px_1fr] h-full">
+      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] h-full">
         {/* Client List Sidebar */}
-        <div className="border-r border-[var(--border)] flex flex-col">
+        <div className={`border-r border-[var(--border)] flex flex-col ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'}`}>
           <div className="px-4 py-3.5 border-b border-[var(--border)] flex items-center justify-between">
             <div className="text-sm font-medium text-[var(--ink)]">Messages</div>
             <div className="text-xs text-[var(--sage)]">3 unread</div>
@@ -51,7 +55,7 @@ export function Messages() {
             {clients.map((client) => (
               <div
                 key={client.id}
-                onClick={() => setSelectedClient(client)}
+                onClick={() => selectClient(client)}
                 className={`flex items-center gap-2.5 px-3.5 py-3 cursor-pointer border-b border-[var(--border)] transition-colors ${
                   selectedClient.id === client.id ? 'bg-[var(--sage-pale)]' : 'hover:bg-[var(--warm)]'
                 }`}
@@ -79,10 +83,16 @@ export function Messages() {
         </div>
 
         {/* Message Area */}
-        <div className="flex flex-col">
+        <div className={`flex flex-col ${mobileView === 'list' ? 'hidden md:flex' : 'flex'}`}>
           {/* Chat Header */}
-          <div className="px-5 py-3.5 border-b border-[var(--border)] flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium ${selectedClient.color}`}>
+          <div className="px-4 py-3.5 border-b border-[var(--border)] flex items-center gap-3">
+            <button
+              onClick={() => setMobileView('list')}
+              className="md:hidden p-1 -ml-1 text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${selectedClient.color}`}>
               {selectedClient.initials}
             </div>
             <div className="flex-1">

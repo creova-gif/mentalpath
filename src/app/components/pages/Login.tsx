@@ -33,10 +33,10 @@ export function Login() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: 'var(--font-body)' }}>
+    <div className="flex h-screen" style={{ fontFamily: 'var(--font-body)' }}>
 
-      {/* LEFT PANEL */}
-      <div style={{ width: '45%', background: '#1a2e28', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px 48px', flexShrink: 0 }}>
+      {/* LEFT PANEL — hidden on mobile */}
+      <div className="hidden md:flex flex-col justify-between" style={{ width: '45%', background: '#1a2e28', padding: '40px 48px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 36, height: 36, background: 'var(--sage)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: 'none', stroke: 'white', strokeWidth: 2 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -73,8 +73,16 @@ export function Login() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div style={{ flex: 1, background: 'var(--warm)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40, overflowY: 'auto' }}>
+      <div style={{ flex: 1, background: 'var(--warm)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }} className="p-6 sm:p-10">
         <div style={{ width: '100%', maxWidth: 400 }}>
+
+          {/* Mobile-only logo */}
+          <div className="flex items-center gap-2.5 mb-8 md:hidden">
+            <div style={{ width: 32, height: 32, background: 'var(--sage)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, fill: 'none', stroke: 'white', strokeWidth: 2 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <span style={{ color: 'var(--ink)', fontSize: 15, fontWeight: 500 }}>MentalPath</span>
+          </div>
 
           <div style={{ marginBottom: 36 }}>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink)', marginBottom: 6 }}>Welcome back</h1>

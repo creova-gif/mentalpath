@@ -49,7 +49,7 @@ export function CalendarView() {
 
   return (
     <div>
-      <div className="grid grid-cols-[1fr_300px] gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
         {/* Main Calendar */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -78,7 +78,8 @@ export function CalendarView() {
             </div>
           </div>
 
-          <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden">
+          <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden overflow-x-auto">
+            <div className="min-w-[540px]">
             {/* Day Headers */}
             <div className="grid grid-cols-[60px_repeat(5,1fr)] bg-[var(--warm)] border-b border-[var(--border)]">
               <div className="p-2.5" />
@@ -150,7 +151,8 @@ export function CalendarView() {
                 </div>
               ))}
             </div>
-          </div>
+            </div>{/* end min-w-[540px] */}
+          </div>{/* end overflow-x-auto */}
         </div>
 
         {/* Sidebar */}
