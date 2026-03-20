@@ -41,6 +41,7 @@ import { CostSavings } from "./components/pages/CostSavings";
 import { HEPBuilder } from "./components/pages/HEPBuilder";
 import { TreatmentCourses } from "./components/pages/TreatmentCourses";
 import { ProfessionIntake } from "./components/pages/ProfessionIntake";
+import { Subscribe } from "./components/pages/Subscribe";
 
 // Simple error boundary fallback
 function ErrorBoundary() {
@@ -124,6 +125,11 @@ const router = createBrowserRouter([
   {
     path: "/intake",
     element: <ProfessionIntake />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/subscribe",
+    element: <Subscribe />,
     errorElement: <ErrorBoundary />,
   },
   {

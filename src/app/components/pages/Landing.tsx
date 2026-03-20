@@ -239,7 +239,7 @@ export function Landing() {
         <div className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.features')}</a>
           <a href="#compliance" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.compliance')}</a>
-          <a href="#pricing" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.pricing')}</a>
+          <Link to="/subscribe" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.pricing')}</Link>
           <Link to="/client-portal" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.clientPortal')}</Link>
           <Link to="/login" className="text-sm text-[var(--ink-soft)] no-underline hover:text-[var(--sage)] transition-colors">{t('nav.dashboard')}</Link>
           <LanguageSwitcher />
@@ -287,7 +287,7 @@ export function Landing() {
             {[
               { label: t('nav.features'), href: '#features', isAnchor: true },
               { label: t('nav.compliance'), href: '#compliance', isAnchor: true },
-              { label: t('nav.pricing'), href: '#pricing', isAnchor: true },
+              { label: t('nav.pricing'), href: '/subscribe', isAnchor: false },
               { label: t('nav.clientPortal'), href: '/client-portal', isAnchor: false },
               { label: t('nav.dashboard'), href: '/login', isAnchor: false },
             ].map((item, i) => (
@@ -803,7 +803,7 @@ export function Landing() {
           <div className="flex gap-7">
             <a href="#features" className="text-[13px] no-underline hover:text-white/80 transition-colors">Features</a>
             <a href="#compliance" className="text-[13px] no-underline hover:text-white/80 transition-colors">Compliance</a>
-            <a href="#pricing" className="text-[13px] no-underline hover:text-white/80 transition-colors">Pricing</a>
+            <Link to="/subscribe" className="text-[13px] no-underline hover:text-white/80 transition-colors">Pricing</Link>
             <a href="#" className="text-[13px] no-underline hover:text-white/80 transition-colors">Privacy</a>
             <a href="#" className="text-[13px] no-underline hover:text-white/80 transition-colors">Terms</a>
           </div>

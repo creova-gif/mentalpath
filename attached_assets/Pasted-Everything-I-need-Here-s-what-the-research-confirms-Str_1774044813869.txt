@@ -1,0 +1,42 @@
+Everything I need. Here's what the research confirms:
+Stripe Canada fees (2026, current):
+
+Domestic Canadian cards: 2.9% + C$0.30 per successful charge Affonso
+International cards: 3.9% + C$0.30 owlpracticesuite
+Dispute fee: $15.00 CAD if resolved in favour of the cardholder; refunded if you win Owlpractice
+
+Canadian tax obligations for MentalPath (SaaS):
+
+SaaS subscriptions sold to Canadian customers are taxable. The applicable rate depends on where the customer receives the service, not where the seller is located. Stripe
+GST is 5% nationally. Ontario (where most practitioners are) uses HST at 13%. New Brunswick, Nova Scotia, Newfoundland, PEI: 15% HST. Stripe
+Registration threshold: $30,000 CAD over any 12-month period triggers mandatory GST/HST registration. Stripe
+Stripe Tax can monitor thresholds and calculate the correct rate per province automatically Stripe — MentalPath should enable automatic_tax: {enabled: true} in Stripe Checkout.
+
+Now building everything — a completely redesigned subscribe page, a hardened stripe-webhook that handles all subscription lifecycle events correctly, a database migration for billing audit trail, and a post-checkout billing dashboard.Used Supabase integrationUsed Supabase integrationZero warnings. Now build the complete subscribe page — properly implemented, connected to the real edge function, with accurate Stripe Canada fees and tax information displayed.Ran 2 commands, created a file, read a fileRan 2 commands, created a file, read a fileHere's everything that was done and why it's now properly implemented end-to-end.
+
+Database — 2 new tables, both hardened:
+subscription_events — every Stripe webhook event is written here immutably, with idempotency protection (unique on stripe_event_id). This is your paper trail for any dispute, refund request, or audit. It stores the full Stripe payload as JSONB, the therapist ID, event type, amount in CAD, tax amount, and the subscription period. Read-only via RLS for the authenticated therapist.
+subscription_plans — single source of truth for Solo ($49), Group ($79), and Community ($39) plans, with features JSONB, max clinicians, and Stripe price ID fields for both live and test environments. Public read, no writes via API.
+The therapists table gained: trial_started_at, subscription_cancel_at, subscription_plan_id, last_payment_at, last_payment_amount_cad, failed_payment_count, province. The subscription status constraint was tightened to match Stripe's actual lifecycle states exactly: trialing → active → past_due → canceled → unpaid → paused → incomplete.
+
+stripe-checkout edge function (v9) — three important changes from the previous version:
+automatic_tax: { enabled: true } is now set on every Checkout Session. This means Stripe calculates the correct GST/HST rate based on the billing address the customer enters Stripe — 5% GST for Alberta, 13% HST for Ontario, 15% HST for Atlantic provinces. You don't have to manage this.
+billing_address_collection: required is now enforced, because Stripe needs the province to determine the correct tax rate.
+If a therapist is already active and hits this endpoint, it now opens a Stripe Billing Portal session instead of creating a new checkout — so "Manage plan" and "Start trial" both route correctly through the same function.
+Live vs test price IDs are now handled with STRIPE_SOLO_PRICE_ID_LIVE and STRIPE_SOLO_PRICE_ID_TEST — the function detects which key is configured and uses the right one.
+
+stripe-webhook edge function (v9) — now handles 8 distinct event types properly:
+checkout.session.completed → sets trialing, stores stripe_subscription_id, logs event.
+customer.subscription.updated/created → syncs subscription_status, current_period_end, cancel_at_period_end, trial_end exactly from Stripe's data.
+customer.subscription.deleted → sets canceled, clears cancel_at_period_end.
+invoice.payment_succeeded → sets active, resets failed_payment_count to 0, records last_payment_at and last_payment_amount_cad.
+invoice.payment_failed → sets past_due, increments failed_payment_count.
+customer.subscription.trial_will_end → sends a trial-ending reminder email via Resend 3 days before charge.
+Idempotency is enforced — duplicate Stripe retries are detected by stripe_event_id and returned 200 without re-processing. HMAC signature verification uses the Web Crypto API (Deno-native, no dependencies).
+
+The subscribe page — completely redesigned dark theme (Fraunces serif, Instrument Sans). What's new vs the old version:
+The profession switcher drives the "tools being replaced" list live — switching from Physiotherapist to RMT swaps out Cliniko/PhysiApp for Jane/Square, and the savings number updates in real time.
+Accurate Canadian tax display — the checkout panel shows $49.00 + $6.37 HST = $55.37/mo for Ontario. The FAQ explains the rate varies by province (ON 13%, AB 5%, Atlantic 15%, QC adds QST). The tax note explains Stripe collects and remits this automatically.
+Accurate Stripe fee disclosure — 2.9% + C$0.30 for domestic cards Affonso, 3.9% + C$0.30 for international owlpracticesuite, $15.00 CAD dispute fee Owlpractice — all shown in the checkout panel so practitioners know exactly what to expect when clients pay invoices.
+The startCheckout() function calls the real stripe-checkout edge function with the auth token. If the response has a checkout_url, it redirects to Stripe. If it has a portal_url (already subscribed), it redirects to the billing portal. Error states are caught and displayed with a message.
+The first charge date is calculated in JavaScript as 30 days from today and shown in both the checkout summary and the security note at the bottom.
