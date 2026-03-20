@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Shield, BookOpen, Users, Lock, FileText, AlertTriangle, Check } from 'lucide-react';
+import { useUser } from '../../context/UserContext';
 
 type ComplianceTab = 'checklist' | 'cpd' | 'supervision' | 'phipa' | 'audit' | 'breach';
 
@@ -100,12 +101,30 @@ const auditLog = [
   { time: 'Yesterday', action: 'Exported session notes for insurance claim', user: 'Dr. Abena Osei' },
 ];
 
+const PROFESSION_COLLEGE: Record<string, { abbr: string; full: string; regPrefix: string }> = {
+  'Registered Psychotherapist': { abbr: 'CRPO', full: 'College of Registered Psychotherapists of Ontario', regPrefix: 'CRPO' },
+  'Chiropractor': { abbr: 'CCO', full: 'College of Chiropractors of Ontario', regPrefix: 'CCO' },
+  'Physiotherapist': { abbr: 'CPO', full: 'College of Physiotherapists of Ontario', regPrefix: 'CPO' },
+  'Registered Massage Therapist': { abbr: 'CMTO', full: 'College of Massage Therapists of Ontario', regPrefix: 'CMTO' },
+};
+
 export function Compliance() {
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<ComplianceTab>('checklist');
   const [showCPDForm, setShowCPDForm] = useState(false);
   const [showSupervisionForm, setShowSupervisionForm] = useState(false);
 
-  const compliantCount = complianceItems.filter(item => item.status === 'compliant').length;
+  const college = PROFESSION_COLLEGE[user?.profession ?? ''] ?? PROFESSION_COLLEGE['Registered Psychotherapist'];
+  const regNumber = user?.registrationNumber ?? 'CRPO-004821';
+
+  const dynamicItems = complianceItems.map(item => {
+    if (item.id === 1) {
+      return { ...item, meta: `Registration #${regNumber} · Renews March 31, 2027` };
+    }
+    return item;
+  });
+
+  const compliantCount = dynamicItems.filter(item => item.status === 'compliant').length;
   const totalCount = complianceItems.length;
   const compliancePercentage = Math.round((compliantCount / totalCount) * 100);
 
@@ -196,12 +215,12 @@ export function Compliance() {
             </div>
             <div>
               <div className="text-sm font-medium text-[var(--ink)]">College & Regulatory Requirements</div>
-              <div className="text-xs text-[var(--ink-muted)] mt-0.5">CRPO, PHIPA (Canada) / State boards, HIPAA (US)</div>
+              <div className="text-xs text-[var(--ink-muted)] mt-0.5">{college.abbr}, PHIPA (Canada) / State boards, HIPAA (US)</div>
             </div>
             <div className="ml-auto text-xs text-[var(--ink-muted)]">Updated March 16, 2026</div>
           </div>
 
-          {complianceItems.map((item) => (
+          {dynamicItems.map((item) => (
             <div
               key={item.id}
               className="flex items-start gap-3.5 px-5 py-4 border-b border-[var(--border)] last:border-0 transition-colors hover:bg-[var(--warm)]"

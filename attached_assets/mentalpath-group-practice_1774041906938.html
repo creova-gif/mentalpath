@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Group Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--red:#c0392b;--green:#1D9E75;--amber:#BA7517;--blue:#185FA5;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);}
+button,input,select{font-family:inherit;}
+.topbar{background:var(--ink);height:52px;display:flex;align-items:center;padding:0 24px;gap:12px;}
+.tb-mark{width:26px;height:26px;background:var(--sage);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.tb-logo{font-family:var(--font-d);font-size:16px;color:white;}
+.tb-badge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;background:rgba(74,124,111,0.3);color:var(--sage-light);}
+.tb-sp{flex:1;}
+.tb-actions{display:flex;gap:8px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.btn-sage{background:var(--sage);color:white;}
+.btn-sage:hover{background:var(--sage-deep);}
+.btn-ghost{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15);}
+.btn-ghost:hover{background:rgba(255,255,255,0.18);}
+
+.tabs{background:white;border-bottom:1px solid var(--border);padding:0 24px;display:flex;overflow-x:auto;}
+.tab{padding:12px 16px;font-size:13px;color:var(--ink-muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.tab.on{color:var(--sage-deep);border-bottom-color:var(--sage);font-weight:500;}
+
+.content{padding:24px;max-width:1200px;}
+.pg{display:none;}
+.pg.on{display:block;}
+
+/* STATS STRIP */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:22px;}
+.stat{background:white;border:1px solid var(--border);border-radius:11px;padding:14px 16px;}
+.sn{font-family:var(--font-d);font-size:26px;color:var(--ink);}
+.sl{font-size:12px;color:var(--ink-muted);margin-top:3px;}
+.sd{font-size:11px;font-weight:500;margin-top:2px;}
+
+/* CLINICIAN CARDS */
+.clinician-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:22px;}
+.clinician-card{background:white;border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+.cc-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.cc-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;}
+.cc-name{font-size:14px;font-weight:500;color:var(--ink);}
+.cc-role{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;margin-left:auto;}
+.role-owner{background:var(--sage-pale);color:var(--sage-deep);}
+.role-clin{background:var(--warm);color:var(--ink-muted);}
+.role-intern{background:#EEEDFE;color:#3C3489;}
+.cc-body{padding:14px 18px;}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.cc-stat{text-align:center;}
+.cc-stat-n{font-family:var(--font-d);font-size:20px;color:var(--ink);}
+.cc-stat-l{font-size:11px;color:var(--ink-muted);}
+.cc-bar{height:4px;background:var(--warm);border-radius:2px;overflow:hidden;margin-bottom:6px;}
+.cc-fill{height:100%;border-radius:2px;}
+.cc-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-muted);}
+.cc-compliance{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;}
+.bg-g{background:#e8f4f0;color:var(--sage-deep);}
+.bg-a{background:#faeeda;color:#633806;}
+.bg-r{background:#fde8e8;color:#791F1F;}
+.cc-actions{display:flex;gap:6px;padding:10px 18px;border-top:1px solid var(--border);}
+.action-btn{flex:1;padding:7px;border:1px solid var(--bmed);border-radius:7px;background:white;font-size:12px;font-weight:500;color:var(--ink-soft);cursor:pointer;text-align:center;transition:all 0.15s;}
+.action-btn:hover{background:var(--sage-pale);border-color:var(--sage-light);color:var(--sage-deep);}
+
+/* INVITE FORM */
+.invite-banner{background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.ib-text h3{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.ib-text p{font-size:13px;color:var(--ink-muted);}
+.invite-form{background:var(--warm);border-radius:10px;padding:16px;margin-bottom:18px;display:none;}
+.invite-form.show{display:block;}
+.if-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:10px;}
+.if-row{display:flex;gap:8px;align-items:flex-end;}
+.if-row input,.if-row select{padding:9px 12px;border-radius:8px;border:1px solid var(--bmed);background:white;font-size:13px;color:var(--ink);outline:none;transition:border-color 0.15s;}
+.if-row input:focus,.if-row select:focus{border-color:var(--sage);}
+.if-row input{flex:1;}
+
+/* ANALYTICS TABLE */
+.analytics-table{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);padding:10px 18px;background:var(--warm);}
+td{padding:12px 18px;border-top:0.5px solid var(--border);font-size:13px;color:var(--ink-soft);vertical-align:middle;}
+td:first-child{font-weight:500;color:var(--ink);}
+tr:hover td{background:var(--warm);}
+
+/* SCHEDULE */
+.schedule-grid{display:grid;grid-template-columns:80px repeat(3,1fr);gap:0;background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.sg-header{padding:10px;text-align:center;font-size:12px;font-weight:500;color:var(--ink);background:var(--warm);border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
+.sg-header:last-child{border-right:none;}
+.sg-time{padding:8px 10px;font-size:11px;color:var(--ink-muted);border-bottom:0.5px solid var(--border);border-right:1px solid var(--border);text-align:right;}
+.sg-cell{padding:4px;border-bottom:0.5px solid var(--border);border-right:1px solid var(--border);min-height:40px;position:relative;}
+.sg-cell:last-child{border-right:none;}
+.appt-block{border-radius:5px;padding:5px 7px;font-size:11px;font-weight:500;margin-bottom:2px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-logo">MentalPath</span>
+  <span class="tb-badge">Group Practice</span>
+  <div class="tb-sp"></div>
+  <div class="tb-actions">
+    <button class="btn btn-ghost"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Invite clinician</button>
+    <button class="btn btn-sage">Practice settings</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('overview',this)">Overview</button>
+  <button class="tab" onclick="go('clinicians',this)">Clinicians (3)</button>
+  <button class="tab" onclick="go('schedule',this)">Shared schedule</button>
+  <button class="tab" onclick="go('analytics',this)">Practice analytics</button>
+  <button class="tab" onclick="go('compliance',this)">Compliance snapshot</button>
+</div>
+
+<div class="content">
+
+  <!-- ═══ OVERVIEW ═══ -->
+  <div id="pg-overview" class="pg on">
+    <div class="stats">
+      <div class="stat"><div class="sn">3</div><div class="sl">Active clinicians</div><div class="sd" style="color:var(--sage)">+1 pending invite</div></div>
+      <div class="stat"><div class="sn">61</div><div class="sl">Total clients</div><div class="sd" style="color:var(--sage)">↑ 8 this month</div></div>
+      <div class="stat"><div class="sn">$12,180</div><div class="sl">Practice revenue (Mar)</div><div class="sd" style="color:var(--green)">↑ 14%</div></div>
+      <div class="stat"><div class="sn">4%</div><div class="sl">Practice no-show rate</div><div class="sd" style="color:var(--green)">↓ from 16%</div></div>
+      <div class="stat"><div class="sn">$237</div><div class="sl">Monthly MentalPath cost</div><div class="sd" style="color:var(--ink-muted)">3 × $79/seat</div></div>
+      <div class="stat"><div class="sn">9.2/10</div><div class="sl">Compliance score (avg)</div><div class="sd" style="color:var(--sage)">↑ from 8.1</div></div>
+    </div>
+
+    <div class="invite-banner">
+      <div class="ib-text">
+        <h3>Pending invite — Dr. Kwame Asante</h3>
+        <p>kwame.asante@gmail.com · Invited March 14 · Role: Clinician · Expires in 3 days</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="action-btn" style="flex:unset;padding:7px 14px;">Resend</button>
+        <button class="action-btn" style="flex:unset;padding:7px 14px;color:var(--red);border-color:#f09595;">Cancel</button>
+      </div>
+    </div>
+
+    <div class="clinician-grid">
+      <!-- Owner -->
+      <div class="clinician-card">
+        <div class="cc-head">
+          <div class="cc-av" style="background:#e8f0ed;color:var(--sage-deep)">AO</div>
+          <div>
+            <div class="cc-name">Dr. Abena Osei-Mensah</div>
+            <div style="font-size:11px;color:var(--ink-muted);">abena.osei@mentalpath.ca</div>
+          </div>
+          <span class="cc-role role-owner">Owner</span>
+        </div>
+        <div class="cc-body">
+          <div class="cc-stats">
+            <div class="cc-stat"><div class="cc-stat-n">23</div><div class="cc-stat-l">Clients</div></div>
+            <div class="cc-stat"><div class="cc-stat-n">6</div><div class="cc-stat-l">This week</div></div>
+            <div class="cc-stat"><div class="cc-stat-n">$4,200</div><div class="cc-stat-l">Mar revenue</div></div>
+          </div>
+          <div>
+            <div class="cc-bar-label"><span>Notes completion</span><span>94%</span></div>
+            <div class="cc-bar"><div class="cc-fill" style="width:94%;background:var(--sage)"></div></div>
+          </div>
+          <div class="cc-compliance">
+            <span class="badge bg-g">CRPO ✓</span>
+            <span class="badge bg-g">Insurance ✓</span>
+            <span class="badge bg-a">CPD 18/40h</span>
+            <span class="badge bg-g">Compliance 7/10</span>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="action-btn">View profile</button>
+          <button class="action-btn">Clients</button>
+          <button class="action-btn">Notes</button>
+        </div>
+      </div>
+
+      <!-- Clinician 2 -->
+      <div class="clinician-card">
+        <div class="cc-head">
+          <div class="cc-av" style="background:#E6F1FB;color:#0C447C">KM</div>
+          <div>
+            <div class="cc-name">Dr. Kofi Mensah</div>
+            <div style="font-size:11px;color:var(--ink-muted);">kofi.mensah@mentalpath.ca</div>
+          </div>
+          <span class="cc-role role-clin">Clinician</span>
+        </div>
+        <div class="cc-body">
+          <div class="cc-stats">
+            <div class="cc-stat"><div class="cc-stat-n">24</div><div class="cc-stat-l">Clients</div></div>
+            <div class="cc-stat"><div class="cc-stat-n">7</div><div class="cc-stat-l">This week</div></div>
+            <div class="cc-stat"><div class="cc-stat-n">$4,760</div><div class="cc-stat-l">Mar revenue</div></div>
+          </div>
+          <div>
+            <div class="cc-bar-label"><span>Notes completion</span><span>87%</span></div>
+            <div class="cc-bar"><div class="cc-fill" style="width:87%;background:var(--sage)"></div></div>
+          </div>
+          <div class="cc-compliance">
+            <span class="badge bg-g">CRPO ✓</span>
+            <span class="badge bg-g">Insurance ✓</span>
+            <span class="badge bg-g">CPD 32/40h</span>
+            <span class="badge bg-g">Compliance 9/10</span>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="action-btn">View profile</button>
+          <button class="action-btn">Clients</button>
+          <button class="action-btn">Notes</button>
+        </div>
+      </div>
+
+      <!-- Clinician 3 — intern -->
+      <div class="clinician-card">
+        <div class="cc-head">
+          <div class="cc-av" style="background:#EEEDFE;color:#3C3489">YB</div>
+          <div>
+            <div class="cc-name">Yasmin Boateng, MSW (student)</div>
+            <div style="font-size:11px;color:var(--ink-muted);">yasmin.b@mentalpath.ca</div>
+          </div>
+          <span class="cc-role role-intern">Intern</span>
+        </div>
+        <div class="cc-body">
+          <div class="cc-stats">
+            <div class="cc-stat"><div class="cc-stat-n">14</div><div class="cc-stat-l">Clients</div></div>
+            <div class="cc-stat"><div class="cc-stat-n">5</div><div class="cc-stat-l">This week</div></div>
+            <div class="cc-stat"><div class="cc-stat-n">$1,960</div><div class="cc-stat-l">Mar revenue</div></div>
+          </div>
+          <div>
+            <div class="cc-bar-label"><span>Notes completion</span><span>100%</span></div>
+            <div class="cc-bar"><div class="cc-fill" style="width:100%;background:var(--green)"></div></div>
+          </div>
+          <div class="cc-compliance">
+            <span class="badge bg-g">OCSWSSW ✓</span>
+            <span class="badge bg-a">Supervision 8h needed</span>
+            <span class="badge bg-g">Compliance 8/10</span>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="action-btn">View profile</button>
+          <button class="action-btn">Supervision log</button>
+          <button class="action-btn">Notes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CLINICIANS ═══ -->
+  <div id="pg-clinicians" class="pg">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-family:var(--font-d);font-size:20px;color:var(--ink);">Practice members</div>
+      <button class="btn btn-sage" onclick="document.getElementById('inviteForm').classList.toggle('show')">+ Invite clinician</button>
+    </div>
+    <div class="invite-form" id="inviteForm">
+      <div class="if-title">Send an invite</div>
+      <div class="if-row">
+        <input type="email" placeholder="colleague@email.com">
+        <select style="width:140px;"><option>Clinician</option><option>Intern (supervised)</option></select>
+        <button class="btn btn-sage" onclick="document.getElementById('inviteForm').classList.remove('show')">Send invite</button>
+      </div>
+      <div style="font-size:12px;color:var(--ink-muted);margin-top:8px;">They'll receive a 7-day invite link. They'll be billed at $79/month on your group plan once they accept.</div>
+    </div>
+    <div class="analytics-table">
+      <table>
+        <thead><tr><th>Clinician</th><th>Role</th><th>Clients</th><th>Sessions (Mar)</th><th>Revenue (Mar)</th><th>Notes %</th><th>Compliance</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Dr. Abena Osei-Mensah</td><td><span class="badge bg-g">Owner</span></td>
+            <td>23</td><td>38</td><td style="font-weight:500">$4,200</td>
+            <td><span style="color:var(--sage);font-weight:500">94%</span></td>
+            <td><span class="badge bg-g">7/10</span></td>
+            <td><span class="badge bg-g">Active</span></td>
+          </tr>
+          <tr>
+            <td>Dr. Kofi Mensah</td><td><span class="badge" style="background:var(--warm);color:var(--ink-muted)">Clinician</span></td>
+            <td>24</td><td>42</td><td style="font-weight:500">$4,760</td>
+            <td><span style="color:var(--sage);font-weight:500">87%</span></td>
+            <td><span class="badge bg-g">9/10</span></td>
+            <td><span class="badge bg-g">Active</span></td>
+          </tr>
+          <tr>
+            <td>Yasmin Boateng, MSW</td><td><span class="badge bg-purple" style="background:#EEEDFE;color:#3C3489">Intern</span></td>
+            <td>14</td><td>25</td><td style="font-weight:500">$1,960</td>
+            <td><span style="color:var(--green);font-weight:500">100%</span></td>
+            <td><span class="badge bg-g">8/10</span></td>
+            <td><span class="badge bg-g">Active</span></td>
+          </tr>
+          <tr style="opacity:0.5;">
+            <td>Dr. Kwame Asante</td><td><span class="badge" style="background:var(--warm);color:var(--ink-muted)">Clinician</span></td>
+            <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+            <td><span class="badge bg-a">Invite sent</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SCHEDULE ═══ -->
+  <div id="pg-schedule" class="pg">
+    <div style="font-family:var(--font-d);font-size:20px;color:var(--ink);margin-bottom:16px;">Shared schedule — Monday March 16</div>
+    <div class="schedule-grid">
+      <div class="sg-header"></div>
+      <div class="sg-header">Dr. Abena Osei</div>
+      <div class="sg-header">Dr. Kofi Mensah</div>
+      <div class="sg-header">Yasmin Boateng</div>
+      <div class="sg-time">9:00</div>
+      <div class="sg-cell"><div class="appt-block" style="background:#d4e8e4;color:var(--sage-deep)">Sadia M. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#E6F1FB;color:#0C447C">David C. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#EEEDFE;color:#3C3489">James T. · 50m</div></div>
+      <div class="sg-time">10:00</div>
+      <div class="sg-cell"><div class="appt-block" style="background:#dde8f5;color:#0C447C">Amara M. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#faeeda;color:#633806">Priya S. · 50m</div></div>
+      <div class="sg-cell"></div>
+      <div class="sg-time">11:00</div>
+      <div class="sg-cell"></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#d4e8d4;color:#1a5a1a">Marcus N. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#faeeda;color:#633806">Aisha K. · 50m</div></div>
+      <div class="sg-time">12:00</div>
+      <div class="sg-cell"></div>
+      <div class="sg-cell"></div>
+      <div class="sg-cell"></div>
+      <div class="sg-time">1:00</div>
+      <div class="sg-cell"><div class="appt-block" style="background:#faeeda;color:#633806">Jamal L. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#d4d4e8;color:#303070">Riya B. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#E6F1FB;color:#0C447C">Chen W. · 80m</div></div>
+      <div class="sg-time">2:00</div>
+      <div class="sg-cell"><div class="appt-block" style="background:#EEEDFE;color:#26215C">Priya & Chetan · 80m</div></div>
+      <div class="sg-cell"></div>
+      <div class="sg-cell"></div>
+      <div class="sg-time">3:00</div>
+      <div class="sg-cell"><div class="appt-block" style="background:#d4e8d4;color:#1a5a1a">Riya B. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#d4e8e4;color:var(--sage-deep)">Fatima A. · 50m</div></div>
+      <div class="sg-cell"><div class="appt-block" style="background:#fde8e8;color:#791F1F">Isabel C. · 50m</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ ANALYTICS ═══ -->
+  <div id="pg-analytics" class="pg">
+    <div class="stats" style="margin-bottom:22px;">
+      <div class="stat"><div class="sn">$12,920</div><div class="sl">Total revenue (Mar)</div><div class="sd" style="color:var(--green)">↑ 14%</div></div>
+      <div class="stat"><div class="sn">105</div><div class="sl">Sessions (Mar)</div></div>
+      <div class="stat"><div class="sn">61</div><div class="sl">Active clients</div></div>
+      <div class="stat"><div class="sn">4%</div><div class="sl">No-show rate</div><div class="sd" style="color:var(--green)">↓ from 16%</div></div>
+    </div>
+    <div class="analytics-table">
+      <table>
+        <thead><tr><th>Clinician</th><th>Sessions</th><th>Revenue</th><th>Clients</th><th>No-shows</th><th>Avg PHQ-9 (clients)</th><th>Notes outstanding</th></tr></thead>
+        <tbody>
+          <tr><td>Dr. Abena Osei-Mensah</td><td>38</td><td style="font-weight:500">$4,200</td><td>23</td><td><span style="color:var(--green)">0%</span></td><td><span style="color:var(--sage);font-weight:500">4.2 (minimal)</span></td><td><span class="badge bg-a">1 draft</span></td></tr>
+          <tr><td>Dr. Kofi Mensah</td><td>42</td><td style="font-weight:500">$4,760</td><td>24</td><td><span style="color:var(--amber)">5%</span></td><td><span style="color:var(--sage);font-weight:500">5.8 (mild)</span></td><td><span class="badge bg-g">All current</span></td></tr>
+          <tr><td>Yasmin Boateng</td><td>25</td><td style="font-weight:500">$1,960</td><td>14</td><td><span style="color:var(--green)">0%</span></td><td><span style="color:var(--amber);font-weight:500">7.1 (mild)</span></td><td><span class="badge bg-g">All current</span></td></tr>
+          <tr style="background:var(--warm);font-weight:500;">
+            <td>Practice total</td><td>105</td><td>$10,920</td><td>61</td><td>1.7%</td><td>5.7 avg</td><td>1 outstanding</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ COMPLIANCE ═══ -->
+  <div id="pg-compliance" class="pg">
+    <div style="font-family:var(--font-d);font-size:20px;color:var(--ink);margin-bottom:4px;">Practice compliance snapshot</div>
+    <div style="font-size:13px;color:var(--ink-muted);margin-bottom:18px;">Owner-level view of all clinicians' compliance status. Each clinician manages their own detailed checklist.</div>
+    <div class="analytics-table">
+      <table>
+        <thead><tr><th>Clinician</th><th>College reg.</th><th>Liability ins.</th><th>CPD hours</th><th>Supervision</th><th>Annual decl.</th><th>Overall</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Dr. Abena Osei-Mensah</td>
+            <td><span class="badge bg-g">CRPO ✓ Mar 2027</span></td>
+            <td><span class="badge bg-g">Dec 2026</span></td>
+            <td><span class="badge bg-a">18/40h</span></td>
+            <td><span class="badge bg-g">12.5h</span></td>
+            <td><span class="badge bg-g">Submitted</span></td>
+            <td><span style="font-weight:500;color:var(--amber)">7/10</span></td>
+          </tr>
+          <tr>
+            <td>Dr. Kofi Mensah</td>
+            <td><span class="badge bg-g">CRPO ✓ Mar 2027</span></td>
+            <td><span class="badge bg-g">Jan 2027</span></td>
+            <td><span class="badge bg-g">32/40h</span></td>
+            <td><span class="badge bg-g">18h</span></td>
+            <td><span class="badge bg-g">Submitted</span></td>
+            <td><span style="font-weight:500;color:var(--green)">9/10</span></td>
+          </tr>
+          <tr>
+            <td>Yasmin Boateng</td>
+            <td><span class="badge bg-g">OCSWSSW ✓</span></td>
+            <td><span class="badge bg-g">Dec 2026</span></td>
+            <td><span class="badge bg-g">24/30h</span></td>
+            <td><span class="badge bg-a">8h needed</span></td>
+            <td><span class="badge bg-g">Submitted</span></td>
+            <td><span style="font-weight:500;color:var(--amber)">8/10</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function go(id, btn) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
