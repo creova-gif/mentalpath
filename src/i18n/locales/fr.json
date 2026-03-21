@@ -31,7 +31,10 @@
       "aiDrafted": "Note rédigée par IA",
       "aiSession": "Séance avec Amara M. →",
       "aiMeta": "SOAP · Verrouillage dans 22h · LPRPS",
-      "phipaBadge": "LPRPS · AWS ca-central-1"
+      "phipaBadge": "LPRPS · AWS ca-central-1",
+      "session1Time": "10h00 · 50 min · Individuel",
+      "session2Time": "11h30 · 50 min · Individuel",
+      "session3Time": "14h00 · 50 min · Couple"
     }
   },
   "dashboard": {
@@ -42,9 +45,35 @@
       "activeClients": "Clients actifs",
       "todaysSessions": "Séances d'aujourd'hui",
       "now": "Maintenant",
-      "noteDue": "Note due"
+      "noteDue": "Note à compléter"
     },
     "compliance": "Données stockées au Canada · Conforme LPRPS · Chiffrement au repos"
+  },
+  "login": {
+    "tagline": "Une plateforme.",
+    "taglineEm": "Toutes les professions",
+    "taglineSub": "de santé réglementées.",
+    "subtitle": "Gestion de pratique conforme LPRPS pour les professionnels de santé réglementés au Canada — psychothérapeutes, chiropraticiens, physiothérapeutes, TRM et plus.",
+    "leftBadges": ["Conforme LPRPS", "Serveurs canadiens", "Essai gratuit 7 jours"],
+    "professions": ["Psychothérapeutes", "Psychologues", "Travailleurs sociaux", "Chiropraticiens", "Physiothérapeutes", "TRM", "Naturopathes", "Ergothérapeutes", "Orthophonistes"],
+    "welcome": "Bon retour",
+    "welcomeSub": "Connectez-vous à votre compte MentalPath",
+    "demoTitle": "Comptes démo — cliquez pour vous connecter",
+    "demoPassword": "Tous les comptes utilisent le mot de passe :",
+    "orEmail": "ou connectez-vous avec votre courriel",
+    "emailLabel": "Courriel professionnel",
+    "emailPlaceholder": "vous@pratique.ca",
+    "passwordLabel": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "signIn": "Se connecter →",
+    "signingIn": "Connexion…",
+    "noAccount": "Pas encore de compte?",
+    "startTrial": "Démarrer l'essai gratuit",
+    "error": "Courriel ou mot de passe invalide. Utilisez un compte démo ci-dessous.",
+    "badgeTrial": "Essai",
+    "badgeGroup": "Groupe",
+    "badgeSolo": "Solo",
+    "bottomBadges": ["Conforme LPRPS", "Serveurs canadiens", "Chiffrement au repos"]
   },
   "ticker": [
     "Conforme LPRPS",
@@ -65,7 +94,7 @@
       "sub": "Thérapeutes · DC · PT · TRM · ND"
     },
     "price": {
-      "stat": "49$/mois",
+      "stat": "49 $/mois",
       "label": "Plan praticien solo",
       "sub": "Moins cher que Jane App · Plus pour le Canada"
     },
@@ -99,9 +128,9 @@
         "desc": "La LPRPS de l'Ontario exige que les données de santé soient stockées au Canada. La plupart des outils américains échouent à ce test — vous laissant exposé."
       },
       {
-        "badge": "400–1 200$/an",
-        "title": "Prix d'entreprise pour travail solo",
-        "desc": "Jane App commence à 54$/mois. Owl Practice à 89$/mois. Conçu pour des groupes de 10 cliniciens, pas pour les praticiens solo."
+        "badge": "400–1 200 $/an",
+        "title": "Prix d'entreprise pour un travail solo",
+        "desc": "Jane App commence à 54 $/mois. Owl Practice à 89 $/mois. Conçu pour des groupes de 10 cliniciens, pas pour les praticiens solo."
       },
       {
         "badge": "Contexte manquant",
@@ -137,7 +166,7 @@
     "scheduling": {
       "tag": "Planification en ligne",
       "title": "Lien de réservation public. Rappels SMS + courriel. Synchronisation Google Agenda.",
-      "body": "Réduisez les absences jusqu'à 40% avec des rappels automatisés envoyés 24h et 1h avant chaque séance."
+      "body": "Réduisez les absences jusqu'à 40 % avec des rappels automatisés envoyés 24h et 1h avant chaque séance."
     },
     "portal": {
       "tag": "Portail client",
@@ -199,7 +228,7 @@
       "line1": "Payez moins que Jane App.",
       "line2Italic": "Obtenez plus pour le Canada."
     },
-    "subtitle": "Pas de minimums. Pas de frais cachés. Annulez à tout moment.",
+    "subtitle": "Pas de minimums d'unités. Pas de frais cachés. Annulez à tout moment.",
     "mostPopular": "Le plus populaire",
     "plans": {
       "starter": {
@@ -212,14 +241,14 @@
       },
       "solo": {
         "name": "Praticien solo",
-        "price": "49$",
+        "price": "49 $",
         "period": "/mois · clients illimités",
         "description": "Tout ce dont un praticien solo canadien a besoin. Conforme LPRPS dès le premier jour.",
         "badge": "Le plus populaire",
         "features": [
           "Clients illimités",
           "Notes SOAP / DAP / BIRP",
-          "Assistance IA pour notes",
+          "Assistance IA pour notes de séance",
           "Réservation en ligne + rappels",
           "Portail client + messagerie",
           "Facturation + reçus d'assurance",
@@ -230,16 +259,16 @@
       },
       "group": {
         "name": "Cabinet de groupe",
-        "price": "79$",
+        "price": "79 $",
         "period": "/mois par clinicien · 2+ cliniciens",
-        "description": "Planification multi-cliniciens, tableau de bord propriétaire, facturation séparée, gestion partagée.",
+        "description": "Planification multi-cliniciens, tableau de bord propriétaire, facturation séparée, gestion partagée des clients.",
         "features": [
           "Tout ce qui est dans Solo",
           "Calendrier multi-cliniciens",
-          "Tableau de bord analytique",
+          "Tableau de bord analytique propriétaire",
           "Contrôle d'accès par rôles",
-          "Rapports de paiement",
-          "Support prioritaire"
+          "Rapports de paiement par clinicien",
+          "Assistance prioritaire"
         ],
         "cta": "Commencer l'essai gratuit"
       }
@@ -263,7 +292,7 @@
         "role": "Travailleuse sociale · Vancouver, C.-B."
       },
       {
-        "quote": "J'ai quitté Jane App. 65$/mois moins cher et les modèles de notes DAP sont meilleurs. Mes notes sont conformes aux exigences de mon Ordre dès le départ — je n'ai rien eu à configurer.",
+        "quote": "J'ai quitté Jane App. 65 $/mois moins cher et les modèles de notes DAP sont meilleurs. Mes notes sont conformes aux exigences de mon Ordre dès le départ — je n'ai rien eu à configurer.",
         "name": "Dr Kenji Nakamura",
         "role": "Psychologue clinicien · Calgary, AB"
       }

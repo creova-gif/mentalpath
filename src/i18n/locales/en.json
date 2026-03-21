@@ -31,7 +31,10 @@
       "aiDrafted": "AI note drafted",
       "aiSession": "Session with Amara M. →",
       "aiMeta": "SOAP · Locks in 22h · PHIPA",
-      "phipaBadge": "PHIPA · AWS ca-central-1"
+      "phipaBadge": "PHIPA · AWS ca-central-1",
+      "session1Time": "10:00 AM · 50 min · Individual",
+      "session2Time": "11:30 AM · 50 min · Individual",
+      "session3Time": "2:00 PM · 50 min · Couples"
     }
   },
   "dashboard": {
@@ -45,6 +48,32 @@
       "noteDue": "Note due"
     },
     "compliance": "Data stored in Canada · PHIPA compliant · Encrypted at rest"
+  },
+  "login": {
+    "tagline": "One platform.",
+    "taglineEm": "Every regulated",
+    "taglineSub": "health profession.",
+    "subtitle": "PHIPA-compliant practice management built for Canadian regulated practitioners — from psychotherapists to chiropractors, physiotherapists, RMTs, and more.",
+    "leftBadges": ["PHIPA compliant", "Canadian servers", "7-day free trial"],
+    "professions": ["Psychotherapists", "Psychologists", "Social Workers", "Chiropractors", "Physiotherapists", "RMTs", "Naturopaths", "OTs", "SLPs"],
+    "welcome": "Welcome back",
+    "welcomeSub": "Sign in to your MentalPath account",
+    "demoTitle": "Demo accounts — click to sign in as",
+    "demoPassword": "All accounts use password:",
+    "orEmail": "or sign in with email",
+    "emailLabel": "Work email",
+    "emailPlaceholder": "you@practice.ca",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign in →",
+    "signingIn": "Signing in…",
+    "noAccount": "Don't have an account?",
+    "startTrial": "Start free trial",
+    "error": "Invalid email or password. Use a demo account below.",
+    "badgeTrial": "Trial",
+    "badgeGroup": "Group",
+    "badgeSolo": "Solo",
+    "bottomBadges": ["PHIPA compliant", "Canadian servers", "Encrypted at rest"]
   },
   "ticker": [
     "PHIPA Compliant",

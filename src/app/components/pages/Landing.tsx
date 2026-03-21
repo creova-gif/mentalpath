@@ -348,9 +348,9 @@ export function Landing() {
                 <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.28)', marginBottom: 8 }}>{t('dashboard.stats.todaysSessions')}</div>
 
                 {[
-                  { init: 'AM', initBg: 'rgba(74,124,111,0.28)', initColor: '#8abda8', name: 'Amara M.', time: '10:00 AM · 50 min · Individual', badge: t('dashboard.stats.now'), badgeBg: 'rgba(74,124,111,0.22)', badgeColor: '#8abda8' },
-                  { init: 'JL', initBg: 'rgba(180,100,60,0.18)', initColor: '#c4845a', name: 'Jamal L.', time: '11:30 AM · 50 min · Individual', badge: t('dashboard.stats.noteDue'), badgeBg: 'rgba(200,140,30,0.15)', badgeColor: '#b8960a' },
-                  { init: 'PK', initBg: 'rgba(80,120,180,0.18)', initColor: '#8ab0d8', name: 'Priya K.', time: '2:00 PM · 50 min · Couples', badge: t('hero.dashboardCard.upcoming'), badgeBg: 'rgba(255,255,255,0.06)', badgeColor: 'rgba(245,240,232,0.4)' },
+                  { init: 'AM', initBg: 'rgba(74,124,111,0.28)', initColor: '#8abda8', name: 'Amara M.', time: t('hero.dashboardCard.session1Time'), badge: t('dashboard.stats.now'), badgeBg: 'rgba(74,124,111,0.22)', badgeColor: '#8abda8' },
+                  { init: 'JL', initBg: 'rgba(180,100,60,0.18)', initColor: '#c4845a', name: 'Jamal L.', time: t('hero.dashboardCard.session2Time'), badge: t('dashboard.stats.noteDue'), badgeBg: 'rgba(200,140,30,0.15)', badgeColor: '#b8960a' },
+                  { init: 'PK', initBg: 'rgba(80,120,180,0.18)', initColor: '#8ab0d8', name: 'Priya K.', time: t('hero.dashboardCard.session3Time'), badge: t('hero.dashboardCard.upcoming'), badgeBg: 'rgba(255,255,255,0.06)', badgeColor: 'rgba(245,240,232,0.4)' },
                 ].map((s, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', marginBottom: 4 }}>
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: s.initBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: s.initColor, flexShrink: 0 }}>{s.init}</div>

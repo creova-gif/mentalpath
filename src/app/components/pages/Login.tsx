@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useUser, DEMO_ACCOUNTS } from '../../context/UserContext';
+import { useTranslation } from 'react-i18next';
 
 const professionEmoji: Record<string, string> = {
   'Registered Psychotherapist': '🧠',
@@ -12,6 +13,7 @@ const professionEmoji: Record<string, string> = {
 export function Login() {
   const navigate = useNavigate();
   const { login } = useUser();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +30,7 @@ export function Login() {
       if (result === 'ok') {
         navigate('/dashboard');
       } else {
-        setError('Invalid email or password. Use a demo account below.');
+        setError(t('login.error'));
         setLoading(false);
       }
     }, 600);
@@ -39,6 +41,10 @@ export function Login() {
     setPassword('demo1234');
     setError('');
   };
+
+  const leftBadges = t('login.leftBadges', { returnObjects: true }) as string[];
+  const professions = t('login.professions', { returnObjects: true }) as string[];
+  const bottomBadges = t('login.bottomBadges', { returnObjects: true }) as string[];
 
   return (
     <div className="flex h-screen" style={{ fontFamily: 'var(--font-body)' }}>
@@ -54,20 +60,22 @@ export function Login() {
 
         <div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 34, color: 'white', lineHeight: 1.2, marginBottom: 12 }}>
-            One platform.<br /><em style={{ color: 'var(--sage-light)' }}>Every regulated</em><br />health profession.
+            {t('login.tagline')}<br />
+            <em style={{ color: 'var(--sage-light)' }}>{t('login.taglineEm')}</em><br />
+            {t('login.taglineSub')}
           </div>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 24 }}>
-            PHIPA-compliant practice management built for Canadian regulated practitioners — from psychotherapists to chiropractors, physiotherapists, RMTs, and more.
+            {t('login.subtitle')}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {['Psychotherapists', 'Psychologists', 'Social Workers', 'Chiropractors', 'Physiotherapists', 'RMTs', 'Naturopaths', 'OTs', 'SLPs'].map(p => (
+            {professions.map(p => (
               <div key={p} style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.06)', borderRadius: 20, padding: '3px 10px', border: '1px solid rgba(255,255,255,0.1)' }}>{p}</div>
             ))}
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: 20 }}>
-          {['PHIPA compliant', 'Canadian servers', '7-day free trial'].map(b => (
+          {leftBadges.map(b => (
             <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--sage-light)' }} />
               {b}
@@ -89,14 +97,14 @@ export function Login() {
           </Link>
 
           <div style={{ marginBottom: 24 }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink)', marginBottom: 6 }}>Welcome back</h1>
-            <p style={{ fontSize: 13, color: 'var(--ink-muted)' }}>Sign in to your MentalPath account</p>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink)', marginBottom: 6 }}>{t('login.welcome')}</h1>
+            <p style={{ fontSize: 13, color: 'var(--ink-muted)' }}>{t('login.welcomeSub')}</p>
           </div>
 
           {/* DEMO ACCOUNTS */}
           <div style={{ marginBottom: 22 }}>
             <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--sage-deep)', marginBottom: 8 }}>
-              ✦ Demo accounts — click to sign in as
+              ✦ {t('login.demoTitle')}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {DEMO_ACCOUNTS.map(acct => (
@@ -131,34 +139,36 @@ export function Login() {
                   </div>
                   <div style={{ flexShrink: 0 }}>
                     {acct.subscription.isTrial ? (
-                      <span style={{ fontSize: 10, fontWeight: 600, color: '#b45309', background: '#fef3c7', borderRadius: 4, padding: '2px 6px' }}>Trial</span>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: '#b45309', background: '#fef3c7', borderRadius: 4, padding: '2px 6px' }}>{t('login.badgeTrial')}</span>
                     ) : acct.subscription.type === 'group' ? (
-                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sage-deep)', background: 'var(--sage-pale)', borderRadius: 4, padding: '2px 6px' }}>Group</span>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sage-deep)', background: 'var(--sage-pale)', borderRadius: 4, padding: '2px 6px' }}>{t('login.badgeGroup')}</span>
                     ) : (
-                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', background: 'var(--warm)', borderRadius: 4, padding: '2px 6px' }}>Solo</span>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', background: 'var(--warm)', borderRadius: 4, padding: '2px 6px' }}>{t('login.badgeSolo')}</span>
                     )}
                   </div>
                 </button>
               ))}
             </div>
-            <p style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 8, textAlign: 'center' }}>All accounts use password: <code style={{ background: 'var(--surface)', padding: '1px 5px', borderRadius: 4, fontSize: 11 }}>demo1234</code></p>
+            <p style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 8, textAlign: 'center' }}>
+              {t('login.demoPassword')} <code style={{ background: 'var(--surface)', padding: '1px 5px', borderRadius: 4, fontSize: 11 }}>demo1234</code>
+            </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>or sign in with email</span>
+            <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{t('login.orEmail')}</span>
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
 
-          <form onSubmit={handleSubmit} aria-label="Sign in to MentalPath" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <form onSubmit={handleSubmit} aria-label={t('login.welcomeSub')} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label htmlFor="login-email" style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: 5 }}>Work email</label>
+              <label htmlFor="login-email" style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: 5 }}>{t('login.emailLabel')}</label>
               <input
                 id="login-email"
                 type="email"
                 value={email}
                 onChange={e => { setEmail(e.target.value); setError(''); }}
-                placeholder="you@practice.ca"
+                placeholder={t('login.emailPlaceholder')}
                 autoComplete="email"
                 aria-required="true"
                 aria-invalid={!!error}
@@ -171,8 +181,8 @@ export function Login() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <label htmlFor="login-password" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>Password</label>
-                <button type="button" aria-label="Forgot your password?" style={{ fontSize: 12, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Forgot password?</button>
+                <label htmlFor="login-password" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{t('login.passwordLabel')}</label>
+                <button type="button" aria-label={t('login.forgotPassword')} style={{ fontSize: 12, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>{t('login.forgotPassword')}</button>
               </div>
               <div style={{ position: 'relative' }}>
                 <input
@@ -218,20 +228,20 @@ export function Login() {
               onMouseEnter={e => { if (!loading) e.currentTarget.style.background = 'var(--sage-deep)'; }}
               onMouseLeave={e => { if (!loading) e.currentTarget.style.background = 'var(--sage)'; }}
             >
-              {loading ? 'Signing in…' : 'Sign in →'}
+              {loading ? t('login.signingIn') : t('login.signIn')}
             </button>
           </form>
 
           <div style={{ marginTop: 20, textAlign: 'center', fontSize: 13, color: 'var(--ink-muted)' }}>
-            Don't have an account?{' '}
-            <a href="/onboarding" style={{ color: 'var(--sage)', fontWeight: 500, textDecoration: 'none' }}>Start free trial</a>
+            {t('login.noAccount')}{' '}
+            <a href="/onboarding" style={{ color: 'var(--sage)', fontWeight: 500, textDecoration: 'none' }}>{t('login.startTrial')}</a>
           </div>
 
           <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'center', gap: 20 }}>
-            {['PHIPA compliant', 'Canadian servers', 'Encrypted at rest'].map(t => (
-              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--ink-muted)' }}>
+            {bottomBadges.map(b => (
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--ink-muted)' }}>
                 <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: 'none', stroke: 'var(--sage)', strokeWidth: 2.5 }}><polyline points="20 6 9 17 4 12"/></svg>
-                {t}
+                {b}
               </div>
             ))}
           </div>
