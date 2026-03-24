@@ -1,0 +1,87 @@
+This is The Forge (McMaster) Startup Survivor Challenge 1 — Customer Discovery. Let me break down exactly what you need to complete and fill it in for Kaya. Based on your platform (AI-powered property management for Ontario landlords + renters), here's everything:
+
+Kaya's Business Model Classification
+B2B2C → You need 15 interviews minimum: 5 B2B (landlords) + 10 B2C (renters/tenants)
+
+1. Problem Statement Canvas
+Question	Your Answer
+What is the problem?	Small-to-mid-size Ontario landlords spend 10–20 hrs/week on manual property tasks (screening, rent tracking, LTB forms, notices) — work that is tedious, error-prone, and legally risky. Renters, especially newcomers, struggle to find verified affordable housing and understand their legal rights in English.
+When does the problem occur?	Landlords: at tenant turnover (finding/screening applicants), on the 1st of every month (rent collection, late payments), when something breaks (maintenance coordination), during disputes (LTB notices), and at tax time (T776/expense tracking). Renters: when apartment hunting, signing leases, paying deposits, and when raising maintenance concerns.
+Who has the problem most often?	Landlords with 1–10 units who self-manage (no property manager); newcomer and immigrant renters unfamiliar with Ontario's Residential Tenancies Act; renters in high-demand Toronto/GTA markets facing affordability + scam risk.
+What is the root cause?	Ontario rental law (RTA 2006, LTB rules) is complex and constantly updated. There is no unified digital tool built specifically for Ontario's regulatory environment. Landlords cobble together spreadsheets, email, e-Transfer, and generic tools. Renters have no single trusted source for rights education and verified listings.
+What is the measurable impact?	Landlords: average $4,600 in lost rent per eviction + months of stress; 40%+ of LTB applications dismissed for procedural errors. Renters: average 3.5 months searching in GTA; 1 in 5 newcomers reports rental scam exposure. Ontario's 1.8% vacancy rate is among the lowest in North America.
+What do customers do now to solve the problem?	Landlords: use Excel, email, e-Transfer, hire costly property managers (~10% of rent), rely on Facebook groups for legal advice, or pay paralegal fees ($1,500–$3,000/case). Renters: scroll Kijiji/Facebook/Realtor.ca, rely on word-of-mouth, use community settlement services.
+Disadvantages of current alternatives?	Property managers: expensive (10% monthly), don't scale for small portfolios. Generic tools (QuickBooks, Google Sheets): not Ontario-specific, no LTB compliance built in. Kijiji/Facebook: no verification, scam exposure. Legal aid: long wait times, English-only in many regions.
+2. Top 10 Assumptions (Riskiest First)
+Small landlords (1–10 units) experience enough pain that they'd pay $29–$149/month for a SaaS solution (if false, there's no market)
+Landlords are doing this management manually and feel overwhelmed by LTB compliance (foundational premise)
+Newcomer and non-English-speaking renters actively want digital, bilingual housing tools (core to the multilingual feature)
+Landlords trust AI-generated screening scores enough to make tenant decisions based on them
+Renters are willing to create a digital "Tenant Passport" and share financial/employment data through the platform
+Ontario landlords will move away from e-Transfer and spreadsheets if a better tool is simple enough
+The LTB forms and compliance features are compelling enough differentiators vs. generic property management tools
+Landlords with 1–10 units make decisions independently (not requiring corporate procurement cycles)
+Renters experiencing housing insecurity are willing to pay for deposit-free / credit-building tools
+Both landlords and tenants can be acquired through the same platform without conflict of interest perception
+3. Interview Guide
+For Landlords (B2B side — 5 interviews):
+
+Opening:
+
+Tell me about your rental properties — how many units, how long have you been a landlord?
+Walk me through what a typical week looks like managing your properties.
+Problem Exploration:
+
+What part of being a landlord takes the most of your time each month?
+Can you tell me about the last time you had a difficult situation with a tenant? What happened?
+How do you currently screen tenants before approving them?
+Have you ever had to use the Landlord and Tenant Board? What was that experience like?
+How do you collect rent? What happens when someone pays late?
+How do you keep track of expenses for tax purposes?
+What tools or systems do you use to manage your properties today?
+What's the biggest frustration with the tools you use right now?
+Closing:
+
+If you could wave a magic wand and fix one thing about being a landlord, what would it be?
+Is there anything I haven't asked that you think is important for me to understand?
+For Renters (B2C side — 10 interviews):
+
+Opening:
+
+Tell me about your current living situation — how long have you been renting in Ontario?
+Can you walk me through how you found your current place?
+Problem Exploration:
+
+What was the hardest part of searching for an apartment?
+Have you ever lost money or had a bad experience during your housing search? What happened?
+How did you verify that a listing was real and the landlord was trustworthy?
+What did you have to provide to apply for your current apartment? How did that feel?
+Have you ever had a maintenance issue? How was it handled?
+Do you understand your rights as a tenant under Ontario law? How did you learn about them?
+Have you ever been worried about being treated unfairly by a landlord?
+Is language ever a barrier when dealing with landlords, leases, or housing applications?
+Closing:
+
+What would make renting in Ontario significantly easier for you?
+Is there anything else about your rental experience I should know?
+4. Stakeholder List
+Primary (B2B):
+
+Small-portfolio landlords (1–10 residential units), Ontario
+Mid-size landlords (10–50 units) self-managing
+Primary (B2C):
+
+Renters searching for housing in Ontario (GTA, Hamilton, Ottawa, Kitchener)
+Newcomers and immigrants to Canada (language barrier, unfamiliar with RTA)
+Young professionals (first-time renters)
+Students (university cities: Hamilton, Waterloo, Kingston)
+Secondary:
+
+Property managers (potential channel partners or competitors)
+Ontario paralegals and legal aid clinics
+Mortgage brokers (investment property buyers)
+CMHC / Housing advocacy organizations
+Settlement agencies (ACCES Employment, COSTI) serving newcomers
+Real estate investors (1–5 investment properties)
+Credit bureaus (Equifax, TransUnion) — Rent Credit Building feature
+Insurance companies (landlord/tenant insurance marketplace)
