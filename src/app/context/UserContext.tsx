@@ -102,7 +102,7 @@ interface TherapistRow {
   email: string | null;
   // Profile fields (actual column names from DB)
   full_name: string | null;          // real column (not first_name/last_name)
-  profession_type: string | null;    // 'psychotherapist' | 'chiropractor' | 'physiotherapist' | 'rmt'
+  profession_code: string | null;    // 'psychotherapist' | 'chiropractor' | 'physiotherapist' | 'rmt'
   province: string | null;
   hourly_rate: number | null;        // real column (not session_rate)
   // Subscription / Stripe fields
@@ -115,7 +115,7 @@ interface TherapistRow {
   updated_at: string | null;
 }
 
-// Map DB profession_type slug → Profession display string
+// Map DB profession_code slug → Profession display string
 const PROFESSION_TYPE_MAP: Record<string, Profession> = {
   psychotherapist:       'Registered Psychotherapist',
   psychologist:          'Psychologist',
@@ -223,7 +223,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Get live data from therapists table using REAL column names
     const { data } = await supabase
       .from('therapists')
-      .select('id, email, full_name, profession_type, province, hourly_rate, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
+      .select('id, email, full_name, profession_code, province, hourly_rate, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
       .eq('id', session.user.id)
       .maybeSingle();
 
@@ -232,7 +232,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Build profile: prefer DB values, fall back to DEMO_ACCOUNTS by email
     const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
 
-    const professionSlug = row?.profession_type ?? '';
+    const professionSlug = row?.profession_code ?? '';
     const profession: Profession = PROFESSION_TYPE_MAP[professionSlug] ?? demo?.profession ?? 'Registered Psychotherapist';
     const meta = PROFESSION_META[profession];
 

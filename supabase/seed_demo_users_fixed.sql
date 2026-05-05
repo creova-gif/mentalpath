@@ -163,7 +163,7 @@ ORDER BY ordinal_position;
 
 -- ── STEP 3: Seed therapists rows (only confirmed-existing columns) ─────────────
 -- Known NOT NULL: id, email
--- Known to exist: subscription_tier, subscription_status, province, session_rate, profession_type
+-- Known to exist: subscription_tier, subscription_status, province, session_rate, profession_code
 -- Removed: plan_type (column does not exist in this schema)
 DO $$
 DECLARE
@@ -184,7 +184,7 @@ BEGIN
     subscription_status,
     province,
     session_rate,
-    profession_type,
+    profession_code,
     created_at,
     updated_at
   )
@@ -199,7 +199,7 @@ BEGIN
     subscription_status = EXCLUDED.subscription_status,
     province            = EXCLUDED.province,
     session_rate        = EXCLUDED.session_rate,
-    profession_type     = EXCLUDED.profession_type,
+    profession_code     = EXCLUDED.profession_code,
     updated_at          = NOW();
 END $$;
 
@@ -213,7 +213,7 @@ SELECT
   t.subscription_status,
   t.province,
   t.session_rate,
-  t.profession_type
+  t.profession_code
 FROM auth.users u
 LEFT JOIN therapists t ON t.id = u.id
 WHERE u.email IN (
