@@ -301,8 +301,8 @@ export function ClinicalTools() {
               
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Client</label>
-                  <select className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]">
+                  <label htmlFor="referral-client" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Client</label>
+                  <select id="referral-client" className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]">
                     <option>Amara Mensah</option>
                     <option>Jamal Lee</option>
                     <option>Sadia Mohamoud</option>
@@ -321,16 +321,18 @@ export function ClinicalTools() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Role / title</label>
+                    <label htmlFor="referral-role" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Role / title</label>
                     <input
+                      id="referral-role"
                       type="text"
                       defaultValue="Psychiatrist"
                       className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Clinic / hospital</label>
+                    <label htmlFor="referral-clinic" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Clinic / hospital</label>
                     <input
+                      id="referral-clinic"
                       type="text"
                       defaultValue="CAMH"
                       className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]"
@@ -339,8 +341,9 @@ export function ClinicalTools() {
                 </div>
 
                 <div>
-                  <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Reason for referral *</label>
+                  <label htmlFor="referral-reason" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Reason for referral *</label>
                   <textarea
+                    id="referral-reason"
                     defaultValue="Requesting psychiatric assessment and possible medication consultation for client presenting with moderate-severe PTSD symptoms that appear to be limiting progress in psychotherapy. Specifically seeking evaluation for pharmacological support to address hyperarousal and sleep disruption."
                     className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)] min-h-[90px] resize-vertical"
                   />
@@ -429,8 +432,9 @@ export function ClinicalTools() {
                 </div>
                 <div className="p-5 space-y-3.5">
                   <div>
-                    <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Client</label>
+                    <label htmlFor="discharge-client" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Client</label>
                     <select
+                      id="discharge-client"
                       value={dischargeClient}
                       onChange={(e) => setDischargeClient(e.target.value)}
                       className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]"
@@ -441,8 +445,8 @@ export function ClinicalTools() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Reason for discharge</label>
-                    <select className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]">
+                    <label htmlFor="discharge-reason" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Reason for discharge</label>
+                    <select id="discharge-reason" className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]">
                       <option>Goals achieved — planned discharge</option>
                       <option>Client transferred to another provider</option>
                       <option>Client discontinued treatment</option>
@@ -450,8 +454,9 @@ export function ClinicalTools() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Discharge date</label>
+                    <label htmlFor="discharge-date" className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">Discharge date</label>
                     <input
+                      id="discharge-date"
                       type="date"
                       defaultValue="2026-03-16"
                       className="w-full px-3 py-2 border border-[var(--bmed)] rounded-lg text-[13px] outline-none focus:border-[var(--sage)]"

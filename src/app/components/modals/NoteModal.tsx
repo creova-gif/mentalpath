@@ -47,7 +47,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
         section2: sectionValues.section2 || '',
         section3: sectionValues.section3 || '',
         section4: sectionValues.section4,
-        sessionContext: `Individual therapy session with ${clientName}, 50 minutes`,
+        sessionContext: `Individual therapy session, 50 minutes`,
       });
 
       // Populate sections with AI suggestions

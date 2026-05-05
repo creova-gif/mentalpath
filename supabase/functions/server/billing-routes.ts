@@ -3,7 +3,7 @@
 
 import { Hono } from "npm:hono";
 import { createClient } from "npm:@supabase/supabase-js";
-import * as kv from "./kv_store.tsx";
+import * as kv from "./kv_store.ts";
 
 const app = new Hono();
 
@@ -41,6 +41,22 @@ app.post("/make-server-4d1a502d/invoices", async (c) => {
     const body = await c.req.json();
     const { clientName, amount, sessions, date } = body;
 
+    // ── M-04: Validate invoice fields ──────────────────────────────────────
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0 || parsedAmount > 99999) {
+      return c.json({ error: "Invalid amount — must be a positive number up to 99999" }, 400);
+    }
+    const parsedSessions = parseInt(sessions, 10);
+    if (isNaN(parsedSessions) || parsedSessions < 1 || parsedSessions > 100) {
+      return c.json({ error: "Invalid sessions — must be between 1 and 100" }, 400);
+    }
+    if (!clientName || typeof clientName !== 'string' || clientName.length < 1 || clientName.length > 200) {
+      return c.json({ error: "Invalid clientName — must be 1–200 characters" }, 400);
+    }
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return c.json({ error: "Invalid date — must be YYYY-MM-DD" }, 400);
+    }
+
     // Generate invoice number
     const invoiceCountKey = `invoice_count:${user.id}`;
     const currentCount = await kv.get(invoiceCountKey);
@@ -55,9 +71,9 @@ app.post("/make-server-4d1a502d/invoices", async (c) => {
       invoiceNumber,
       clientName,
       date: date || new Date().toISOString().split('T')[0],
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       status: 'pending',
-      sessions: parseInt(sessions, 10),
+      sessions: parsedSessions,
       userId: user.id,
     };
 
@@ -84,10 +100,7 @@ app.post("/make-server-4d1a502d/invoices", async (c) => {
 
   } catch (error) {
     console.error("Create invoice error:", error);
-    return c.json({ 
-      error: "Failed to create invoice",
-      details: error instanceof Error ? error.message : String(error)
-    }, 500);
+    return c.json({ error: "Failed to create invoice" }, 500);
   }
 });
 
@@ -201,6 +214,11 @@ app.get("/make-server-4d1a502d/tax-export/t2125/:year", async (c) => {
     }
 
     const year = c.req.param("year");
+
+    // ── L-03: Validate year param ───────────────────────────────────────────
+    if (!/^\d{4}$/.test(year)) {
+      return c.json({ error: "Invalid year — must be a 4-digit year" }, 400);
+    }
     
     // Get all user invoices
     const userInvoicesKey = `invoices:${user.id}`;
@@ -292,6 +310,20 @@ function generateMonthlyBreakdown(invoices: Invoice[]) {
   return months;
 }
 
+// ── M-01: CSV injection protection ─────────────────────────────────────────
+// Prefixes cells that start with formula trigger characters with a tab,
+// and properly quotes cells that contain commas, quotes, or newlines.
+function csvSafe(value: string): string {
+  const str = String(value ?? '');
+  // Prefix potential formula triggers so they are treated as text by spreadsheet apps
+  if (/^[=+\-@\t\r|%]/.test(str)) return `\t${str}`;
+  // Quote cells that contain special CSV characters
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
 function generateT2125CSV(summary: any): string {
   const lines = [
     "MentalPath T2125 Income Summary",
@@ -312,7 +344,7 @@ function generateT2125CSV(summary: any): string {
     "DETAILED INVOICE LIST",
     "Invoice Number,Date,Client,Amount,Sessions",
     ...summary.invoiceDetails.map((inv: any) =>
-      `${inv.invoiceNumber},${inv.date},${inv.client},$${inv.amount.toFixed(2)},${inv.sessions}`
+      `${csvSafe(inv.invoiceNumber)},${csvSafe(inv.date)},${csvSafe(inv.client)},$${inv.amount.toFixed(2)},${inv.sessions}`
     ),
     "",
     "NOTES FOR T2125 PREPARATION",

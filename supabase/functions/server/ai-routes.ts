@@ -4,7 +4,7 @@
 
 import { Hono } from "npm:hono";
 import { createClient } from "npm:@supabase/supabase-js";
-import * as kv from "./kv_store.tsx";
+import * as kv from "./kv_store.ts";
 
 const app = new Hono();
 
@@ -86,7 +86,7 @@ const sanitize = (text: string): string => {
   if (!text) return "";
   return text
     .replace(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g, "[phone redacted]")
-    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\\b/g, "[email redacted]")
+    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/gi, "[email redacted]")
     .replace(/\b\d{9}\b/g, "[SIN redacted]")
     .trim();
 };
@@ -219,7 +219,7 @@ This note will be reviewed and edited by the therapist before saving.`;
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-20250514",
         max_tokens: 800,
         temperature: 0.7,
         system: `You are a clinical documentation assistant for Canadian registered psychotherapists and mental health professionals.
@@ -281,10 +281,7 @@ Your drafts should be concise, clinically sound, and suitable for regulated prac
 
   } catch (error) {
     console.error("AI assist error:", error);
-    return c.json({ 
-      error: "AI assist unavailable. Please write your note manually.",
-      details: error instanceof Error ? error.message : String(error)
-    }, 500);
+    return c.json({ error: "AI assist unavailable. Please write your note manually." }, 500);
   }
 });
 

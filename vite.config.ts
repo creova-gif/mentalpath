@@ -14,6 +14,8 @@ export default defineConfig({
     alias: {
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
+      // Alias /utils to the utils directory (matches tsconfig paths)
+      '/utils': path.resolve(__dirname, './utils'),
     },
   },
 

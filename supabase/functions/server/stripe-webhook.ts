@@ -252,7 +252,16 @@ async function verifyStripeSignature(
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 
-  if (expectedSig !== sig) throw new Error("Signature mismatch");
+  const expectedBytes = new TextEncoder().encode(expectedSig);
+  const actualBytes = new TextEncoder().encode(sig);
+
+  // Constant-time comparison — prevents timing-based signature leaks
+  if (expectedBytes.length !== actualBytes.length) throw new Error("Signature mismatch");
+  let diff = 0;
+  for (let i = 0; i < expectedBytes.length; i++) {
+    diff |= expectedBytes[i] ^ actualBytes[i];
+  }
+  if (diff !== 0) throw new Error("Signature mismatch");
 
   return JSON.parse(payload);
 }

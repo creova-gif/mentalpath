@@ -1,5 +1,6 @@
 import { Hono } from "npm:hono";
-import * as kv from "./kv_store.tsx";
+import { createClient } from "npm:@supabase/supabase-js";
+import * as kv from "./kv_store.ts";
 
 const app = new Hono();
 
@@ -27,21 +28,43 @@ interface SubscriptionData {
   updatedAt: string;
 }
 
+// ─── Auth helper ────────────────────────────────────────────────────────────
+// Returns the authenticated user or sends a 401 response.
+// Callers MUST return immediately if this returns a Response.
+async function requireAuth(c: any): Promise<{ user: any } | Response> {
+  const authHeader = c.req.header("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  const token = authHeader.split(" ")[1];
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+  );
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return { user };
+}
+
 // Start a new trial
 app.post("/make-server-4d1a502d/trial/start", async (c) => {
   try {
-    const { userId, email } = await c.req.json();
+    const authResult = await requireAuth(c);
+    if (authResult instanceof Response) return authResult;
+    const { user } = authResult;
 
-    if (!userId || !email) {
-      return c.json({ error: "userId and email are required" }, 400);
-    }
+    // Use the authenticated user's id and email — never trust the request body for these
+    const userId = user.id;
+    const email = user.email ?? "";
 
     // Check if trial already exists
     const existingTrial = await kv.get<TrialData>(`trial:${userId}`);
     if (existingTrial) {
-      return c.json({ 
+      return c.json({
         error: "Trial already exists for this user",
-        trial: existingTrial 
+        trial: existingTrial
       }, 409);
     }
 
@@ -61,27 +84,33 @@ app.post("/make-server-4d1a502d/trial/start", async (c) => {
 
     await kv.set(`trial:${userId}`, trialData);
 
-    console.log(`Trial started for user ${userId} (${email})`);
+    console.log(`Trial started for user ${userId}`);
 
-    return c.json({ 
-      success: true, 
+    return c.json({
+      success: true,
       trial: trialData,
       message: "7-day free trial started successfully"
     });
   } catch (error) {
     console.error("Error starting trial:", error);
-    return c.json({ error: "Failed to start trial", details: String(error) }, 500);
+    return c.json({ error: "Failed to start trial" }, 500);
   }
 });
 
 // Get trial status
 app.get("/make-server-4d1a502d/trial/:userId", async (c) => {
   try {
-    const userId = c.req.param("userId");
+    const authResult = await requireAuth(c);
+    if (authResult instanceof Response) return authResult;
+    const { user } = authResult;
 
-    if (!userId) {
-      return c.json({ error: "userId is required" }, 400);
+    // Enforce that a user can only read their own trial
+    const requestedUserId = c.req.param("userId");
+    if (requestedUserId !== user.id) {
+      return c.json({ error: "Forbidden" }, 403);
     }
+
+    const userId = user.id;
 
     // Check for active subscription first
     const subscription = await kv.get<SubscriptionData>(`subscription:${userId}`);
@@ -96,7 +125,7 @@ app.get("/make-server-4d1a502d/trial/:userId", async (c) => {
 
     // Get trial data
     const trial = await kv.get<TrialData>(`trial:${userId}`);
-    
+
     if (!trial) {
       return c.json({
         hasActivePlan: false,
@@ -132,22 +161,30 @@ app.get("/make-server-4d1a502d/trial/:userId", async (c) => {
     });
   } catch (error) {
     console.error("Error getting trial status:", error);
-    return c.json({ error: "Failed to get trial status", details: String(error) }, 500);
+    return c.json({ error: "Failed to get trial status" }, 500);
   }
 });
 
 // Activate subscription (upgrade from trial)
 app.post("/make-server-4d1a502d/trial/upgrade", async (c) => {
   try {
-    const { userId, email, planType, stripeCustomerId, stripeSubscriptionId } = await c.req.json();
+    const authResult = await requireAuth(c);
+    if (authResult instanceof Response) return authResult;
+    const { user } = authResult;
 
-    if (!userId || !email || !planType) {
-      return c.json({ error: "userId, email, and planType are required" }, 400);
+    const body = await c.req.json();
+    const { planType, stripeCustomerId, stripeSubscriptionId } = body;
+
+    if (!planType) {
+      return c.json({ error: "planType is required" }, 400);
     }
 
     if (planType !== 'solo' && planType !== 'group') {
       return c.json({ error: "planType must be 'solo' or 'group'" }, 400);
     }
+
+    const userId = user.id;
+    const email = user.email ?? "";
 
     const now = new Date();
     const subscriptionData: SubscriptionData = {
@@ -174,28 +211,28 @@ app.post("/make-server-4d1a502d/trial/upgrade", async (c) => {
 
     console.log(`User ${userId} upgraded to ${planType} plan`);
 
-    return c.json({ 
-      success: true, 
+    return c.json({
+      success: true,
       subscription: subscriptionData,
       message: `Successfully upgraded to ${planType} plan`
     });
   } catch (error) {
     console.error("Error upgrading subscription:", error);
-    return c.json({ error: "Failed to upgrade subscription", details: String(error) }, 500);
+    return c.json({ error: "Failed to upgrade subscription" }, 500);
   }
 });
 
 // Cancel subscription
 app.post("/make-server-4d1a502d/subscription/cancel", async (c) => {
   try {
-    const { userId } = await c.req.json();
+    const authResult = await requireAuth(c);
+    if (authResult instanceof Response) return authResult;
+    const { user } = authResult;
 
-    if (!userId) {
-      return c.json({ error: "userId is required" }, 400);
-    }
+    const userId = user.id;
 
     const subscription = await kv.get<SubscriptionData>(`subscription:${userId}`);
-    
+
     if (!subscription) {
       return c.json({ error: "No subscription found for this user" }, 404);
     }
@@ -206,30 +243,36 @@ app.post("/make-server-4d1a502d/subscription/cancel", async (c) => {
 
     console.log(`Subscription canceled for user ${userId}`);
 
-    return c.json({ 
-      success: true, 
+    return c.json({
+      success: true,
       subscription,
       message: "Subscription canceled successfully"
     });
   } catch (error) {
     console.error("Error canceling subscription:", error);
-    return c.json({ error: "Failed to cancel subscription", details: String(error) }, 500);
+    return c.json({ error: "Failed to cancel subscription" }, 500);
   }
 });
 
 // Get subscription status
 app.get("/make-server-4d1a502d/subscription/:userId", async (c) => {
   try {
-    const userId = c.req.param("userId");
+    const authResult = await requireAuth(c);
+    if (authResult instanceof Response) return authResult;
+    const { user } = authResult;
 
-    if (!userId) {
-      return c.json({ error: "userId is required" }, 400);
+    // Enforce that a user can only read their own subscription
+    const requestedUserId = c.req.param("userId");
+    if (requestedUserId !== user.id) {
+      return c.json({ error: "Forbidden" }, 403);
     }
 
+    const userId = user.id;
+
     const subscription = await kv.get<SubscriptionData>(`subscription:${userId}`);
-    
+
     if (!subscription) {
-      return c.json({ 
+      return c.json({
         hasActiveSubscription: false,
         subscription: null,
         message: "No subscription found for this user"
@@ -242,7 +285,7 @@ app.get("/make-server-4d1a502d/subscription/:userId", async (c) => {
     });
   } catch (error) {
     console.error("Error getting subscription status:", error);
-    return c.json({ error: "Failed to get subscription status", details: String(error) }, 500);
+    return c.json({ error: "Failed to get subscription status" }, 500);
   }
 });
 

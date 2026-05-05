@@ -34,6 +34,7 @@ export function NewClientModal({ onClose }: { onClose: () => void }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="bg-none border-none text-xl cursor-pointer text-[var(--ink-muted)] px-2 py-1 rounded-md transition-all duration-150 hover:bg-[var(--warm)]"
           >
             <X className="w-5 h-5" />
@@ -62,16 +63,18 @@ export function NewClientModal({ onClose }: { onClose: () => void }) {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Email</label>
+              <label htmlFor="client-email" className="text-[13px] font-medium text-[var(--ink-soft)]">Email</label>
               <input
+                id="client-email"
                 type="email"
                 placeholder="client@example.com"
                 className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Phone</label>
+              <label htmlFor="client-phone" className="text-[13px] font-medium text-[var(--ink-soft)]">Phone</label>
               <input
+                id="client-phone"
                 type="tel"
                 placeholder="+1 (555) 123-4567"
                 className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
@@ -81,15 +84,16 @@ export function NewClientModal({ onClose }: { onClose: () => void }) {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Date of birth</label>
+              <label htmlFor="client-dob" className="text-[13px] font-medium text-[var(--ink-soft)]">Date of birth</label>
               <input
+                id="client-dob"
                 type="date"
                 className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Pronouns</label>
-              <select className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]">
+              <label htmlFor="client-pronouns" className="text-[13px] font-medium text-[var(--ink-soft)]">Pronouns</label>
+              <select id="client-pronouns" className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]">
                 <option>They/Them</option>
                 <option>She/Her</option>
                 <option>He/Him</option>
@@ -100,8 +104,8 @@ export function NewClientModal({ onClose }: { onClose: () => void }) {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Session type</label>
-              <select className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]">
+              <label htmlFor="client-session-type" className="text-[13px] font-medium text-[var(--ink-soft)]">Session type</label>
+              <select id="client-session-type" className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]">
                 <option>Individual</option>
                 <option>Couples</option>
                 <option>Family</option>
@@ -109,8 +113,9 @@ export function NewClientModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Rate per session</label>
+              <label htmlFor="client-rate" className="text-[13px] font-medium text-[var(--ink-soft)]">Rate per session</label>
               <input
+                id="client-rate"
                 type="number"
                 placeholder="140"
                 className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
@@ -128,8 +133,9 @@ export function NewClientModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="flex flex-col gap-1.5 mb-4">
-            <label className="text-[13px] font-medium text-[var(--ink-soft)]">Intake template</label>
+            <label htmlFor="intake-template" className="text-[13px] font-medium text-[var(--ink-soft)]">Intake template</label>
             <select
+              id="intake-template"
               value={selectedTemplate}
               onChange={(e) => setSelectedTemplate(e.target.value)}
               className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"

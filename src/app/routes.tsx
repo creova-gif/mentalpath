@@ -86,11 +86,14 @@ const router = createBrowserRouter([
     element: <Support />,
     errorElement: <ErrorBoundary />,
   },
-  {
+  // H-02: Debug admin panel — only accessible in local development builds.
+  // import.meta.env.DEV is false in production Vite builds, so this route
+  // and its element are tree-shaken out entirely.
+  ...(import.meta.env.DEV ? [{
     path: "/trial-admin",
     element: <TrialAdmin />,
     errorElement: <ErrorBoundary />,
-  },
+  }] : []),
   {
     path: "/ai-test",
     element: <AITest />,

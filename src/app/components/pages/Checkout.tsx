@@ -69,7 +69,7 @@ const PLANS = {
   }
 };
 
-function CheckoutForm({ plan, onSuccess }: { plan: typeof PLANS.solo; onSuccess: () => void }) {
+function CheckoutForm({ plan, onSuccess }: { plan: typeof PLANS[keyof typeof PLANS]; onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
