@@ -96,20 +96,18 @@ export const DEMO_ACCOUNTS = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// therapists table — real schema (profile + subscription + billing)
+// therapists table — real schema confirmed from DB
 interface TherapistRow {
   id: string;
   email: string | null;
-  // Profile fields
-  first_name: string | null;
-  last_name: string | null;
-  profession_type: string | null;   // 'psychotherapist' | 'chiropractor' | 'physiotherapist' | 'rmt' etc.
+  // Profile fields (actual column names from DB)
+  full_name: string | null;          // real column (not first_name/last_name)
+  profession_type: string | null;    // 'psychotherapist' | 'chiropractor' | 'physiotherapist' | 'rmt'
   province: string | null;
-  session_rate: number | null;
+  hourly_rate: number | null;        // real column (not session_rate)
   // Subscription / Stripe fields
-  subscription_tier: string | null;    // 'solo' | 'group' | 'enterprise' | 'free'
+  subscription_tier: string | null;    // 'solo' | 'group' | 'enterprise'
   subscription_status: string | null;  // 'active' | 'trialing' | 'past_due' | 'cancelled'
-  plan_type: string | null;
   trial_ends_at: string | null;
   stripe_customer_id: string | null;
   cancel_at: string | null;
@@ -217,14 +215,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Load profile: query 'therapists' for all data (profile + subscription).
+  // Load profile: query 'therapists' for all data (profile + subscription).
   // Falls back to DEMO_ACCOUNTS for any missing profile fields.
   const loadProfile = useCallback(async (session: Session) => {
     const email = session.user.email ?? '';
 
-    // Get live data from therapists table (has both profile + billing)
+    // Get live data from therapists table using REAL column names
     const { data } = await supabase
       .from('therapists')
-      .select('id, email, first_name, last_name, profession_type, province, session_rate, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
+      .select('id, email, full_name, profession_type, province, hourly_rate, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
       .eq('id', session.user.id)
       .maybeSingle();
 
@@ -237,15 +236,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const profession: Profession = PROFESSION_TYPE_MAP[professionSlug] ?? demo?.profession ?? 'Registered Psychotherapist';
     const meta = PROFESSION_META[profession];
 
-    const rawFirstName = row?.first_name ?? demo?.firstName ?? email.split('@')[0];
-    const rawLastName  = row?.last_name  ?? demo?.lastName  ?? '';
-    const firstName = rawFirstName || '';
-    const lastName  = rawLastName  || '';
-    const city      = row?.province ? `${row.province}` : (demo?.city ?? '');
+    // full_name from DB → split into firstName/lastName for profile
+    const fullNameFromDB = row?.full_name ?? null;
+    const [dbFirst = '', ...rest] = fullNameFromDB ? fullNameFromDB.split(' ') : [];
+    const dbLast = rest.join(' ');
+
+    const firstName = dbFirst || demo?.firstName || email.split('@')[0];
+    const lastName  = dbLast  || demo?.lastName  || '';
+    const city      = row?.province ? row.province : (demo?.city ?? '');
+    const rateFromDB = row?.hourly_rate ? Number(row.hourly_rate) : null;
 
     setUser({
       id: session.user.id,
-      name: `${firstName} ${lastName}`.trim() || email,
+      name: fullNameFromDB || `${firstName} ${lastName}`.trim() || email,
       firstName,
       lastName,
       initials: `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || email[0]?.toUpperCase() || 'U',
@@ -254,7 +257,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       registrationNumber: demo?.regNumber ?? '',
       city,
       ...meta,
-      sessionRate: row?.session_rate ? Number(row.session_rate) : meta.sessionRate,
+      sessionRate: rateFromDB ?? meta.sessionRate,
     });
 
     setSubscriptionState(buildSubscriptionFromTherapistRow(row, email));
