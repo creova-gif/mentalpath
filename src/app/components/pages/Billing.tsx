@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
-import { supabase } from 'src/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;

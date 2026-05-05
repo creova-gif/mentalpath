@@ -6,7 +6,7 @@ import {
   useCallback,
   ReactNode,
 } from 'react';
-import { supabase } from 'src/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 import type { Session } from '@supabase/supabase-js';
 
 // ── Types (unchanged — all 45 pages that consume useUser() need zero changes) ─
