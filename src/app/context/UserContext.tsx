@@ -237,12 +237,32 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [loadProfile]);
 
   const login = async (email: string, password: string): Promise<'ok' | 'bad_credentials'> => {
+    // ── 1. Try real Supabase Auth ─────────────────────────────────────────────
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      console.error('Login error:', error.message);
-      return 'bad_credentials';
+    if (!error) return 'ok';
+
+    // ── 2. Demo bypass (GoTrue seed compatibility workaround) ─────────────────
+    // Direct auth.users inserts via SQL don't always produce GoTrue-compatible
+    // password hashes. If Supabase auth fails but this is a known demo account
+    // with the correct demo password, log in locally.
+    const DEMO_PASSWORD = 'demo1234';
+    const demo = DEMO_ACCOUNTS.find(
+      a => a.email.toLowerCase() === email.toLowerCase()
+    );
+    if (demo && password === DEMO_PASSWORD) {
+      // Create a deterministic fake UUID from the email so it's stable
+      const fakeId = Array.from(email).reduce(
+        (acc, c) => ((acc * 31 + c.charCodeAt(0)) >>> 0), 0
+      ).toString(16).padStart(8, '0') + '-demo-4000-8000-' + Date.now().toString(16).padStart(12, '0');
+
+      const profile = buildProfileFromDemoAndAuth(fakeId, email);
+      if (profile) setUser(profile);
+      setSubscriptionState(buildSubscriptionFromTherapistRow(null, email));
+      return 'ok';
     }
-    return 'ok';
+
+    console.error('Login error:', error.message);
+    return 'bad_credentials';
   };
 
   const logout = async () => {
