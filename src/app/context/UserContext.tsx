@@ -96,17 +96,41 @@ export const DEMO_ACCOUNTS = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// therapists table: Stripe billing columns only (no profile fields)
+// therapists table — real schema (profile + subscription + billing)
 interface TherapistRow {
   id: string;
+  email: string | null;
+  // Profile fields
+  first_name: string | null;
+  last_name: string | null;
+  profession_type: string | null;   // 'psychotherapist' | 'chiropractor' | 'physiotherapist' | 'rmt' etc.
+  province: string | null;
+  session_rate: number | null;
+  // Subscription / Stripe fields
   subscription_tier: string | null;    // 'solo' | 'group' | 'enterprise' | 'free'
   subscription_status: string | null;  // 'active' | 'trialing' | 'past_due' | 'cancelled'
+  plan_type: string | null;
   trial_ends_at: string | null;
   stripe_customer_id: string | null;
   cancel_at: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
+
+// Map DB profession_type slug → Profession display string
+const PROFESSION_TYPE_MAP: Record<string, Profession> = {
+  psychotherapist:       'Registered Psychotherapist',
+  psychologist:          'Psychologist',
+  social_worker:         'Social Worker',
+  chiropractor:          'Chiropractor',
+  physiotherapist:       'Physiotherapist',
+  rmt:                   'Registered Massage Therapist',
+  occupational_therapist:'Occupational Therapist',
+  naturopath:            'Naturopathic Doctor',
+  acupuncturist:         'Acupuncturist',
+  dietitian:             'Dietitian',
+  slp:                   'Speech-Language Pathologist',
+};
 
 function buildProfileFromDemoAndAuth(
   userId: string,
@@ -192,23 +216,48 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load profile: query 'therapists' for subscription data (Stripe billing columns),
-  // match profile fields from DEMO_ACCOUNTS by email.
+  // Load profile: query 'therapists' for all data (profile + subscription).
+  // Falls back to DEMO_ACCOUNTS for any missing profile fields.
   const loadProfile = useCallback(async (session: Session) => {
     const email = session.user.email ?? '';
 
-    // Build profile from demo accounts (profile fields not stored in DB yet)
-    const profile = buildProfileFromDemoAndAuth(session.user.id, email);
-    if (profile) setUser(profile);
-
-    // Try to get live subscription data from therapists table
+    // Get live data from therapists table (has both profile + billing)
     const { data } = await supabase
       .from('therapists')
-      .select('id, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
+      .select('id, email, first_name, last_name, profession_type, province, session_rate, subscription_tier, subscription_status, plan_type, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
       .eq('id', session.user.id)
       .maybeSingle();
 
-    setSubscriptionState(buildSubscriptionFromTherapistRow(data as TherapistRow | null, email));
+    const row = data as TherapistRow | null;
+
+    // Build profile: prefer DB values, fall back to DEMO_ACCOUNTS by email
+    const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
+
+    const professionSlug = row?.profession_type ?? '';
+    const profession: Profession = PROFESSION_TYPE_MAP[professionSlug] ?? demo?.profession ?? 'Registered Psychotherapist';
+    const meta = PROFESSION_META[profession];
+
+    const rawFirstName = row?.first_name ?? demo?.firstName ?? email.split('@')[0];
+    const rawLastName  = row?.last_name  ?? demo?.lastName  ?? '';
+    const firstName = rawFirstName || '';
+    const lastName  = rawLastName  || '';
+    const city      = row?.province ? `${row.province}` : (demo?.city ?? '');
+
+    setUser({
+      id: session.user.id,
+      name: `${firstName} ${lastName}`.trim() || email,
+      firstName,
+      lastName,
+      initials: `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || email[0]?.toUpperCase() || 'U',
+      email,
+      profession,
+      registrationNumber: demo?.regNumber ?? '',
+      city,
+      ...meta,
+      sessionRate: row?.session_rate ? Number(row.session_rate) : meta.sessionRate,
+    });
+
+    setSubscriptionState(buildSubscriptionFromTherapistRow(row, email));
   }, []);
 
 

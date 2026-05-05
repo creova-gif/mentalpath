@@ -161,15 +161,34 @@ BEGIN
   SELECT id INTO uid_patel    FROM auth.users WHERE email = 'sarah.patel@physiocare.ca';
   SELECT id INTO uid_williams FROM auth.users WHERE email = 'j.williams@rmtcare.ca';
 
-  INSERT INTO therapists (id, subscription_tier, subscription_status, created_at, updated_at)
+  -- therapists table has both profile fields AND subscription fields
+  -- Include email (NOT NULL) + all known profile columns
+  INSERT INTO therapists (
+    id,
+    email,
+    subscription_tier,
+    subscription_status,
+    plan_type,
+    province,
+    session_rate,
+    profession_type,
+    created_at,
+    updated_at
+  )
   VALUES
-    (uid_osei,     'solo',  'active',   NOW(), NOW()),
-    (uid_chen,     'solo',  'active',   NOW(), NOW()),
-    (uid_patel,    'group', 'active',   NOW(), NOW()),
-    (uid_williams, 'solo',  'trialing', NOW(), NOW())
+    (uid_osei,     'dr.osei@mentalpath.ca',     'solo',  'active',   'solo',  'ON', 140.00, 'psychotherapist', NOW(), NOW()),
+    (uid_chen,     'dr.chen@spine360.ca',        'solo',  'active',   'solo',  'BC',  85.00, 'chiropractor',    NOW(), NOW()),
+    (uid_patel,    'sarah.patel@physiocare.ca',  'group', 'active',   'group', 'AB', 120.00, 'physiotherapist', NOW(), NOW()),
+    (uid_williams, 'j.williams@rmtcare.ca',      'solo',  'trialing', 'solo',  'ON',  95.00, 'rmt',             NOW(), NOW())
   ON CONFLICT (id) DO UPDATE SET
+    email              = EXCLUDED.email,
+    subscription_tier  = EXCLUDED.subscription_tier,
     subscription_status = EXCLUDED.subscription_status,
-    updated_at = NOW();
+    plan_type          = EXCLUDED.plan_type,
+    province           = EXCLUDED.province,
+    session_rate       = EXCLUDED.session_rate,
+    profession_type    = EXCLUDED.profession_type,
+    updated_at         = NOW();
 
 END $$;
 
