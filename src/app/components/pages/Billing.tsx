@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
+import { supabase } from 'src/utils/supabase/client';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
@@ -15,6 +16,25 @@ interface Invoice {
   sessions: number;
 }
 
+interface InvoiceRow {
+  id: string;
+  invoice_number: string;
+  client_name: string;
+  date: string;
+  amount: number;
+  status: string;
+  sessions: number;
+}
+
+const MOCK_INVOICES: Invoice[] = [
+  { id: '1', invoiceNumber: 'INV-0031', clientName: 'Amara Mensah',      date: '2026-03-09', sessions: 2, amount: 280.00, status: 'paid'    },
+  { id: '2', invoiceNumber: 'INV-0032', clientName: 'Jamal Lee',          date: '2026-03-09', sessions: 2, amount: 280.00, status: 'pending' },
+  { id: '3', invoiceNumber: 'INV-0030', clientName: 'Sadia Mohamoud',     date: '2026-03-06', sessions: 2, amount: 140.00, status: 'paid'    },
+  { id: '4', invoiceNumber: 'INV-0029', clientName: 'Priya & Chetan C.', date: '2026-03-07', sessions: 1, amount: 180.00, status: 'overdue' },
+  { id: '5', invoiceNumber: 'INV-0028', clientName: 'Amara Mensah',      date: '2026-02-23', sessions: 2, amount: 280.00, status: 'paid'    },
+  { id: '6', invoiceNumber: 'INV-0027', clientName: 'Riya Bhatt',        date: '2026-03-10', sessions: 1, amount: 110.00, status: 'pending' },
+];
+
 export function Billing() {
   const [filter, setFilter] = useState('all');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -28,77 +48,95 @@ export function Billing() {
   }, []);
 
   const loadInvoices = async () => {
+    setLoading(true);
     try {
-      // For demo purposes, use mock data. In production, fetch from backend
-      // const response = await fetch(`${SUPABASE_URL}/functions/v1/make-server-4d1a502d/invoices`, {
-      //   headers: { Authorization: `Bearer ${publicAnonKey}` }
-      // });
-      // const data = await response.json();
-      // setInvoices(data.invoices);
-      
-      // Mock data for now
-      setInvoices([
-        {
-          id: '1',
-          invoiceNumber: 'INV-0031',
-          clientName: 'Amara Mensah',
-          date: '2026-03-09',
-          sessions: 2,
-          amount: 280.00,
-          status: 'paid' as const,
-        },
-        {
-          id: '2',
-          invoiceNumber: 'INV-0032',
-          clientName: 'Jamal Lee',
-          date: '2026-03-09',
-          sessions: 2,
-          amount: 280.00,
-          status: 'pending' as const,
-        },
-        {
-          id: '3',
-          invoiceNumber: 'INV-0030',
-          clientName: 'Sadia Mohamoud',
-          date: '2026-03-06',
-          sessions: 2,
-          amount: 140.00,
-          status: 'paid' as const,
-        },
-        {
-          id: '4',
-          invoiceNumber: 'INV-0029',
-          clientName: 'Priya & Chetan C.',
-          date: '2026-03-07',
-          sessions: 1,
-          amount: 180.00,
-          status: 'overdue' as const,
-        },
-        {
-          id: '5',
-          invoiceNumber: 'INV-0028',
-          clientName: 'Amara Mensah',
-          date: '2026-02-23',
-          sessions: 2,
-          amount: 280.00,
-          status: 'paid' as const,
-        },
-        {
-          id: '6',
-          invoiceNumber: 'INV-0027',
-          clientName: 'Riya Bhatt',
-          date: '2026-03-10',
-          sessions: 1,
-          amount: 110.00,
-          status: 'pending' as const,
-        },
-      ]);
-    } catch (error) {
-      console.error('Failed to load invoices:', error);
-    } finally {
-      setLoading(false);
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        setInvoices(
+          (data as InvoiceRow[]).map(row => ({
+            id: row.id,
+            invoiceNumber: row.invoice_number,
+            clientName: row.client_name,
+            date: row.date,
+            amount: Number(row.amount),
+            status: row.status as Invoice['status'],
+            sessions: row.sessions,
+          }))
+        );
+        return;
+      }
+    } catch {
+      // fall through to mock
     }
+    // Fallback: mock data until DB tables are seeded
+    setInvoices(MOCK_INVOICES);
+    setLoading(false);
   };
+
+  // Called by InvoiceModal when a new invoice is saved
+  const handleInvoiceSaved = async (newInvoice: {
+    clientName: string;
+    clientId?: string;
+    date: string;
+    sessions: number;
+    amount: number;
+  }) => {
+    const maxNum = invoices.reduce((max, inv) => {
+      const n = parseInt(inv.invoiceNumber.replace('INV-', ''), 10);
+      return isNaN(n) ? max : Math.max(max, n);
+    }, 30);
+    const invoiceNumber = `INV-${String(maxNum + 1).padStart(4, '0')}`;
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const clinicianId = sessionData?.session?.user?.id;
+
+    if (clinicianId) {
+      const { data, error } = await supabase
+        .from('invoices')
+        .insert({
+          clinician_id: clinicianId,
+          client_id: newInvoice.clientId ?? null,
+          invoice_number: invoiceNumber,
+          client_name: newInvoice.clientName,
+          date: newInvoice.date,
+          sessions: newInvoice.sessions,
+          amount: newInvoice.amount,
+          status: 'pending',
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        const row = data as InvoiceRow;
+        setInvoices(prev => [{
+          id: row.id,
+          invoiceNumber: row.invoice_number,
+          clientName: row.client_name,
+          date: row.date,
+          amount: Number(row.amount),
+          status: row.status as Invoice['status'],
+          sessions: row.sessions,
+        }, ...prev]);
+        return;
+      }
+    }
+
+    // Optimistic local update (demo/no DB yet)
+    setInvoices(prev => [{
+      id: String(Date.now()),
+      invoiceNumber,
+      clientName: newInvoice.clientName,
+      date: newInvoice.date,
+      sessions: newInvoice.sessions,
+      amount: newInvoice.amount,
+      status: 'pending',
+    }, ...prev]);
+  };
+
 
   const handleExportT2125 = async () => {
     setExporting(true);

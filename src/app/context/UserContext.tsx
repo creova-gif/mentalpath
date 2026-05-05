@@ -1,5 +1,15 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react';
+import { supabase } from 'src/utils/supabase/client';
+import type { Session } from '@supabase/supabase-js';
 
+// ── Types (unchanged — all 45 pages that consume useUser() need zero changes) ─
 export type Profession =
   | 'Registered Psychotherapist'
   | 'Psychologist'
@@ -17,6 +27,7 @@ export type PlanType = 'solo' | 'group' | 'enterprise';
 export type BillingCycle = 'monthly' | 'annual';
 
 export interface UserProfile {
+  id: string; // real Supabase auth.users UUID
   name: string;
   firstName: string;
   lastName: string;
@@ -49,12 +60,17 @@ interface UserContextType {
   user: UserProfile | null;
   subscription: SubscriptionPlan | null;
   isLoggedIn: boolean;
-  login: (email: string, password: string) => 'ok' | 'bad_credentials';
-  logout: () => void;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<'ok' | 'bad_credentials'>;
+  logout: () => Promise<void>;
   setSubscription: (plan: SubscriptionPlan) => void;
 }
 
-const PROFESSION_META: Record<Profession, { college: string; collegeAbbr: string; notesLabel: string; noteFormat: string; hstExempt: boolean; sessionRate: number }> = {
+// ── Profession metadata (unchanged) ──────────────────────────────────────────
+const PROFESSION_META: Record<
+  Profession,
+  { college: string; collegeAbbr: string; notesLabel: string; noteFormat: string; hstExempt: boolean; sessionRate: number }
+> = {
   'Registered Psychotherapist': { college: 'College of Registered Psychotherapists of Ontario', collegeAbbr: 'CRPO', notesLabel: 'Session Notes', noteFormat: 'DAP / Process Notes', hstExempt: true, sessionRate: 140 },
   'Psychologist': { college: 'College of Psychologists of Ontario', collegeAbbr: 'CPO', notesLabel: 'Session Notes', noteFormat: 'SOAP / Process Notes', hstExempt: true, sessionRate: 220 },
   'Social Worker': { college: 'Ontario College of Social Workers and Social Service Workers', collegeAbbr: 'OCSWSSW', notesLabel: 'Session Notes', noteFormat: 'DAP / PIE Notes', hstExempt: true, sessionRate: 130 },
@@ -68,145 +84,129 @@ const PROFESSION_META: Record<Profession, { college: string; collegeAbbr: string
   'Speech-Language Pathologist': { college: 'College of Audiologists and Speech-Language Pathologists of Ontario', collegeAbbr: 'CASLPO', notesLabel: 'Clinical Notes', noteFormat: 'SOAP / Progress Notes', hstExempt: true, sessionRate: 175 },
 };
 
-function buildProfile(base: Omit<UserProfile, 'college' | 'collegeAbbr' | 'notesLabel' | 'noteFormat' | 'hstExempt' | 'sessionRate'>): UserProfile {
-  const meta = PROFESSION_META[base.profession];
-  return { ...base, ...meta };
-}
-
-const DEMO_ACCOUNTS: Array<{ email: string; password: string; profile: UserProfile; subscription: SubscriptionPlan }> = [
-  {
-    email: 'dr.osei@mentalpath.ca',
-    password: 'demo1234',
-    profile: buildProfile({
-      name: 'Dr. Abena Osei-Mensah',
-      firstName: 'Abena',
-      lastName: 'Osei-Mensah',
-      initials: 'AO',
-      email: 'dr.osei@mentalpath.ca',
-      profession: 'Registered Psychotherapist',
-      registrationNumber: 'CRPO-004821',
-      city: 'Toronto, ON',
-    }),
-    subscription: {
-      type: 'solo',
-      cycle: 'monthly',
-      seats: 1,
-      pricePerSeat: 79,
-      trialDaysRemaining: null,
-      isTrial: false,
-      startDate: 'September 1, 2025',
-      renewsOn: 'April 1, 2026',
-      nextBillingAmount: 79,
-    },
-  },
-  {
-    email: 'dr.chen@spine360.ca',
-    password: 'demo1234',
-    profile: buildProfile({
-      name: 'Dr. Marcus Chen',
-      firstName: 'Marcus',
-      lastName: 'Chen',
-      initials: 'MC',
-      email: 'dr.chen@spine360.ca',
-      profession: 'Chiropractor',
-      registrationNumber: 'CCO-012047',
-      city: 'Vancouver, BC',
-    }),
-    subscription: {
-      type: 'solo',
-      cycle: 'annual',
-      seats: 1,
-      pricePerSeat: 69,
-      trialDaysRemaining: null,
-      isTrial: false,
-      startDate: 'January 15, 2026',
-      renewsOn: 'January 15, 2027',
-      nextBillingAmount: 828,
-    },
-  },
-  {
-    email: 'sarah.patel@physiocare.ca',
-    password: 'demo1234',
-    profile: buildProfile({
-      name: 'Sarah Patel',
-      firstName: 'Sarah',
-      lastName: 'Patel',
-      initials: 'SP',
-      email: 'sarah.patel@physiocare.ca',
-      profession: 'Physiotherapist',
-      registrationNumber: 'CPT-008834',
-      city: 'Calgary, AB',
-    }),
-    subscription: {
-      type: 'group',
-      cycle: 'monthly',
-      seats: 4,
-      pricePerSeat: 69,
-      trialDaysRemaining: null,
-      isTrial: false,
-      startDate: 'November 1, 2025',
-      renewsOn: 'April 1, 2026',
-      nextBillingAmount: 276,
-    },
-  },
-  {
-    email: 'j.williams@rmtcare.ca',
-    password: 'demo1234',
-    profile: buildProfile({
-      name: 'Jordan Williams',
-      firstName: 'Jordan',
-      lastName: 'Williams',
-      initials: 'JW',
-      email: 'j.williams@rmtcare.ca',
-      profession: 'Registered Massage Therapist',
-      registrationNumber: 'CMTO-019923',
-      city: 'Ottawa, ON',
-    }),
-    subscription: {
-      type: 'solo',
-      cycle: 'monthly',
-      seats: 1,
-      pricePerSeat: 79,
-      trialDaysRemaining: 4,
-      isTrial: true,
-      startDate: 'March 16, 2026',
-      renewsOn: 'March 23, 2026',
-      nextBillingAmount: 79,
-    },
-  },
+// ── Demo accounts (kept for seeding + local dev fallback) ────────────────────
+// These are seeded into Supabase Auth and the `clinicians` table.
+// Password for all demo accounts: demo1234
+export const DEMO_ACCOUNTS = [
+  { email: 'dr.osei@mentalpath.ca',       firstName: 'Abena',  lastName: 'Osei-Mensah', profession: 'Registered Psychotherapist' as Profession, regNumber: 'CRPO-004821', city: 'Toronto, ON',    planType: 'solo' as PlanType,  planCycle: 'monthly' as BillingCycle, pricePerSeat: 79,  seats: 1, isTrial: false, starts: 'September 1, 2025',  renews: 'April 1, 2026',    nextAmount: 79  },
+  { email: 'dr.chen@spine360.ca',         firstName: 'Marcus', lastName: 'Chen',         profession: 'Chiropractor' as Profession,                regNumber: 'CCO-012047', city: 'Vancouver, BC', planType: 'solo' as PlanType,  planCycle: 'annual' as BillingCycle,  pricePerSeat: 69,  seats: 1, isTrial: false, starts: 'January 15, 2026',  renews: 'January 15, 2027', nextAmount: 828 },
+  { email: 'sarah.patel@physiocare.ca',   firstName: 'Sarah',  lastName: 'Patel',        profession: 'Physiotherapist' as Profession,              regNumber: 'CPT-008834', city: 'Calgary, AB',   planType: 'group' as PlanType, planCycle: 'monthly' as BillingCycle, pricePerSeat: 69,  seats: 4, isTrial: false, starts: 'November 1, 2025',  renews: 'April 1, 2026',    nextAmount: 276 },
+  { email: 'j.williams@rmtcare.ca',       firstName: 'Jordan', lastName: 'Williams',     profession: 'Registered Massage Therapist' as Profession, regNumber: 'CMTO-019923',city: 'Ottawa, ON',    planType: 'solo' as PlanType,  planCycle: 'monthly' as BillingCycle, pricePerSeat: 79,  seats: 1, isTrial: true,  starts: 'March 16, 2026',    renews: 'March 23, 2026',   nextAmount: 79  },
 ];
 
-const UserContext = createContext<UserContextType | null>(null);
-
-const STORAGE_KEY = 'mentalpath_user_email';
-
-function getStoredAccount() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return DEMO_ACCOUNTS.find(a => a.email === saved) ?? null;
-  } catch {}
-  return null;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function buildProfileFromClinicianRow(
+  row: Record<string, unknown>,
+  email: string
+): UserProfile {
+  const profession = row.profession as Profession;
+  const meta = PROFESSION_META[profession] ?? PROFESSION_META['Registered Psychotherapist'];
+  const firstName = String(row.first_name ?? '');
+  const lastName = String(row.last_name ?? '');
+  return {
+    id: String(row.id),
+    name: `${firstName} ${lastName}`.trim(),
+    firstName,
+    lastName,
+    initials: `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase(),
+    email,
+    profession,
+    registrationNumber: String(row.reg_number ?? ''),
+    city: String(row.city ?? ''),
+    ...meta,
+    sessionRate: Number(row.session_rate ?? meta.sessionRate),
+    hstExempt: Boolean(row.hst_exempt ?? meta.hstExempt),
+  };
 }
 
-export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(() => getStoredAccount()?.profile ?? null);
-  const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(() => getStoredAccount()?.subscription ?? null);
+function buildSubscriptionFromClinicianRow(row: Record<string, unknown>): SubscriptionPlan {
+  const pricePerSeat = Number(row.price_per_seat ?? 79);
+  const seats = Number(row.plan_seats ?? 1);
+  const isTrial = Boolean(row.is_trial ?? false);
+  const trialEndsAt = row.trial_ends_at ? new Date(String(row.trial_ends_at)) : null;
+  const now = new Date();
+  const trialDaysRemaining = trialEndsAt
+    ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / 86_400_000))
+    : null;
 
-  const login = (email: string, password: string): 'ok' | 'bad_credentials' => {
-    const account = DEMO_ACCOUNTS.find(
-      a => a.email.toLowerCase() === email.trim().toLowerCase() && a.password === password
+  const fmtDate = (val: unknown) =>
+    val ? new Date(String(val)).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+
+  return {
+    type: (row.plan_type as PlanType) ?? 'solo',
+    cycle: (row.plan_cycle as BillingCycle) ?? 'monthly',
+    seats,
+    pricePerSeat,
+    trialDaysRemaining: isTrial ? trialDaysRemaining : null,
+    isTrial,
+    startDate: fmtDate(row.plan_starts_at),
+    renewsOn: fmtDate(row.plan_renews_at),
+    nextBillingAmount: pricePerSeat * seats,
+  };
+}
+
+// ── Context ───────────────────────────────────────────────────────────────────
+const UserContext = createContext<UserContextType | null>(null);
+
+export function UserProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load profile from clinicians table given a Supabase session
+  const loadProfile = useCallback(async (session: Session) => {
+    const { data, error } = await supabase
+      .from('clinicians')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error || !data) {
+      // Clinicians row doesn't exist yet — could be a brand-new sign-up.
+      // Fall through without crashing.
+      console.warn('No clinician profile found for user', session.user.id);
+      return;
+    }
+
+    setUser(buildProfileFromClinicianRow(data as Record<string, unknown>, session.user.email ?? ''));
+    setSubscriptionState(buildSubscriptionFromClinicianRow(data as Record<string, unknown>));
+  }, []);
+
+  // Bootstrap: listen to Supabase auth state changes
+  useEffect(() => {
+    // Get the current session immediately
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) await loadProfile(session);
+      setIsLoading(false);
+    });
+
+    // Subscribe to future auth events (login, logout, token refresh)
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          await loadProfile(session);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setSubscriptionState(null);
+        }
+        setIsLoading(false);
+      }
     );
-    if (!account) return 'bad_credentials';
-    setUser(account.profile);
-    setSubscriptionState(account.subscription);
-    localStorage.setItem(STORAGE_KEY, account.email);
+
+    return () => authSub.unsubscribe();
+  }, [loadProfile]);
+
+  const login = async (email: string, password: string): Promise<'ok' | 'bad_credentials'> => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.error('Login error:', error.message);
+      return 'bad_credentials';
+    }
     return 'ok';
   };
 
-  const logout = () => {
-    setUser(null);
-    setSubscriptionState(null);
-    localStorage.removeItem(STORAGE_KEY);
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   const setSubscription = (plan: SubscriptionPlan) => {
@@ -214,7 +214,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, subscription, isLoggedIn: !!user, login, logout, setSubscription }}>
+    <UserContext.Provider value={{ user, subscription, isLoggedIn: !!user, isLoading, login, logout, setSubscription }}>
       {children}
     </UserContext.Provider>
   );
@@ -225,5 +225,3 @@ export function useUser() {
   if (!ctx) throw new Error('useUser must be used inside UserProvider');
   return ctx;
 }
-
-export { DEMO_ACCOUNTS };

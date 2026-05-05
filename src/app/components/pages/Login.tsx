@@ -21,19 +21,17 @@ export function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      const result = login(email, password);
-      if (result === 'ok') {
-        navigate('/dashboard');
-      } else {
-        setError(t('login.error'));
-        setLoading(false);
-      }
-    }, 600);
+    const result = await login(email, password);
+    if (result === 'ok') {
+      navigate('/dashboard');
+    } else {
+      setError(t('login.error'));
+      setLoading(false);
+    }
   };
 
   const fillDemo = (acctEmail: string) => {
@@ -107,7 +105,9 @@ export function Login() {
               ✦ {t('login.demoTitle')}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {DEMO_ACCOUNTS.map(acct => (
+              {DEMO_ACCOUNTS.map(acct => {
+                const initials = `${acct.firstName[0] ?? ''}${acct.lastName[0] ?? ''}`.toUpperCase();
+                return (
                 <button
                   key={acct.email}
                   type="button"
@@ -129,25 +129,26 @@ export function Login() {
                   onMouseLeave={e => { if (email !== acct.email) e.currentTarget.style.background = 'white'; }}
                 >
                   <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: 'white', flexShrink: 0 }}>
-                    {acct.profile.initials}
+                    {initials}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 1 }}>{acct.profile.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 1 }}>{acct.firstName} {acct.lastName}</div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
-                      {professionEmoji[acct.profile.profession] || '🏥'} {acct.profile.profession} · {acct.profile.city}
+                      {professionEmoji[acct.profession] || '🏥'} {acct.profession} · {acct.city}
                     </div>
                   </div>
                   <div style={{ flexShrink: 0 }}>
-                    {acct.subscription.isTrial ? (
+                    {acct.isTrial ? (
                       <span style={{ fontSize: 10, fontWeight: 600, color: '#b45309', background: '#fef3c7', borderRadius: 4, padding: '2px 6px' }}>{t('login.badgeTrial')}</span>
-                    ) : acct.subscription.type === 'group' ? (
+                    ) : acct.planType === 'group' ? (
                       <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sage-deep)', background: 'var(--sage-pale)', borderRadius: 4, padding: '2px 6px' }}>{t('login.badgeGroup')}</span>
                     ) : (
                       <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', background: 'var(--warm)', borderRadius: 4, padding: '2px 6px' }}>{t('login.badgeSolo')}</span>
                     )}
                   </div>
                 </button>
-              ))}
+                );
+              })}
             </div>
             <p style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 8, textAlign: 'center' }}>
               {t('login.demoPassword')} <code style={{ background: 'var(--surface)', padding: '1px 5px', borderRadius: 4, fontSize: 11 }}>demo1234</code>
