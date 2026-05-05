@@ -224,7 +224,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Get live data from therapists table (has both profile + billing)
     const { data } = await supabase
       .from('therapists')
-      .select('id, email, first_name, last_name, profession_type, province, session_rate, subscription_tier, subscription_status, plan_type, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
+      .select('id, email, first_name, last_name, profession_type, province, session_rate, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
       .eq('id', session.user.id)
       .maybeSingle();
 

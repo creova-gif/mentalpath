@@ -154,21 +154,34 @@ BEGIN
     WHERE id = uid_williams;
   END IF;
 
-  -- ── STEP 3: Seed/update therapists rows ─────────────────────────────────────
-  -- Re-fetch IDs in case they already existed
+-- ── FIRST: Run this SELECT alone to see the REAL column names ─────────────────
+-- (run it in a separate query before the DO $$ block below)
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_schema = 'public' AND table_name = 'therapists'
+ORDER BY ordinal_position;
+
+-- ── STEP 3: Seed therapists rows (only confirmed-existing columns) ─────────────
+-- Known NOT NULL: id, email
+-- Known to exist: subscription_tier, subscription_status, province, session_rate, profession_type
+-- Removed: plan_type (column does not exist in this schema)
+DO $$
+DECLARE
+  uid_osei     UUID;
+  uid_chen     UUID;
+  uid_patel    UUID;
+  uid_williams UUID;
+BEGIN
   SELECT id INTO uid_osei     FROM auth.users WHERE email = 'dr.osei@mentalpath.ca';
   SELECT id INTO uid_chen     FROM auth.users WHERE email = 'dr.chen@spine360.ca';
   SELECT id INTO uid_patel    FROM auth.users WHERE email = 'sarah.patel@physiocare.ca';
   SELECT id INTO uid_williams FROM auth.users WHERE email = 'j.williams@rmtcare.ca';
 
-  -- therapists table has both profile fields AND subscription fields
-  -- Include email (NOT NULL) + all known profile columns
   INSERT INTO therapists (
     id,
     email,
     subscription_tier,
     subscription_status,
-    plan_type,
     province,
     session_rate,
     profession_type,
@@ -176,20 +189,18 @@ BEGIN
     updated_at
   )
   VALUES
-    (uid_osei,     'dr.osei@mentalpath.ca',     'solo',  'active',   'solo',  'ON', 140.00, 'psychotherapist', NOW(), NOW()),
-    (uid_chen,     'dr.chen@spine360.ca',        'solo',  'active',   'solo',  'BC',  85.00, 'chiropractor',    NOW(), NOW()),
-    (uid_patel,    'sarah.patel@physiocare.ca',  'group', 'active',   'group', 'AB', 120.00, 'physiotherapist', NOW(), NOW()),
-    (uid_williams, 'j.williams@rmtcare.ca',      'solo',  'trialing', 'solo',  'ON',  95.00, 'rmt',             NOW(), NOW())
+    (uid_osei,     'dr.osei@mentalpath.ca',    'solo',  'active',   'ON', 140.00, 'psychotherapist', NOW(), NOW()),
+    (uid_chen,     'dr.chen@spine360.ca',       'solo',  'active',   'BC',  85.00, 'chiropractor',    NOW(), NOW()),
+    (uid_patel,    'sarah.patel@physiocare.ca', 'group', 'active',   'AB', 120.00, 'physiotherapist', NOW(), NOW()),
+    (uid_williams, 'j.williams@rmtcare.ca',     'solo',  'trialing', 'ON',  95.00, 'rmt',             NOW(), NOW())
   ON CONFLICT (id) DO UPDATE SET
-    email              = EXCLUDED.email,
-    subscription_tier  = EXCLUDED.subscription_tier,
+    email               = EXCLUDED.email,
+    subscription_tier   = EXCLUDED.subscription_tier,
     subscription_status = EXCLUDED.subscription_status,
-    plan_type          = EXCLUDED.plan_type,
-    province           = EXCLUDED.province,
-    session_rate       = EXCLUDED.session_rate,
-    profession_type    = EXCLUDED.profession_type,
-    updated_at         = NOW();
-
+    province            = EXCLUDED.province,
+    session_rate        = EXCLUDED.session_rate,
+    profession_type     = EXCLUDED.profession_type,
+    updated_at          = NOW();
 END $$;
 
 -- ── Verify ─────────────────────────────────────────────────────────────────────
@@ -199,7 +210,10 @@ SELECT
   u.aud,
   u.role,
   t.subscription_tier,
-  t.subscription_status
+  t.subscription_status,
+  t.province,
+  t.session_rate,
+  t.profession_type
 FROM auth.users u
 LEFT JOIN therapists t ON t.id = u.id
 WHERE u.email IN (
