@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Search, Lock, Send, ArrowLeft } from 'lucide-react';
+
+type Message = { from: 'client' | 'therapist'; text: string; time: string };
 
 const clients = [
   { id: 1, initials: 'AM', name: 'Amara Mensah', preview: 'Thank you for today\'s session...', time: '2:45 PM', unread: 0, color: 'bg-[#d4e8e4] text-[var(--sage-deep)]' },
@@ -9,22 +11,50 @@ const clients = [
   { id: 5, initials: 'RB', name: 'Riya Bhatt', preview: 'I wanted to follow up on...', time: 'Mar 10', unread: 0, color: 'bg-[#d4e8e4] text-[var(--sage-deep)]' },
 ];
 
-const messagesData = [
-  { from: 'client', text: 'Hi Dr. Osei, can we reschedule next week\'s session? I have a work conflict on Thursday.', time: '11:20 AM' },
-  { from: 'therapist', text: 'Of course! What day works better for you? I have openings on Tuesday at 2pm or Friday at 10:30am.', time: '11:23 AM' },
-  { from: 'client', text: 'Friday at 10:30 would be perfect. Thank you!', time: '11:25 AM' },
-  { from: 'therapist', text: 'Great! I\'ve updated your appointment. You\'ll receive a calendar invite shortly. See you Friday!', time: '11:27 AM' },
-];
+const INITIAL_MESSAGES: Record<number, Message[]> = {
+  2: [
+    { from: 'client', text: 'Hi Dr. Osei, can we reschedule next week\'s session? I have a work conflict on Thursday.', time: '11:20 AM' },
+    { from: 'therapist', text: 'Of course! What day works better for you? I have openings on Tuesday at 2pm or Friday at 10:30am.', time: '11:23 AM' },
+    { from: 'client', text: 'Friday at 10:30 would be perfect. Thank you!', time: '11:25 AM' },
+    { from: 'therapist', text: 'Great! I\'ve updated your appointment. You\'ll receive a calendar invite shortly. See you Friday!', time: '11:27 AM' },
+  ],
+  1: [
+    { from: 'client', text: 'Thank you for today\'s session. I really appreciated the grounding exercise.', time: '2:45 PM' },
+    { from: 'therapist', text: 'So glad it was helpful! Remember to practice the box breathing before bed tonight. See you next week!', time: '2:47 PM' },
+  ],
+  3: [
+    { from: 'client', text: 'The breathing exercises are really helping with my anxiety.', time: 'Yesterday 3:12 PM' },
+    { from: 'therapist', text: 'That\'s wonderful progress, Sadia! Keep up the daily practice.', time: 'Yesterday 3:15 PM' },
+  ],
+};
+
+function nowTime() {
+  return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
 
 export function Messages() {
   const [selectedClient, setSelectedClient] = useState(clients[1]);
   const [messageText, setMessageText] = useState('');
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
+  const [threadMap, setThreadMap] = useState<Record<number, Message[]>>(INITIAL_MESSAGES);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const currentMessages = threadMap[selectedClient.id] ?? [];
+
+  // Scroll to bottom whenever the active thread changes or a new message is added
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [currentMessages.length, selectedClient.id]);
 
   const handleSend = () => {
-    if (messageText.trim()) {
-      setMessageText('');
-    }
+    const text = messageText.trim();
+    if (!text) return;
+    const newMsg: Message = { from: 'therapist', text, time: nowTime() };
+    setThreadMap(prev => ({
+      ...prev,
+      [selectedClient.id]: [...(prev[selectedClient.id] ?? []), newMsg],
+    }));
+    setMessageText('');
   };
 
   const selectClient = (client: typeof clients[0]) => {
@@ -109,7 +139,12 @@ export function Messages() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-3.5">
-            {messagesData.map((msg, idx) => (
+            {currentMessages.length === 0 && (
+              <div className="flex-1 flex items-center justify-center text-[13px] text-[var(--ink-muted)]">
+                No messages yet. Start the conversation.
+              </div>
+            )}
+            {currentMessages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`max-w-[70%] px-3.5 py-2.5 rounded-xl text-sm leading-relaxed ${
@@ -124,6 +159,7 @@ export function Messages() {
                 </div>
               </div>
             ))}
+            <div ref={bottomRef} />
           </div>
 
           {/* Compose */}

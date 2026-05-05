@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Download, FileText } from 'lucide-react';
+import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 
@@ -21,6 +21,7 @@ export function Billing() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [exportingZip, setExportingZip] = useState(false);
 
   useEffect(() => {
     loadInvoices();
@@ -133,6 +134,38 @@ export function Billing() {
       alert('Failed to export T2125 summary. Please try again.');
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleExportReceiptsZip = async () => {
+    setExportingZip(true);
+    try {
+      // Build a CSV of all paid invoices as a receipt summary
+      // In production this would call an edge function to generate real PDFs.
+      const paidInvoices = invoices.filter(inv => inv.status === 'paid');
+      if (paidInvoices.length === 0) {
+        alert('No paid invoices to export.');
+        return;
+      }
+      const header = 'Invoice #,Client,Date,Sessions,Amount ($),Status';
+      const rows = paidInvoices.map(inv =>
+        `${inv.invoiceNumber},"${inv.clientName}",${inv.date},${inv.sessions},${inv.amount.toFixed(2)},${inv.status}`
+      );
+      const csv = [header, ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'MentalPath_Receipts.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Receipt export error:', err);
+      alert('Failed to export receipts. Please try again.');
+    } finally {
+      setExportingZip(false);
     }
   };
 
@@ -268,8 +301,17 @@ export function Billing() {
             )}
             Export 2025 T2125 summary
           </button>
-          <button className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border border-[var(--border)] bg-transparent text-[var(--ink-soft)] hover:bg-[var(--warm)] hover:text-[var(--ink)]">
-            Download all receipts (ZIP)
+          <button
+            onClick={handleExportReceiptsZip}
+            disabled={exportingZip}
+            className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border border-[var(--border)] bg-transparent text-[var(--ink-soft)] hover:bg-[var(--warm)] hover:text-[var(--ink)] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {exportingZip ? (
+              <Download className="w-[13px] h-[13px] animate-spin" strokeWidth={2} />
+            ) : (
+              <Archive className="w-[13px] h-[13px]" strokeWidth={2} />
+            )}
+            {exportingZip ? 'Exporting…' : 'Download all receipts (CSV)'}
           </button>
         </div>
       </div>
