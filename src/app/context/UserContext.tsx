@@ -95,52 +95,91 @@ export const DEMO_ACCOUNTS = [
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function buildProfileFromClinicianRow(
-  row: Record<string, unknown>,
-  email: string
-): UserProfile {
-  const profession = row.profession as Profession;
-  const meta = PROFESSION_META[profession] ?? PROFESSION_META['Registered Psychotherapist'];
-  const firstName = String(row.first_name ?? '');
-  const lastName = String(row.last_name ?? '');
+
+// therapists table: Stripe billing columns only (no profile fields)
+interface TherapistRow {
+  id: string;
+  subscription_tier: string | null;    // 'solo' | 'group' | 'enterprise' | 'free'
+  subscription_status: string | null;  // 'active' | 'trialing' | 'past_due' | 'cancelled'
+  trial_ends_at: string | null;
+  stripe_customer_id: string | null;
+  cancel_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+function buildProfileFromDemoAndAuth(
+  userId: string,
+  email: string,
+): UserProfile | null {
+  // Find matching demo account for profile fields
+  const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
+  if (!demo) {
+    // New sign-up not in demo list — return a minimal profile
+    const firstName = email.split('@')[0] ?? 'User';
+    const lastName = '';
+    const profession: Profession = 'Registered Psychotherapist';
+    const meta = PROFESSION_META[profession];
+    return {
+      id: userId,
+      name: firstName,
+      firstName,
+      lastName,
+      initials: firstName[0]?.toUpperCase() ?? 'U',
+      email,
+      profession,
+      registrationNumber: '',
+      city: '',
+      ...meta,
+    };
+  }
+  const meta = PROFESSION_META[demo.profession];
   return {
-    id: String(row.id),
-    name: `${firstName} ${lastName}`.trim(),
-    firstName,
-    lastName,
-    initials: `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase(),
+    id: userId,
+    name: `${demo.firstName} ${demo.lastName}`.trim(),
+    firstName: demo.firstName,
+    lastName: demo.lastName,
+    initials: `${demo.firstName[0] ?? ''}${demo.lastName[0] ?? ''}`.toUpperCase(),
     email,
-    profession,
-    registrationNumber: String(row.reg_number ?? ''),
-    city: String(row.city ?? ''),
+    profession: demo.profession,
+    registrationNumber: demo.regNumber,
+    city: demo.city,
     ...meta,
-    sessionRate: Number(row.session_rate ?? meta.sessionRate),
-    hstExempt: Boolean(row.hst_exempt ?? meta.hstExempt),
   };
 }
 
-function buildSubscriptionFromClinicianRow(row: Record<string, unknown>): SubscriptionPlan {
-  const pricePerSeat = Number(row.price_per_seat ?? 79);
-  const seats = Number(row.plan_seats ?? 1);
-  const isTrial = Boolean(row.is_trial ?? false);
-  const trialEndsAt = row.trial_ends_at ? new Date(String(row.trial_ends_at)) : null;
+function buildSubscriptionFromTherapistRow(
+  row: TherapistRow | null,
+  email: string,
+): SubscriptionPlan {
+  // Prefer live DB data; fall back to demo account metadata
+  const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
+
+  const tier = (row?.subscription_tier ?? demo?.planType ?? 'solo') as PlanType;
+  // Map subscription_status → isTrial
+  const status = row?.subscription_status ?? '';
+  const isTrial = status === 'trialing' || (demo?.isTrial ?? false);
+  const trialEndsAt = row?.trial_ends_at ? new Date(row.trial_ends_at) : null;
   const now = new Date();
-  const trialDaysRemaining = trialEndsAt
+  const trialDaysRemaining = isTrial && trialEndsAt
     ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / 86_400_000))
     : null;
 
-  const fmtDate = (val: unknown) =>
-    val ? new Date(String(val)).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+  const pricePerSeat = demo?.pricePerSeat ?? 79;
+  const seats = demo?.seats ?? 1;
+
+  const fmtDate = (val: string | null | undefined) =>
+    val ? new Date(val).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 
   return {
-    type: (row.plan_type as PlanType) ?? 'solo',
-    cycle: (row.plan_cycle as BillingCycle) ?? 'monthly',
+    type: tier,
+    cycle: (demo?.planCycle ?? 'monthly') as BillingCycle,
     seats,
     pricePerSeat,
     trialDaysRemaining: isTrial ? trialDaysRemaining : null,
     isTrial,
-    startDate: fmtDate(row.plan_starts_at),
-    renewsOn: fmtDate(row.plan_renews_at),
+    startDate: fmtDate(demo?.starts),
+    renewsOn: fmtDate(demo?.renews),
     nextBillingAmount: pricePerSeat * seats,
   };
 }
@@ -153,24 +192,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load profile from clinicians table given a Supabase session
+  // Load profile: query 'therapists' for subscription data (Stripe billing columns),
+  // match profile fields from DEMO_ACCOUNTS by email.
   const loadProfile = useCallback(async (session: Session) => {
-    const { data, error } = await supabase
-      .from('clinicians')
-      .select('*')
+    const email = session.user.email ?? '';
+
+    // Build profile from demo accounts (profile fields not stored in DB yet)
+    const profile = buildProfileFromDemoAndAuth(session.user.id, email);
+    if (profile) setUser(profile);
+
+    // Try to get live subscription data from therapists table
+    const { data } = await supabase
+      .from('therapists')
+      .select('id, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
       .eq('id', session.user.id)
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
-      // Clinicians row doesn't exist yet — could be a brand-new sign-up.
-      // Fall through without crashing.
-      console.warn('No clinician profile found for user', session.user.id);
-      return;
-    }
-
-    setUser(buildProfileFromClinicianRow(data as Record<string, unknown>, session.user.email ?? ''));
-    setSubscriptionState(buildSubscriptionFromClinicianRow(data as Record<string, unknown>));
+    setSubscriptionState(buildSubscriptionFromTherapistRow(data as TherapistRow | null, email));
   }, []);
+
 
   // Bootstrap: listen to Supabase auth state changes
   useEffect(() => {

@@ -98,7 +98,7 @@ export function Billing() {
       const { data, error } = await supabase
         .from('invoices')
         .insert({
-          clinician_id: clinicianId,
+          therapist_id: clinicianId,
           client_id: newInvoice.clientId ?? null,
           invoice_number: invoiceNumber,
           client_name: newInvoice.clientName,
