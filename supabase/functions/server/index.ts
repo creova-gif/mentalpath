@@ -13,17 +13,30 @@ app.use('*', logger(console.log));
 
 // ── M-02: Restrict CORS to explicit allowlist ────────────────────────────────
 // Set ALLOWED_ORIGINS env var to a comma-separated list of production domains.
-// Falls back to localhost for local development.
-const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") ?? "http://localhost:5173")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
+// Falls back to common dev origins (localhost variants + Replit) when not set.
+const rawOrigins = Deno.env.get("ALLOWED_ORIGINS");
+const allowedOrigins = rawOrigins
+  ? rawOrigins.split(",").map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const isDev = !rawOrigins;
 
 // Enable CORS for all routes and methods
 app.use(
   "/*",
   cors({
-    origin: (origin) => allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+    origin: (origin) => {
+      // In prod: only exact allowlist matches
+      if (!isDev) {
+        return allowedOrigins.includes(origin) ? origin : null;
+      }
+      // In dev (no ALLOWED_ORIGINS set): allow localhost on any port + Replit
+      const devAllowed =
+        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+        /^https?:\/\/[\w-]+\.[\w-]+\.repl\.co$/.test(origin) ||
+        /^https?:\/\/[\w-]+\.replit\.app$/.test(origin);
+      return devAllowed ? origin : null;
+    },
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
