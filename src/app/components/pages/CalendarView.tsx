@@ -1,16 +1,35 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const timeSlots = ['9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00'];
 
-const appointments = [
-  { id: 1, client: 'Amara M.', day: 1, startHour: 2, duration: 1, type: 'green' },
-  { id: 2, client: 'Jamal L.', day: 1, startHour: 3, duration: 1, type: 'blue' },
-  { id: 3, client: 'Sadia M.', day: 0, startHour: 0, duration: 1, type: 'amber' },
-  { id: 4, client: 'Priya & Chetan', day: 2, startHour: 5, duration: 1.5, type: 'purple' },
-  { id: 5, client: 'Marcus N.', day: 4, startHour: 1, duration: 1, type: 'green' },
+const WEEKS = [
+  { label: 'Mar 9 – Mar 13, 2026', startDate: 9 },
+  { label: 'Mar 16 – Mar 20, 2026', startDate: 16 },
+  { label: 'Mar 23 – Mar 27, 2026', startDate: 23 },
 ];
+
+const appointmentsByWeek: Record<number, { id: number; client: string; day: number; startHour: number; duration: number; type: string }[]> = {
+  0: [
+    { id: 1, client: 'Jamal L.', day: 0, startHour: 2, duration: 1, type: 'blue' },
+    { id: 2, client: 'Amara M.', day: 2, startHour: 1, duration: 1, type: 'green' },
+    { id: 3, client: 'Sadia M.', day: 4, startHour: 3, duration: 1, type: 'amber' },
+  ],
+  1: [
+    { id: 1, client: 'Amara M.', day: 1, startHour: 2, duration: 1, type: 'green' },
+    { id: 2, client: 'Jamal L.', day: 1, startHour: 3, duration: 1, type: 'blue' },
+    { id: 3, client: 'Sadia M.', day: 0, startHour: 0, duration: 1, type: 'amber' },
+    { id: 4, client: 'Priya & Chetan', day: 2, startHour: 5, duration: 1.5, type: 'purple' },
+    { id: 5, client: 'Marcus N.', day: 4, startHour: 1, duration: 1, type: 'green' },
+  ],
+  2: [
+    { id: 1, client: 'Riya B.', day: 0, startHour: 1, duration: 1, type: 'purple' },
+    { id: 2, client: 'Amara M.', day: 2, startHour: 2, duration: 1, type: 'green' },
+    { id: 3, client: 'Jamal L.', day: 3, startHour: 3, duration: 1, type: 'blue' },
+  ],
+};
 
 const upcomingToday = [
   { time: '10:00', initials: 'AM', name: 'Amara M.', type: 'Individual', color: 'bg-[#d4e8e4] text-[var(--sage-deep)]' },
@@ -19,29 +38,48 @@ const upcomingToday = [
 ];
 
 export function CalendarView() {
-  const [currentWeek, setCurrentWeek] = useState('Mar 16 – Mar 20, 2026');
+  const navigate = useNavigate();
+  const [weekIdx, setWeekIdx] = useState(1);
+
+  const week = WEEKS[weekIdx];
+  const appointments = appointmentsByWeek[weekIdx] || [];
+
+  const prevWeek = () => setWeekIdx(i => Math.max(0, i - 1));
+  const nextWeek = () => setWeekIdx(i => Math.min(WEEKS.length - 1, i + 1));
 
   return (
     <div>
-      <div className="grid grid-cols-[1fr_300px] gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
         {/* Main Calendar */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-[var(--font-display)] text-xl text-[var(--ink)]">{currentWeek}</h2>
+            <h2 className="font-[var(--font-display)] text-xl text-[var(--ink)]">{week.label}</h2>
             <div className="flex gap-2 items-center">
-              <button className="px-3.5 py-1.75 border border-[var(--border)] rounded-lg bg-white cursor-pointer text-[13px] text-[var(--ink-soft)] transition-all hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)]">
+              <button
+                onClick={prevWeek}
+                disabled={weekIdx === 0}
+                className="px-3.5 py-1.75 border border-[var(--border)] rounded-lg bg-white cursor-pointer text-[13px] text-[var(--ink-soft)] transition-all hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <button className="px-3.5 py-1.75 border border-[var(--border)] rounded-lg bg-white cursor-pointer text-[13px] text-[var(--ink-soft)] transition-all hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)]">
+              <button
+                onClick={() => setWeekIdx(1)}
+                className="px-3.5 py-1.75 border border-[var(--border)] rounded-lg bg-white cursor-pointer text-[13px] text-[var(--ink-soft)] transition-all hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)]"
+              >
                 Today
               </button>
-              <button className="px-3.5 py-1.75 border border-[var(--border)] rounded-lg bg-white cursor-pointer text-[13px] text-[var(--ink-soft)] transition-all hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)]">
+              <button
+                onClick={nextWeek}
+                disabled={weekIdx === WEEKS.length - 1}
+                className="px-3.5 py-1.75 border border-[var(--border)] rounded-lg bg-white cursor-pointer text-[13px] text-[var(--ink-soft)] transition-all hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden">
+          <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden overflow-x-auto">
+            <div className="min-w-[540px]">
             {/* Day Headers */}
             <div className="grid grid-cols-[60px_repeat(5,1fr)] bg-[var(--warm)] border-b border-[var(--border)]">
               <div className="p-2.5" />
@@ -49,11 +87,11 @@ export function CalendarView() {
                 <div
                   key={day}
                   className={`p-2.5 text-center text-xs font-medium uppercase tracking-[0.5px] ${
-                    idx === 0 ? 'text-[var(--sage-deep)]' : 'text-[var(--ink-muted)]'
+                    weekIdx === 1 && idx === 0 ? 'text-[var(--sage-deep)]' : 'text-[var(--ink-muted)]'
                   }`}
                 >
                   {day}
-                  <div className="text-base font-medium mt-0.5">{16 + idx}</div>
+                  <div className="text-base font-medium mt-0.5">{week.startDate + idx}</div>
                 </div>
               ))}
             </div>
@@ -68,7 +106,9 @@ export function CalendarView() {
                   {weekDays.map((_, dayIdx) => (
                     <div
                       key={`${dayIdx}-${timeIdx}`}
-                      className="border-r border-b border-[var(--border)] min-h-[40px] relative cursor-pointer transition-colors hover:bg-[rgba(74,124,111,0.03)]"
+                      onClick={() => navigate('/book')}
+                      className="border-r border-b border-[var(--border)] min-h-[40px] relative cursor-pointer transition-colors hover:bg-[rgba(74,124,111,0.05)]"
+                      title="Click to book appointment"
                     >
                       {/* Render appointments */}
                       {appointments
@@ -76,6 +116,7 @@ export function CalendarView() {
                         .map(apt => (
                           <div
                             key={apt.id}
+                            onClick={(e) => { e.stopPropagation(); navigate('/dashboard/clients'); }}
                             className={`absolute left-0.5 right-0.5 rounded-md p-1.5 cursor-pointer transition-opacity hover:opacity-85 z-10 ${
                               apt.type === 'green' ? 'bg-[#d4e8e4] border-l-[3px] border-[var(--sage)]' :
                               apt.type === 'blue' ? 'bg-[#dde8f5] border-l-[3px] border-[#378ADD]' :
@@ -110,7 +151,8 @@ export function CalendarView() {
                 </div>
               ))}
             </div>
-          </div>
+            </div>{/* end min-w-[540px] */}
+          </div>{/* end overflow-x-auto */}
         </div>
 
         {/* Sidebar */}
@@ -119,7 +161,11 @@ export function CalendarView() {
             <div className="text-[13px] font-medium text-[var(--ink)] mb-2.5">Today's schedule</div>
             <div className="space-y-2">
               {upcomingToday.map((item, idx) => (
-                <div key={idx} className="flex gap-2.5 py-2 border-b border-[var(--border)] text-[13px] last:border-0">
+                <div
+                  key={idx}
+                  onClick={() => navigate('/dashboard/clients')}
+                  className="flex gap-2.5 py-2 border-b border-[var(--border)] text-[13px] last:border-0 cursor-pointer hover:bg-[var(--warm)] rounded-lg px-1.5 -mx-1.5 transition-colors"
+                >
                   <div className="text-[var(--ink-muted)] min-w-[45px] text-xs">{item.time}</div>
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-medium flex-shrink-0 ${item.color}`}>
                     {item.initials}
@@ -151,7 +197,10 @@ export function CalendarView() {
             </div>
           </div>
 
-          <button className="w-full py-2.5 rounded-lg bg-[var(--sage)] text-white border-none text-[13px] font-medium cursor-pointer transition-colors hover:bg-[var(--sage-deep)] flex items-center justify-center gap-2">
+          <button
+            onClick={() => navigate('/book')}
+            className="w-full py-2.5 rounded-lg bg-[var(--sage)] text-white border-none text-[13px] font-medium cursor-pointer transition-colors hover:bg-[var(--sage-deep)] flex items-center justify-center gap-2"
+          >
             <Plus className="w-4 h-4" />
             New appointment
           </button>

@@ -3,6 +3,7 @@ import { Search, Bell, Plus, Menu } from 'lucide-react';
 import { useLocation } from 'react-router';
 import { NewClientModal } from '../modals/NewClientModal';
 import { TrialStatusBadge } from '../dashboard/TrialStatusBadge';
+import { useUser } from '../../context/UserContext';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -10,7 +11,10 @@ interface TopbarProps {
 
 export function Topbar({ onMenuClick }: TopbarProps) {
   const location = useLocation();
+  const { user } = useUser();
   const [showNewClientModal, setShowNewClientModal] = useState(false);
+
+  const notesLabel = user?.notesLabel ?? 'Session Notes';
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -20,15 +24,19 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       case '/dashboard/clients':
         return 'Clients';
       case '/dashboard/notes':
-        return 'Session Notes';
+        return notesLabel;
       case '/dashboard/billing':
         return 'Billing';
+      case '/dashboard/insurance-receipts':
+        return 'Insurance Receipts';
+      case '/dashboard/group-practice':
+        return 'Group Practice';
       case '/dashboard/calendar':
         return 'Calendar';
       case '/dashboard/messages':
-        return 'Messages';
+        return 'Secure Messages';
       case '/dashboard/settings':
-        return 'Settings';
+        return 'Practice Settings';
       case '/dashboard/compliance':
         return 'Compliance';
       case '/dashboard/cultural-templates':
@@ -43,6 +51,14 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         return 'Waitlist';
       case '/dashboard/resources':
         return 'Resources';
+      case '/dashboard/therapist-wellbeing':
+        return 'Your Wellbeing';
+      case '/dashboard/treatment-courses':
+        return 'Treatment Courses';
+      case '/dashboard/hep-builder':
+        return 'HEP Builder';
+      case '/dashboard/cost-savings':
+        return 'What You Save';
       case '/dashboard/faq':
         return 'FAQ';
       case '/dashboard/support':

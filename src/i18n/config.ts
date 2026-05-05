@@ -3,14 +3,12 @@ import { initReactI18next } from 'react-i18next';
 import enTranslations from './locales/en.json';
 import frTranslations from './locales/fr.json';
 
-// Safely get language from localStorage with fallback
 function getSavedLanguage(): string {
   if (typeof window === 'undefined') return 'en';
-  
   try {
-    return localStorage.getItem('mentalpath_language') || 'en';
-  } catch (e) {
-    // localStorage might not be available during SSR or in some environments
+    const saved = localStorage.getItem('mentalpath_language');
+    return saved === 'fr' ? 'fr' : 'en';
+  } catch {
     return 'en';
   }
 }
@@ -26,6 +24,9 @@ i18n
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false
+    },
+    react: {
+      useSuspense: false
     }
   })
   .catch((error) => {

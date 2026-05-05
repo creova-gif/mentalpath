@@ -166,17 +166,17 @@ export function Billing() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
         <SummaryBox label={`Collected — ${currentMonth}`} value={`$${monthRevenue.toFixed(0)}`} highlight />
         <SummaryBox label="Outstanding" value={`$${outstanding.toFixed(0)}`} />
         <SummaryBox label="YTD collected" value={`$${ytdRevenue.toFixed(0)}`} />
       </div>
 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-5">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border)]">
           <span className="text-sm font-medium text-[var(--ink)]">Invoices</span>
-          <div className="flex gap-2.5 items-center">
-            <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex gap-1.5 overflow-x-auto">
               <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterButton>
               <FilterButton active={filter === 'paid'} onClick={() => setFilter('paid')}>Paid</FilterButton>
               <FilterButton active={filter === 'pending'} onClick={() => setFilter('pending')}>Pending</FilterButton>
@@ -184,14 +184,16 @@ export function Billing() {
             </div>
             <button
               onClick={() => setShowInvoiceModal(true)}
-              className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
+              className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)] flex-shrink-0"
             >
               <Plus className="w-[13px] h-[13px]" strokeWidth={2} />
-              New invoice
+              <span className="hidden sm:inline">New invoice</span>
+              <span className="sm:hidden">New</span>
             </button>
           </div>
         </div>
-        <table className="w-full border-collapse">
+        <div className="overflow-x-auto">
+        <table className="w-full border-collapse min-w-[540px]">
           <thead>
             <tr>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
@@ -245,6 +247,7 @@ export function Billing() {
             ))}
           </tbody>
         </table>
+        </div>{/* end overflow-x-auto */}
       </div>
 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">

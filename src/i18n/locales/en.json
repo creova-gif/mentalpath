@@ -5,23 +5,36 @@
     "pricing": "Pricing",
     "clientPortal": "Client Portal",
     "dashboard": "Dashboard",
-    "signUpFree": "Sign Up Free"
+    "signUpFree": "Sign Up Free",
+    "signIn": "Sign in"
   },
   "hero": {
-    "badge": "Made for Canadian therapists · PHIPA compliant",
+    "badge": "Made for Canadian practitioners · PHIPA-first",
     "title": {
       "line1": "Less admin.",
-      "line2": "More",
-      "line2Italic": "presence",
-      "line3": "with your clients."
+      "line2": "More time with",
+      "line2Italic": "your clients."
     },
-    "subtitle": "Practice management built for Canadian therapists, psychotherapists, and social workers. PHIPA-compliant, culturally-informed, and priced for solo practitioners.",
+    "subtitle": "Practice management built for Canadian regulated health practitioners — therapists, chiropractors, physiotherapists, RMTs, and more. PHIPA-compliant and priced for solo practice.",
     "cta": "Start your free trial →",
     "seeHow": "See how it works",
     "footer": {
       "noCreditCard": "No credit card required",
       "canadianServers": "Canadian servers (PHIPA)",
       "cancelAnytime": "Cancel anytime"
+    },
+    "scrollLabel": "Scroll",
+    "dashboardCard": {
+      "greeting": "Good morning, Dr. Osei",
+      "date": "Mon, Mar 16",
+      "upcoming": "Upcoming",
+      "aiDrafted": "AI note drafted",
+      "aiSession": "Session with Amara M. →",
+      "aiMeta": "SOAP · Locks in 22h · PHIPA",
+      "phipaBadge": "PHIPA · AWS ca-central-1",
+      "session1Time": "10:00 AM · 50 min · Individual",
+      "session2Time": "11:30 AM · 50 min · Individual",
+      "session3Time": "2:00 PM · 50 min · Couples"
     }
   },
   "dashboard": {
@@ -36,123 +49,176 @@
     },
     "compliance": "Data stored in Canada · PHIPA compliant · Encrypted at rest"
   },
-  "complianceStrip": {
-    "phipa": "PHIPA Compliant",
-    "pipeda": "PIPEDA Compliant",
-    "canadianServers": "Canadian servers (ca-central-1)",
-    "collegeReady": "College-ready records"
+  "login": {
+    "tagline": "One platform.",
+    "taglineEm": "Every regulated",
+    "taglineSub": "health profession.",
+    "subtitle": "PHIPA-compliant practice management built for Canadian regulated practitioners — from psychotherapists to chiropractors, physiotherapists, RMTs, and more.",
+    "leftBadges": ["PHIPA compliant", "Canadian servers", "7-day free trial"],
+    "professions": ["Psychotherapists", "Psychologists", "Social Workers", "Chiropractors", "Physiotherapists", "RMTs", "Naturopaths", "OTs", "SLPs"],
+    "welcome": "Welcome back",
+    "welcomeSub": "Sign in to your MentalPath account",
+    "demoTitle": "Demo accounts — click to sign in as",
+    "demoPassword": "All accounts use password:",
+    "orEmail": "or sign in with email",
+    "emailLabel": "Work email",
+    "emailPlaceholder": "you@practice.ca",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign in →",
+    "signingIn": "Signing in…",
+    "noAccount": "Don't have an account?",
+    "startTrial": "Start free trial",
+    "error": "Invalid email or password. Use a demo account below.",
+    "badgeTrial": "Trial",
+    "badgeGroup": "Group",
+    "badgeSolo": "Solo",
+    "bottomBadges": ["PHIPA compliant", "Canadian servers", "Encrypted at rest"]
+  },
+  "ticker": [
+    "PHIPA Compliant",
+    "Canadian Servers Only",
+    "PIPEDA Certified",
+    "AES-256 Encrypted",
+    "College-Ready Records",
+    "No US Routing",
+    "AWS ca-central-1",
+    "Audit Logs",
+    "Therapist-Key Encryption",
+    "CRPO · CPO · CPSBC"
+  ],
+  "statsBar": {
+    "practitioners": {
+      "stat": "25,000+",
+      "label": "Regulated Canadian practitioners",
+      "sub": "Therapists · DCs · PTs · RMTs · NDs"
+    },
+    "price": {
+      "stat": "$49/mo",
+      "label": "Solo practitioner plan",
+      "sub": "Less than Jane App · More for Canada"
+    },
+    "trial": {
+      "stat": "7 days",
+      "label": "Free trial, no card required",
+      "sub": "Full feature access from day one"
+    }
+  },
+  "professionSection": {
+    "tag": "Who it's built for",
+    "title": "Every regulated Canadian health practitioner",
+    "subtitle": "College-compliant tools, billing codes, and clinical templates — built for your specific profession.",
+    "comingSoon": "OTs, Dietitians, Speech-Language Pathologists, and more — coming soon.",
+    "inCanada": "in Canada",
+    "cta": "Start your free trial"
   },
   "problemSection": {
     "tag": "The real problem",
     "title": {
-      "line1": "Your US therapy software",
+      "line1": "Your US practice software",
       "line2": "is",
-      "line2Italic": "putting you at risk"
+      "line2Italic": "putting you at risk."
     },
     "subtitle": "TherapyNotes, TheraNest, SimplePractice — built for American practitioners, storing your clients' most sensitive data on US servers. Your College doesn't accept that.",
-    "problems": [
+    "cta": "Switch in one afternoon →",
+    "cards": [
       {
-        "tag": "Privacy breach risk",
-        "title": "US cloud storage violates PHIPA",
-        "description": "Ontario's Personal Health Information Protection Act requires health data to be stored in Canada or encrypted in a way that prevents US law enforcement access. Most US tools fail this test."
+        "badge": "Privacy risk",
+        "title": "US cloud violates PHIPA",
+        "desc": "Ontario's PHIPA requires health data in Canada. Most US tools fail this test — leaving you exposed."
       },
       {
-        "tag": "$400–1,200/yr wasted",
+        "badge": "$400–1,200/yr",
         "title": "Enterprise pricing for solo work",
-        "description": "Jane App starts at $54/mo and climbs fast. Owl Practice at $89/mo. You're paying for features built for 10-clinician group practices. 70% of Canadian therapists work solo or in pairs."
+        "desc": "Jane App starts at $54/mo. Owl Practice at $89/mo. Built for 10-clinician groups, not solo practitioners."
       },
       {
-        "tag": "Missing: cultural context",
-        "title": "Generic intake forms miss your clients",
-        "description": "Newcomer trauma, racialized stress, cultural identity, and community-specific mental health frameworks aren't in any standard intake library. You're building these from scratch every time."
+        "badge": "Missing context",
+        "title": "Generic intake forms",
+        "desc": "Newcomer trauma, racialized stress, cultural identity frameworks — not in any US intake library."
       },
       {
-        "tag": "2–3 hrs/week on admin",
-        "title": "Notes, billing, scheduling — all fragmented",
-        "description": "Most practitioners cobble together a scheduling tool, a notes app, a payment processor, and a client portal from separate vendors. MentalPath replaces all four for less than you're spending on one."
+        "badge": "2–3 hrs/week",
+        "title": "Fragmented tools",
+        "desc": "Notes, billing, scheduling, portal — cobbled from 4 different vendors. MentalPath replaces all four."
       }
     ]
   },
-  "featuresSection": {
+  "bento": {
     "tag": "What MentalPath does",
     "title": {
       "line1": "Everything you need.",
-      "line2": "Nothing you don't."
+      "line2Italic": "Nothing you don't."
     },
-    "subtitle": "Built for the solo or small-group Canadian practitioner. Not a port of a US product — purpose-built for how you work.",
-    "features": [
-      {
-        "title": "Client management + culturally-adapted profiles",
-        "description": "Full client records with intake forms, session history, consent management, and document storage. Pre-built intake templates for newcomer trauma, BIPOC mental health, and intersectional stress frameworks — ready to customize.",
-        "tags": ["Cultural formulation", "Consent e-sign", "Document storage", "Sliding scale"]
-      },
-      {
-        "title": "Session notes + AI-assisted documentation",
-        "description": "SOAP, DAP, BIRP, and progress note templates. Optional AI session summary draft (stays on Canadian servers, never sent to US). Note history, searchable, linked to each client. Notes locked after 24hrs to prevent accidental edits.",
-        "tags": ["SOAP / DAP / BIRP", "AI draft assist", "24hr lock", "Searchable"]
-      },
-      {
-        "title": "Billing, invoicing + sliding scale management",
-        "description": "Generate official receipts for client insurance claims, track payments, send outstanding invoice reminders. Sliding scale rate management per client. Stripe integration for card payments. Export T2200 / self-employment income summaries at tax time.",
-        "tags": ["Stripe payments", "Sliding scale", "Insurance receipts", "Tax export"]
-      },
-      {
-        "title": "Client portal + secure messaging",
-        "description": "Clients access their own portal to book appointments, complete intake forms, view invoices, and message you securely — all PHIPA-compliant. No app download required. Works on any device.",
-        "tags": ["Self-booking", "Secure messaging", "No app needed"]
-      },
-      {
-        "title": "Online scheduling + automated reminders",
-        "description": "Share your booking link. Clients pick from your available slots. Automated SMS + email reminders reduce no-shows by 40%. Google Calendar sync. Session types: individual, couples, family, group.",
-        "tags": ["Booking link", "SMS reminders", "Google Calendar"]
-      }
-    ]
+    "subtitle": "Built for solo and small-group Canadian practitioners — not a port of a US product.",
+    "aiNotes": {
+      "tag": "AI Note Drafting",
+      "title": "SOAP, DAP, BIRP notes drafted from your session notes — entirely on Canadian servers.",
+      "body": "Draft, review, sign. Notes locked after 24hrs and searchable across all clients.",
+      "previewNote": "Session Note — Amara M. · March 16",
+      "aiLabel": "AI drafting from your notes..."
+    },
+    "billing": {
+      "tag": "Billing & Receipts",
+      "title": "Official insurance receipts, sliding scale, Stripe, T2125 export.",
+      "tags": ["CAD billing", "Sliding scale", "Stripe", "Tax export"]
+    },
+    "scheduling": {
+      "tag": "Online Scheduling",
+      "title": "Public booking link. SMS + email reminders. Google Calendar sync.",
+      "body": "Reduce no-shows by up to 40% with automated reminders sent 24hrs and 1hr before each session."
+    },
+    "portal": {
+      "tag": "Client Portal",
+      "title": "Secure portal for booking, intake forms, invoices, and encrypted messaging.",
+      "body": "No app download required. Works on any device. PHIPA-compliant end-to-end."
+    },
+    "group": {
+      "tag": "Group Practice",
+      "title": "Multi-clinician calendars, owner dashboard, role-based access, payout reporting.",
+      "body": "Built for practices with 2–20 clinicians who need shared scheduling and separate billing."
+    },
+    "clientMgmt": {
+      "tag": "Client Management",
+      "title": "Culturally-adapted intake forms. Full records. Consent management built-in.",
+      "body": "Pre-built templates for newcomer trauma, BIPOC mental health, and intersectional frameworks — ready to use, fully customizable.",
+      "templatesLabel": "Intake Templates",
+      "templates": [
+        "General Adult Intake",
+        "Newcomer Trauma Screen",
+        "BIPOC Mental Health",
+        "Culturally-adapted PHQ-9",
+        "Intersectional Stress Scale"
+      ]
+    }
   },
   "complianceSection": {
     "tag": "Built for Canada",
     "title": {
       "line1": "Compliance isn't a feature.",
-      "line2": "It's the foundation."
+      "line2Italic": "It's the foundation."
     },
-    "subtitle": "Every architectural decision was made with PHIPA, PIPEDA, and College requirements in mind. Not retrofitted — built-in from day one.",
+    "subtitle": "Every architectural decision was made with PHIPA, PIPEDA, and College requirements in mind — not retrofitted, built-in from day one.",
     "points": [
       {
+        "badge": "PHIPA",
         "title": "All data stored in Canada (AWS ca-central-1)",
-        "description": "Client records, session notes, billing data — hosted exclusively in Montreal and Toronto data centres. Never routed through or accessible under US CLOUD Act."
+        "desc": "Client records, session notes, billing — hosted exclusively in Montreal and Toronto data centres. Never routed through or accessible under US CLOUD Act."
       },
       {
-        "title": "End-to-end encryption at rest + in transit",
-        "description": "AES-256 encryption for stored data, TLS 1.3 for all connections. Session notes encrypted with therapist-specific keys — even MentalPath staff cannot read your clinical notes."
+        "badge": "Encryption",
+        "title": "AES-256 at rest · TLS 1.3 in transit",
+        "desc": "Session notes encrypted with therapist-specific keys — even MentalPath staff cannot read your clinical notes."
       },
       {
+        "badge": "College standards",
         "title": "College-ready records and documentation",
-        "description": "Note formats, consent forms, and retention periods aligned with CRPO, OCSWSSW, CPO, and CPSBC requirements. Audit logs for every record access."
+        "desc": "Note formats, consent forms, and retention periods aligned with CRPO, OCSWSSW, CPO, and CPSBC requirements. Audit logs for every record access."
       },
       {
+        "badge": "Consent",
         "title": "Client consent management built-in",
-        "description": "Digital consent forms with timestamped e-signatures. Consent versioning — clients re-consent when your privacy policy changes. Consent withdrawal recorded and respected automatically."
-      }
-    ],
-    "badges": [
-      {
-        "icon": "🛡️",
-        "name": "PHIPA",
-        "description": "Ontario's Personal Health Information Protection Act - fully compliant"
-      },
-      {
-        "icon": "🔒",
-        "name": "PIPEDA",
-        "description": "Federal privacy law - all personal data handled per PIPEDA requirements"
-      },
-      {
-        "icon": "🍁",
-        "name": "Canada-only hosting",
-        "description": "AWS ca-central-1 - Montreal + Toronto - No US routing"
-      },
-      {
-        "icon": "📋",
-        "name": "College standards",
-        "description": "CRPO, OCSWSSW, CPO, CPSBC record requirements met"
+        "desc": "Digital consent with timestamped e-signatures. Consent versioning — clients re-consent when your policy changes. Withdrawal recorded and respected automatically."
       }
     ]
   },
@@ -160,9 +226,10 @@
     "tag": "Simple pricing",
     "title": {
       "line1": "Pay less than Jane App.",
-      "line2": "Get more for Canada."
+      "line2Italic": "Get more for Canada."
     },
-    "subtitle": "No unit minimums. No surprise fees. Cancel any month. Built so solo practitioners can actually afford to run a compliant practice.",
+    "subtitle": "No unit minimums. No surprise fees. Cancel any month.",
+    "mostPopular": "Most popular",
     "plans": {
       "starter": {
         "name": "Starter",
@@ -176,25 +243,25 @@
         "name": "Solo Practitioner",
         "price": "$49",
         "period": "/month · unlimited clients",
-        "description": "Everything a solo therapist, social worker, or psychotherapist needs. PHIPA-compliant from day one.",
+        "description": "Everything a solo Canadian practitioner needs. PHIPA-compliant from day one.",
         "badge": "Most popular",
         "features": [
           "Unlimited clients",
-          "All note formats (SOAP, DAP, BIRP)",
+          "SOAP / DAP / BIRP notes",
           "AI session note assist",
           "Online booking + reminders",
-          "Client portal + secure messaging",
-          "Billing + invoice + receipts",
-          "Culturally-adapted intake forms",
-          "Tax export (T2125 prep)"
+          "Client portal + messaging",
+          "Billing + insurance receipts",
+          "Culturally-adapted intakes",
+          "T2125 tax export"
         ],
-        "cta": "Start 30-day free trial"
+        "cta": "Start 7-day free trial"
       },
       "group": {
         "name": "Group Practice",
         "price": "$79",
         "period": "/month per clinician · 2+ clinicians",
-        "description": "Multi-clinician scheduling, owner dashboard, separate billing per clinician, shared client base management.",
+        "description": "Multi-clinician scheduling, owner dashboard, separate billing, shared client management.",
         "features": [
           "Everything in Solo",
           "Multi-clinician calendar",
@@ -211,7 +278,7 @@
     "tag": "From practitioners",
     "title": {
       "line1": "Therapists who",
-      "line1Italic": "switched"
+      "line1Italic": "switched."
     },
     "testimonials": [
       {
@@ -220,36 +287,47 @@
         "role": "Registered Psychotherapist · Toronto, ON"
       },
       {
-        "quote": "The sliding scale billing feature is exactly what I needed. Most of my clients are newcomers navigating their first year in Canada - being able to set rates per client without awkward workarounds changed how I run my practice.",
+        "quote": "The sliding scale billing feature is exactly what I needed. Most of my clients are newcomers navigating their first year in Canada — being able to set rates per client without awkward workarounds changed how I run my practice.",
         "name": "Maya Rodriguez, MSW, RSW",
         "role": "Social Worker · Vancouver, BC"
       },
       {
-        "quote": "Switched from Jane App. It's $65/mo cheaper and the DAP note templates are actually better. My notes are compliant with my College's requirements right out of the box - I didn't have to configure anything.",
+        "quote": "Switched from Jane App. $65/mo cheaper and the DAP note templates are actually better. My notes are compliant with my College's requirements right out of the box — I didn't configure a thing.",
         "name": "Dr. Kenji Nakamura",
         "role": "Clinical Psychologist · Calgary, AB"
       }
     ]
   },
   "ctaSection": {
+    "tag": "Ready to start",
     "title": {
-      "line1": "Ready to focus on",
-      "line1Italic": "therapy,",
-      "line2": "not admin?"
+      "line1": "Ready to focus on therapy,",
+      "line2Italic": "not admin?"
     },
-    "subtitle": "Start your free 14-day trial. No credit card required. Cancel anytime.",
-    "placeholder": "your.email@example.com",
+    "subtitle": "Start your free 7-day trial. No credit card required. Cancel anytime.",
+    "emailPlaceholder": "your.email@practice.ca",
     "cta": "Start trial →",
-    "footer": "14-day free trial · No credit card required · PHIPA compliant"
+    "footer": "7-day free trial · No credit card required · PHIPA compliant"
   },
   "footer": {
+    "tagline": "Practice management built for Canadian regulated health practitioners. PHIPA & PIPEDA compliant.",
+    "columns": {
+      "product": "Product",
+      "compliance": "Compliance",
+      "company": "Company"
+    },
     "links": {
       "features": "Features",
       "compliance": "Compliance",
       "pricing": "Pricing",
+      "clientPortal": "Client Portal",
+      "phipa": "PHIPA",
+      "pipeda": "PIPEDA",
+      "collegeStandards": "College standards",
       "privacy": "Privacy",
-      "terms": "Terms"
+      "terms": "Terms",
+      "support": "Support"
     },
-    "copyright": "© 2026 MentalPath. Made in Canada. PHIPA & PIPEDA compliant. For Canadian mental health practitioners."
+    "copyright": "© 2026 MentalPath. Made in Canada. PHIPA & PIPEDA compliant."
   }
 }

@@ -3,7 +3,21 @@ import { useNavigate } from 'react-router';
 import { Check, Eye, EyeOff, Shield, Plus } from 'lucide-react';
 import { startTrial } from '../../hooks/useTrialStatus';
 
-type OnboardingStep = 1 | 2 | 3 | 4;
+type OnboardingStep = 1 | 2 | 3 | 4 | 5;
+
+const professions = [
+  { id: 'psychotherapist', icon: '🧠', name: 'Psycho-therapist', college: 'CRPO (ON)', notes: 'DAP, SOAP, BIRP, Progress', outcomes: 'PHQ-9, GAD-7, WHODAS', billing: 'Self-pay / private', hst: 'Exempt (ON)', credentials: 'RP' },
+  { id: 'psychologist', icon: '🔬', name: 'Psychologist', college: 'CPO (ON)', notes: 'DAP, SOAP, BIRP, Progress', outcomes: 'PHQ-9, GAD-7, WHODAS', billing: 'Self-pay / OHIP', hst: 'Exempt (ON)', credentials: 'PhD, C.Psych' },
+  { id: 'social_worker', icon: '🤝', name: 'Social Worker', college: 'OCSWSSW (ON)', notes: 'DAP, SOAP, Progress', outcomes: 'PHQ-9, GAD-7', billing: 'Self-pay / EAP', hst: 'Exempt (ON)', credentials: 'RSW' },
+  { id: 'chiropractor', icon: '🦴', name: 'Chiropractor', college: 'CCO (ON)', notes: 'SOAP, Progress', outcomes: 'Oswestry, NPRS, PSFS', billing: 'Extended health', hst: 'Taxable (13%)', credentials: 'DC' },
+  { id: 'physiotherapist', icon: '⚡', name: 'Physio-therapist', college: 'CPT (ON)', notes: 'SOAP, Progress', outcomes: 'Oswestry, DASH, NPRS', billing: 'Extended health', hst: 'Taxable (13%)', credentials: 'PT' },
+  { id: 'rmt', icon: '💆', name: 'Massage Therapist', college: 'CMTO (ON)', notes: 'SOAP, Progress', outcomes: 'NPRS, PSFS', billing: 'Extended health', hst: 'Taxable (13%)', credentials: 'RMT' },
+  { id: 'occupational', icon: '🔧', name: 'Occupational Therapist', college: 'COTO (ON)', notes: 'SOAP, DAP, Progress', outcomes: 'WHODAS, COPM, FIM', billing: 'Extended / OHIP', hst: 'Varies', credentials: 'OT Reg. (Ont.)' },
+  { id: 'naturopath', icon: '🌿', name: 'Naturopath', college: 'CONO (ON)', notes: 'SOAP, Progress', outcomes: 'PHQ-9, GAD-7', billing: 'Extended health', hst: 'Varies', credentials: 'ND' },
+  { id: 'acupuncturist', icon: '🪡', name: 'Acupuncturist', college: 'CTCMPAO (ON)', notes: 'SOAP, Progress', outcomes: 'NPRS, PHQ-9', billing: 'Extended health', hst: 'Taxable', credentials: 'R.Ac.' },
+  { id: 'dietitian', icon: '🥗', name: 'Dietitian', college: 'CDO (ON)', notes: 'SOAP, DAP, Progress', outcomes: 'PHQ-9, GAD-7', billing: 'Extended / self-pay', hst: 'Exempt', credentials: 'RD' },
+  { id: 'slp', icon: '🗣️', name: 'Speech-Language Pathologist', college: 'CASLPO (ON)', notes: 'SOAP, Progress', outcomes: 'Functional scales', billing: 'Extended / OHIP', hst: 'Exempt', credentials: 'SLP Reg. (Ont.)' },
+];
 
 const colleges = [
   { id: 'CRPO', name: 'CRPO (ON)' },
@@ -44,6 +58,7 @@ export function Onboarding() {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'solo' | 'group'>('solo');
   const [selectedCollege, setSelectedCollege] = useState<string>('');
+  const [selectedProfessionId, setSelectedProfessionId] = useState<string>('');
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -89,8 +104,11 @@ export function Onboarding() {
     navigate('/dashboard');
   };
 
+  const selectedProfession = professions.find(p => p.id === selectedProfessionId);
+
   const canContinueStep1 = formData.fullName && formData.email && formData.password.length >= 8;
-  const canContinueStep2 = formData.credentials && formData.registrationNumber && selectedCollege;
+  const canContinueStep2 = !!selectedProfessionId;
+  const canContinueStep3 = formData.credentials && formData.registrationNumber && selectedCollege;
 
   return (
     <div className="grid md:grid-cols-2 min-h-screen">
@@ -108,11 +126,16 @@ export function Onboarding() {
 
         <div>
           <h1 className="font-[var(--font-display)] text-[32px] text-white leading-[1.25] mb-4">
-            Practice management<br/>built for <em className="italic text-[var(--sage-light)]">Canadian</em><br/>therapists.
+            Built for <em className="italic text-[var(--sage-light)]">every</em><br/>regulated health<br/>professional.
           </h1>
-          <p className="text-[15px] text-white/50 leading-relaxed mb-10">
-            PHIPA-compliant. Canadian servers. Culturally-adapted intake forms. AI-assisted notes. $49/month — less than you spend on coffee.
+          <p className="text-[15px] text-white/50 leading-relaxed mb-6">
+            Note templates, receipt formats, outcome measures, and College standards configured automatically for your profession. PHIPA-compliant from minute one.
           </p>
+          <div className="flex flex-wrap gap-1.5 mb-6">
+            {['Psychotherapists', 'Psychologists', 'Social Workers', 'Chiropractors', 'Physiotherapists', 'RMTs', 'OTs', 'Naturopaths', 'Acupuncturists', 'Dietitians', 'SLPs'].map(tag => (
+              <span key={tag} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/[0.07] text-white/55 border border-white/[0.08]">{tag}</span>
+            ))}
+          </div>
 
           <div className="bg-white/5 rounded-xl p-6 border border-white/[0.08]">
             <p className="text-[15px] text-white/75 leading-relaxed italic mb-3.5">
@@ -157,7 +180,7 @@ export function Onboarding() {
         <div className="w-full max-w-[420px]">
           {/* Step Dots */}
           <div className="flex gap-1.5 mb-8">
-            {[1, 2, 3, 4].map((step) => (
+            {[1, 2, 3, 4, 5].map((step) => (
               <div
                 key={step}
                 className={`h-1.5 rounded-full transition-all ${
@@ -248,16 +271,72 @@ export function Onboarding() {
               </button>
 
               <div className="text-center mt-4 text-[13px] text-[var(--ink-muted)]">
-                Already have an account? <a href="/dashboard" className="text-[var(--sage)] font-medium hover:text-[var(--sage-deep)]">Sign in</a>
+                Already have an account? <a href="/login" className="text-[var(--sage)] font-medium hover:text-[var(--sage-deep)]">Sign in</a>
               </div>
             </div>
           )}
 
-          {/* Step 2: Professional Info */}
+          {/* Step 2: Your profession */}
           {currentStep === 2 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
-                Your practice
+                What's your profession?
+              </h2>
+              <p className="text-sm text-[var(--ink-muted)] mb-5">
+                MentalPath configures note templates, receipt formats, outcome measures, and College compliance automatically.
+              </p>
+
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {professions.map((prof) => (
+                  <button
+                    key={prof.id}
+                    onClick={() => setSelectedProfessionId(prof.id)}
+                    className={`bg-[var(--warm)] border-[1.5px] rounded-[11px] p-3 cursor-pointer transition-all text-center ${
+                      selectedProfessionId === prof.id
+                        ? 'border-[var(--sage)] bg-[var(--sage-pale)]'
+                        : 'border-[var(--border)] hover:border-[var(--sage-light)] hover:bg-white'
+                    }`}
+                  >
+                    <div className="text-[22px] mb-1.5">{prof.icon}</div>
+                    <div className={`text-[12px] font-medium leading-tight mb-0.5 ${selectedProfessionId === prof.id ? 'text-[var(--sage-deep)]' : 'text-[var(--ink)]'}`}>{prof.name}</div>
+                    <div className={`text-[10px] ${selectedProfessionId === prof.id ? 'text-[var(--sage)]' : 'text-[var(--ink-muted)]'}`}>{prof.college}</div>
+                  </button>
+                ))}
+              </div>
+
+              {selectedProfession && (
+                <div className="bg-[var(--sage-pale)] border border-[rgba(74,124,111,0.2)] rounded-xl p-4 mb-4 text-[13px] text-[var(--sage-deep)] leading-relaxed">
+                  <div className="font-medium mb-2">MentalPath will configure for {selectedProfession.name}:</div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[12px]">
+                    <div><span className="text-[var(--sage)]">Note formats:</span> {selectedProfession.notes}</div>
+                    <div><span className="text-[var(--sage)]">Outcome measures:</span> {selectedProfession.outcomes}</div>
+                    <div><span className="text-[var(--sage)]">Billing:</span> {selectedProfession.billing}</div>
+                    <div><span className="text-[var(--sage)]">HST:</span> {selectedProfession.hst}</div>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => canContinueStep2 && setCurrentStep(3)}
+                disabled={!canContinueStep2}
+                className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              >
+                Continue →
+              </button>
+              <button
+                onClick={() => setCurrentStep(1)}
+                className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
+              >
+                ← Back
+              </button>
+            </div>
+          )}
+
+          {/* Step 3: Professional Info */}
+          {currentStep === 3 && (
+            <div>
+              <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
+                Your practice details
               </h2>
               <p className="text-sm text-[var(--ink-muted)] mb-7">
                 This appears on invoices and receipts sent to your clients.
@@ -355,14 +434,14 @@ export function Onboarding() {
               </div>
 
               <button
-                onClick={() => canContinueStep2 && setCurrentStep(3)}
-                disabled={!canContinueStep2}
+                onClick={() => canContinueStep3 && setCurrentStep(4)}
+                disabled={!canContinueStep3}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
                 Continue →
               </button>
               <button
-                onClick={() => setCurrentStep(1)}
+                onClick={() => setCurrentStep(2)}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
                 ← Back
@@ -370,8 +449,8 @@ export function Onboarding() {
             </div>
           )}
 
-          {/* Step 3: Plan Selection */}
-          {currentStep === 3 && (
+          {/* Step 4: Plan Selection */}
+          {currentStep === 4 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
                 Choose your plan
@@ -421,13 +500,13 @@ export function Onboarding() {
               </div>
 
               <button
-                onClick={() => setCurrentStep(4)}
+                onClick={() => setCurrentStep(5)}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] mt-2"
               >
                 Start free trial →
               </button>
               <button
-                onClick={() => setCurrentStep(2)}
+                onClick={() => setCurrentStep(3)}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
                 ← Back
@@ -435,8 +514,8 @@ export function Onboarding() {
             </div>
           )}
 
-          {/* Step 4: First Client */}
-          {currentStep === 4 && (
+          {/* Step 5: First Client */}
+          {currentStep === 5 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
                 Add your first client

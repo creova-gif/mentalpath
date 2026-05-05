@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Subscribe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,500&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0d0f0e; --night-2:#131614; --night-3:#191e1b;
+  --sage:#4fb896; --sage-dim:#2a6b54; --sage-bright:#6dd9b2; --sage-pale:rgba(79,184,150,0.1);
+  --cream:#e8ede9; --cream-dim:#8a9e90; --cream-faint:rgba(232,237,233,0.05);
+  --red:#e05252; --amber:#d4893a; --green:#22c98a;
+  --border:rgba(232,237,233,0.07); --border-2:rgba(232,237,233,0.12);
+  --font-d:'Fraunces',serif; --font-b:'Instrument Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--night);color:var(--cream);min-height:100vh;}
+button,input,select{font-family:inherit;}
+
+/* ── TOPBAR ── */
+.topbar{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;}
+.tb-mark{width:28px;height:28px;background:var(--sage-dim);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:13px;height:13px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.tb-name{font-family:var(--font-d);font-size:16px;color:var(--cream);}
+.tb-sp{flex:1;}
+.tb-secure{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream-dim);}
+.tb-secure svg{width:12px;height:12px;fill:none;stroke:var(--sage);stroke-width:1.5;}
+
+/* ── MAIN ── */
+.page{max-width:1080px;margin:0 auto;padding:52px 20px 80px;display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:start;}
+
+/* ── LEFT ── */
+.left-col{}
+.page-eyebrow{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--sage);margin-bottom:14px;}
+.page-title{font-family:var(--font-d);font-size:clamp(32px,5vw,52px);font-weight:300;line-height:1.05;color:var(--cream);margin-bottom:12px;}
+.page-title em{font-style:italic;color:var(--sage);}
+.page-sub{font-size:15px;color:var(--cream-dim);line-height:1.65;margin-bottom:36px;max-width:480px;}
+
+/* PROF SELECTOR */
+.prof-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px;}
+.prof-pill{padding:7px 14px;border:1px solid var(--border-2);border-radius:8px;font-size:12px;font-weight:500;color:var(--cream-dim);cursor:pointer;background:transparent;transition:all 0.15s;}
+.prof-pill:hover{border-color:var(--sage-dim);color:var(--cream);}
+.prof-pill.on{background:var(--sage-pale);border-color:var(--sage);color:var(--sage);}
+
+/* SAVINGS HERO */
+.savings-bar{background:var(--night-2);border:1px solid var(--border-2);border-radius:14px;padding:20px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+.savings-bar::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(79,184,150,0.08),transparent 60%);pointer-events:none;}
+.sb-eyebrow{font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:8px;}
+.sb-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.sb-saving{font-family:var(--font-d);font-size:42px;color:var(--cream);line-height:1;}
+.sb-period{font-size:13px;color:var(--cream-dim);margin-top:4px;}
+.sb-stats{display:flex;gap:20px;margin-left:auto;}
+.sbs{text-align:center;}
+.sbs-n{font-family:var(--font-d);font-size:22px;color:var(--cream);}
+.sbs-l{font-size:10px;color:var(--cream-dim);margin-top:2px;}
+.sbs-sep{width:1px;background:var(--border);align-self:stretch;}
+
+/* PLAN CARDS */
+.plan-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.plan-card{background:var(--night-2);border:1.5px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.plan-card:hover{border-color:var(--sage-dim);}
+.plan-card.selected{border-color:var(--sage);border-width:2px;}
+.plan-card.selected::before{content:'';position:absolute;inset:0;background:rgba(79,184,150,0.04);}
+.popular-tag{position:absolute;top:-1px;right:16px;background:var(--sage);color:var(--night);font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:3px 10px;border-radius:0 0 6px 6px;}
+.plan-name{font-size:11px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;color:var(--cream-dim);margin-bottom:8px;}
+.plan-price{font-family:var(--font-d);font-size:36px;color:var(--cream);line-height:1;}
+.plan-price .currency{font-size:18px;vertical-align:top;margin-top:6px;display:inline-block;color:var(--cream-dim);}
+.plan-price .unit{font-size:13px;color:var(--cream-dim);font-family:var(--font-b);}
+.plan-desc{font-size:12px;color:var(--cream-dim);margin:8px 0 14px;line-height:1.55;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.pf{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--cream-dim);}
+.pf-check{width:13px;height:13px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;flex-shrink:0;margin-top:1px;}
+.pf-x{width:13px;height:13px;fill:none;stroke:rgba(232,237,233,0.2);stroke-width:2;stroke-linecap:round;flex-shrink:0;margin-top:1px;}
+
+/* TOOLS BEING REPLACED */
+.tools-section{margin-bottom:24px;}
+.ts-title{font-size:11px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;color:var(--cream-dim);margin-bottom:10px;}
+.tools-list{display:flex;flex-direction:column;gap:6px;}
+.tool-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--night-2);border-radius:8px;border:1px solid var(--border);}
+.tool-icon{font-size:16px;flex-shrink:0;}
+.tool-name{font-size:13px;font-weight:500;color:var(--cream);flex:1;}
+.tool-cat{font-size:11px;color:var(--cream-dim);}
+.tool-cost{font-size:13px;font-weight:500;color:var(--red);text-decoration:line-through;flex-shrink:0;}
+.tool-replaced{width:18px;height:18px;border-radius:50%;background:var(--sage-pale);border:1px solid var(--sage-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tool-replaced svg{width:9px;height:9px;fill:none;stroke:var(--sage);stroke-width:2.5;stroke-linecap:round;}
+.tools-total{display:flex;justify-content:space-between;padding:10px 12px;background:var(--night-3);border-radius:8px;border:1px solid var(--border-2);margin-top:6px;}
+.tt-label{font-size:13px;color:var(--cream-dim);}
+.tt-old{font-family:var(--font-d);font-size:20px;color:var(--red);text-decoration:line-through;opacity:0.6;}
+.tt-arrow{font-size:14px;color:var(--cream-dim);}
+.tt-new{font-family:var(--font-d);font-size:20px;color:var(--sage);}
+
+/* EXTRAS */
+.extras-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:24px;}
+.extra-item{display:flex;align-items:flex-start;gap:8px;background:var(--night-2);border-radius:8px;padding:10px 12px;border:1px solid var(--border);}
+.extra-icon{font-size:16px;flex-shrink:0;}
+.extra-name{font-size:12px;font-weight:500;color:var(--cream);line-height:1.2;}
+.extra-note{font-size:11px;color:var(--cream-dim);margin-top:2px;}
+
+/* ── RIGHT COL / CHECKOUT ── */
+.checkout-col{position:sticky;top:24px;}
+.checkout-card{background:var(--night-2);border:1px solid var(--border-2);border-radius:16px;overflow:hidden;}
+.cc-head{padding:20px 22px;border-bottom:1px solid var(--border);}
+.cc-trial{display:inline-flex;align-items:center;gap:6px;background:rgba(79,184,150,0.12);border:1px solid rgba(79,184,150,0.2);border-radius:6px;padding:5px 11px;font-size:11px;font-weight:500;color:var(--sage-bright);margin-bottom:12px;}
+.cc-trial svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.cc-plan-name{font-family:var(--font-d);font-size:22px;color:var(--cream);margin-bottom:4px;}
+.cc-plan-price{font-size:14px;color:var(--cream-dim);}
+.cc-plan-price strong{color:var(--cream);font-size:24px;font-family:var(--font-d);}
+.cc-body{padding:20px 22px;}
+.cc-line{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:13px;border-bottom:1px solid var(--border);}
+.cc-line:last-child{border-bottom:none;}
+.cc-ll{color:var(--cream-dim);}
+.cc-lr{font-weight:500;color:var(--cream);}
+.cc-lr.green{color:var(--sage);}
+.cc-lr.muted{color:var(--cream-dim);font-size:11px;}
+.cc-tax-note{font-size:11px;color:var(--cream-dim);margin-top:10px;line-height:1.55;padding:8px 10px;background:rgba(232,237,233,0.03);border-radius:6px;border:1px solid var(--border);}
+.checkout-btn{width:100%;padding:15px;background:var(--sage);color:var(--night);border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.checkout-btn:hover{background:var(--sage-bright);}
+.checkout-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.checkout-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;}
+.spinner{width:16px;height:16px;border:2px solid rgba(13,15,14,0.3);border-top-color:var(--night);border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.secure-row{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:var(--cream-dim);margin-top:10px;}
+.secure-row svg{width:11px;height:11px;fill:none;stroke:var(--sage);stroke-width:1.5;}
+.stripe-logo{font-size:11px;color:var(--cream-dim);}
+.cc-fees{font-size:11px;color:var(--cream-dim);margin-top:14px;padding:10px 12px;background:rgba(232,237,233,0.03);border-radius:6px;border:1px solid var(--border);line-height:1.65;}
+.cf-title{font-weight:500;color:var(--cream-dim);margin-bottom:4px;font-size:11px;}
+.cc-footer{padding:14px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--cream-dim);line-height:1.6;}
+.cc-footer a{color:var(--sage);text-decoration:none;}
+
+/* FAQ */
+.faq{margin-top:40px;}
+.faq-title{font-family:var(--font-d);font-size:22px;font-weight:300;color:var(--cream);margin-bottom:16px;}
+.faq-item{border-bottom:1px solid var(--border);cursor:pointer;}
+.faq-q{padding:14px 0;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--cream);}
+.faq-q:hover{color:var(--sage);}
+.faq-icon{font-size:18px;color:var(--cream-dim);transition:transform 0.2s;flex-shrink:0;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-a{display:none;padding:0 0 14px;font-size:13px;color:var(--cream-dim);line-height:1.65;}
+.faq-item.open .faq-a{display:block;}
+
+/* PLAN SWITCH TABS (inside checkout col) */
+.plan-tabs{display:flex;gap:0;background:var(--night-3);border-radius:8px;padding:3px;margin-bottom:16px;}
+.plan-tab{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;font-size:12px;font-weight:500;color:var(--cream-dim);cursor:pointer;transition:all 0.15s;text-align:center;}
+.plan-tab.on{background:var(--sage-dim);color:var(--sage);}
+
+/* ERROR STATE */
+.error-banner{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-radius:8px;padding:12px 14px;font-size:13px;color:#f09595;line-height:1.55;margin-bottom:14px;display:none;}
+.error-banner.show{display:block;}
+
+@media(max-width:880px){
+  .page{grid-template-columns:1fr;}
+  .checkout-col{position:static;}
+  .plan-cards{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-name">MentalPath</span>
+  <div class="tb-sp"></div>
+  <div class="tb-secure">
+    <svg viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+    Secured by Stripe · Canadian servers (AWS ca-central-1) · PHIPA compliant
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ── LEFT COLUMN ── -->
+  <div class="left-col">
+    <div class="page-eyebrow">For Canadian regulated health professionals</div>
+    <h1 class="page-title">Stop paying five bills<br>for <em>one practice.</em></h1>
+    <p class="page-sub">Every tool you're currently paying for — scheduling, notes, invoicing, reminders, HEPs, outcomes, portal, compliance — is already in MentalPath. For $49 a month.</p>
+
+    <!-- Profession selector -->
+    <div class="prof-row">
+      <button class="prof-pill on" onclick="selectProf('physio',this)">⚡ Physiotherapist</button>
+      <button class="prof-pill" onclick="selectProf('chiro',this)">🦴 Chiropractor</button>
+      <button class="prof-pill" onclick="selectProf('rmt',this)">💆 RMT</button>
+      <button class="prof-pill" onclick="selectProf('psychotherapist',this)">🧠 Psychotherapist</button>
+      <button class="prof-pill" onclick="selectProf('ot',this)">🔧 OT</button>
+      <button class="prof-pill" onclick="selectProf('naturopath',this)">🌿 Naturopath</button>
+    </div>
+
+    <!-- Savings bar -->
+    <div class="savings-bar">
+      <div class="sb-eyebrow">Your monthly savings with MentalPath</div>
+      <div class="sb-row">
+        <div>
+          <div class="sb-saving" id="sbSaving">$202</div>
+          <div class="sb-period">per month · <span id="sbAnnual">$2,424/yr</span></div>
+        </div>
+        <div class="sb-stats">
+          <div class="sbs"><div class="sbs-n" id="sbOld">$251</div><div class="sbs-l">old stack</div></div>
+          <div class="sbs-sep"></div>
+          <div class="sbs" style="color:var(--sage)"><div class="sbs-n">$49</div><div class="sbs-l">MentalPath</div></div>
+          <div class="sbs-sep"></div>
+          <div class="sbs"><div class="sbs-n" id="sbTools">6</div><div class="sbs-l">replaced</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan cards -->
+    <div class="plan-cards">
+      <div class="plan-card selected" id="card-solo" onclick="selectPlan('solo',this)">
+        <div class="plan-name">Solo practitioner</div>
+        <div class="plan-price"><span class="currency">$</span>49<span class="unit"> CAD/mo</span></div>
+        <div class="plan-desc">Everything a solo practitioner needs. Unlimited clients, all AI features, full compliance toolkit.</div>
+        <ul class="plan-features">
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Unlimited clients</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>AI note drafting (all formats)</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>All outcome measures</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>HEP builder + exercise library</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Extended health receipts</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Treatment course dashboard</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>PHIPA compliance toolkit</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Therapist wellbeing check-ins</li>
+          <li class="pf"><svg class="pf-x" viewBox="0 0 14 12"><path d="M2 2l10 10M12 2L2 12"/></svg>1 clinician only</li>
+        </ul>
+      </div>
+      <div class="plan-card" id="card-group" onclick="selectPlan('group',this)">
+        <div class="popular-tag">Most popular for clinics</div>
+        <div class="plan-name">Group practice</div>
+        <div class="plan-price"><span class="currency">$</span>79<span class="unit"> CAD/clinician/mo</span></div>
+        <div class="plan-desc">Everything in Solo, plus a shared practice dashboard, multi-clinician scheduling, and owner analytics.</div>
+        <ul class="plan-features">
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Everything in Solo</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Unlimited clinician seats</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Practice owner dashboard</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Shared scheduling calendar</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Clinician invite + roles</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Cross-clinician compliance</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>Practice analytics</li>
+          <li class="pf"><svg class="pf-check" viewBox="0 0 14 12"><path d="M1 6l4 4 8-8"/></svg>2–50 clinicians</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tools being replaced -->
+    <div class="tools-section">
+      <div class="ts-title">What MentalPath replaces</div>
+      <div class="tools-list" id="toolsList"></div>
+      <div class="tools-total">
+        <span class="tt-label">Old stack</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="tt-old" id="ttOld">$251/mo</span>
+          <span class="tt-arrow">→</span>
+          <span class="tt-new">$49/mo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extras you can't get elsewhere -->
+    <div class="ts-title" style="margin-bottom:10px;">Things your old stack never had</div>
+    <div class="extras-grid" id="extrasGrid"></div>
+
+    <!-- FAQ -->
+    <div class="faq">
+      <div class="faq-title">Common questions</div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">When will I be charged? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Not until your 30-day free trial ends. You can add your payment method now — nothing is charged until the trial ends. If you cancel before the trial ends, you pay nothing.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">What taxes will I pay? <span class="faq-icon">+</span></div>
+        <div class="faq-a">MentalPath is a Canadian SaaS product. GST/HST applies based on your province. Ontario: 13% HST. Alberta/territories: 5% GST. Atlantic provinces: 15% HST. Quebec adds QST on top of GST. Stripe collects and remits this automatically — your invoice shows the tax breakdown clearly. This is standard for any Canadian software subscription.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">What are the Stripe payment processing fees? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Stripe charges 2.9% + $0.30 CAD for Canadian cards, 3.9% + $0.30 for international cards. These fees apply when your <em>clients</em> pay invoices through MentalPath. Your subscription to MentalPath itself is also processed through Stripe at the same rates. Stripe deducts fees before payout — so if a client pays a $140 invoice, you receive ~$135.74 after the 2.9% + $0.30 fee.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Is my client data safe and PHIPA-compliant? <span class="faq-icon">+</span></div>
+        <div class="faq-a">All client health records are stored on AWS ca-central-1 (Montreal + Calgary) — physically in Canada. Data is encrypted at rest (AES-256) and in transit (TLS 1.3). Session notes are auto-locked after 24 hours. There is an append-only audit log for all PHI access. Your billing data is handled by Stripe — it never touches MentalPath servers.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Can I get a discount? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Yes — 20% community rate ($39/mo) for practitioners who primarily serve BIPOC, newcomer, refugee, or rural/remote communities. Email hello@mentalpath.ca with a brief description of your practice. Use code COMMUNITY at checkout.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">What happens to my data if I cancel? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Your account is paused — not deleted. You retain read-only access for 90 days. Clinical records are retained for 10 years as required by PHIPA regardless of subscription status. You'll receive a full data export before any deletion.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Can I switch plans? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Yes — upgrade from Solo to Group any time from Settings. Downgrade at next renewal. Upgrades are prorated to the day.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT COLUMN / CHECKOUT ── -->
+  <div class="checkout-col">
+    <div class="checkout-card">
+      <div class="cc-head">
+        <div class="cc-trial">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          30-day free trial active
+        </div>
+        <div class="plan-tabs">
+          <button class="plan-tab on" id="tab-solo" onclick="selectPlan('solo',document.getElementById('card-solo'))">Solo $49</button>
+          <button class="plan-tab" id="tab-group" onclick="selectPlan('group',document.getElementById('card-group'))">Group $79</button>
+        </div>
+        <div class="cc-plan-name" id="ccPlanName">Solo Practitioner</div>
+        <div class="cc-plan-price" id="ccPlanPrice">
+          <strong>$49</strong> CAD per month after trial
+        </div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-line"><span class="cc-ll">Trial period</span><span class="cc-lr green">30 days free</span></div>
+        <div class="cc-line"><span class="cc-ll">Charged today</span><span class="cc-lr green">$0.00</span></div>
+        <div class="cc-line"><span class="cc-ll">First charge</span><span class="cc-lr" id="ccFirstCharge">April 19, 2026</span></div>
+        <div class="cc-line"><span class="cc-ll">Subscription</span><span class="cc-lr" id="ccMonthly">$49.00 CAD/mo</span></div>
+        <div class="cc-line"><span class="cc-ll">GST/HST (Ontario)</span><span class="cc-lr muted" id="ccTax">+$6.37 (13%)</span></div>
+        <div class="cc-line" style="font-weight:500;border-top:1px solid var(--border-2);padding-top:12px;margin-top:4px;"><span style="color:var(--cream)">Total after trial</span><span style="color:var(--sage-bright)" id="ccTotal">$55.37 CAD/mo</span></div>
+
+        <div class="cc-tax-note">
+          Tax is calculated automatically based on your billing address. Rate varies by province: ON 13% HST · AB 5% GST · Atlantic 15% HST · QC GST+QST.
+        </div>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <button class="checkout-btn" id="checkoutBtn" onclick="startCheckout()">
+          <span id="checkoutBtnText">Start free trial →</span>
+          <div class="spinner" id="checkoutSpinner"></div>
+        </button>
+
+        <div class="secure-row">
+          <svg viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+          Secured by Stripe · No charge until
+          <span id="secureDate">April 19</span>
+        </div>
+
+        <div class="cc-fees">
+          <div class="cf-title">Stripe payment processing (when clients pay invoices)</div>
+          Canadian cards: 2.9% + $0.30 CAD per transaction<br>
+          International cards: 3.9% + $0.30 CAD<br>
+          Disputes: $15.00 CAD (refunded if you win)<br>
+          <span style="color:rgba(232,237,233,0.3)">Deducted by Stripe before payout — not billed separately</span>
+        </div>
+      </div>
+      <div class="cc-footer">
+        By starting your trial you agree to MentalPath's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. Cancel any time from Settings → Billing. Subscription renews monthly. HST/GST collected per Canadian tax law.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ──
+// In production these come from your environment / Next.js
+const SUPABASE_URL = window.SUPABASE_URL || 'https://hkhwgbkijepsxtixdmrs.supabase.co';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+
+const PLANS = {
+  solo: { name: 'Solo Practitioner', price: 49, label: '$49 CAD/mo' },
+  group: { name: 'Group Practice', price: 79, label: '$79 CAD/clinician/mo' }
+};
+
+const DATA = {
+  physio: {
+    tools:[
+      {icon:'📅',name:'Cliniko',cat:'Scheduling + notes + intake',cost:74,note:'Australian servers — not PHIPA'},
+      {icon:'💰',name:'QuickBooks',cat:'Invoicing + T2125',cost:35},
+      {icon:'💪',name:'PhysiApp',cat:'Home exercise programs',cost:45,note:'Most physios pay this monthly'},
+      {icon:'📋',name:'JotForm',cat:'Digital intake forms',cost:27},
+      {icon:'🔐',name:'Healthie',cat:'Client portal',cost:49},
+      {icon:'📹',name:'Zoom Pro',cat:'Video telehealth',cost:21},
+    ],
+    extras:[
+      {icon:'📊',name:'Oswestry + DASH + NPRS + PSFS + Berg',note:'Full MSK outcome library — built in'},
+      {icon:'🔄',name:'Treatment course dashboard',note:'Session 4 of 8 · who needs reassessment'},
+      {icon:'🤖',name:'AI CPT-standard SOAP drafting',note:'Fills S/O/A/P in seconds from your dictation'},
+      {icon:'🇨🇦',name:'100% Canadian infrastructure',note:'Cliniko is Australian. MentalPath is ca-central-1.'},
+    ]
+  },
+  chiro: {
+    tools:[
+      {icon:'📅',name:'Cliniko',cat:'Scheduling + notes',cost:74,note:'Australian servers — not PHIPA'},
+      {icon:'💰',name:'QuickBooks',cat:'Invoicing',cost:35},
+      {icon:'💪',name:'PhysiApp',cat:'Home exercise programs',cost:45},
+      {icon:'📋',name:'JotForm',cat:'Intake forms',cost:27},
+      {icon:'🔐',name:'Healthie',cat:'Client portal',cost:49},
+      {icon:'📹',name:'Doxy.me',cat:'Video sessions',cost:20},
+    ],
+    extras:[
+      {icon:'🦴',name:'CCO-standard SOAP templates',note:'Pre-built to College standards'},
+      {icon:'📊',name:'Oswestry + NPRS + PSFS outcomes',note:'Track disability and pain per course'},
+      {icon:'🤖',name:'AI SOAP note drafting',note:'No other chiro software does this'},
+      {icon:'🏥',name:'Extended health receipts',note:'Blue Cross, Sun Life, Manulife, Green Shield, Canada Life'},
+    ]
+  },
+  rmt: {
+    tools:[
+      {icon:'📅',name:'Jane App',cat:'Scheduling + intake',cost:74},
+      {icon:'💰',name:'QuickBooks',cat:'Invoicing',cost:35},
+      {icon:'📂',name:'Google Drive / Dropbox',cat:'Document storage',cost:14},
+      {icon:'💳',name:'Square',cat:'Payment processing overhead',cost:25},
+      {icon:'📅',name:'Calendly',cat:'Online booking',cost:19},
+    ],
+    extras:[
+      {icon:'📋',name:'CMTO-standard intake form',note:'Seeded, PHIPA-compliant, e-signed before visit'},
+      {icon:'🏥',name:'Extended health receipts in 30s',note:'CMTO provider number on every receipt'},
+      {icon:'🤖',name:'AI SOAP note drafting',note:'Jane has no AI — you type everything'},
+      {icon:'🫀',name:'Therapist wellbeing check-ins',note:'No RMT tool asks how you\'re doing'},
+    ]
+  },
+  psychotherapist: {
+    tools:[
+      {icon:'📅',name:'Jane App',cat:'Scheduling + intake',cost:74,note:'Most popular for Canadian therapists'},
+      {icon:'💰',name:'QuickBooks',cat:'Invoicing + T2125',cost:35},
+      {icon:'📊',name:'Owl Practice',cat:'PHQ-9 / GAD-7 only',cost:29,note:'Separate sub for outcome tracking'},
+      {icon:'📹',name:'Zoom Pro',cat:'Video telehealth',cost:21},
+      {icon:'📧',name:'Mailchimp',cat:'Client reminders',cost:18},
+    ],
+    extras:[
+      {icon:'🤖',name:'AI DAP/SOAP/BIRP/Progress drafting',note:'Jane has zero AI. Every note is typed by hand.'},
+      {icon:'🫀',name:'Therapist wellbeing monitoring',note:'ProQOL-5 VT tracking — nothing else has this'},
+      {icon:'🌍',name:'Cultural intake templates (7)',note:'BIPOC, newcomer, Indigenous, LGBTQ2S+ — ready now'},
+      {icon:'📋',name:'Auto-generated T2125 summary',note:'No accountant needed for this step'},
+    ]
+  },
+  ot: {
+    tools:[
+      {icon:'📅',name:'SimplePractice',cat:'Practice management',cost:109,note:'US-hosted — not PHIPA-compliant'},
+      {icon:'💰',name:'QuickBooks',cat:'Invoicing',cost:35},
+      {icon:'📋',name:'JotForm',cat:'Intake forms',cost:27},
+    ],
+    extras:[
+      {icon:'🇨🇦',name:'Actually PHIPA-compliant',note:'SimplePractice is US-hosted and follows HIPAA, not PHIPA'},
+      {icon:'📊',name:'WHODAS + COPM + FIM built in',note:'OT-specific outcomes, pre-configured'},
+      {icon:'🤖',name:'AI SOAP + DAP note drafting',note:'SimplePractice has no AI'},
+      {icon:'🏥',name:'Extended health + OHIP receipts',note:'Both billing streams for OT'},
+    ]
+  },
+  naturopath: {
+    tools:[
+      {icon:'📅',name:'Practice Better',cat:'Scheduling + protocols',cost:89,note:'US-hosted — not PHIPA'},
+      {icon:'💰',name:'QuickBooks',cat:'Invoicing',cost:35},
+      {icon:'📋',name:'JotForm',cat:'Intake forms',cost:27},
+    ],
+    extras:[
+      {icon:'🇨🇦',name:'Canadian infrastructure',note:'Practice Better is US-hosted. ca-central-1.'},
+      {icon:'📋',name:'CONO-standard intake templates',note:'Health history, supplements, lifestyle — seeded'},
+      {icon:'🤖',name:'AI SOAP note drafting',note:'Practice Better has no AI'},
+      {icon:'🏥',name:'Extended health receipts',note:'CONO provider number on every receipt'},
+    ]
+  }
+};
+
+let currentProf = 'physio';
+let currentPlan = 'solo';
+let isLoading = false;
+
+function selectProf(id, btn) {
+  currentProf = id;
+  document.querySelectorAll('.prof-pill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTools();
+}
+
+function selectPlan(plan, cardEl) {
+  currentPlan = plan;
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  if (cardEl) cardEl.classList.add('selected');
+  document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('tab-'+plan)?.classList.add('on');
+
+  const p = PLANS[plan];
+  const price = p.price;
+  const tax = parseFloat((price * 0.13).toFixed(2));
+  const total = parseFloat((price + tax).toFixed(2));
+
+  document.getElementById('ccPlanName').textContent = p.name;
+  document.getElementById('ccPlanPrice').innerHTML = `<strong>$${price}</strong> CAD per ${plan === 'group' ? 'clinician/' : ''}month after trial`;
+  document.getElementById('ccMonthly').textContent = `$${price}.00 CAD/mo`;
+  document.getElementById('ccTax').textContent = `+$${tax.toFixed(2)} (13%)`;
+  document.getElementById('ccTotal').textContent = `$${total.toFixed(2)} CAD/mo`;
+  document.getElementById('checkoutBtnText').textContent = `Start free trial — ${plan === 'solo' ? 'Solo' : 'Group'} →`;
+}
+
+function renderTools() {
+  const d = DATA[currentProf];
+  const oldTotal = d.tools.reduce((s, t) => s + t.cost, 0);
+  const saving = oldTotal - 49;
+
+  document.getElementById('sbSaving').textContent = `$${saving}`;
+  document.getElementById('sbAnnual').textContent = `$${(saving * 12).toLocaleString()}/yr`;
+  document.getElementById('sbOld').textContent = `$${oldTotal}`;
+  document.getElementById('sbTools').textContent = d.tools.length;
+  document.getElementById('ttOld').textContent = `$${oldTotal}/mo`;
+
+  document.getElementById('toolsList').innerHTML = d.tools.map(t => `
+    <div class="tool-row">
+      <span class="tool-icon">${t.icon}</span>
+      <div style="flex:1">
+        <div class="tool-name">${t.name}</div>
+        <div class="tool-cat">${t.cat}${t.note ? ` · ${t.note}` : ''}</div>
+      </div>
+      <span class="tool-cost">$${t.cost}/mo</span>
+      <div class="tool-replaced"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div>
+    </div>
+  `).join('');
+
+  document.getElementById('extrasGrid').innerHTML = d.extras.map(x => `
+    <div class="extra-item">
+      <span class="extra-icon">${x.icon}</span>
+      <div><div class="extra-name">${x.name}</div><div class="extra-note">${x.note}</div></div>
+    </div>
+  `).join('');
+}
+
+// Calculate first charge date (30 days from today)
+const firstCharge = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+const dateStr = firstCharge.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
+const dateShort = firstCharge.toLocaleDateString('en-CA', { month: 'long', day: 'numeric' });
+document.getElementById('ccFirstCharge').textContent = dateStr;
+document.getElementById('secureDate').textContent = dateShort;
+
+async function startCheckout() {
+  if (isLoading) return;
+  isLoading = true;
+
+  const btn = document.getElementById('checkoutBtn');
+  const txt = document.getElementById('checkoutBtnText');
+  const spin = document.getElementById('checkoutSpinner');
+  const err = document.getElementById('errorBanner');
+
+  btn.disabled = true;
+  txt.style.display = 'none';
+  spin.style.display = 'block';
+  err.classList.remove('show');
+
+  try {
+    // Get session from Supabase auth
+    // In production this is provided by the Supabase client:
+    // const { data: { session } } = await supabase.auth.getSession()
+    const session = window.__supabaseSession || null;
+    const accessToken = session?.access_token || SUPABASE_ANON_KEY;
+
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({
+        plan: currentPlan,
+        profession: currentProf
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.checkout_url) {
+      // Redirect to Stripe Checkout
+      window.location.href = data.checkout_url;
+      return;
+    }
+
+    if (data.portal_url) {
+      // Already subscribed — redirect to billing portal
+      window.location.href = data.portal_url;
+      return;
+    }
+
+    throw new Error(data.error || data.detail || 'Failed to start checkout. Please try again.');
+
+  } catch (e) {
+    err.textContent = e.message || 'Something went wrong. Please try again or email hello@mentalpath.ca';
+    err.classList.add('show');
+    btn.disabled = false;
+    txt.style.display = '';
+    spin.style.display = 'none';
+    isLoading = false;
+  }
+}
+
+// Init
+renderTools();
+selectPlan('solo', document.getElementById('card-solo'));
+</script>
+</body>
+</html>

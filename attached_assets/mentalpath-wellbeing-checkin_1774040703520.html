@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Your wellbeing</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--warm-mid:#ede9e0;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--red:#c0392b;--green:#1D9E75;--amber:#BA7517;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);min-height:100vh;}
+button,input,textarea{font-family:inherit;}
+
+/* NAV */
+.nav{background:var(--ink);padding:0 28px;height:50px;display:flex;align-items:center;justify-content:space-between;}
+.nav-left{display:flex;align-items:center;gap:10px;}
+.nav-mark{width:26px;height:26px;background:var(--sage);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.nav-mark svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.nav-name{font-family:var(--font-d);font-size:15px;color:white;}
+.nav-sub{font-size:12px;color:rgba(255,255,255,0.4);}
+.nav-tabs{display:flex;gap:0;}
+.nav-tab{padding:0 16px;height:50px;display:flex;align-items:center;font-size:13px;color:rgba(255,255,255,0.45);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.nav-tab.on{color:white;border-bottom-color:var(--sage-light);}
+
+/* MAIN VIEWS */
+.view{display:none;max-width:680px;margin:0 auto;padding:36px 20px 80px;}
+.view.on{display:block;}
+
+/* CHECK-IN PAGE */
+.ci-week{font-size:11px;font-weight:500;letter-spacing:0.7px;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px;}
+.ci-title{font-family:var(--font-d);font-size:30px;color:var(--ink);line-height:1.15;margin-bottom:8px;}
+.ci-sub{font-size:14px;color:var(--ink-muted);line-height:1.6;margin-bottom:20px;}
+.priv-pill{display:inline-flex;align-items:center;gap:6px;background:white;border:0.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--ink-muted);margin-bottom:32px;}
+.priv-pill svg{width:11px;height:11px;fill:none;stroke:var(--sage);stroke-width:1.75;}
+
+.section{margin-bottom:32px;}
+.section-label{font-size:10px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink-muted);padding-bottom:10px;border-bottom:0.5px solid var(--border);margin-bottom:18px;}
+
+/* SLIDERS */
+.slider-block{margin-bottom:20px;}
+.sl-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.sl-name{font-size:14px;font-weight:500;color:var(--ink);}
+.sl-desc{font-size:12px;color:var(--ink-muted);margin-top:1px;}
+.sl-num{font-family:var(--font-d);font-size:22px;transition:color 0.2s;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--warm-mid);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--sage);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
+.sl-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-muted);margin-top:4px;}
+
+/* VT FLAGS */
+.vt-item{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:0.5px solid var(--border);}
+.vt-item:last-child{border-bottom:none;}
+.vt-left{flex:1;}
+.vt-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.vt-desc{font-size:12px;color:var(--ink-muted);line-height:1.45;}
+.tog{position:relative;width:40px;height:22px;flex-shrink:0;}
+.tog input{opacity:0;width:0;height:0;position:absolute;}
+.tog-track{position:absolute;inset:0;border-radius:11px;background:rgba(0,0,0,0.13);cursor:pointer;transition:background 0.2s;}
+.tog input:checked+.tog-track{background:var(--sage);}
+.tog-thumb{position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:3px;transition:transform 0.2s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.18);}
+.tog input:checked~.tog-thumb{transform:translateX(18px);}
+
+/* SELF CARE */
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.sc-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;}
+.sc-item:hover{border-color:var(--sage-light);}
+.sc-item.on{background:var(--sage-pale);border-color:var(--sage);}
+.sc-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.sc-item.on .sc-check{background:var(--sage);border-color:var(--sage);}
+.sc-check svg{width:10px;height:10px;fill:none;stroke:white;stroke-width:2.5;opacity:0;transition:opacity 0.15s;}
+.sc-item.on .sc-check svg{opacity:1;}
+.sc-label{font-size:13px;font-weight:500;color:var(--ink-soft);}
+.sc-item.on .sc-label{color:var(--sage-deep);}
+
+/* REFLECTION */
+.reflection-wrap{position:relative;}
+.reflection-ta{width:100%;min-height:110px;padding:13px;border:1px solid var(--border);border-radius:10px;background:white;font-size:14px;color:var(--ink-soft);line-height:1.7;resize:none;outline:none;transition:border-color 0.15s;}
+.reflection-ta:focus{border-color:var(--sage);}
+.reflection-ta::placeholder{color:var(--ink-muted);}
+.reflection-hint{font-size:11px;color:var(--ink-muted);margin-top:6px;line-height:1.5;font-style:italic;}
+
+/* VT METER */
+.vt-meter{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+.vtm-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);margin-bottom:8px;}
+.vtm-dots{display:flex;gap:6px;margin-bottom:6px;}
+.vtm-dot{width:10px;height:10px;border-radius:50%;background:var(--warm-mid);transition:background 0.3s;}
+.vtm-text{font-size:12px;color:var(--ink-muted);}
+
+/* SUBMIT */
+.submit-btn{width:100%;padding:14px;background:var(--sage);color:white;border:none;border-radius:11px;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:6px;}
+.submit-btn:hover{background:var(--sage-deep);}
+
+/* RESPONSE */
+.response-card{background:white;border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-top:24px;display:none;}
+.response-card.show{display:block;}
+.rc-from{padding:13px 18px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;letter-spacing:0.7px;text-transform:uppercase;color:var(--ink-muted);display:flex;align-items:center;justify-content:space-between;}
+.rc-from span{font-size:11px;background:var(--sage-pale);color:var(--sage-deep);padding:3px 9px;border-radius:4px;font-weight:500;}
+.rc-body{padding:18px;}
+.rc-section{margin-bottom:14px;}
+.rc-section:last-child{margin-bottom:0;}
+.rc-lbl{font-size:10px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--sage);margin-bottom:6px;}
+.rc-text{font-size:14px;color:var(--ink-soft);line-height:1.75;font-style:italic;}
+.vt-status{display:flex;align-items:center;gap:10px;background:var(--warm);border-radius:8px;padding:10px 13px;margin-top:14px;}
+.vts-dots{display:flex;gap:4px;}
+.vts-dot{width:8px;height:8px;border-radius:50%;background:var(--warm-mid);}
+.vts-msg{font-size:12px;color:var(--ink-muted);}
+
+/* HISTORY VIEW */
+.hist-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.hs{background:white;border:1px solid var(--border);border-radius:10px;padding:13px;}
+.hs-n{font-family:var(--font-d);font-size:24px;color:var(--ink);line-height:1;}
+.hs-l{font-size:11px;color:var(--ink-muted);margin-top:3px;}
+.chart-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
+.chart-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:14px;}
+.chart-legend{display:flex;gap:14px;margin-bottom:10px;}
+.cl-i{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-muted);}
+.cl-dot{width:8px;height:8px;border-radius:50%;}
+.hist-entry{background:white;border:1px solid var(--border);border-radius:11px;padding:15px 17px;margin-bottom:9px;cursor:pointer;transition:border-color 0.15s;}
+.hist-entry:hover{border-color:var(--sage-light);}
+.hist-entry.open .he-reflection{display:block;}
+.he-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.he-week{font-size:13px;font-weight:500;color:var(--ink);}
+.he-scores{display:flex;gap:10px;}
+.he-score{font-size:12px;color:var(--ink-muted);}
+.he-score strong{color:var(--ink);font-weight:500;}
+.he-flags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px;}
+.he-flag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;background:#fde8e8;color:#791F1F;}
+.he-reflection{display:none;font-size:13px;color:var(--ink-muted);line-height:1.6;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-left">
+    <div class="nav-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+    <span class="nav-name">MentalPath</span>
+    <span style="width:1px;height:16px;background:rgba(255,255,255,0.15);"></span>
+    <span class="nav-sub">Your wellbeing</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab on" onclick="showView('checkin',this)">This week</button>
+    <button class="nav-tab" onclick="showView('history',this)">History</button>
+  </div>
+</div>
+
+<!-- ═══ CHECK-IN VIEW ═══ -->
+<div id="view-checkin" class="view on">
+  <div class="ci-week">Week of March 16, 2026</div>
+  <div class="ci-title">How are you doing<br>this week?</div>
+  <div class="ci-sub">A private check-in, just for you. Nothing here is visible to clients, shared with anyone, or part of your clinical record.</div>
+  <div class="priv-pill">
+    <svg viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+    Private to you only · Never audited · Never exported
+  </div>
+
+  <div class="section">
+    <div class="section-label">This week in numbers</div>
+
+    <div class="slider-block">
+      <div class="sl-row">
+        <div><div class="sl-name">Energy</div><div class="sl-desc">How resourced did you feel going into sessions?</div></div>
+        <div class="sl-num" id="v-energy" style="color:var(--sage)">6</div>
+      </div>
+      <input type="range" min="1" max="10" step="1" value="6" oninput="updateSlider('energy',this.value)">
+      <div class="sl-ends"><span>1 — depleted</span><span>10 — energised</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="sl-row">
+        <div><div class="sl-name">Emotional load</div><div class="sl-desc">How heavy did the work feel?</div></div>
+        <div class="sl-num" id="v-load" style="color:var(--amber)">7</div>
+      </div>
+      <input type="range" min="1" max="10" step="1" value="7" oninput="updateSlider('load',this.value)">
+      <div class="sl-ends"><span>1 — light</span><span>10 — very heavy</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="sl-row">
+        <div><div class="sl-name">Satisfaction</div><div class="sl-desc">How meaningful did the work feel?</div></div>
+        <div class="sl-num" id="v-sat" style="color:var(--sage)">7</div>
+      </div>
+      <input type="range" min="1" max="10" step="1" value="7" oninput="updateSlider('sat',this.value)">
+      <div class="sl-ends"><span>1 — going through motions</span><span>10 — deeply purposeful</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="sl-row">
+        <div><div class="sl-name">Boundary clarity</div><div class="sl-desc">How well did work stay at work?</div></div>
+        <div class="sl-num" id="v-bound" style="color:var(--sage)">7</div>
+      </div>
+      <input type="range" min="1" max="10" step="1" value="7" oninput="updateSlider('bound',this.value)">
+      <div class="sl-ends"><span>1 — work followed me everywhere</span><span>10 — clean separation</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Vicarious trauma indicators</div>
+    <div>
+      <div class="vt-item">
+        <div class="vt-left"><div class="vt-name">Intrusive thoughts about client material</div><div class="vt-desc">Finding yourself thinking about a client's story outside of session, especially when you don't want to</div></div>
+        <label class="tog"><input type="checkbox" id="vt1" onchange="updateVT()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="vt-item">
+        <div class="vt-left"><div class="vt-name">Sleep disrupted by work thoughts</div><div class="vt-desc">Waking up thinking about a session, or difficulty falling asleep after a heavy day</div></div>
+        <label class="tog"><input type="checkbox" id="vt2" checked onchange="updateVT()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="vt-item">
+        <div class="vt-left"><div class="vt-name">Dreading a specific session</div><div class="vt-desc">Feeling reluctance or anxiety about seeing a particular client — more than just a difficult case</div></div>
+        <label class="tog"><input type="checkbox" id="vt3" onchange="updateVT()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="vt-item">
+        <div class="vt-left"><div class="vt-name">Emotional numbing or disconnection</div><div class="vt-desc">Feeling flat or distant in sessions, going through the motions without feeling present</div></div>
+        <label class="tog"><input type="checkbox" id="vt4" onchange="updateVT()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="vt-item">
+        <div class="vt-left"><div class="vt-name">Increased cynicism about the work</div><div class="vt-desc">Noticing skepticism about whether therapy helps, or feeling jaded in ways that feel unfamiliar</div></div>
+        <label class="tog"><input type="checkbox" id="vt5" onchange="updateVT()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="vt-item">
+        <div class="vt-left"><div class="vt-name">Difficulty being present in session</div><div class="vt-desc">Mind wandering, struggling to hold attention, feeling like you're watching yourself rather than being there</div></div>
+        <label class="tog"><input type="checkbox" id="vt6" onchange="updateVT()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+    </div>
+
+    <div class="vt-meter" style="margin-top:14px;">
+      <div class="vtm-label">VT indicator level</div>
+      <div class="vtm-dots" id="vtDots">
+        <div class="vtm-dot"></div><div class="vtm-dot"></div><div class="vtm-dot"></div>
+        <div class="vtm-dot"></div><div class="vtm-dot"></div><div class="vtm-dot"></div>
+      </div>
+      <div class="vtm-text" id="vtMsg">1 of 6 indicators flagged — worth keeping an eye on.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Self-care this week</div>
+    <div class="sc-grid">
+      <div class="sc-item" onclick="toggleSC(this)"><div class="sc-check"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="sc-label">Had supervision</span></div>
+      <div class="sc-item on" onclick="toggleSC(this)"><div class="sc-check"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="sc-label">Took intentional breaks</span></div>
+      <div class="sc-item" onclick="toggleSC(this)"><div class="sc-check"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="sc-label">Peer consultation</span></div>
+      <div class="sc-item" onclick="toggleSC(this)"><div class="sc-check"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="sc-label">Personal therapy</span></div>
+      <div class="sc-item" onclick="toggleSC(this)"><div class="sc-check"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="sc-label">Movement / exercise</span></div>
+      <div class="sc-item" onclick="toggleSC(this)"><div class="sc-check"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="sc-label">Time with people I love</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">A moment to write — just for you</div>
+    <div class="reflection-wrap">
+      <textarea class="reflection-ta" id="reflection" placeholder="What's sitting with you from this week? A session that stayed with you, something that surprised you, or something you want to bring to supervision…">Heavy week — the session with SM touched something personal for me around displacement. Took a walk after. Supervision helped put it in perspective. Sleep was off Tuesday night, kept thinking about the session. Important to watch this.</textarea>
+    </div>
+    <div class="reflection-hint">This is never read by anyone. It doesn't go into clinical records. It isn't exported. It's just yours.</div>
+  </div>
+
+  <button class="submit-btn" onclick="submitCheckin()">Save this week's check-in</button>
+
+  <div class="response-card" id="responseCard">
+    <div class="rc-from">A reflection back — from your check-in <span>✦ therapist-wellbeing edge function</span></div>
+    <div class="rc-body">
+      <div class="rc-section">
+        <div class="rc-lbl">What this week held</div>
+        <div class="rc-text" id="rcAck">You carried a lot this week. Sleep being disrupted by a session isn't just fatigue — it's a sign that something landed somewhere deeper than usual, and that's worth paying attention to rather than pushing through.</div>
+      </div>
+      <div class="rc-section">
+        <div class="rc-lbl">Something worth noticing</div>
+        <div class="rc-text" id="rcNotice">You named the session with SM explicitly, which tells you something. The noticing itself — recognising that it touched something personal — is the protective factor working exactly as it should.</div>
+      </div>
+      <div class="rc-section">
+        <div class="rc-lbl">A possibility for this week</div>
+        <div class="rc-text" id="rcInvite">You might consider whether the SM material warrants space in supervision this week, not as a problem to solve but just to put it somewhere outside yourself. You don't have to carry it alone just because you noticed it.</div>
+      </div>
+      <div class="vt-status">
+        <div class="vts-dots" id="vtsDots"></div>
+        <div class="vts-msg" id="vtsMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORY VIEW ═══ -->
+<div id="view-history" class="view">
+  <div style="font-family:var(--font-d);font-size:24px;color:var(--ink);margin-bottom:4px;">Your recent weeks</div>
+  <div style="font-size:13px;color:var(--ink-muted);margin-bottom:24px;">Only you can see this.</div>
+
+  <div class="hist-stats">
+    <div class="hs"><div class="hs-n">4</div><div class="hs-l">Weeks tracked</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--amber)">6.5</div><div class="hs-l">Avg energy</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--red)">7</div><div class="hs-l">Avg load</div></div>
+    <div class="hs"><div class="hs-n" style="color:var(--green)">7.3</div><div class="hs-l">Avg satisfaction</div></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">4-week trend</div>
+    <div class="chart-legend">
+      <div class="cl-i"><div class="cl-dot" style="background:var(--sage)"></div>Energy</div>
+      <div class="cl-i"><div class="cl-dot" style="background:var(--red)"></div>Load</div>
+      <div class="cl-i"><div class="cl-dot" style="background:var(--amber)"></div>Satisfaction</div>
+    </div>
+    <svg width="100%" height="90" viewBox="0 0 560 90" preserveAspectRatio="none">
+      <line x1="0" y1="10" x2="560" y2="10" stroke="var(--border)" stroke-width="0.5"/>
+      <line x1="0" y1="35" x2="560" y2="35" stroke="var(--border)" stroke-width="0.5"/>
+      <line x1="0" y1="60" x2="560" y2="60" stroke="var(--border)" stroke-width="0.5"/>
+      <line x1="0" y1="80" x2="560" y2="80" stroke="var(--border)" stroke-width="0.5"/>
+      <!-- energy: 5,7,6,6 -->
+      <polyline points="70,57 210,35 350,46 490,46" fill="none" stroke="#4a7c6f" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="70" cy="57" r="4" fill="#4a7c6f"/><circle cx="210" cy="35" r="4" fill="#4a7c6f"/>
+      <circle cx="350" cy="46" r="4" fill="#4a7c6f"/><circle cx="490" cy="46" r="5" fill="#4a7c6f" stroke="white" stroke-width="2"/>
+      <!-- load: 8,6,7,7 -->
+      <polyline points="70,22 210,46 350,35 490,35" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="70" cy="22" r="4" fill="#c0392b"/><circle cx="210" cy="46" r="4" fill="#c0392b"/>
+      <circle cx="350" cy="35" r="4" fill="#c0392b"/><circle cx="490" cy="35" r="5" fill="#c0392b" stroke="white" stroke-width="2"/>
+      <!-- satisfaction: 6,8,7,7 -->
+      <polyline points="70,46 210,22 350,35 490,35" fill="none" stroke="#BA7517" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+      <circle cx="70" cy="46" r="4" fill="#BA7517"/><circle cx="210" cy="22" r="4" fill="#BA7517"/>
+      <circle cx="350" cy="35" r="4" fill="#BA7517"/><circle cx="490" cy="35" r="5" fill="#BA7517" stroke="white" stroke-width="2"/>
+      <text x="70" y="88" text-anchor="middle" font-size="10" fill="#7a7a72">Feb 23</text>
+      <text x="210" y="88" text-anchor="middle" font-size="10" fill="#7a7a72">Mar 2</text>
+      <text x="350" y="88" text-anchor="middle" font-size="10" fill="#7a7a72">Mar 9</text>
+      <text x="490" y="88" text-anchor="middle" font-size="10" fill="#7a7a72">Mar 16</text>
+    </svg>
+  </div>
+
+  <div class="hist-entry" onclick="this.classList.toggle('open')">
+    <div class="he-head"><div class="he-week">Week of March 9</div><div class="he-scores"><span class="he-score">Energy <strong>6</strong></span><span class="he-score">Load <strong>7</strong></span><span class="he-score">Satisfaction <strong>7</strong></span></div></div>
+    <div class="he-flags"><span class="he-flag">Sleep disrupted</span></div>
+    <div class="he-reflection">Heavy week — the session with SM touched something personal for me around displacement. Took a walk after. Supervision helped put it in perspective. Sleep was off Tuesday night, kept thinking about the session.</div>
+  </div>
+  <div class="hist-entry" onclick="this.classList.toggle('open')">
+    <div class="he-head"><div class="he-week">Week of March 2</div><div class="he-scores"><span class="he-score">Energy <strong>7</strong></span><span class="he-score">Load <strong>6</strong></span><span class="he-score">Satisfaction <strong>8</strong></span></div></div>
+    <div class="he-flags"><span style="font-size:11px;color:var(--sage);font-style:italic;">No flags this week</span></div>
+    <div class="he-reflection">Good week overall. Felt present and connected in most sessions. Missing supervision this week — need to book it.</div>
+  </div>
+  <div class="hist-entry" onclick="this.classList.toggle('open')">
+    <div class="he-head"><div class="he-week">Week of February 23</div><div class="he-scores"><span class="he-score">Energy <strong>5</strong></span><span class="he-score">Load <strong>8</strong></span><span class="he-score">Satisfaction <strong>6</strong></span></div></div>
+    <div class="he-flags"><span class="he-flag">Intrusive thoughts</span><span class="he-flag">Sleep disrupted</span><span class="he-flag">Dreading sessions</span><span class="he-flag">Presence difficulty</span></div>
+    <div class="he-reflection">Two crisis presentations in one week is too much without more recovery time between sessions. I need to be more intentional about spacing. Will bring to supervision.</div>
+  </div>
+</div>
+
+<script>
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('view-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function updateSlider(id, val) {
+  const el = document.getElementById('v-'+id);
+  el.textContent = val;
+  const n = parseInt(val);
+  if (id === 'load') el.style.color = n >= 8 ? 'var(--red)' : n >= 6 ? 'var(--amber)' : 'var(--sage)';
+  else el.style.color = n <= 4 ? 'var(--red)' : n <= 6 ? 'var(--amber)' : 'var(--sage)';
+}
+
+function updateVT() {
+  const count = ['vt1','vt2','vt3','vt4','vt5','vt6'].filter(id => document.getElementById(id).checked).length;
+  const dots = document.getElementById('vtDots').children;
+  const colors = ['var(--green)','var(--green)','var(--amber)','var(--amber)','var(--red)','var(--red)'];
+  for (let i = 0; i < 6; i++) {
+    dots[i].style.background = i < count ? colors[Math.min(count-1,5)] : 'var(--warm-mid)';
+  }
+  const msgs = {0:'No indicators flagged this week.',1:'1 of 6 flagged — worth keeping an eye on.',2:'2 of 6 flagged — consider bringing this to supervision.',3:'3 of 6 flagged — this warrants attention.',4:'4 of 6 flagged — please prioritise consultation or support.',5:'5 of 6 flagged — significant. Please reach out to a trusted colleague or your own therapist.',6:'6 of 6 flagged — please seek support. You cannot pour from an empty cup.'};
+  document.getElementById('vtMsg').textContent = msgs[count] || '';
+}
+
+function toggleSC(el) { el.classList.toggle('on'); }
+
+function submitCheckin() {
+  const vtCount = ['vt1','vt2','vt3','vt4','vt5','vt6'].filter(id => document.getElementById(id).checked).length;
+  const energy = parseInt(document.getElementById('v-energy').value || '6');
+  const card = document.getElementById('responseCard');
+
+  if (energy <= 4 && vtCount >= 3) {
+    document.getElementById('rcAck').textContent = 'This was a genuinely hard week. Low energy and multiple vicarious trauma indicators together is a combination that deserves to be taken seriously — not pushed through.';
+    document.getElementById('rcNotice').textContent = 'When both your energy and your protective buffers are depleted at the same time, the impact compounds. The noticing is the protective factor working.';
+    document.getElementById('rcInvite').textContent = 'Before planning next week, you might ask yourself what the minimum viable caseload looks like — not forever, just for one week.';
+  }
+
+  const vtsDots = document.getElementById('vtsDots');
+  vtsDots.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    d.className = 'vts-dot';
+    const c = vtCount >= 5 ? 'var(--red)' : vtCount >= 3 ? 'var(--amber)' : 'var(--sage)';
+    d.style.background = i < vtCount ? c : 'var(--warm-mid)';
+    vtsDots.appendChild(d);
+  }
+  const msgs = {0:'No vicarious trauma indicators this week.',1:'1 indicator flagged.',2:'2 flagged — worth watching.',3:'3 flagged — consider supervision.',4:'4 flagged — please prioritise support.',5:'5 flagged — please seek support.',6:'Please seek support this week.'};
+  document.getElementById('vtsMsg').textContent = msgs[vtCount] || '';
+
+  card.classList.add('show');
+  setTimeout(() => card.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+}
+
+updateVT();
+</script>
+</body>
+</html>

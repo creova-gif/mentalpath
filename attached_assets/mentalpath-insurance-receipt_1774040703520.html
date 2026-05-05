@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Insurance receipts</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--blue:#185FA5;--green:#1D9E75;--amber:#BA7517;--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);}
+button,input,select{font-family:inherit;}
+.topbar{background:var(--ink);height:52px;display:flex;align-items:center;padding:0 24px;gap:12px;}
+.tb-mark{width:26px;height:26px;background:var(--sage);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.tb-logo{font-family:var(--font-d);font-size:16px;color:white;}
+.tb-sp{flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.btn-sage{background:var(--sage);color:white;}
+.btn-ghost{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);}
+
+.layout{display:grid;grid-template-columns:340px 1fr;gap:0;min-height:calc(100vh - 52px);}
+.form-panel{background:white;border-right:1px solid var(--border);padding:24px;overflow-y:auto;}
+.fp-title{font-family:var(--font-d);font-size:18px;color:var(--ink);margin-bottom:4px;}
+.fp-sub{font-size:12px;color:var(--ink-muted);margin-bottom:20px;line-height:1.5;}
+
+.field{margin-bottom:13px;}
+label{display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-bottom:4px;}
+input[type=text],input[type=date],input[type=number],select{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--bmed);background:white;color:var(--ink);font-size:13px;outline:none;transition:border-color 0.15s;}
+input:focus,select:focus{border-color:var(--sage);}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+.section-label{font-size:10px;font-weight:500;letter-spacing:0.7px;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px;}
+.insurer-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.insurer-tab{padding:6px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:500;color:var(--ink-muted);cursor:pointer;transition:all 0.15s;background:white;}
+.insurer-tab:hover{border-color:var(--sage-light);}
+.insurer-tab.on{background:var(--sage);border-color:var(--sage);color:white;}
+.code-selector{display:flex;flex-direction:column;gap:5px;}
+.code-option{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all 0.15s;}
+.code-option:hover{border-color:var(--sage-light);}
+.code-option.on{border-color:var(--sage);background:var(--sage-pale);}
+.co-code{font-family:monospace;font-size:11px;font-weight:600;padding:2px 7px;border-radius:3px;background:#E6F1FB;color:#0C447C;flex-shrink:0;}
+.co-desc{font-size:12px;color:var(--ink-soft);}
+.gen-btn{width:100%;padding:12px;background:var(--sage);color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;transition:background 0.15s;}
+.gen-btn:hover{background:var(--sage-deep);}
+
+.preview-panel{padding:24px;overflow-y:auto;}
+.pp-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+.pp-title{font-family:var(--font-d);font-size:18px;color:var(--ink);}
+.pp-actions{display:flex;gap:8px;}
+.btn-outline{padding:8px 16px;border:1px solid var(--bmed);border-radius:8px;background:white;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink-soft);transition:background 0.15s;}
+.btn-outline:hover{background:var(--warm);}
+
+.receipt{background:white;border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);}
+.receipt-inner{padding:32px 36px;font-size:13px;color:var(--ink-soft);line-height:1.65;}
+.r-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;margin-bottom:20px;border-bottom:2px solid var(--ink);}
+.r-practice{font-family:var(--font-d);font-size:20px;color:var(--ink);margin-bottom:4px;}
+.r-creds{font-size:12px;color:var(--ink-muted);}
+.r-reg{display:inline-block;margin-top:5px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:3px;background:var(--sage-pale);color:var(--sage-deep);}
+.r-insurer{text-align:right;}
+.r-ins-name{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.r-ins-type{font-size:12px;color:var(--ink-muted);}
+.r-ins-num{margin-top:6px;font-size:11px;color:var(--ink-muted);}
+.r-bill-to{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.rbt-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);margin-bottom:5px;}
+.rbt-val{font-size:13px;color:var(--ink);}
+.r-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.r-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);padding:8px 0;border-bottom:1px solid var(--border);}
+.r-table td{padding:11px 0;border-bottom:0.5px solid var(--border);font-size:13px;color:var(--ink-soft);}
+.r-table td:last-child,.r-table th:last-child{text-align:right;}
+.r-totals{display:flex;justify-content:flex-end;}
+.r-totals-inner{width:240px;}
+.r-total-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:0.5px solid var(--border);}
+.r-total-row.grand{font-size:15px;font-weight:500;color:var(--ink);border-bottom:2px solid var(--ink);border-top:1px solid var(--ink);padding:9px 0;margin-top:3px;}
+.r-footer{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--ink-muted);line-height:1.6;}
+.r-watermark{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-top:1px solid var(--border);background:var(--warm);font-size:11px;color:var(--ink-muted);}
+
+/* STATUS BADGE */
+.status-strip{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.ss-item{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;}
+.ss-dot{width:7px;height:7px;border-radius:50%;}
+.ss-label{color:var(--ink-muted);}
+.ss-val{font-weight:500;color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-logo">MentalPath</span>
+  <div class="tb-sp"></div>
+  <button class="btn btn-ghost">Insurance receipt history</button>
+</div>
+
+<div class="layout">
+
+  <!-- FORM PANEL -->
+  <div class="form-panel">
+    <div class="fp-title">Generate insurance receipt</div>
+    <div class="fp-sub">Extended health benefit receipts for Blue Cross, Sun Life, Manulife, Green Shield, Canada Life</div>
+
+    <div class="section-label">Session details</div>
+    <div class="field">
+      <label>Client</label>
+      <select onchange="updatePreview()">
+        <option>Jane Smith</option><option>Marcus Lee</option><option>Priya Sharma</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Service date</label>
+      <input type="date" value="2026-03-16" onchange="updatePreview()">
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Insurer</div>
+    <div class="insurer-tabs">
+      <div class="insurer-tab on" onclick="selectInsurer('Blue Cross',this)">Blue Cross</div>
+      <div class="insurer-tab" onclick="selectInsurer('Sun Life',this)">Sun Life</div>
+      <div class="insurer-tab" onclick="selectInsurer('Manulife',this)">Manulife</div>
+      <div class="insurer-tab" onclick="selectInsurer('Green Shield',this)">Green Shield</div>
+      <div class="insurer-tab" onclick="selectInsurer('Canada Life',this)">Canada Life</div>
+    </div>
+
+    <div class="field">
+      <label>Plan member ID</label>
+      <input type="text" id="memberID" value="MBR-4821-002" onchange="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Certificate / group number</label>
+      <input type="text" id="groupNum" value="GRP-00447" onchange="updatePreview()">
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Service code</div>
+    <div class="code-selector" id="codeSelector">
+      <div class="code-option on" onclick="selectCode(this,'20.01','Chiropractic visit — initial assessment',140)"><span class="co-code">20.01</span><span class="co-desc">Initial assessment</span></div>
+      <div class="code-option" onclick="selectCode(this,'20.02','Chiropractic visit — subsequent treatment',120)"><span class="co-code">20.02</span><span class="co-desc">Subsequent treatment</span></div>
+      <div class="code-option" onclick="selectCode(this,'20.10','Spinal X-ray (diagnostic)',80)"><span class="co-code">20.10</span><span class="co-desc">Spinal X-ray (diagnostic)</span></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="field">
+      <label>Session rate ($CAD)</label>
+      <input type="number" id="rateInput" value="140" onchange="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Diagnosis code (optional)</label>
+      <input type="text" id="diagCode" value="M54.5" placeholder="ICD-10 e.g. M54.5" onchange="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Provider number</label>
+      <input type="text" value="CCO-009834">
+    </div>
+
+    <button class="gen-btn" onclick="generateReceipt()">Generate receipt →</button>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <div class="preview-panel">
+    <div class="pp-topbar">
+      <div class="pp-title">Receipt preview</div>
+      <div class="pp-actions">
+        <button class="btn-outline">Save draft</button>
+        <button class="btn-outline">Email to client</button>
+        <button class="btn btn-sage">Download PDF</button>
+      </div>
+    </div>
+
+    <div class="status-strip">
+      <div class="ss-item"><div class="ss-dot" style="background:var(--amber)"></div><span class="ss-label">Status</span><span class="ss-val">Draft</span></div>
+      <div class="ss-item"><div class="ss-dot" style="background:var(--sage)"></div><span class="ss-label">Insurer</span><span class="ss-val" id="statusInsurer">Blue Cross</span></div>
+      <div class="ss-item"><div class="ss-dot" style="background:var(--blue)"></div><span class="ss-label">Code</span><span class="ss-val" id="statusCode">20.01</span></div>
+      <div class="ss-item"><div class="ss-dot" style="background:var(--sage)"></div><span class="ss-label">Amount</span><span class="ss-val" id="statusAmount">$158.20</span></div>
+    </div>
+
+    <div class="receipt">
+      <div class="receipt-inner" id="receiptContent">
+
+        <div class="r-header">
+          <div>
+            <div class="r-practice" id="rPracticeName">Northside Chiropractic Clinic</div>
+            <div class="r-creds">Dr. Jane Smith, DC · CCO Registration #CCO-009834</div>
+            <div><span class="r-reg">CCO Registered</span></div>
+          </div>
+          <div class="r-insurer">
+            <div class="r-ins-name" id="rInsurerName">Blue Cross</div>
+            <div class="r-ins-type">Extended Health Benefit Receipt</div>
+            <div class="r-ins-num">Receipt #RCT-2026-<span id="rReceiptNum">4821</span></div>
+          </div>
+        </div>
+
+        <div class="r-bill-to">
+          <div>
+            <div class="rbt-label">Bill to (patient)</div>
+            <div class="rbt-val">Jane Smith<br><span style="font-size:12px;color:var(--ink-muted)">jane.smith@email.com</span></div>
+          </div>
+          <div>
+            <div class="rbt-label">Insurance details</div>
+            <div class="rbt-val" style="font-size:12px;">
+              Plan member ID: <span id="rMemberID">MBR-4821-002</span><br>
+              Group/Certificate: <span id="rGroupNum">GRP-00447</span>
+            </div>
+          </div>
+        </div>
+
+        <table class="r-table">
+          <thead>
+            <tr><th>Date</th><th>Service</th><th>Code</th><th>Diag.</th><th>Units</th><th>Rate</th><th>Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mar 16, 2026</td>
+              <td id="rServiceDesc">Chiropractic visit — initial assessment</td>
+              <td><span style="font-family:monospace;font-size:11px;font-weight:600;padding:2px 6px;background:#E6F1FB;color:#0C447C;border-radius:3px;" id="rCode">20.01</span></td>
+              <td style="font-size:12px;" id="rDiag">M54.5</td>
+              <td>1 visit</td>
+              <td id="rRate">$140.00</td>
+              <td style="font-weight:500;" id="rSubtotal">$140.00</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="r-totals">
+          <div class="r-totals-inner">
+            <div class="r-total-row"><span>Subtotal</span><span id="rSubtotalFt">$140.00</span></div>
+            <div class="r-total-row"><span>HST (13%)</span><span id="rHST">$18.20</span></div>
+            <div class="r-total-row grand"><span>Total payable</span><span id="rTotal">$158.20</span></div>
+          </div>
+        </div>
+
+        <div class="r-footer">
+          This receipt is issued for submission to <span id="rFooterInsurer">Blue Cross</span> for extended health benefit reimbursement. 
+          Please submit with your plan member ID and group number. Provider is registered with the College of Chiropractors of Ontario (CCO). 
+          All services were provided in Ontario, Canada. Retain this receipt for your records.
+          <br><br>
+          <strong>Provider statement:</strong> I certify that the services described above were provided to the patient named and are accurate to the best of my knowledge.
+        </div>
+      </div>
+      <div class="r-watermark">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="12" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+        Generated by MentalPath · Data stored on Canadian servers (AWS ca-central-1) · PHIPA compliant
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentInsurer = 'Blue Cross';
+let currentCode = '20.01';
+let currentDesc = 'Chiropractic visit — initial assessment';
+let currentRate = 140;
+
+function selectInsurer(name, btn) {
+  currentInsurer = name;
+  document.querySelectorAll('.insurer-tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  const codes = {
+    'Blue Cross': [{code:'20.01',desc:'Chiropractic visit — initial',rate:140},{code:'20.02',desc:'Chiropractic visit — subsequent',rate:120},{code:'20.10',desc:'Spinal X-ray',rate:80}],
+    'Sun Life': [{code:'CHIRO-INIT',desc:'Initial assessment',rate:145},{code:'CHIRO-SUBSEQ',desc:'Subsequent treatment',rate:125},{code:'CHIRO-XRAY',desc:'Radiograph',rate:85}],
+    'Manulife': [{code:'C001',desc:'Chiropractic consultation',rate:140},{code:'C002',desc:'Chiropractic treatment',rate:120}],
+    'Green Shield': [{code:'CH01',desc:'Chiro initial visit',rate:140},{code:'CH02',desc:'Chiro follow-up',rate:110}],
+    'Canada Life': [{code:'CHIRO-1',desc:'Chiropractic consultation',rate:140},{code:'CHIRO-2',desc:'Chiropractic treatment',rate:120}]
+  };
+  const sel = document.getElementById('codeSelector');
+  const codesForInsurer = codes[name] || codes['Blue Cross'];
+  sel.innerHTML = codesForInsurer.map((c,i) => `
+    <div class="code-option${i===0?' on':''}" onclick="selectCode(this,'${c.code}','${c.desc}',${c.rate})">
+      <span class="co-code">${c.code}</span><span class="co-desc">${c.desc}</span>
+    </div>
+  `).join('');
+  selectCode(sel.querySelector('.code-option.on'), codesForInsurer[0].code, codesForInsurer[0].desc, codesForInsurer[0].rate);
+  updatePreview();
+}
+
+function selectCode(el, code, desc, rate) {
+  document.querySelectorAll('.code-option').forEach(c => c.classList.remove('on'));
+  if (el) el.classList.add('on');
+  currentCode = code;
+  currentDesc = desc;
+  currentRate = rate;
+  document.getElementById('rateInput').value = rate;
+  updatePreview();
+}
+
+function updatePreview() {
+  const rate = parseFloat(document.getElementById('rateInput').value) || 140;
+  const hst = +(rate * 0.13).toFixed(2);
+  const total = +(rate + hst).toFixed(2);
+  document.getElementById('rInsurerName').textContent = currentInsurer;
+  document.getElementById('rServiceDesc').textContent = currentDesc;
+  document.getElementById('rCode').textContent = currentCode;
+  document.getElementById('rDiag').textContent = document.getElementById('diagCode').value || '—';
+  document.getElementById('rRate').textContent = `$${rate.toFixed(2)}`;
+  document.getElementById('rSubtotal').textContent = `$${rate.toFixed(2)}`;
+  document.getElementById('rSubtotalFt').textContent = `$${rate.toFixed(2)}`;
+  document.getElementById('rHST').textContent = `$${hst.toFixed(2)}`;
+  document.getElementById('rTotal').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('rMemberID').textContent = document.getElementById('memberID').value;
+  document.getElementById('rGroupNum').textContent = document.getElementById('groupNum').value;
+  document.getElementById('rFooterInsurer').textContent = currentInsurer;
+  document.getElementById('statusInsurer').textContent = currentInsurer;
+  document.getElementById('statusCode').textContent = currentCode;
+  document.getElementById('statusAmount').textContent = `$${total.toFixed(2)}`;
+}
+
+function generateReceipt() {
+  document.getElementById('rReceiptNum').textContent = Math.floor(Math.random()*9000+1000);
+  document.querySelector('.ss-item:first-child .ss-val').textContent = 'Ready';
+  document.querySelector('.ss-item:first-child .ss-dot').style.background = 'var(--green)';
+  updatePreview();
+}
+</script>
+</body>
+</html>

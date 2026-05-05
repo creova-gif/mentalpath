@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Set up your practice</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);min-height:100vh;}
+button,input,select{font-family:inherit;}
+
+.shell{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+
+/* LEFT PANEL */
+.left{background:var(--ink);padding:48px 52px;display:flex;flex-direction:column;justify-content:space-between;}
+.left-logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:var(--sage);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.lm svg{width:14px;height:14px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.ln{font-family:var(--font-d);font-size:16px;color:white;}
+.left-hero{margin:auto 0;}
+.lh-tag{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage-light);margin-bottom:14px;}
+.lh-title{font-family:var(--font-d);font-size:36px;color:white;line-height:1.15;margin-bottom:16px;}
+.lh-title em{font-style:italic;color:var(--sage-light);}
+.lh-sub{font-size:15px;color:rgba(255,255,255,0.5);line-height:1.65;max-width:360px;}
+.professions-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:28px;}
+.pl-tag{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.08);}
+.left-bottom{display:flex;gap:10px;flex-wrap:wrap;}
+.lb-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.4);}
+.lb-badge svg{width:11px;height:11px;fill:none;stroke:var(--sage);stroke-width:1.5;}
+
+/* RIGHT PANEL */
+.right{background:white;padding:0;display:flex;flex-direction:column;overflow-y:auto;}
+.step-indicator{padding:20px 40px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0;}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;}
+.step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;transition:all 0.2s;}
+.step.done .step-num{background:var(--sage);color:white;}
+.step.on .step-num{background:var(--ink);color:white;}
+.step.off .step-num{background:var(--border);color:var(--ink-muted);}
+.step-label{color:var(--ink-muted);white-space:nowrap;}
+.step.on .step-label{color:var(--ink);font-weight:500;}
+.step.done .step-label{color:var(--sage);}
+.step-connector{flex:1;height:1px;background:var(--border);margin:0 8px;}
+.step-connector.done{background:var(--sage);}
+
+.step-body{flex:1;padding:36px 40px;}
+.step-page{display:none;}
+.step-page.on{display:block;}
+.sp-title{font-family:var(--font-d);font-size:24px;color:var(--ink);margin-bottom:6px;}
+.sp-sub{font-size:14px;color:var(--ink-muted);line-height:1.55;margin-bottom:28px;}
+
+/* PROFESSION GRID */
+.prof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:16px;}
+.prof-card{background:var(--warm);border:1.5px solid var(--border);border-radius:11px;padding:14px 12px;cursor:pointer;transition:all 0.15s;text-align:center;}
+.prof-card:hover{border-color:var(--sage-light);background:white;}
+.prof-card.on{border-color:var(--sage);border-width:2px;background:var(--sage-pale);}
+.pc-icon{font-size:24px;margin-bottom:7px;}
+.pc-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px;line-height:1.2;}
+.pc-college{font-size:10px;color:var(--ink-muted);}
+.prof-card.on .pc-name{color:var(--sage-deep);}
+.prof-card.on .pc-college{color:var(--sage);}
+.college-reveal{background:var(--sage-pale);border:1px solid rgba(74,124,111,0.2);border-radius:9px;padding:13px 16px;font-size:13px;color:var(--sage-deep);line-height:1.6;margin-bottom:16px;display:none;}
+.college-reveal.show{display:block;}
+.college-reveal strong{font-weight:500;}
+
+/* FORM */
+.field{margin-bottom:14px;}
+label{display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-bottom:5px;}
+.req{color:var(--sage);}
+input[type=text],input[type=email],input[type=tel],input[type=number],select{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bmed);background:white;color:var(--ink);font-size:14px;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+input:focus,select:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(74,124,111,0.09);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.hint{font-size:11px;color:var(--ink-muted);margin-top:4px;}
+
+/* CONFIG PREVIEW */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.config-card{background:var(--warm);border-radius:9px;padding:12px 14px;}
+.config-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-muted);margin-bottom:5px;}
+.config-val{font-size:13px;font-weight:500;color:var(--ink);}
+.config-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.ctag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:3px;background:var(--sage-pale);color:var(--sage-deep);}
+.ctag.blue{background:#E6F1FB;color:#0C447C;}
+.ctag.amber{background:#faeeda;color:#633806;}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:20px 0;}
+.suc-icon{width:60px;height:60px;background:var(--sage-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.suc-icon svg{width:26px;height:26px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.suc-title{font-family:var(--font-d);font-size:24px;color:var(--ink);margin-bottom:8px;}
+.suc-sub{font-size:14px;color:var(--ink-muted);line-height:1.65;margin-bottom:28px;max-width:340px;margin-left:auto;margin-right:auto;}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.btn-primary{flex:1;padding:13px;background:var(--sage);color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.btn-primary:hover{background:var(--sage-deep);}
+.btn-back{padding:13px 20px;background:transparent;border:1px solid var(--bmed);color:var(--ink-soft);border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.btn-back:hover{background:var(--warm);}
+
+@media(max-width:800px){.shell{grid-template-columns:1fr;}.left{display:none;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- LEFT -->
+<div class="left">
+  <div class="left-logo">
+    <div class="lm"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+    <span class="ln">MentalPath</span>
+  </div>
+  <div class="left-hero">
+    <div class="lh-tag">Canadian regulated health professionals</div>
+    <div class="lh-title">Built for <em>every</em><br>regulated health<br>professional.</div>
+    <div class="lh-sub">Your note templates, receipt formats, outcome measures, and College standards configured automatically based on your profession. PHIPA-compliant from minute one.</div>
+    <div class="professions-list">
+      <span class="pl-tag">Psychotherapists</span><span class="pl-tag">Psychologists</span><span class="pl-tag">Social Workers</span>
+      <span class="pl-tag">Chiropractors</span><span class="pl-tag">Physiotherapists</span><span class="pl-tag">RMTs</span>
+      <span class="pl-tag">Occupational Therapists</span><span class="pl-tag">Naturopaths</span><span class="pl-tag">Acupuncturists</span>
+      <span class="pl-tag">Dietitians</span><span class="pl-tag">SLPs</span>
+    </div>
+  </div>
+  <div class="left-bottom">
+    <div class="lb-badge"><svg viewBox="0 0 16 16"><path d="M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z"/></svg>PHIPA compliant</div>
+    <div class="lb-badge"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 8h12"/></svg>Canadian servers</div>
+    <div class="lb-badge"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>30-day free trial</div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+  <div class="step-indicator">
+    <div class="step done" id="si1"><div class="step-num">✓</div><span class="step-label">Account</span></div>
+    <div class="step-connector done"></div>
+    <div class="step on" id="si2"><div class="step-num">2</div><span class="step-label">Your profession</span></div>
+    <div class="step-connector" id="sc23"></div>
+    <div class="step off" id="si3"><div class="step-num">3</div><span class="step-label">Practice details</span></div>
+    <div class="step-connector" id="sc34"></div>
+    <div class="step off" id="si4"><div class="step-num">4</div><span class="step-label">Confirm setup</span></div>
+  </div>
+
+  <div class="step-body">
+
+    <!-- STEP 2: Profession -->
+    <div class="step-page on" id="sp2">
+      <div class="sp-title">What's your profession?</div>
+      <div class="sp-sub">MentalPath configures everything automatically — note templates, receipt formats, outcome measures, and College compliance standards.</div>
+      <div class="prof-grid">
+        <div class="prof-card" onclick="selectProf('psychotherapist','Registered Psychotherapist','CRPO (ON)','DAP, SOAP, BIRP, Progress','PHQ-9, GAD-7, WHODAS','Self-pay / private','Exempt (ON)',this)"><div class="pc-icon">🧠</div><div class="pc-name">Psycho-therapist</div><div class="pc-college">CRPO</div></div>
+        <div class="prof-card" onclick="selectProf('psychologist','Registered Psychologist','CPO (ON)','DAP, SOAP, BIRP, Progress','PHQ-9, GAD-7, WHODAS','Self-pay / OHIP','Exempt (ON)',this)"><div class="pc-icon">🔬</div><div class="pc-name">Psychologist</div><div class="pc-college">CPO</div></div>
+        <div class="prof-card" onclick="selectProf('social_worker','Registered Social Worker','OCSWSSW (ON)','DAP, SOAP, Progress','PHQ-9, GAD-7','Self-pay / EAP','Exempt (ON)',this)"><div class="pc-icon">🤝</div><div class="pc-name">Social Worker</div><div class="pc-college">OCSWSSW</div></div>
+        <div class="prof-card" onclick="selectProf('chiropractor','Doctor of Chiropractic','CCO (ON)','SOAP, Progress','Oswestry, NPRS, PSFS','Extended health benefits','Taxable (13%)',this)"><div class="pc-icon">🦴</div><div class="pc-name">Chiropractor</div><div class="pc-college">CCO</div></div>
+        <div class="prof-card" onclick="selectProf('physiotherapist','Physiotherapist','CPT (ON)','SOAP, Progress','Oswestry, DASH, NPRS, PSFS','Extended health benefits','Taxable (13%)',this)"><div class="pc-icon">⚡</div><div class="pc-name">Physio-therapist</div><div class="pc-college">CPT</div></div>
+        <div class="prof-card" onclick="selectProf('rmt','Registered Massage Therapist','CMTO (ON)','SOAP, Progress','NPRS, PSFS','Extended health benefits','Taxable (13%)',this)"><div class="pc-icon">💆</div><div class="pc-name">Massage Therapist</div><div class="pc-college">CMTO</div></div>
+        <div class="prof-card" onclick="selectProf('occupational','Occupational Therapist','COTO (ON)','SOAP, DAP, Progress','WHODAS, COPM, FIM','Extended health / OHIP','Varies',this)"><div class="pc-icon">🔧</div><div class="pc-name">Occupational Therapist</div><div class="pc-college">COTO</div></div>
+        <div class="prof-card" onclick="selectProf('naturopath','Naturopathic Doctor','CONO (ON)','SOAP, Progress','PHQ-9, GAD-7','Extended health','Varies',this)"><div class="pc-icon">🌿</div><div class="pc-name">Naturopath</div><div class="pc-college">CONO</div></div>
+        <div class="prof-card" onclick="selectProf('acupuncturist','Acupuncturist / TCM','CTCMPAO (ON)','SOAP, Progress','NPRS, PHQ-9','Extended health','Taxable',this)"><div class="pc-icon">🪡</div><div class="pc-name">Acupuncturist</div><div class="pc-college">CTCMPAO</div></div>
+        <div class="prof-card" onclick="selectProf('dietitian','Registered Dietitian','CDO (ON)','SOAP, DAP, Progress','PHQ-9, GAD-7','Extended health / self-pay','Exempt',this)"><div class="pc-icon">🥗</div><div class="pc-name">Dietitian</div><div class="pc-college">CDO</div></div>
+        <div class="prof-card" onclick="selectProf('speech','Speech-Language Pathologist','CASLPO (ON)','SOAP, Progress','PSFS, PHQ-9','Extended health / OHIP','Exempt',this)"><div class="pc-icon">💬</div><div class="pc-name">SLP</div><div class="pc-college">CASLPO</div></div>
+        <div class="prof-card" style="opacity:0.4;cursor:default;"><div class="pc-icon">➕</div><div class="pc-name">More coming</div><div class="pc-college">Request yours</div></div>
+      </div>
+      <div class="college-reveal" id="collegeReveal"></div>
+      <button class="btn-primary" id="profNextBtn" disabled onclick="goStep(3)">Continue →</button>
+    </div>
+
+    <!-- STEP 3: Practice details -->
+    <div class="step-page" id="sp3">
+      <div class="sp-title">Your practice details</div>
+      <div class="sp-sub">This information appears on invoices and receipts. You can change it any time in Settings.</div>
+      <div class="field">
+        <label>Full name <span class="req">*</span></label>
+        <input type="text" id="fullname" placeholder="Dr. Jane Smith">
+      </div>
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0;">
+          <label>Credentials <span class="req">*</span></label>
+          <input type="text" id="credentials" placeholder="e.g. RP, DC, PT, RMT">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Registration number <span class="req">*</span></label>
+          <input type="text" id="regnum" placeholder="e.g. CRPO-004821">
+          <div class="hint">Printed on all receipts</div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Practice / clinic name</label>
+        <input type="text" placeholder="Leave blank to use your full name">
+      </div>
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0;">
+          <label>Province <span class="req">*</span></label>
+          <select>
+            <option selected>Ontario</option><option>British Columbia</option><option>Alberta</option>
+            <option>Quebec</option><option>Manitoba</option><option>Saskatchewan</option>
+            <option>Nova Scotia</option><option>New Brunswick</option><option>PEI</option><option>Newfoundland</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Default session rate</label>
+          <input type="number" placeholder="140" value="140">
+          <div class="hint">CAD per session</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn-primary" onclick="goStep(4)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Config confirm -->
+    <div class="step-page" id="sp4">
+      <div class="sp-title">Your MentalPath is ready</div>
+      <div class="sp-sub">Here's how we've configured your account based on your profession. You can change any of these in Settings.</div>
+      <div class="config-grid" id="configGrid"></div>
+      <div style="background:var(--sage-pale);border-radius:9px;padding:13px 16px;font-size:13px;color:var(--sage-deep);line-height:1.6;margin-bottom:20px;">
+        Your data is stored on <strong>Canadian servers (AWS ca-central-1)</strong> in compliance with PHIPA. AES-256 encryption at rest. TLS 1.3 in transit. Your 30-day free trial starts today.
+      </div>
+      <div class="success-wrap">
+        <div class="suc-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="suc-title">All set, <span id="nameDisplay">Doctor</span>.</div>
+        <div class="suc-sub">Your practice is live on Canadian servers. Your first client can book in the next 5 minutes. Let's go.</div>
+        <button class="btn-primary" style="max-width:300px;" onclick="window.location='mentalpath-dashboard.html'">Open your dashboard →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+let selectedProf = null;
+
+const PROFS = {
+  psychotherapist:{notes:'DAP, SOAP, BIRP, Progress',outcomes:'PHQ-9, GAD-7, WHODAS',billing:'Self-pay / private',hst:'HST-exempt'},
+  psychologist:{notes:'DAP, SOAP, BIRP, Progress',outcomes:'PHQ-9, GAD-7, WHODAS',billing:'Self-pay / OHIP',hst:'HST-exempt'},
+  social_worker:{notes:'DAP, SOAP, Progress',outcomes:'PHQ-9, GAD-7',billing:'Self-pay / EAP',hst:'HST-exempt'},
+  chiropractor:{notes:'SOAP, Progress',outcomes:'Oswestry, NPRS, PSFS',billing:'Extended health benefits',hst:'HST taxable (13%)'},
+  physiotherapist:{notes:'SOAP, Progress',outcomes:'Oswestry, DASH, NPRS, PSFS',billing:'Extended health benefits',hst:'HST taxable (13%)'},
+  rmt:{notes:'SOAP, Progress',outcomes:'NPRS, PSFS',billing:'Extended health benefits',hst:'HST taxable (13%)'},
+  occupational:{notes:'SOAP, DAP, Progress',outcomes:'WHODAS, COPM, FIM',billing:'Extended health / OHIP',hst:'Varies'},
+  naturopath:{notes:'SOAP, Progress',outcomes:'PHQ-9, GAD-7',billing:'Extended health',hst:'Varies'},
+  acupuncturist:{notes:'SOAP, Progress',outcomes:'NPRS, PHQ-9',billing:'Extended health',hst:'HST taxable'},
+  dietitian:{notes:'SOAP, DAP, Progress',outcomes:'PHQ-9, GAD-7',billing:'Extended health / self-pay',hst:'HST-exempt'},
+  speech:{notes:'SOAP, Progress',outcomes:'PSFS, PHQ-9',billing:'Extended health / OHIP',hst:'HST-exempt'}
+};
+
+function selectProf(id, name, college, notes, outcomes, billing, hst, el) {
+  selectedProf = {id, name, college, notes, outcomes, billing, hst};
+  document.querySelectorAll('.prof-card').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  const reveal = document.getElementById('collegeReveal');
+  reveal.innerHTML = `<strong>${name}</strong> · ${college}<br>Notes: ${notes} · Billing: ${billing} · Outcomes: ${outcomes}`;
+  reveal.classList.add('show');
+  document.getElementById('profNextBtn').disabled = false;
+}
+
+function goStep(n) {
+  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('on'));
+  document.getElementById('sp'+n).classList.add('on');
+
+  // Update step indicators
+  const steps = [1,2,3,4];
+  steps.forEach(s => {
+    const el = document.getElementById('si'+s);
+    el.className = 'step ' + (s < n ? 'done' : s === n ? 'on' : 'off');
+    el.querySelector('.step-num').textContent = s < n ? '✓' : s;
+    if (s < 4) document.getElementById('sc'+(s)+(s+1) )?.classList.toggle('done', s < n);
+  });
+
+  if (n === 4) buildConfig();
+}
+
+function buildConfig() {
+  const p = selectedProf || {notes:'DAP',outcomes:'PHQ-9, GAD-7',billing:'Self-pay',hst:'HST-exempt'};
+  const name = document.getElementById('fullname')?.value || 'Doctor';
+  document.getElementById('nameDisplay').textContent = name.split(' ').pop();
+  const grid = document.getElementById('configGrid');
+  grid.innerHTML = `
+    <div class="config-card"><div class="config-label">Profession</div><div class="config-val">${p.name||'Registered Psychotherapist'}</div><div style="font-size:11px;color:var(--ink-muted);margin-top:2px;">${p.college||'CRPO'}</div></div>
+    <div class="config-card"><div class="config-label">Note formats</div><div class="config-tags">${(p.notes||'DAP').split(',').map(n=>`<span class="ctag">${n.trim()}</span>`).join('')}</div></div>
+    <div class="config-card"><div class="config-label">Outcome measures</div><div class="config-tags">${(p.outcomes||'PHQ-9').split(',').map(o=>`<span class="ctag blue">${o.trim()}</span>`).join('')}</div></div>
+    <div class="config-card"><div class="config-label">Billing</div><div class="config-val">${p.billing||'Self-pay'}</div><div style="font-size:11px;color:var(--ink-muted);margin-top:2px;">${p.hst||''}</div></div>
+  `;
+}
+
+// Init step connectors
+['sc12','sc23','sc34'].forEach(id => {
+  if (!document.getElementById(id)) {
+    // connectors are already in HTML
+  }
+});
+</script>
+</body>
+</html>

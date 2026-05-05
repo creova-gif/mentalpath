@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Treatment courses</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1210; --surface:#171a18; --surface-2:#1e2420; --surface-3:#242b26;
+  --sage:#4fb896; --sage-dim:#2a6b54; --sage-pale:rgba(79,184,150,0.1);
+  --cream:#e8ede9; --cream-dim:#9aa89c; --cream-faint:rgba(232,237,233,0.06);
+  --red:#e05252; --amber:#d4893a; --green:#4fb896; --blue:#5a9fd4;
+  --border:rgba(232,237,233,0.08);
+  --font-d:'Fraunces',serif; --font-b:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-b);background:var(--bg);color:var(--cream);display:flex;flex-direction:column;}
+button,select{font-family:inherit;cursor:pointer;}
+
+/* ── TOPBAR ── */
+.topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;}
+.tb-logo{font-family:var(--font-d);font-size:16px;color:var(--cream);}
+.tb-mark{width:28px;height:28px;background:var(--sage-dim);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.tb-mark svg{width:14px;height:14px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.tb-sep{width:1px;height:18px;background:var(--border);}
+.tb-prof{font-size:12px;color:var(--cream-dim);font-weight:500;}
+.tb-sp{flex:1;}
+.tb-date{font-size:12px;color:var(--cream-dim);}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;border:none;font-size:12px;font-weight:500;transition:all 0.15s;}
+.tb-btn-ghost{background:var(--cream-faint);color:var(--cream-dim);}
+.tb-btn-ghost:hover{background:rgba(232,237,233,0.1);color:var(--cream);}
+.tb-btn-sage{background:var(--sage-dim);color:var(--sage);}
+.tb-btn-sage:hover{background:var(--sage);color:var(--bg);}
+
+/* ── DAILY BRIEF STRIP ── */
+.brief{background:linear-gradient(135deg, var(--sage-dim) 0%, #1a4a38 100%);padding:12px 20px;display:flex;align-items:center;gap:20px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
+.brief-label{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:rgba(79,184,150,0.7);flex-shrink:0;}
+.brief-item{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.brief-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.brief-text{font-size:12px;font-weight:500;color:rgba(232,237,233,0.9);}
+.brief-sep{width:1px;height:14px;background:rgba(79,184,150,0.2);flex-shrink:0;}
+
+/* ── MAIN LAYOUT ── */
+.main-layout{display:grid;grid-template-columns:220px 1fr 300px;flex:1;overflow:hidden;min-height:0;}
+
+/* ── LEFT SIDEBAR ── */
+.left-sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.ls-section{padding:14px 14px 6px;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--cream-dim);}
+.ls-stat{padding:10px 14px;border-bottom:1px solid var(--border);}
+.ls-n{font-family:var(--font-d);font-size:24px;color:var(--cream);}
+.ls-l{font-size:11px;color:var(--cream-dim);margin-top:2px;}
+.ls-d{font-size:11px;font-weight:500;margin-top:2px;}
+.filter-row{padding:10px 14px;display:flex;flex-direction:column;gap:6px;}
+.filter-label{font-size:10px;color:var(--cream-dim);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;}
+.filter-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.fb{padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;font-size:11px;font-weight:500;color:var(--cream-dim);transition:all 0.15s;}
+.fb.on{background:var(--sage-pale);border-color:var(--sage-dim);color:var(--sage);}
+.today-list{padding:10px 14px;}
+.tl-item{padding:8px 10px;background:var(--surface-2);border-radius:7px;margin-bottom:5px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;}
+.tl-item:hover{border-color:var(--sage-dim);}
+.tl-time{font-size:10px;color:var(--cream-dim);margin-bottom:3px;}
+.tl-name{font-size:12px;font-weight:500;color:var(--cream);}
+.tl-session{font-size:10px;color:var(--cream-dim);}
+.tl-status{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:5px;}
+
+/* ── COURSE GRID ── */
+.course-area{overflow-y:auto;padding:16px;}
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.course-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:15px;
+  overflow:hidden;transition:all 0.2s;cursor:pointer;
+}
+.course-card:hover{border-color:rgba(79,184,150,0.3);transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.course-card.urgent{border-color:rgba(208,89,52,0.35);background:rgba(208,89,52,0.04);}
+.course-card.near-discharge{border-color:rgba(79,184,150,0.4);}
+
+/* CARD HEAD */
+.cc-head{padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.cc-ring{width:44px;height:44px;flex-shrink:0;position:relative;}
+.cc-ring svg{width:44px;height:44px;transform:rotate(-90deg);}
+.cc-ring-bg{fill:none;stroke:var(--surface-3);stroke-width:3.5;}
+.cc-ring-fill{fill:none;stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset 0.5s ease;}
+.cc-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:500;}
+.cc-ring-n{font-family:var(--font-d);font-size:13px;line-height:1;}
+.cc-info{flex:1;min-width:0;}
+.cc-name{font-size:13px;font-weight:500;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cc-diag{font-size:11px;color:var(--cream-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cc-status{flex-shrink:0;}
+.status-pill{font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+.sp-active{background:rgba(79,184,150,0.15);color:var(--sage);}
+.sp-review{background:rgba(212,137,58,0.2);color:#d4893a;}
+.sp-overdue{background:rgba(224,82,82,0.2);color:var(--red);}
+.sp-discharge{background:rgba(79,184,150,0.25);color:#7ce8c4;}
+
+/* OUTCOMES ROW */
+.cc-outcomes{padding:8px 16px;display:flex;gap:12px;border-top:1px solid var(--border);background:var(--surface-2);}
+.oc-item{display:flex;flex-direction:column;gap:2px;flex:1;}
+.oc-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--cream-dim);}
+.oc-values{display:flex;align-items:center;gap:4px;font-size:12px;}
+.oc-before{color:rgba(232,237,233,0.3);}
+.oc-arrow{color:rgba(232,237,233,0.2);font-size:10px;}
+.oc-after{font-weight:500;}
+.oc-spark{height:20px;width:100%;}
+.sparkline{fill:none;stroke-width:1.5;stroke-linecap:round;}
+
+/* ACTIONS */
+.cc-actions{padding:10px 16px;display:flex;gap:6px;border-top:1px solid var(--border);}
+.ca-btn{flex:1;padding:7px 5px;border-radius:6px;border:1px solid var(--border);background:transparent;font-size:11px;font-weight:500;color:var(--cream-dim);text-align:center;transition:all 0.15s;}
+.ca-btn:hover{background:var(--cream-faint);color:var(--cream);}
+.ca-btn.primary{background:var(--sage-pale);border-color:var(--sage-dim);color:var(--sage);}
+.ca-btn.primary:hover{background:var(--sage-dim);color:var(--cream);}
+.ca-btn.urgent{background:rgba(224,82,82,0.1);border-color:rgba(224,82,82,0.3);color:var(--red);}
+
+/* ADD CARD */
+.add-card{background:var(--surface);border:1.5px dashed var(--border);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;transition:all 0.2s;min-height:200px;}
+.add-card:hover{border-color:var(--sage-dim);background:var(--surface-2);}
+.add-icon{width:40px;height:40px;border-radius:50%;border:1.5px dashed var(--sage-dim);display:flex;align-items:center;justify-content:center;color:var(--sage-dim);font-size:20px;margin-bottom:12px;transition:all 0.2s;}
+.add-card:hover .add-icon{border-color:var(--sage);color:var(--sage);}
+.add-title{font-size:13px;font-weight:500;color:var(--cream-dim);margin-bottom:4px;}
+.add-sub{font-size:11px;color:rgba(232,237,233,0.3);}
+
+/* ── RIGHT DETAIL PANEL ── */
+.right-panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.rp-head{padding:16px;border-bottom:1px solid var(--border);}
+.rp-title{font-family:var(--font-d);font-size:17px;color:var(--cream);margin-bottom:2px;}
+.rp-sub{font-size:11px;color:var(--cream-dim);}
+.rp-section{padding:12px 16px;border-bottom:1px solid var(--border);}
+.rp-section-label{font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--cream-dim);margin-bottom:8px;}
+.metric-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:12px;}
+.mr-label{color:var(--cream-dim);}
+.mr-val{font-weight:500;color:var(--cream);}
+.outcome-chart-wrap{margin-top:8px;}
+.chart-label-row{display:flex;justify-content:space-between;font-size:10px;color:var(--cream-dim);margin-bottom:4px;}
+.outcome-chart-svg{width:100%;height:60px;}
+.alert-card{background:rgba(212,137,58,0.1);border:1px solid rgba(212,137,58,0.25);border-radius:8px;padding:10px 12px;margin-top:6px;}
+.alert-icon{font-size:13px;margin-bottom:4px;}
+.alert-text{font-size:11px;color:#d4893a;line-height:1.5;}
+.eod-section{padding:12px 16px;}
+.eod-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface-2);border-radius:7px;margin-bottom:5px;}
+.eod-name{font-size:12px;font-weight:500;color:var(--cream);flex:1;}
+.eod-sess{font-size:10px;color:var(--cream-dim);}
+.eod-amt{font-size:13px;font-weight:500;color:var(--cream);margin-right:5px;}
+.eod-btn{padding:4px 10px;border-radius:5px;border:1px solid var(--sage-dim);background:transparent;font-size:11px;color:var(--sage);transition:all 0.15s;}
+.eod-btn:hover{background:var(--sage-dim);}
+.eod-btn.done{background:var(--sage-pale);border-color:var(--sage);color:var(--sage);}
+.eod-all-btn{width:100%;padding:10px;border-radius:8px;border:none;background:var(--sage-dim);color:var(--sage);font-size:13px;font-weight:500;margin-top:8px;transition:all 0.15s;}
+.eod-all-btn:hover{background:var(--sage);color:var(--bg);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/><path d="M8 11h8M8 14h5"/></svg></div>
+  <span class="tb-logo">MentalPath</span>
+  <div class="tb-sep"></div>
+  <span class="tb-prof">Dr. Sarah Chen · Physiotherapist · CPT</span>
+  <div class="tb-sp"></div>
+  <span class="tb-date">Monday, March 16, 2026</span>
+  <button class="tb-btn tb-btn-ghost">+ New course</button>
+  <button class="tb-btn tb-btn-sage">Invoice today's sessions →</button>
+</div>
+
+<div class="brief">
+  <span class="brief-label">Today</span>
+  <div class="brief-item"><div class="brief-dot" style="background:#d4893a"></div><span class="brief-text">3 reassessments due this week</span></div>
+  <div class="brief-sep"></div>
+  <div class="brief-item"><div class="brief-dot" style="background:var(--sage)"></div><span class="brief-text">5 sessions today · $600 to invoice</span></div>
+  <div class="brief-sep"></div>
+  <div class="brief-item"><div class="brief-dot" style="background:#5a9fd4"></div><span class="brief-text">James Liu — discharge criteria met</span></div>
+  <div class="brief-sep"></div>
+  <div class="brief-item"><div class="brief-dot" style="background:var(--red)"></div><span class="brief-text">Thomas N — 18 days since last session</span></div>
+</div>
+
+<div class="main-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="left-sidebar">
+    <div class="ls-section">Practice overview</div>
+    <div class="ls-stat"><div class="ls-n">8</div><div class="ls-l">Active courses</div></div>
+    <div class="ls-stat"><div class="ls-n" style="color:var(--amber)">3</div><div class="ls-l">Reviews due</div><div class="ls-d" style="color:var(--amber)">Act this week</div></div>
+    <div class="ls-stat"><div class="ls-n" style="color:var(--sage)">$600</div><div class="ls-l">To invoice today</div><div class="ls-d" style="color:var(--sage)">5 sessions</div></div>
+    <div class="ls-stat"><div class="ls-n">62</div><div class="ls-l">Sessions this month</div></div>
+
+    <div class="filter-row">
+      <div class="filter-label">Filter</div>
+      <div class="filter-btns">
+        <button class="fb on">All</button>
+        <button class="fb">Active</button>
+        <button class="fb">Review</button>
+        <button class="fb">Overdue</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-label">Body area</div>
+      <div class="filter-btns">
+        <button class="fb on">All</button>
+        <button class="fb">Lumbar</button>
+        <button class="fb">Shoulder</button>
+        <button class="fb">Knee</button>
+        <button class="fb">Cervical</button>
+      </div>
+    </div>
+
+    <div class="ls-section">Today's schedule</div>
+    <div class="today-list">
+      <div class="tl-item"><div class="tl-time">9:00 AM</div><div class="tl-name">Marcus Silva<div class="tl-status" style="background:var(--amber);display:inline-block"></div></div><div class="tl-session">Session 8/12 · Lumbar</div></div>
+      <div class="tl-item"><div class="tl-time">10:00 AM</div><div class="tl-name">Priya Kapoor<div class="tl-status" style="background:var(--sage);display:inline-block"></div></div><div class="tl-session">Session 4/8 · Shoulder</div></div>
+      <div class="tl-item"><div class="tl-time">1:00 PM</div><div class="tl-name">Aisha Boateng<div class="tl-status" style="background:var(--sage);display:inline-block"></div></div><div class="tl-session">Session 2/8 · Cervical</div></div>
+      <div class="tl-item"><div class="tl-time">2:00 PM</div><div class="tl-name">James Liu<div class="tl-status" style="background:#7ce8c4;display:inline-block"></div></div><div class="tl-session">Session 6/6 · Ankle · Final</div></div>
+      <div class="tl-item"><div class="tl-time">3:00 PM</div><div class="tl-name">Riya Nair<div class="tl-status" style="background:var(--blue);display:inline-block"></div></div><div class="tl-session">Intake assessment · Knee</div></div>
+    </div>
+  </div>
+
+  <!-- COURSE GRID -->
+  <div class="course-area">
+    <div class="course-grid" id="courseGrid">
+
+      <!-- Card: Review due -->
+      <div class="course-card urgent" onclick="selectCard(this,'Marcus Silva')">
+        <div class="cc-head">
+          <div class="cc-ring">
+            <svg viewBox="0 0 44 44"><circle class="cc-ring-bg" cx="22" cy="22" r="18"/><circle class="cc-ring-fill" cx="22" cy="22" r="18" stroke="#d4893a" stroke-dasharray="113" stroke-dashoffset="37"/></svg>
+            <div class="cc-ring-label"><span class="cc-ring-n" style="color:#d4893a">8</span><span style="font-size:8px;color:var(--cream-dim)">of 12</span></div>
+          </div>
+          <div class="cc-info">
+            <div class="cc-name">Marcus Silva</div>
+            <div class="cc-diag">M54.5 — Lumbar disc · L4-L5</div>
+          </div>
+          <div class="cc-status"><span class="status-pill sp-review">Review due</span></div>
+        </div>
+        <div class="cc-outcomes">
+          <div class="oc-item">
+            <div class="oc-label">Oswestry</div>
+            <div class="oc-values"><span class="oc-before">46%</span><span class="oc-arrow">→</span><span class="oc-after" style="color:#d4893a">28%</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">NPRS</div>
+            <div class="oc-values"><span class="oc-before">7</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--sage)">4</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Progress</div>
+            <svg class="oc-spark"><polyline class="sparkline" points="0,18 10,14 20,10 30,12 40,8 50,10 60,6" style="stroke:#d4893a"/></svg>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="ca-btn urgent">Reassess</button>
+          <button class="ca-btn primary">Write note</button>
+          <button class="ca-btn">Receipt</button>
+        </div>
+      </div>
+
+      <!-- Card: Active, good -->
+      <div class="course-card" onclick="selectCard(this,'Priya Kapoor')">
+        <div class="cc-head">
+          <div class="cc-ring">
+            <svg viewBox="0 0 44 44"><circle class="cc-ring-bg" cx="22" cy="22" r="18"/><circle class="cc-ring-fill" cx="22" cy="22" r="18" stroke="#4fb896" stroke-dasharray="113" stroke-dashoffset="56.5"/></svg>
+            <div class="cc-ring-label"><span class="cc-ring-n" style="color:var(--sage)">4</span><span style="font-size:8px;color:var(--cream-dim)">of 8</span></div>
+          </div>
+          <div class="cc-info">
+            <div class="cc-name">Priya Kapoor</div>
+            <div class="cc-diag">M75.1 — Rotator cuff · Shoulder R</div>
+          </div>
+          <div class="cc-status"><span class="status-pill sp-active">On track</span></div>
+        </div>
+        <div class="cc-outcomes">
+          <div class="oc-item">
+            <div class="oc-label">DASH</div>
+            <div class="oc-values"><span class="oc-before">54</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--sage)">31</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">NPRS</div>
+            <div class="oc-values"><span class="oc-before">8</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--sage)">3</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Trend</div>
+            <svg class="oc-spark"><polyline class="sparkline" points="0,18 15,14 30,9 45,7 60,4" style="stroke:var(--sage)"/></svg>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="ca-btn primary">Write note</button>
+          <button class="ca-btn">Update HEP</button>
+          <button class="ca-btn">Receipt</button>
+        </div>
+      </div>
+
+      <!-- Card: Overdue -->
+      <div class="course-card urgent" onclick="selectCard(this,'Thomas Nguyen')">
+        <div class="cc-head">
+          <div class="cc-ring">
+            <svg viewBox="0 0 44 44"><circle class="cc-ring-bg" cx="22" cy="22" r="18"/><circle class="cc-ring-fill" cx="22" cy="22" r="18" stroke="#e05252" stroke-dasharray="113" stroke-dashoffset="45"/></svg>
+            <div class="cc-ring-label"><span class="cc-ring-n" style="color:var(--red)">6</span><span style="font-size:8px;color:var(--cream-dim)">of 10</span></div>
+          </div>
+          <div class="cc-info">
+            <div class="cc-name">Thomas Nguyen</div>
+            <div class="cc-diag">M23.2 — Medial meniscus · Knee R</div>
+          </div>
+          <div class="cc-status"><span class="status-pill sp-overdue">18 days absent</span></div>
+        </div>
+        <div class="cc-outcomes">
+          <div class="oc-item">
+            <div class="oc-label">NPRS</div>
+            <div class="oc-values"><span class="oc-before">6</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--amber)">4</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Berg</div>
+            <div class="oc-values"><span class="oc-before">38</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--amber)">44</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Trend</div>
+            <svg class="oc-spark"><polyline class="sparkline" points="0,16 15,12 30,9 45,9 60,9" style="stroke:var(--red);stroke-dasharray:3,2"/></svg>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="ca-btn urgent">Contact now</button>
+          <button class="ca-btn">Write note</button>
+        </div>
+      </div>
+
+      <!-- Card: Early -->
+      <div class="course-card" onclick="selectCard(this,'Aisha Boateng')">
+        <div class="cc-head">
+          <div class="cc-ring">
+            <svg viewBox="0 0 44 44"><circle class="cc-ring-bg" cx="22" cy="22" r="18"/><circle class="cc-ring-fill" cx="22" cy="22" r="18" stroke="#4fb896" stroke-dasharray="113" stroke-dashoffset="84.75"/></svg>
+            <div class="cc-ring-label"><span class="cc-ring-n" style="color:var(--sage)">2</span><span style="font-size:8px;color:var(--cream-dim)">of 8</span></div>
+          </div>
+          <div class="cc-info">
+            <div class="cc-name">Aisha Boateng</div>
+            <div class="cc-diag">G54.2 — Cervical radiculopathy · C6</div>
+          </div>
+          <div class="cc-status"><span class="status-pill sp-active">Week 1</span></div>
+        </div>
+        <div class="cc-outcomes">
+          <div class="oc-item">
+            <div class="oc-label">NPRS</div>
+            <div class="oc-values"><span class="oc-before">8</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--amber)">6</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">PSFS</div>
+            <div class="oc-values"><span class="oc-before">2.5</span><span class="oc-arrow">→</span><span class="oc-after" style="color:var(--amber)">4.0</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Trend</div>
+            <svg class="oc-spark"><polyline class="sparkline" points="0,18 30,12 60,9" style="stroke:var(--amber)"/></svg>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="ca-btn primary">Write note</button>
+          <button class="ca-btn">Issue HEP</button>
+          <button class="ca-btn">Receipt</button>
+        </div>
+      </div>
+
+      <!-- Card: Discharge ready -->
+      <div class="course-card near-discharge" onclick="selectCard(this,'James Liu')">
+        <div class="cc-head">
+          <div class="cc-ring">
+            <svg viewBox="0 0 44 44"><circle class="cc-ring-bg" cx="22" cy="22" r="18"/><circle class="cc-ring-fill" cx="22" cy="22" r="18" stroke="#7ce8c4" stroke-dasharray="113" stroke-dashoffset="0"/></svg>
+            <div class="cc-ring-label"><span class="cc-ring-n" style="color:#7ce8c4">6</span><span style="font-size:8px;color:rgba(124,232,196,0.6)">of 6 ✓</span></div>
+          </div>
+          <div class="cc-info">
+            <div class="cc-name">James Liu</div>
+            <div class="cc-diag">S83.5 — Lateral ankle sprain · Left</div>
+          </div>
+          <div class="cc-status"><span class="status-pill sp-discharge">Discharge ready</span></div>
+        </div>
+        <div class="cc-outcomes">
+          <div class="oc-item">
+            <div class="oc-label">NPRS</div>
+            <div class="oc-values"><span class="oc-before">7</span><span class="oc-arrow">→</span><span class="oc-after" style="color:#7ce8c4">1 ✓</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Berg</div>
+            <div class="oc-values"><span class="oc-before">41</span><span class="oc-arrow">→</span><span class="oc-after" style="color:#7ce8c4">54 ✓</span></div>
+          </div>
+          <div class="oc-item">
+            <div class="oc-label">Sport</div>
+            <svg class="oc-spark"><polyline class="sparkline" points="0,18 12,14 24,10 36,6 48,3 60,1" style="stroke:#7ce8c4"/></svg>
+          </div>
+        </div>
+        <div class="cc-actions">
+          <button class="ca-btn" style="background:rgba(124,232,196,0.1);border-color:rgba(124,232,196,0.3);color:#7ce8c4;">Discharge summary</button>
+          <button class="ca-btn">Final receipt</button>
+        </div>
+      </div>
+
+      <!-- Add new -->
+      <div class="add-card">
+        <div class="add-icon">+</div>
+        <div class="add-title">New treatment course</div>
+        <div class="add-sub">Diagnosis · goals · session count · outcomes · 60 seconds</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT DETAIL PANEL -->
+  <div class="right-panel">
+    <div class="rp-head">
+      <div class="rp-title" id="rpName">Marcus Silva</div>
+      <div class="rp-sub" id="rpDetail">Session 8 of 12 · Reassessment due today</div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-section-label">Course metrics</div>
+      <div class="metric-row"><span class="mr-label">Course started</span><span class="mr-val">Jan 20, 2026</span></div>
+      <div class="metric-row"><span class="mr-label">Planned sessions</span><span class="mr-val">12</span></div>
+      <div class="metric-row"><span class="mr-label">Completed</span><span class="mr-val">8 · 67%</span></div>
+      <div class="metric-row"><span class="mr-label">Next review date</span><span class="mr-val" style="color:var(--amber)">Today (overdue)</span></div>
+      <div class="metric-row"><span class="mr-label">Last seen</span><span class="mr-val">March 9</span></div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-section-label">Outcome trajectory</div>
+      <div class="outcome-chart-wrap">
+        <div class="chart-label-row"><span>Oswestry</span><span style="color:var(--amber)">46% → 28%</span></div>
+        <svg class="outcome-chart-svg" viewBox="0 0 260 60">
+          <line x1="0" y1="50" x2="260" y2="50" stroke="var(--border)" stroke-width="0.5"/>
+          <line x1="0" y1="30" x2="260" y2="30" stroke="var(--border)" stroke-width="0.5"/>
+          <line x1="0" y1="10" x2="260" y2="10" stroke="var(--border)" stroke-width="0.5"/>
+          <polyline fill="none" stroke="#d4893a" stroke-width="2" stroke-linecap="round" points="0,42 40,36 80,28 120,24 160,22 200,20 240,18"/>
+          <circle cx="240" cy="18" r="4" fill="#d4893a"/>
+          <text x="0" y="58" font-size="8" fill="rgba(232,237,233,0.3)">Session 1</text>
+          <text x="200" y="58" font-size="8" fill="rgba(232,237,233,0.3)">Session 8</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="alert-card">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text">Formal reassessment required at session 8 per CPT documentation standards. Extend, modify, or discharge — document the decision today.</div>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-section-label">Reassessment options</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <button class="ca-btn primary" style="flex:none;padding:10px;border-radius:7px;font-size:12px;">Extend course (+4 sessions)</button>
+        <button class="ca-btn" style="flex:none;padding:10px;border-radius:7px;font-size:12px;">Discharge (goals met)</button>
+        <button class="ca-btn" style="flex:none;padding:10px;border-radius:7px;font-size:12px;">Refer onward</button>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-section-label">End-of-day billing</div>
+    </div>
+    <div class="eod-section">
+      <div class="eod-item"><div style="flex:1"><div class="eod-name">Marcus Silva</div><div class="eod-sess">Session 8 · Lumbar</div></div><span class="eod-amt">$120</span><button class="eod-btn" onclick="markPaid(this)">Invoice</button></div>
+      <div class="eod-item"><div style="flex:1"><div class="eod-name">Priya Kapoor</div><div class="eod-sess">Session 4 · Shoulder</div></div><span class="eod-amt">$120</span><button class="eod-btn" onclick="markPaid(this)">Invoice</button></div>
+      <div class="eod-item"><div style="flex:1"><div class="eod-name">Aisha Boateng</div><div class="eod-sess">Session 2 · Cervical</div></div><span class="eod-amt">$120</span><button class="eod-btn" onclick="markPaid(this)">Invoice</button></div>
+      <div class="eod-item"><div style="flex:1"><div class="eod-name">James Liu</div><div class="eod-sess">Session 6 · Final</div></div><span class="eod-amt">$120</span><button class="eod-btn" onclick="markPaid(this)">Invoice</button></div>
+      <div class="eod-item"><div style="flex:1"><div class="eod-name">Riya Nair</div><div class="eod-sess">Intake · Knee</div></div><span class="eod-amt">$120</span><button class="eod-btn" onclick="markPaid(this)">Invoice</button></div>
+      <button class="eod-all-btn" onclick="invoiceAll()">Invoice all 5 at once →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function selectCard(card, name) {
+  document.querySelectorAll('.course-card').forEach(c => c.style.borderColor = '');
+  card.style.borderColor = 'rgba(79,184,150,0.5)';
+  document.getElementById('rpName').textContent = name;
+}
+function markPaid(btn) {
+  btn.textContent = '✓ Sent';
+  btn.classList.add('done');
+  btn.disabled = true;
+}
+function invoiceAll() {
+  document.querySelectorAll('.eod-btn').forEach(b => { b.textContent='✓'; b.classList.add('done'); b.disabled=true; });
+  const allBtn = document.querySelector('.eod-all-btn');
+  allBtn.textContent = '✓ All 5 invoiced — $600';
+  allBtn.style.background = 'var(--sage)';
+  allBtn.style.color = 'var(--bg)';
+}
+</script>
+</body>
+</html>

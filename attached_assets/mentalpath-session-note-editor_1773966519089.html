@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentalPath — Session note</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.08);--bmed:rgba(0,0,0,0.13);--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);display:flex;flex-direction:column;}
+button,input,select,textarea{font-family:inherit;}
+
+/* TOP BAR */
+.topbar{height:52px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:50;flex-shrink:0;}
+.tb-back{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-muted);cursor:pointer;padding:6px 10px;border-radius:7px;border:none;background:transparent;transition:background 0.15s;}
+.tb-back:hover{background:var(--warm);}
+.tb-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;}
+.tb-divider{width:1px;height:20px;background:var(--border);}
+.tb-client{display:flex;align-items:center;gap:8px;}
+.tb-av{width:24px;height:24px;border-radius:50%;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:var(--sage-deep);}
+.tb-name{font-size:13px;font-weight:500;color:var(--ink);}
+.tb-session{font-size:12px;color:var(--ink-muted);}
+.tb-spacer{flex:1;}
+.tb-status{display:flex;align-items:center;gap:6px;font-size:12px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#BA7517;}
+.status-dot.saved{background:var(--sage);}
+.status-dot.locked{background:var(--ink-muted);}
+.status-text{color:var(--ink-muted);}
+.btn-lock{display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--ink);color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.btn-lock:hover{background:#333;}
+.btn-lock svg{width:13px;height:13px;fill:none;stroke:white;stroke-width:2;}
+.btn-save{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--sage);color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.btn-save:hover{background:var(--sage-deep);}
+
+/* LAYOUT */
+.editor-shell{display:grid;grid-template-columns:220px 1fr 280px;flex:1;overflow:hidden;min-height:0;}
+
+/* LEFT SIDEBAR */
+.left-sidebar{background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.ls-section{padding:14px 14px 6px;font-size:10px;font-weight:500;letter-spacing:0.7px;text-transform:uppercase;color:var(--ink-muted);}
+.format-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;border:none;background:transparent;font-size:13px;color:var(--ink-soft);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;text-align:left;}
+.format-btn:hover{background:var(--warm);color:var(--ink);}
+.format-btn.active{background:var(--sage-pale);color:var(--sage-deep);border-left-color:var(--sage);}
+.format-btn .fmt-abbr{font-size:10px;font-weight:600;color:var(--sage);background:var(--sage-pale);padding:2px 6px;border-radius:3px;margin-left:auto;}
+.format-btn.active .fmt-abbr{background:var(--sage);color:white;}
+.ls-divider{height:1px;background:var(--border);margin:8px 0;}
+.prep-card{margin:12px;background:var(--sage-pale);border-radius:9px;padding:12px;}
+.pc-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.6px;color:var(--sage);margin-bottom:7px;}
+.pc-section{margin-bottom:8px;}
+.pc-s-label{font-size:10px;font-weight:500;color:var(--sage-deep);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.4px;}
+.pc-text{font-size:12px;color:var(--sage-deep);line-height:1.55;}
+.session-meta{padding:12px 14px;}
+.sm-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:0.5px solid var(--border);}
+.sm-row:last-child{border-bottom:none;}
+.sm-label{color:var(--ink-muted);}
+.sm-val{color:var(--ink);font-weight:500;}
+select.sm-select{border:none;background:transparent;font-size:12px;color:var(--ink);font-weight:500;cursor:pointer;padding:0;outline:none;}
+
+/* MAIN EDITOR */
+.editor-main{display:flex;flex-direction:column;overflow:hidden;}
+.editor-body{flex:1;overflow-y:auto;padding:32px 40px;}
+.note-format-label{font-family:var(--font-d);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-muted);margin-bottom:24px;}
+.note-sections{display:flex;flex-direction:column;gap:0;}
+.note-section{border-bottom:1px solid var(--border);}
+.note-section:last-child{border-bottom:none;}
+.ns-header{display:flex;align-items:center;gap:10px;padding:16px 0 10px;}
+.ns-tag{font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;padding:3px 9px;border-radius:4px;flex-shrink:0;}
+.ns-tag-d{background:#e8f0ed;color:var(--sage-deep);}
+.ns-tag-a{background:#faeeda;color:#633806;}
+.ns-tag-p{background:#E6F1FB;color:#0C447C;}
+.ns-tag-s{background:#fde8e8;color:#791F1F;}
+.ns-tag-o{background:#faeeda;color:#633806;}
+.ns-tag-b{background:#EEEDFE;color:#3C3489;}
+.ns-tag-i{background:#fde8e8;color:#791F1F;}
+.ns-tag-r{background:#e8f4f0;color:var(--sage-deep);}
+.ns-tag-pr{background:#faeeda;color:#633806;}
+.ns-hint{font-size:11px;color:var(--ink-muted);line-height:1.4;flex:1;}
+.ns-ai-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid rgba(74,124,111,0.25);border-radius:6px;background:var(--sage-pale);color:var(--sage-deep);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.ns-ai-btn:hover{background:var(--sage);color:white;}
+.ns-ai-btn svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.ns-textarea{width:100%;padding:4px 0 20px;border:none;background:transparent;font-size:14px;color:var(--ink-soft);line-height:1.75;resize:none;outline:none;min-height:80px;}
+.ns-textarea::placeholder{color:var(--ink-muted);}
+.ns-textarea:focus{color:var(--ink);}
+.word-count{font-size:11px;color:var(--ink-muted);text-align:right;padding-bottom:8px;}
+.ai-draft-bar{background:var(--sage-pale);border-radius:8px;padding:10px 13px;margin-bottom:8px;font-size:12px;color:var(--sage-deep);display:none;align-items:center;gap:8px;}
+.ai-draft-bar.show{display:flex;}
+.ai-draft-bar svg{width:13px;height:13px;fill:none;stroke:var(--sage);stroke-width:1.5;flex-shrink:0;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RIGHT SIDEBAR */
+.right-sidebar{background:white;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.rs-section-head{padding:14px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:500;color:var(--ink);display:flex;align-items:center;justify-content:space-between;}
+.rs-body{padding:12px 14px;}
+.outcome-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:12px;}
+.outcome-row:last-child{border-bottom:none;}
+.or-label{color:var(--ink-muted);}
+.or-val{font-weight:500;color:var(--ink);}
+.or-trend{font-size:10px;}
+.tr-up{color:var(--sage);}
+.tr-dn{color:#c0392b;}
+.goal-item{padding:8px 0;border-bottom:0.5px solid var(--border);}
+.goal-item:last-child{border-bottom:none;}
+.gi-text{font-size:12px;color:var(--ink-soft);line-height:1.5;margin-bottom:5px;}
+.gi-prog{height:3px;background:var(--warm);border-radius:2px;overflow:hidden;}
+.gi-fill{height:100%;border-radius:2px;background:var(--sage);}
+.gi-pct{font-size:10px;color:var(--ink-muted);margin-top:3px;}
+.prev-note-card{background:var(--warm);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:background 0.15s;}
+.prev-note-card:hover{background:var(--sage-pale);}
+.pnc-date{font-size:11px;font-weight:500;color:var(--ink-muted);margin-bottom:4px;}
+.pnc-text{font-size:12px;color:var(--ink-soft);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.assign-measure-btn{width:100%;padding:8px;border:1.5px dashed var(--sage-light);border-radius:8px;background:transparent;color:var(--sage);font-size:12px;font-weight:500;cursor:pointer;margin-top:4px;transition:all 0.15s;}
+.assign-measure-btn:hover{background:var(--sage-pale);}
+.lock-warning{background:#faeeda;border:1px solid rgba(186,117,23,0.3);border-radius:8px;padding:10px 12px;margin:12px;font-size:12px;color:#633806;line-height:1.5;display:none;}
+.lock-warning.show{display:block;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="tb-back">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    Dashboard
+  </button>
+  <div class="tb-divider"></div>
+  <div class="tb-client">
+    <div class="tb-av">AM</div>
+    <div>
+      <span class="tb-name">Amara Mensah</span>
+      <span class="tb-session"> · Session 15 · March 16, 2026</span>
+    </div>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="tb-status">
+    <div class="status-dot saved" id="statusDot"></div>
+    <span class="status-text" id="statusText">Draft saved</span>
+  </div>
+  <button class="btn-save" onclick="saveDraft()">
+    <svg viewBox="0 0 16 16"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V5l-3-3z"/><path d="M11 2v4H5V2M5 9h6"/></svg>
+    Save draft
+  </button>
+  <button class="btn-lock" onclick="lockNote()">
+    <svg viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+    Lock & finalise
+  </button>
+</div>
+
+<div class="editor-shell">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="left-sidebar">
+    <div class="ls-section">Note format</div>
+    <button class="format-btn active" onclick="setFormat('dap',this)" id="btn-dap">
+      DAP <span class="fmt-abbr">DAP</span>
+    </button>
+    <button class="format-btn" onclick="setFormat('soap',this)" id="btn-soap">
+      SOAP <span class="fmt-abbr">SOAP</span>
+    </button>
+    <button class="format-btn" onclick="setFormat('birp',this)" id="btn-birp">
+      BIRP <span class="fmt-abbr">BIRP</span>
+    </button>
+    <button class="format-btn" onclick="setFormat('progress',this)" id="btn-progress">
+      Progress <span class="fmt-abbr">PROG</span>
+    </button>
+    <div class="ls-divider"></div>
+    <div class="ls-section">Session prep AI</div>
+    <div class="prep-card">
+      <div class="pc-label">✦ Pre-session brief</div>
+      <div class="pc-section">
+        <div class="pc-s-label">Where we left off</div>
+        <div class="pc-text">Explored workplace microaggression incident using anti-racism framework. Strong externalisation. Cautiously hopeful tone.</div>
+      </div>
+      <div class="pc-section">
+        <div class="pc-s-label">Watch for</div>
+        <div class="pc-text">Treatment plan 3-month review due today. PHQ-9 now 3 (minimal). Watch for premature closure impulse.</div>
+      </div>
+      <div class="pc-section" style="margin-bottom:0;">
+        <div class="pc-s-label">Suggested focus</div>
+        <div class="pc-text">Formal treatment plan review. Celebrate progress. Begin discharge planning discussion if criteria met.</div>
+      </div>
+    </div>
+    <div class="ls-divider"></div>
+    <div class="ls-section">Session details</div>
+    <div class="session-meta">
+      <div class="sm-row"><span class="sm-label">Date</span><span class="sm-val">Mar 16, 2026</span></div>
+      <div class="sm-row"><span class="sm-label">Duration</span><select class="sm-select"><option>50 min</option><option>25 min</option><option>80 min</option></select></div>
+      <div class="sm-row"><span class="sm-label">Format</span><select class="sm-select"><option>Video</option><option>In-person</option><option>Phone</option></select></div>
+      <div class="sm-row"><span class="sm-label">Session #</span><span class="sm-val">15</span></div>
+      <div class="sm-row"><span class="sm-label">Presenting Dx</span><select class="sm-select"><option>F43.10 PTSD</option><option>F41.1 GAD</option><option>F32.1 MDD</option></select></div>
+    </div>
+  </div>
+
+  <!-- MAIN EDITOR -->
+  <div class="editor-main">
+    <div class="editor-body" id="editorBody">
+      <div class="note-format-label" id="formatLabel">DAP — Data · Assessment · Plan</div>
+
+      <!-- DAP format -->
+      <div class="note-sections" id="sections-dap">
+        <div class="note-section">
+          <div class="ns-header">
+            <span class="ns-tag ns-tag-d">D</span>
+            <span class="ns-hint">Client presentation, what was discussed, direct observations</span>
+            <button class="ns-ai-btn" onclick="aiAssist('data','dap')">
+              <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+              AI assist
+            </button>
+          </div>
+          <div class="ai-draft-bar" id="ai-dap-data">
+            <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
+            Drafting from session context and last 3 notes...
+          </div>
+          <textarea class="ns-textarea" id="dap-data" placeholder="Client presented with... Reported that... Discussed... Affect was... Mood appeared..." oninput="markUnsaved();autoResize(this)" rows="5">Client presented as engaged and reflective. Reported completing the journaling exercise between sessions, noting it helped her identify and name emotions in real time — described this as a shift from 'just feeling it' to 'understanding it.' Mood was notably elevated compared to previous sessions; affect bright, appropriate, and congruent. Raised questions about workplace rights resources independently, suggesting increased self-advocacy capacity. Initiated conversation about treatment plan review without prompting.</textarea>
+          <div class="word-count" id="wc-dap-data">47 words</div>
+        </div>
+        <div class="note-section">
+          <div class="ns-header">
+            <span class="ns-tag ns-tag-a">A</span>
+            <span class="ns-hint">Clinical interpretation, formulation, risk assessment</span>
+            <button class="ns-ai-btn" onclick="aiAssist('assessment','dap')">
+              <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+              AI assist
+            </button>
+          </div>
+          <div class="ai-draft-bar" id="ai-dap-assessment"></div>
+          <textarea class="ns-textarea" id="dap-assessment" placeholder="Presentation consistent with... Progress toward... Clinical formulation suggests... Risk assessment..." oninput="markUnsaved();autoResize(this)" rows="4">Progress is consistent with resolution of acute RBTS symptoms and consolidation of treatment gains. Client demonstrates strong integration of anti-racism externalisation framework in daily life — a primary treatment goal. PHQ-9 trajectory (10→7→3) indicates clinically significant improvement. Client's unprompted self-advocacy behaviour and readiness for treatment review suggest approaching discharge readiness. No safety concerns identified. Therapeutic alliance remains strong.</textarea>
+          <div class="word-count" id="wc-dap-assessment">58 words</div>
+        </div>
+        <div class="note-section">
+          <div class="ns-header">
+            <span class="ns-tag ns-tag-p">P</span>
+            <span class="ns-hint">Next steps, interventions, homework, follow-up plan</span>
+            <button class="ns-ai-btn" onclick="aiAssist('plan','dap')">
+              <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+              AI assist
+            </button>
+          </div>
+          <div class="ai-draft-bar" id="ai-dap-plan"></div>
+          <textarea class="ns-textarea" id="dap-plan" placeholder="Continue... Next session will focus on... Client to... Referrals... Review date..." oninput="markUnsaved();autoResize(this)" rows="4">Conducted formal treatment plan 3-month review. All three treatment goals assessed as substantially met. Initiated discharge planning conversation — client receptive and expressed readiness. Discussed maintenance strategies and return-to-treatment indicators. Provide workplace rights resource (OHRC). Next session: Session 16 (likely penultimate). Offer 3-month follow-up contact post-discharge. Update treatment plan status to 'completed.'</textarea>
+          <div class="word-count" id="wc-dap-plan">55 words</div>
+        </div>
+      </div>
+
+      <!-- SOAP format (hidden by default) -->
+      <div class="note-sections" id="sections-soap" style="display:none">
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-s">S</span><span class="ns-hint">Subjective — what the client reports</span><button class="ns-ai-btn" onclick="aiAssist('subjective','soap')"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>AI</button></div><textarea class="ns-textarea" placeholder="Client reports..." oninput="markUnsaved();autoResize(this)" rows="4"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-o">O</span><span class="ns-hint">Objective — clinician observations</span><button class="ns-ai-btn" onclick="aiAssist('objective','soap')"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>AI</button></div><textarea class="ns-textarea" placeholder="Client appeared... Affect was... Mood..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-a">A</span><span class="ns-hint">Assessment — clinical interpretation</span><button class="ns-ai-btn" onclick="aiAssist('assessment','soap')"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>AI</button></div><textarea class="ns-textarea" placeholder="Presentation consistent with..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-p">P</span><span class="ns-hint">Plan — next steps and interventions</span><button class="ns-ai-btn" onclick="aiAssist('plan','soap')"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>AI</button></div><textarea class="ns-textarea" placeholder="Continue... Next session..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+      </div>
+
+      <!-- BIRP format (hidden) -->
+      <div class="note-sections" id="sections-birp" style="display:none">
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-b">B</span><span class="ns-hint">Behaviour — observable behaviours and presentation</span><button class="ns-ai-btn" onclick="aiAssist('behaviour','birp')"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>AI</button></div><textarea class="ns-textarea" placeholder="Client demonstrated..." oninput="markUnsaved();autoResize(this)" rows="4"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-i">I</span><span class="ns-hint">Intervention — what the therapist did</span><button class="ns-ai-btn" onclick="aiAssist('intervention','birp')"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>AI</button></div><textarea class="ns-textarea" placeholder="Therapist provided..." oninput="markUnsaved();autoResize(this)" rows="4"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-r">R</span><span class="ns-hint">Response — how client responded to interventions</span></div><textarea class="ns-textarea" placeholder="Client responded by..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-p">P</span><span class="ns-hint">Plan — next steps</span></div><textarea class="ns-textarea" placeholder="Plan for next session..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+      </div>
+
+      <!-- PROGRESS format (hidden) -->
+      <div class="note-sections" id="sections-progress" style="display:none">
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-pr">Status</span><span class="ns-hint">Current status relative to treatment goals</span></div><textarea class="ns-textarea" placeholder="Progress toward goals..." oninput="markUnsaved();autoResize(this)" rows="4"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-d">Content</span><span class="ns-hint">Session content and client presentation</span></div><textarea class="ns-textarea" placeholder="Session focused on..." oninput="markUnsaved();autoResize(this)" rows="4"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-a">Assessment</span><span class="ns-hint">Clinical formulation update</span></div><textarea class="ns-textarea" placeholder="Clinical assessment..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+        <div class="note-section"><div class="ns-header"><span class="ns-tag ns-tag-p">Next steps</span><span class="ns-hint">Plan for upcoming sessions</span></div><textarea class="ns-textarea" placeholder="Next session will..." oninput="markUnsaved();autoResize(this)" rows="3"></textarea></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="right-sidebar">
+    <div class="rs-section-head">
+      Amara Mensah
+      <span style="font-size:11px;font-weight:400;color:var(--ink-muted);">Session 15</span>
+    </div>
+
+    <div class="rs-section-head" style="border-top:none;">Outcome scores</div>
+    <div class="rs-body">
+      <div class="outcome-row"><span class="or-label">PHQ-9</span><span class="or-val">3 <span style="font-size:11px;color:var(--ink-muted)">/ 27</span></span><span class="or-trend tr-up">↓ from 10</span></div>
+      <div class="outcome-row"><span class="or-label">GAD-7</span><span class="or-val">4 <span style="font-size:11px;color:var(--ink-muted)">/ 21</span></span><span class="or-trend tr-up">↓ from 8</span></div>
+      <div class="outcome-row"><span class="or-label">Wellbeing (portal)</span><span class="or-val">7<span style="font-size:11px;color:var(--ink-muted)">/10</span></span><span class="or-trend tr-up">↑ +2</span></div>
+      <button class="assign-measure-btn">+ Assign PHQ-9 for today</button>
+    </div>
+
+    <div class="rs-section-head">Treatment goals</div>
+    <div class="rs-body">
+      <div class="goal-item">
+        <div class="gi-text">Develop grounding techniques for acute stress responses</div>
+        <div class="gi-prog"><div class="gi-fill" style="width:100%"></div></div>
+        <div class="gi-pct">✓ Met — session 8</div>
+      </div>
+      <div class="goal-item">
+        <div class="gi-text">Externalise systemic nature of racism, reduce self-blame</div>
+        <div class="gi-prog"><div class="gi-fill" style="width:90%"></div></div>
+        <div class="gi-pct">90% · Substantially met</div>
+      </div>
+      <div class="goal-item">
+        <div class="gi-text">Rebuild professional identity integrating cultural heritage</div>
+        <div class="gi-prog"><div class="gi-fill" style="width:80%"></div></div>
+        <div class="gi-pct">80% · Strong progress</div>
+      </div>
+    </div>
+
+    <div class="rs-section-head">Previous notes</div>
+    <div class="rs-body">
+      <div class="prev-note-card">
+        <div class="pnc-date">Session 14 · Mar 10, 2026 · DAP</div>
+        <div class="pnc-text">Client explored workplace microaggression incident from the previous week using anti-racism framework. Demonstrated strong externalisation skills and showed reduced self-blame...</div>
+      </div>
+      <div class="prev-note-card">
+        <div class="pnc-date">Session 13 · Mar 3, 2026 · DAP</div>
+        <div class="pnc-text">Session focused on somatic responses to hypervigilance at work. Introduced body scan technique. Client receptive. Practiced in-session grounding...</div>
+      </div>
+      <div class="prev-note-card">
+        <div class="pnc-date">Session 12 · Feb 24, 2026 · DAP</div>
+        <div class="pnc-text">Explored family-of-origin patterns and their intersection with current workplace dynamics. Cultural genogram exercise initiated...</div>
+      </div>
+    </div>
+
+    <div class="lock-warning" id="lockWarning">
+      Once locked, this note cannot be edited. It will be retained for 10 years per PHIPA s.20. Locked notes appear in your audit log.
+    </div>
+  </div>
+</div>
+
+<script>
+const FORMATS = {
+  dap: 'DAP — Data · Assessment · Plan',
+  soap: 'SOAP — Subjective · Objective · Assessment · Plan',
+  birp: 'BIRP — Behaviour · Intervention · Response · Plan',
+  progress: 'Progress note'
+};
+
+let currentFormat = 'dap';
+let saveTimer = null;
+
+function setFormat(fmt, btn) {
+  document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['dap','soap','birp','progress'].forEach(f => {
+    document.getElementById('sections-'+f).style.display = f === fmt ? 'flex' : 'none';
+  });
+  document.getElementById('formatLabel').textContent = FORMATS[fmt];
+  currentFormat = fmt;
+}
+
+function aiAssist(section, format) {
+  const key = `ai-${format}-${section}`;
+  const bar = document.getElementById(key);
+  if (!bar) return;
+  bar.classList.add('show');
+  const drafts = {
+    'dap-data': 'Client presented as engaged and reflective. Initiated review of treatment goals unprompted, suggesting readiness. Affect bright, mood notably elevated from previous sessions.',
+    'dap-assessment': 'Progress consistent with resolution of acute RBTS symptoms. PHQ-9 trajectory indicates clinically significant improvement. Client approaching discharge readiness.',
+    'dap-plan': 'Conducted 3-month treatment plan review. Initiated discharge planning conversation. Discuss maintenance strategies and return-to-treatment indicators next session.'
+  };
+  setTimeout(() => {
+    bar.classList.remove('show');
+    const textarea = document.getElementById(`${format}-${section}`);
+    if (textarea && !textarea.value.trim()) {
+      textarea.value = drafts[`${format}-${section}`] || 'AI draft would appear here in production, calling the ai-note-assist edge function with PII stripped.';
+      autoResize(textarea);
+      updateWordCount(textarea, `wc-${format}-${section}`);
+    }
+    markUnsaved();
+  }, 1400);
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+  const key = el.id ? `wc-${el.id}` : null;
+  if (key) updateWordCount(el, key);
+}
+
+function updateWordCount(el, wcId) {
+  const wc = document.getElementById(wcId);
+  if (!wc) return;
+  const words = el.value.trim().split(/\s+/).filter(w => w).length;
+  wc.textContent = `${words} word${words !== 1 ? 's' : ''}`;
+}
+
+function markUnsaved() {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot';
+  txt.textContent = 'Unsaved changes';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDraft, 2000);
+}
+
+function saveDraft() {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot saved';
+  txt.textContent = 'Draft saved';
+}
+
+function lockNote() {
+  const warning = document.getElementById('lockWarning');
+  warning.classList.add('show');
+  warning.scrollIntoView({behavior:'smooth'});
+  setTimeout(() => {
+    if (confirm('Lock and finalise this note? It cannot be edited after locking.')) {
+      document.getElementById('statusDot').className = 'status-dot locked';
+      document.getElementById('statusText').textContent = 'Locked · ' + new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+      document.querySelectorAll('.ns-textarea').forEach(t => { t.readOnly = true; t.style.color = 'var(--ink-muted)'; });
+      document.querySelectorAll('.ns-ai-btn,.btn-save,.btn-lock').forEach(b => b.disabled = true);
+    }
+  }, 200);
+}
+
+document.querySelectorAll('.ns-textarea').forEach(t => {
+  autoResize(t);
+  const id = t.id;
+  if (id) updateWordCount(t, `wc-${id}`);
+});
+</script>
+</body>
+</html>

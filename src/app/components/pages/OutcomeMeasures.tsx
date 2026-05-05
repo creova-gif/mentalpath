@@ -37,9 +37,12 @@ export function OutcomeMeasures() {
   const severity = totalScore <= 4 ? 'Minimal' : totalScore <= 9 ? 'Mild' : totalScore <= 14 ? 'Moderate' : totalScore <= 19 ? 'Moderately severe' : 'Severe';
   const severityColor = totalScore <= 4 ? '#1D9E75' : totalScore <= 9 ? '#BA7517' : '#c0392b';
 
+  const [savedBanner, setSavedBanner] = useState(false);
+
   const saveScores = () => {
     setShowAdminister(false);
-    alert('Scores saved to outcome_measures table. In production this calls the Supabase API directly.');
+    setSavedBanner(true);
+    setTimeout(() => setSavedBanner(false), 3500);
   };
 
   return (
@@ -56,6 +59,13 @@ export function OutcomeMeasures() {
           </button>
         </div>
       </div>
+
+      {/* Save success banner */}
+      {savedBanner && (
+        <div className="bg-[#e8f4f0] border-b border-[#b8ddd4] px-7 py-3 flex items-center gap-2 text-[13px] text-[var(--sage-deep)] font-medium">
+          <span>✓</span> PHQ-9 scores saved successfully.
+        </div>
+      )}
 
       {/* Content */}
       <div className="p-6">

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { ClientDetailPanel } from '../modals/ClientDetailPanel';
 import { NoteModal } from '../modals/NoteModal';
 
@@ -95,6 +96,7 @@ const clients: Client[] = [
 ];
 
 export function Clients() {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [noteModalClient, setNoteModalClient] = useState<string | null>(null);
@@ -199,7 +201,7 @@ export function Clients() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert('Intake prep would open here');
+                        navigate('/dashboard/session-prep');
                       }}
                       className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--sage)] bg-transparent cursor-pointer text-[var(--sage)] transition-all duration-150 hover:bg-[var(--sage-pale)]"
                     >
@@ -275,7 +277,7 @@ export function Clients() {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  alert('Intake prep would open here');
+                  navigate('/dashboard/session-prep');
                 }}
                 className="mt-3 w-full px-3 py-2 rounded-md text-sm font-medium border border-[var(--sage)] bg-transparent cursor-pointer text-[var(--sage)] transition-all duration-150 hover:bg-[var(--sage-pale)]"
               >

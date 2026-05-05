@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New patient intake</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --off-white:#F5F1EB; --white:#FFFFFF; --off-black:#111310;
+  --sage:#3B7A65; --sage-light:#5BA08A; --sage-pale:#EAF4F0;
+  --ink:#1C2019; --ink-mid:#4A4E47; --ink-muted:#8A8F87;
+  --border:#E0DDD6; --border-light:#EDEAE3; --red:#B03A2E;
+  --font-d:'Fraunces',serif; --font-b:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--off-white);color:var(--ink);min-height:100vh;}
+button,input,select,textarea{font-family:inherit;}
+
+/* ── HEADER ── */
+.header{background:var(--off-black);padding:0;}
+.header-main{display:grid;grid-template-columns:1fr 1fr;min-height:180px;}
+.hm-left{padding:32px 40px;display:flex;flex-direction:column;justify-content:space-between;}
+.hm-logo{display:flex;align-items:center;gap:8px;}
+.hm-lm{width:22px;height:22px;background:var(--sage);border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.hm-lm svg{width:11px;height:11px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;}
+.hm-ln{font-family:var(--font-d);font-size:14px;color:white;letter-spacing:-0.2px;}
+.hm-practice{font-family:var(--font-d);font-size:28px;color:white;line-height:1.1;margin-top:auto;}
+.hm-right{background:var(--sage);padding:28px 32px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hm-r-creds{font-size:13px;color:rgba(255,255,255,0.8);line-height:1.6;margin-bottom:10px;}
+.hm-r-reg{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;color:rgba(255,255,255,0.6);letter-spacing:0.3px;}
+.hm-r-reg svg{width:10px;height:10px;fill:none;stroke:rgba(255,255,255,0.5);stroke-width:1.5;}
+
+/* PROF SWITCHER (demo) */
+.prof-switch{background:var(--ink);padding:10px 40px;display:flex;gap:8px;align-items:center;}
+.ps-label{font-size:11px;color:rgba(255,255,255,0.3);margin-right:4px;}
+.ps-btn{padding:5px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;background:transparent;font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);cursor:pointer;transition:all 0.15s;}
+.ps-btn.on{background:rgba(59,122,101,0.4);border-color:var(--sage-light);color:white;}
+
+/* ── PROGRESS ── */
+.progress-rail{padding:20px 40px;background:white;border-bottom:1px solid var(--border);}
+.pr-steps{display:flex;align-items:center;gap:0;}
+.pr-step{display:flex;align-items:center;gap:8px;}
+.pr-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;transition:all 0.25s;}
+.pr-num.done{background:var(--sage);color:white;}
+.pr-num.on{background:var(--off-black);color:white;}
+.pr-num.off{background:var(--border);color:var(--ink-muted);}
+.pr-label{font-size:12px;transition:color 0.2s;}
+.pr-label.on{font-weight:500;color:var(--ink);}
+.pr-label.done{color:var(--sage);}
+.pr-label.off{color:var(--ink-muted);}
+.pr-line{flex:1;height:1px;background:var(--border);margin:0 10px;transition:background 0.3s;}
+.pr-line.done{background:var(--sage);}
+
+/* ── FORM ── */
+.form-outer{max-width:680px;margin:0 auto;padding:40px 20px 100px;}
+.step-wrap{display:none;}
+.step-wrap.on{display:block;animation:slideIn 0.25s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.step-title{font-family:var(--font-d);font-size:28px;font-weight:300;color:var(--ink);margin-bottom:6px;}
+.step-sub{font-size:14px;color:var(--ink-muted);margin-bottom:32px;line-height:1.6;}
+
+/* FIELDS */
+.field{margin-bottom:20px;}
+.fl{display:block;font-size:12px;font-weight:500;color:var(--ink-mid);margin-bottom:6px;letter-spacing:0.1px;}
+.req{color:var(--sage);}
+input[type=text],input[type=email],input[type=date],select,textarea{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;
+  background:white;color:var(--ink);font-size:14px;outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(59,122,101,0.06);}
+textarea{resize:vertical;min-height:80px;line-height:1.65;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* PAIN SCALE */
+.pain-wrap{margin-top:6px;}
+.pain-track{display:flex;gap:5px;}
+.pn{flex:1;aspect-ratio:1;border:1.5px solid var(--border);border-radius:9px;background:white;font-size:13px;font-weight:500;color:var(--ink-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.pn:hover{border-color:var(--sage-light);}
+.pn.on{background:var(--sage);border-color:var(--sage);color:white;font-weight:600;}
+.pn.mid.on{background:#d4893a;border-color:#d4893a;}
+.pn.high.on{background:#B03A2E;border-color:#B03A2E;}
+.pain-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-muted);margin-top:5px;padding:0 2px;}
+
+/* BODY AREA SELECTOR */
+.body-select{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.ba-item{border:1.5px solid var(--border);border-radius:9px;padding:10px 8px;cursor:pointer;transition:all 0.15s;text-align:center;background:white;}
+.ba-item:hover{border-color:var(--sage-light);background:var(--sage-pale);}
+.ba-item.on{border-color:var(--sage);background:var(--sage-pale);}
+.ba-icon{font-size:18px;margin-bottom:4px;}
+.ba-name{font-size:11px;font-weight:500;color:var(--ink-mid);line-height:1.2;}
+.ba-item.on .ba-name{color:var(--sage);}
+
+/* CHECKBOX GRID */
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ci{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;background:white;transition:all 0.15s;}
+.ci:hover{border-color:var(--sage-light);}
+.ci.on{border-color:var(--sage);background:var(--sage-pale);}
+.ci-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.ci.on .ci-box{background:var(--sage);border-color:var(--sage);}
+.ci-box svg{width:9px;height:9px;fill:none;stroke:white;stroke-width:2.5;opacity:0;}
+.ci.on .ci-box svg{opacity:1;}
+.ci-label{font-size:13px;color:var(--ink-mid);}
+.ci.on .ci-label{color:var(--sage);}
+
+/* YES/NO */
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.yn-btn{padding:11px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-weight:500;color:var(--ink-muted);cursor:pointer;background:white;transition:all 0.15s;}
+.yn-btn:hover{border-color:var(--sage-light);}
+.yn-btn.yes.on{background:var(--sage-pale);border-color:var(--sage);color:var(--sage);}
+.yn-btn.no.on{background:#fef5f5;border-color:#e4b3b0;color:#8b2a22;}
+
+/* CONSENT */
+.consent-block{display:flex;flex-direction:column;gap:0;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;}
+.consent-item{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid var(--border-light);}
+.consent-item:last-child{border-bottom:none;}
+.consent-item:hover{background:var(--off-white);}
+.consent-item.on{background:var(--sage-pale);}
+.cb{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.15s;}
+.consent-item.on .cb{background:var(--sage);border-color:var(--sage);}
+.cb svg{width:10px;height:10px;fill:none;stroke:white;stroke-width:2.5;opacity:0;}
+.consent-item.on .cb svg{opacity:1;}
+.ct{font-size:13px;color:var(--ink-mid);line-height:1.55;}
+.ct-req{font-size:10px;font-weight:600;color:var(--sage);letter-spacing:0.3px;margin-top:2px;}
+.phipa-note{background:var(--sage-pale);border:1px solid rgba(59,122,101,0.15);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--sage);line-height:1.6;margin-top:14px;}
+
+/* SECTION DIVIDER */
+.field-section{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--ink-muted);margin:24px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+/* NAV */
+.form-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+.fn-context{font-size:12px;color:var(--ink-muted);}
+.fn-context strong{color:var(--ink);font-weight:500;}
+.nav-row{display:flex;gap:8px;}
+.nav-back{padding:11px 20px;border:1.5px solid var(--border);border-radius:9px;background:white;font-size:14px;font-weight:500;color:var(--ink-muted);cursor:pointer;transition:all 0.15s;}
+.nav-back:hover{border-color:var(--sage-light);color:var(--ink);}
+.nav-next{padding:11px 28px;border:none;border-radius:9px;background:var(--sage);font-size:14px;font-weight:500;color:white;cursor:pointer;transition:all 0.15s;}
+.nav-next:hover{background:var(--off-black);}
+
+/* SUCCESS */
+.success-page{display:none;text-align:center;padding:60px 20px;}
+.success-page.on{display:block;animation:slideIn 0.3s ease;}
+.sp-icon{width:64px;height:64px;border-radius:50%;background:var(--sage-pale);border:2px solid var(--sage-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.sp-icon svg{width:28px;height:28px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.sp-title{font-family:var(--font-d);font-size:30px;font-weight:300;color:var(--ink);margin-bottom:8px;}
+.sp-sub{font-size:14px;color:var(--ink-muted);line-height:1.65;max-width:400px;margin:0 auto 28px;}
+.sp-btn{display:inline-block;padding:13px 32px;background:var(--sage);color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+.sp-btn:hover{background:var(--off-black);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-main">
+    <div class="hm-left">
+      <div class="hm-logo">
+        <div class="hm-lm"><svg viewBox="0 0 24 24"><path d="M12 3c-4.5 0-8 3.5-8 8 0 3 1.7 5.6 4.2 7l-.2 3 4-2c.7.1 1.3.2 2 .2 4.5 0 8-3.5 8-8s-3.5-8-8-8z"/></svg></div>
+        <span class="hm-ln">MentalPath</span>
+      </div>
+      <div class="hm-practice" id="headerPractice">Northside Chiropractic</div>
+    </div>
+    <div class="hm-right">
+      <div class="hm-r-creds" id="headerCreds">Dr. Jane Smith, DC<br>College of Chiropractors of Ontario</div>
+      <div class="hm-r-reg">
+        <svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+        PHIPA compliant · Canadian servers
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="prof-switch">
+  <span class="ps-label">Preview:</span>
+  <button class="ps-btn on" onclick="switchProf('chiro',this)">Chiropractic (CCO)</button>
+  <button class="ps-btn" onclick="switchProf('physio',this)">Physiotherapy (CPT)</button>
+  <button class="ps-btn" onclick="switchProf('rmt',this)">Massage Therapy (CMTO)</button>
+</div>
+
+<div class="progress-rail">
+  <div class="pr-steps" id="progressRail"></div>
+</div>
+
+<div id="formRegion">
+  <div class="form-outer" id="formOuter"></div>
+</div>
+
+<div class="success-page" id="successPage">
+  <div class="sp-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+  <div class="sp-title">Thank you.</div>
+  <div class="sp-sub" id="successSub">Your intake form has been securely submitted. Your information is stored on Canadian servers in compliance with PHIPA. You'll receive a confirmation email shortly.</div>
+  <button class="sp-btn">Open your client portal →</button>
+</div>
+
+<div class="form-nav" id="formNav">
+  <div class="fn-context" id="navContext">Step 1 of 4</div>
+  <div class="nav-row">
+    <button class="nav-back" id="navBack" style="display:none" onclick="prev()">← Back</button>
+    <button class="nav-next" id="navNext" onclick="next()">Continue →</button>
+  </div>
+</div>
+
+<script>
+const FORMS = {
+  chiro: {
+    practice: 'Northside Chiropractic',
+    creds: 'Dr. Jane Smith, DC\nCollege of Chiropractors of Ontario',
+    steps: ['Chief Complaint','Health History','Functional Impact','Consent'],
+    pages: [
+      {
+        title: 'What brings you in today?',
+        sub: 'Tell us about your main concern. The more detail, the better prepared Dr. Smith will be.',
+        fields: [
+          {type:'textarea', id:'f1a', label:'Describe your main concern', req:true, placeholder:'Location, what happened, how long it\'s been...'},
+          {type:'date', id:'f1b', label:'When did it start?'},
+          {type:'select', id:'f1c', label:'How did this occur?', options:['Gradual onset','Acute injury / fall','Motor vehicle accident','Work injury','Sports injury','Unknown','Other']},
+          {type:'pain', id:'f1d', label:'Pain intensity right now (0 = none, 10 = worst)'},
+          {type:'check', id:'f1e', label:'Describe your pain (select all that apply)', options:['Sharp','Dull','Aching','Burning','Throbbing','Shooting','Constant','Intermittent']},
+          {type:'textarea', id:'f1f', label:'What makes it worse?', placeholder:'Certain movements, sitting, standing, driving...'},
+          {type:'textarea', id:'f1g', label:'What makes it better?', placeholder:'Rest, heat, ice, movement...'},
+        ]
+      },
+      {
+        title: 'Your health history',
+        sub: 'This helps us ensure treatment is safe and appropriate for you.',
+        fields: [
+          {type:'yesno', id:'f2a', label:'Have you seen a chiropractor before?'},
+          {type:'yesno', id:'f2b', label:'Have you had X-rays of this area?'},
+          {type:'yesno', id:'f2c', label:'Do you have osteoporosis?'},
+          {type:'yesno', id:'f2d', label:'Are you on blood thinners or anticoagulants?'},
+          {type:'textarea', id:'f2e', label:'Any surgeries? (area, year)', placeholder:'e.g. Left knee 2019, appendix 2008'},
+          {type:'textarea', id:'f2f', label:'Current medications and supplements', placeholder:'Include all prescription, over-the-counter, vitamins...'},
+          {type:'textarea', id:'f2g', label:'Other health conditions', placeholder:'Diabetes, heart conditions, neurological conditions, cancer...'},
+        ]
+      },
+      {
+        title: 'How is this affecting your life?',
+        sub: 'This helps us set meaningful, real-world goals for your care.',
+        fields: [
+          {type:'bodyarea', id:'f3a', label:'Areas affected'},
+          {type:'yesno', id:'f3b', label:'Has this affected your ability to work?'},
+          {type:'yesno', id:'f3c', label:'Is your sleep affected?'},
+          {type:'textarea', id:'f3d', label:'Activities you\'re unable to do', placeholder:'Exercise, driving, work tasks, hobbies, caring for family...'},
+          {type:'check', id:'f3e', label:'Goals for your care', options:['Reduce pain','Return to work','Return to sport','Better sleep','Improve posture','Prevent recurrence','Reduce medication','Other']},
+        ]
+      },
+      {
+        title: 'Before we begin',
+        sub: 'Please read and confirm the following. Your signature is binding.',
+        fields: [
+          {type:'consent', items:[
+            {text:'I consent to chiropractic assessment and treatment. I understand I may withdraw or modify consent at any time, including during treatment.',req:true},
+            {text:'I consent to spinal X-rays if clinically necessary. I understand I will be informed before any imaging is taken.'},
+            {text:'I have read the Privacy Notice and consent to my health information being collected, stored, and used for my care in compliance with PHIPA.',req:true},
+            {text:'I consent to appointment reminders via email and/or SMS. I can opt out at any time.'},
+          ]},
+          {type:'phipa_note'},
+        ]
+      },
+    ]
+  },
+  physio: {
+    practice: 'Riverside Physiotherapy',
+    creds: 'Sarah Chen, PT, MSc\nCollege of Physiotherapists of Ontario',
+    steps: ['Your Concern','Past Treatment','Your Goals','Consent'],
+    pages: [
+      {
+        title: 'Tell us about your concern',
+        sub: 'The more you can share, the better your physiotherapist can prepare.',
+        fields: [
+          {type:'textarea', id:'f1a', label:'What brings you to physiotherapy?', req:true, placeholder:'Describe your main concern — what happened, when, how it feels...'},
+          {type:'bodyarea', id:'f1b', label:'Area(s) affected'},
+          {type:'date', id:'f1c', label:'When did this start?'},
+          {type:'select', id:'f1d', label:'Cause', options:['Sudden injury','Gradual / overuse','Post-surgery','Motor vehicle accident','Workplace injury','Sport or exercise','Repetitive strain','Unknown']},
+          {type:'pain', id:'f1e', label:'Current pain level (0–10)'},
+          {type:'textarea', id:'f1f', label:'What makes it worse?', placeholder:'Movements, positions, activities...'},
+          {type:'textarea', id:'f1g', label:'What makes it better?', placeholder:'Rest, heat, ice, medication...'},
+        ]
+      },
+      {
+        title: 'Previous treatment',
+        sub: 'This helps us build on what\'s worked and avoid repeating what hasn\'t.',
+        fields: [
+          {type:'yesno', id:'f2a', label:'Have you had physiotherapy for this before?'},
+          {type:'check', id:'f2b', label:'Imaging completed', options:['None','X-ray','MRI','CT scan','Ultrasound','Other']},
+          {type:'yesno', id:'f2c', label:'Have you seen a specialist (orthopaedic, neurologist, etc.)?'},
+          {type:'textarea', id:'f2d', label:'Current medications', placeholder:'Prescription, over-the-counter, supplements...'},
+          {type:'textarea', id:'f2e', label:'Relevant health conditions', placeholder:'Diabetes, heart conditions, osteoporosis, neurological...'},
+        ]
+      },
+      {
+        title: 'Your goals',
+        sub: 'Physiotherapy works best when it\'s shaped around what matters to you.',
+        fields: [
+          {type:'textarea', id:'f3a', label:'What do you want to be able to do when you\'re better?', req:true, placeholder:'Return to running, lift my kids, drive without pain, go back to work — be specific'},
+          {type:'yesno', id:'f3b', label:'Is return to work a goal?'},
+          {type:'yesno', id:'f3c', label:'Is return to sport or specific activity a goal?'},
+          {type:'textarea', id:'f3d', label:'Anything else for your physiotherapist to know?', placeholder:'Optional'},
+        ]
+      },
+      {
+        title: 'Before we begin',
+        sub: 'Please review and confirm the following.',
+        fields: [
+          {type:'consent', items:[
+            {text:'I consent to physiotherapy assessment and treatment, including manual therapy, exercise, and therapeutic modalities.',req:true},
+            {text:'I understand physiotherapy involves hands-on treatment and that I can withdraw consent at any time.'},
+            {text:'I have read the Privacy Notice and consent to my health information being stored for my care in compliance with PHIPA.',req:true},
+            {text:'I consent to appointment reminders via email and/or SMS.'},
+          ]},
+          {type:'phipa_note'},
+        ]
+      },
+    ]
+  },
+  rmt: {
+    practice: 'Harmony Massage Therapy',
+    creds: 'Michael Torres, RMT\nCollege of Massage Therapists of Ontario',
+    steps: ['Visit Purpose','Health Screen','Preferences','Consent'],
+    pages: [
+      {
+        title: 'What brings you in today?',
+        sub: 'This helps Michael prepare the most beneficial session for you.',
+        fields: [
+          {type:'check', id:'f1a', label:'Reason for visit', options:['Relaxation','Muscle tension','Pain relief','Injury recovery','Headaches','Stress reduction','Post-surgery','Athletic recovery','Prenatal','Other']},
+          {type:'textarea', id:'f1b', label:'Specific areas to focus on', placeholder:'Upper back, neck, shoulders, lower back...'},
+          {type:'pain', id:'f1c', label:'Discomfort level right now (0 = none)'},
+        ]
+      },
+      {
+        title: 'Quick health screening',
+        sub: 'CMTO standards require this to ensure massage therapy is safe for you. All answers are confidential.',
+        fields: [
+          {type:'textarea', id:'f2a', label:'Any skin conditions? (rash, wounds, tattoos, piercings)', placeholder:'None, or describe...'},
+          {type:'yesno', id:'f2b', label:'Any history of blood clots (DVT) or clotting disorders?'},
+          {type:'yesno', id:'f2c', label:'Are you currently receiving cancer treatment?'},
+          {type:'yesno', id:'f2d', label:'Are you pregnant or recently postpartum?'},
+          {type:'yesno', id:'f2e', label:'Do you have osteoporosis?'},
+          {type:'textarea', id:'f2f', label:'Medications affecting sensation, bleeding, or bruising?', placeholder:'Blood thinners, steroids, neuropathy medications...'},
+          {type:'textarea', id:'f2g', label:'Allergies (oils, lotions, latex)?', placeholder:'None, or describe...'},
+        ]
+      },
+      {
+        title: 'Your preferences',
+        sub: 'Your experience is important. Let us know what makes your session best.',
+        fields: [
+          {type:'select', id:'f3a', label:'Preferred pressure', options:['Light','Medium','Deep','Deep as tolerated','Varies by area','Not sure — therapist\'s guidance']},
+          {type:'select', id:'f3b', label:'Draping preference', options:['Full draping (standard)','Comfortable with therapist guidance']},
+          {type:'yesno', id:'f3c', label:'Do you prefer music during the session?'},
+          {type:'textarea', id:'f3d', label:'Areas to avoid', placeholder:'Optional — e.g. feet, abdomen...'},
+        ]
+      },
+      {
+        title: 'Before we begin',
+        sub: 'CMTO standards require informed consent before every treatment.',
+        fields: [
+          {type:'consent', items:[
+            {text:'I consent to massage therapy assessment and treatment. I understand I may modify or withdraw consent at any time, including during treatment.',req:true},
+            {text:'I understand massage therapy involves hands-on physical contact and that I may stop treatment at any point.'},
+            {text:'I consent to my health information being collected and stored by this practice in compliance with PHIPA.',req:true},
+            {text:'I consent to appointment reminders via email and/or SMS.'},
+          ]},
+          {type:'phipa_note'},
+        ]
+      },
+    ]
+  }
+};
+
+let prof = 'chiro';
+let step = 0;
+
+function switchProf(id, btn) {
+  prof = id; step = 0;
+  document.querySelectorAll('.ps-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('headerPractice').textContent = FORMS[id].practice;
+  document.getElementById('headerCreds').textContent = FORMS[id].creds.replace('\n','<br>');
+  document.getElementById('successPage').classList.remove('on');
+  document.getElementById('formRegion').style.display = '';
+  document.getElementById('formNav').style.display = '';
+  render();
+}
+
+function render() {
+  const d = FORMS[prof];
+  // Progress rail
+  const rail = document.getElementById('progressRail');
+  rail.innerHTML = d.steps.map((s,i) => `
+    <div class="pr-step">
+      <div class="pr-num ${i < step ? 'done' : i === step ? 'on' : 'off'}">${i < step ? '✓' : i+1}</div>
+      <span class="pr-label ${i < step ? 'done' : i === step ? 'on' : 'off'}">${s}</span>
+      ${i < d.steps.length-1 ? `<div class="pr-line${i < step ? ' done':''}"></div>` : ''}
+    </div>
+  `).join('');
+
+  // Nav
+  document.getElementById('navBack').style.display = step === 0 ? 'none' : '';
+  document.getElementById('navNext').textContent = step === d.steps.length-1 ? 'Submit →' : 'Continue →';
+  document.getElementById('navContext').textContent = `Step ${step+1} of ${d.steps.length} — ${d.steps[step]}`;
+
+  // Form
+  const page = d.pages[step];
+  const outer = document.getElementById('formOuter');
+  let html = `<div class="step-wrap on">
+    <div class="step-title">${page.title}</div>
+    <div class="step-sub">${page.sub}</div>
+  `;
+  page.fields.forEach(f => {
+    if (f.type === 'textarea') {
+      html += `<div class="field"><label class="fl">${f.label}${f.req?'<span class="req"> *</span>':''}</label><textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea></div>`;
+    } else if (f.type === 'date') {
+      html += `<div class="field"><label class="fl">${f.label}</label><input type="date" id="${f.id}"></div>`;
+    } else if (f.type === 'select') {
+      html += `<div class="field"><label class="fl">${f.label}</label><select id="${f.id}"><option value="">Select...</option>${f.options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+    } else if (f.type === 'pain') {
+      html += `<div class="field"><label class="fl">${f.label}</label>
+        <div class="pain-wrap">
+          <div class="pain-track">${Array.from({length:11},(_,n)=>`<div class="pn${n>=7?' high':n>=4?' mid':''}" onclick="selectPain(this,${n})">${n}</div>`).join('')}</div>
+          <div class="pain-labels"><span>No pain</span><span>Moderate</span><span>Worst</span></div>
+        </div></div>`;
+    } else if (f.type === 'check') {
+      html += `<div class="field"><label class="fl">${f.label}</label><div class="check-grid">${f.options.map(opt=>`<div class="ci" onclick="this.classList.toggle('on')"><div class="ci-box"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><span class="ci-label">${opt}</span></div>`).join('')}</div></div>`;
+    } else if (f.type === 'yesno') {
+      html += `<div class="field"><label class="fl">${f.label}</label><div class="yn"><div class="yn-btn yes" onclick="togYN(this,'yes')">Yes</div><div class="yn-btn no" onclick="togYN(this,'no')">No</div></div></div>`;
+    } else if (f.type === 'bodyarea') {
+      const areas = [{icon:'🧠',name:'Neck'},{icon:'⬆️',name:'Upper back'},{icon:'⬇️',name:'Lower back'},{icon:'💪',name:'Shoulder L'},{icon:'💪',name:'Shoulder R'},{icon:'🦾',name:'Elbow L'},{icon:'🦾',name:'Elbow R'},{icon:'🖐️',name:'Wrist / Hand'},{icon:'🦴',name:'Hip L'},{icon:'🦴',name:'Hip R'},{icon:'🦵',name:'Knee L'},{icon:'🦵',name:'Knee R'},{icon:'🦶',name:'Ankle L'},{icon:'🦶',name:'Ankle R'},{icon:'❓',name:'Other'}];
+      html += `<div class="field"><label class="fl">${f.label}</label><div class="body-select">${areas.map(a=>`<div class="ba-item" onclick="this.classList.toggle('on')"><div class="ba-icon">${a.icon}</div><div class="ba-name">${a.name}</div></div>`).join('')}</div></div>`;
+    } else if (f.type === 'consent') {
+      html += `<div class="consent-block">${f.items.map((item,ci)=>`<div class="consent-item" onclick="this.classList.toggle('on')"><div class="cb"><svg viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1"/></svg></div><div><div class="ct">${item.text}</div>${item.req?'<div class="ct-req">Required</div>':''}</div></div>`).join('')}</div>`;
+    } else if (f.type === 'phipa_note') {
+      html += `<div class="phipa-note">Your information is stored on Canadian servers (AWS ca-central-1) in compliance with PHIPA. It will never be shared without your explicit consent, except as required by law. You have the right to access and correct your records at any time.</div>`;
+    }
+  });
+  html += `</div>`;
+  outer.innerHTML = html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectPain(el, n) {
+  el.closest('.pain-track').querySelectorAll('.pn').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+}
+function togYN(el, val) {
+  el.closest('.yn').querySelectorAll('.yn-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+function next() {
+  const d = FORMS[prof];
+  if (step >= d.steps.length - 1) {
+    // Submit
+    document.getElementById('formRegion').style.display = 'none';
+    document.getElementById('formNav').style.display = 'none';
+    document.getElementById('successPage').classList.add('on');
+    document.getElementById('successSub').textContent = `Your intake form has been securely submitted to ${d.practice}. Stored on Canadian servers in compliance with PHIPA. You'll receive a confirmation email and a link to your client portal shortly.`;
+    document.getElementById('progressRail').innerHTML = d.steps.map((s,i) => `
+      <div class="pr-step">
+        <div class="pr-num done">✓</div>
+        <span class="pr-label done">${s}</span>
+        ${i < d.steps.length-1 ? '<div class="pr-line done"></div>' : ''}
+      </div>
+    `).join('');
+    return;
+  }
+  step++;
+  render();
+}
+function prev() {
+  if (step > 0) { step--; render(); }
+}
+
+render();
+</script>
+</body>
+</html>

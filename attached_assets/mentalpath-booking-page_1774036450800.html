@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book with Dr. Abena Osei-Mensah, RP</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#4a7c6f;--sage-light:#6b9e8f;--sage-pale:#e8f0ed;--sage-deep:#2d5049;--warm:#f7f4ef;--ink:#1a1a18;--ink-soft:#3d3d38;--ink-muted:#7a7a72;--border:rgba(0,0,0,0.09);--bmed:rgba(0,0,0,0.13);--font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--warm);color:var(--ink);min-height:100vh;}
+button,input,select,textarea{font-family:inherit;}
+
+/* HEADER */
+.booking-header{background:var(--sage-deep);padding:32px 24px;text-align:center;}
+.bh-av{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid rgba(255,255,255,0.3);}
+.bh-av svg{width:32px;height:32px;fill:none;stroke:white;stroke-width:1.5;}
+.bh-name{font-family:var(--font-d);font-size:24px;color:white;margin-bottom:4px;}
+.bh-creds{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px;}
+.bh-tags{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;}
+.bh-tag{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15);}
+.phipa-strip{background:rgba(255,255,255,0.07);padding:8px 16px;text-align:center;font-size:11px;color:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;gap:6px;}
+.phipa-strip svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5;}
+
+/* MAIN */
+.main{max-width:680px;margin:0 auto;padding:24px 20px 60px;}
+
+/* STEPS */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:28px;background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;padding:0;}
+.step{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:var(--ink-muted);cursor:pointer;border-right:1px solid var(--border);transition:all 0.15s;}
+.step:last-child{border-right:none;}
+.step.on{background:var(--sage-pale);color:var(--sage-deep);font-weight:500;}
+.step.done{color:var(--sage);font-weight:500;}
+.step-num{font-size:16px;font-weight:500;display:block;margin-bottom:2px;}
+.step.on .step-num{color:var(--sage);}
+.step.done .step-num{color:var(--sage-light);}
+
+/* CARDS */
+.booking-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.bc-head{padding:16px 20px;border-bottom:1px solid var(--border);}
+.bc-title{font-family:var(--font-d);font-size:18px;color:var(--ink);margin-bottom:3px;}
+.bc-sub{font-size:13px;color:var(--ink-muted);}
+.bc-body{padding:20px;}
+
+/* SESSION TYPE */
+.session-types{display:flex;flex-direction:column;gap:10px;}
+.st-option{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;}
+.st-option:hover{border-color:var(--sage-light);}
+.st-option.selected{border-color:var(--sage);background:var(--sage-pale);}
+.st-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.st-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;}
+.st-name{font-size:14px;font-weight:500;color:var(--ink);}
+.st-desc{font-size:12px;color:var(--ink-muted);margin-top:2px;}
+.st-price{margin-left:auto;font-size:15px;font-weight:500;color:var(--sage-deep);flex-shrink:0;}
+.st-duration{font-size:11px;color:var(--ink-muted);text-align:right;}
+
+/* CALENDAR */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month{font-size:15px;font-weight:500;color:var(--ink);}
+.cal-nav-btn{padding:6px 12px;border:1px solid var(--border);border-radius:7px;background:white;cursor:pointer;font-size:13px;color:var(--ink-soft);transition:background 0.15s;}
+.cal-nav-btn:hover{background:var(--warm);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
+.cal-day-name{font-size:11px;font-weight:500;color:var(--ink-muted);padding:4px 0;text-transform:uppercase;letter-spacing:0.4px;}
+.cal-day{padding:8px 4px;border-radius:8px;font-size:14px;cursor:pointer;transition:all 0.15s;color:var(--ink-soft);}
+.cal-day.empty{color:transparent;cursor:default;}
+.cal-day.past{color:var(--border);cursor:default;}
+.cal-day.available:hover{background:var(--sage-pale);color:var(--sage-deep);}
+.cal-day.selected{background:var(--sage);color:white;}
+.cal-day.today{font-weight:600;color:var(--sage);}
+.cal-day.has-slots::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--sage-light);margin:2px auto 0;}
+.cal-day.selected::after{background:rgba(255,255,255,0.6);}
+
+/* TIME SLOTS */
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+.slot{padding:10px;border:1.5px solid var(--border);border-radius:9px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-soft);transition:all 0.15s;}
+.slot:hover{border-color:var(--sage-light);color:var(--sage-deep);}
+.slot.selected{background:var(--sage);border-color:var(--sage);color:white;}
+.slot.full{color:var(--border);cursor:default;border-style:dashed;}
+.slot-sub{font-size:11px;font-weight:400;margin-top:2px;}
+
+/* FORM */
+.field{margin-bottom:14px;}
+label{display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-bottom:5px;}
+.req{color:var(--sage);}
+input[type=text],input[type=email],input[type=tel],select,textarea{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bmed);background:white;color:var(--ink);font-size:14px;outline:none;transition:border-color 0.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--sage);}
+textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.consent-item{display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13px;color:var(--ink-soft);line-height:1.5;cursor:pointer;}
+.consent-item:last-child{border-bottom:none;}
+.consent-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--sage);flex-shrink:0;margin-top:2px;cursor:pointer;}
+.consent-required{font-size:11px;color:var(--sage);font-weight:500;white-space:nowrap;}
+
+/* CTA */
+.next-btn{width:100%;padding:14px;background:var(--sage);color:white;border:none;border-radius:11px;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:8px;}
+.next-btn:hover{background:var(--sage-deep);}
+.next-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* CONFIRMATION */
+.confirmation{text-align:center;padding:32px 20px;}
+.conf-icon{width:64px;height:64px;background:var(--sage-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.conf-icon svg{width:28px;height:28px;fill:none;stroke:var(--sage);stroke-width:2;stroke-linecap:round;}
+.conf-title{font-family:var(--font-d);font-size:24px;color:var(--ink);margin-bottom:8px;}
+.conf-sub{font-size:14px;color:var(--ink-muted);line-height:1.65;margin-bottom:24px;max-width:380px;margin-left:auto;margin-right:auto;}
+.conf-card{background:var(--sage-pale);border-radius:12px;padding:16px;text-align:left;margin-bottom:20px;}
+.cc-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:0.5px solid rgba(74,124,111,0.2);}
+.cc-row:last-child{border-bottom:none;}
+.cc-label{color:var(--sage-deep);}
+.cc-val{font-weight:500;color:var(--sage-deep);}
+.portal-btn{width:100%;padding:13px;background:var(--sage);color:white;border:none;border-radius:11px;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+.portal-btn:hover{background:var(--sage-deep);}
+
+/* ABOUT SECTION */
+.about-section{background:white;border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+.about-bio{font-size:14px;color:var(--ink-soft);line-height:1.7;margin-bottom:14px;}
+.specialties{display:flex;flex-wrap:wrap;gap:6px;}
+.spec{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;background:var(--sage-pale);color:var(--sage-deep);}
+</style>
+</head>
+<body>
+
+<div class="booking-header">
+  <div class="bh-av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+  <div class="bh-name">Dr. Abena Osei-Mensah</div>
+  <div class="bh-creds">Registered Psychotherapist, PhD · CRPO #004821 · Toronto, ON</div>
+  <div class="bh-tags">
+    <span class="bh-tag">Anti-racism & RBTS</span>
+    <span class="bh-tag">Newcomer support</span>
+    <span class="bh-tag">LGBTQ2S+ affirming</span>
+    <span class="bh-tag">Trauma</span>
+    <span class="bh-tag">Individual & couples</span>
+  </div>
+</div>
+<div class="phipa-strip">
+  <svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+  Booking secured by MentalPath · Canadian servers · PHIPA-compliant
+</div>
+
+<div class="main">
+
+  <!-- STEPS -->
+  <div class="steps" id="stepsBar">
+    <div class="step on" id="step1"><span class="step-num">1</span>Session type</div>
+    <div class="step" id="step2"><span class="step-num">2</span>Date & time</div>
+    <div class="step" id="step3"><span class="step-num">3</span>About you</div>
+    <div class="step" id="step4"><span class="step-num">4</span>Consent</div>
+    <div class="step" id="step5"><span class="step-num">5</span>Confirm</div>
+  </div>
+
+  <!-- ── STEP 1: Session type ── -->
+  <div id="pg1">
+    <div class="booking-card">
+      <div class="bc-head">
+        <div class="bc-title">What brings you here?</div>
+        <div class="bc-sub">Choose the type of session. All sessions are confidential.</div>
+      </div>
+      <div class="bc-body">
+        <div class="session-types">
+          <div class="st-option selected" onclick="selectType(this)">
+            <div class="st-icon" style="background:var(--sage-pale);color:var(--sage)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div>
+            <div>
+              <div class="st-name">Initial consultation (intake)</div>
+              <div class="st-desc">First session · Assessment & getting to know each other</div>
+            </div>
+            <div><div class="st-price">$140</div><div class="st-duration">50 min</div></div>
+          </div>
+          <div class="st-option" onclick="selectType(this)">
+            <div class="st-icon" style="background:#E6F1FB;color:#185FA5"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div>
+              <div class="st-name">Individual therapy session</div>
+              <div class="st-desc">Returning client · Ongoing work</div>
+            </div>
+            <div><div class="st-price">$140</div><div class="st-duration">50 min</div></div>
+          </div>
+          <div class="st-option" onclick="selectType(this)">
+            <div class="st-icon" style="background:#faeeda;color:#633806"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div>
+              <div class="st-name">Couples session</div>
+              <div class="st-desc">Relationship therapy · Two partners</div>
+            </div>
+            <div><div class="st-price">$175</div><div class="st-duration">80 min</div></div>
+          </div>
+          <div class="st-option" onclick="selectType(this)">
+            <div class="st-icon" style="background:#EEEDFE;color:#3C3489"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+            <div>
+              <div class="st-name">Extended session</div>
+              <div class="st-desc">Individual · More time for complex topics</div>
+            </div>
+            <div><div class="st-price">$210</div><div class="st-duration">80 min</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:10px;">About Dr. Osei-Mensah</div>
+      <div class="about-bio">I'm a Registered Psychotherapist and PhD psychologist specialising in anti-racism frameworks, race-based traumatic stress, and culturally-informed therapy. I work with individuals and couples — particularly Black, racialized, and newcomer clients navigating the intersection of identity, systemic racism, and mental health in Canada.</div>
+      <div class="specialties">
+        <span class="spec">Race-based traumatic stress</span>
+        <span class="spec">Anxiety & depression</span>
+        <span class="spec">Trauma & PTSD</span>
+        <span class="spec">Newcomer adjustment</span>
+        <span class="spec">Professional burnout</span>
+        <span class="spec">Couples</span>
+        <span class="spec">Cultural identity</span>
+        <span class="spec">LGBTQ2S+ affirming</span>
+      </div>
+    </div>
+
+    <button class="next-btn" onclick="nextStep(2)">Choose a date & time →</button>
+  </div>
+
+  <!-- ── STEP 2: Date & Time ── -->
+  <div id="pg2" style="display:none">
+    <div class="booking-card">
+      <div class="bc-head">
+        <div class="bc-title">Choose a date</div>
+        <div class="bc-sub">Eastern Time (ET) · Toronto</div>
+      </div>
+      <div class="bc-body">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="prevMonth()">←</button>
+          <div class="cal-month" id="calMonth">March 2026</div>
+          <button class="cal-nav-btn" onclick="nextMonth()">→</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div id="timeSlots" style="display:none;">
+          <div style="font-size:13px;font-weight:500;color:var(--ink);margin:16px 0 10px;" id="selectedDateLabel"></div>
+          <div class="slots-grid" id="slotsGrid"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="next-btn" style="background:white;border:1px solid var(--bmed);color:var(--ink-soft);" onclick="nextStep(1)">← Back</button>
+      <button class="next-btn" id="nextBtn2" onclick="nextStep(3)" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: About you ── -->
+  <div id="pg3" style="display:none">
+    <div class="booking-card">
+      <div class="bc-head"><div class="bc-title">About you</div><div class="bc-sub">All information is confidential and stored on Canadian servers (PHIPA).</div></div>
+      <div class="bc-body">
+        <div class="field-row">
+          <div class="field" style="margin-bottom:0"><label>First name <span class="req">*</span></label><input type="text" placeholder="First name" id="firstName"></div>
+          <div class="field" style="margin-bottom:0"><label>Last name <span class="req">*</span></label><input type="text" placeholder="Last name" id="lastName"></div>
+        </div>
+        <div class="field" style="margin-top:14px;"><label>Email <span class="req">*</span></label><input type="email" placeholder="your@email.com" id="email"></div>
+        <div class="field"><label>Phone</label><input type="tel" placeholder="(416) 555-0100"></div>
+        <div class="field"><label>Date of birth</label><input type="text" placeholder="YYYY-MM-DD"></div>
+        <div class="field"><label>Pronouns</label><select><option value="">Prefer not to say</option><option>She / her</option><option>He / him</option><option>They / them</option><option>She / they</option><option>He / they</option><option>Use my name only</option></select></div>
+        <div class="field"><label>What brings you to therapy? <span class="req">*</span></label><textarea placeholder="A brief description of what you're looking for support with..."></textarea></div>
+        <div class="field"><label>How did you hear about Dr. Osei-Mensah?</label><select><option value="">Select...</option><option>Psychology Today directory</option><option>CRPO directory</option><option>Referral from GP / doctor</option><option>Referral from friend / colleague</option><option>Google search</option><option>Social media</option><option>Other</option></select></div>
+        <div class="field"><label>Have you been in therapy before?</label><select><option>Yes, and it was helpful</option><option>Yes, but it wasn't a good fit</option><option>No, this would be my first time</option></select></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="next-btn" style="background:white;border:1px solid var(--bmed);color:var(--ink-soft);" onclick="nextStep(2)">← Back</button>
+      <button class="next-btn" onclick="nextStep(4)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Consent ── -->
+  <div id="pg4" style="display:none">
+    <div class="booking-card">
+      <div class="bc-head"><div class="bc-title">Before we confirm</div><div class="bc-sub">Please review and agree to the following.</div></div>
+      <div class="bc-body">
+        <div>
+          <div class="consent-item"><input type="checkbox" id="c1"><label for="c1" style="display:inline;font-weight:400;font-size:13px;cursor:pointer;margin-bottom:0;">I understand that all sessions are confidential. Dr. Osei-Mensah may only disclose information in limited circumstances required by law (e.g. risk of harm). <span class="consent-required">Required</span></label></div>
+          <div class="consent-item"><input type="checkbox" id="c2"><label for="c2" style="display:inline;font-weight:400;font-size:13px;cursor:pointer;margin-bottom:0;">I understand that session recordings may only be made with explicit written consent from both parties. I have read the Privacy Policy / PHIPA notice. <span class="consent-required">Required</span></label></div>
+          <div class="consent-item"><input type="checkbox" id="c3"><label for="c3" style="display:inline;font-weight:400;font-size:13px;cursor:pointer;margin-bottom:0;">I understand the cancellation policy: at least 24 hours notice required. Late cancellations may be subject to a fee equal to the full session rate. <span class="consent-required">Required</span></label></div>
+          <div class="consent-item"><input type="checkbox" id="c4"><label for="c4" style="display:inline;font-weight:400;font-size:13px;cursor:pointer;margin-bottom:0;">For video sessions: I consent to receiving psychotherapy services via secure video platform. I understand that technology introduces limitations and risks not present in in-person sessions. <span class="consent-required">Required</span></label></div>
+        </div>
+        <div style="background:var(--sage-pale);border-radius:8px;padding:12px 14px;margin-top:14px;font-size:12px;color:var(--sage-deep);line-height:1.55;">
+          Your e-signature on this form is legally binding. Your consent, timestamp, and IP address are stored securely on Canadian servers in compliance with PHIPA.
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="next-btn" style="background:white;border:1px solid var(--bmed);color:var(--ink-soft);" onclick="nextStep(3)">← Back</button>
+      <button class="next-btn" onclick="confirmBooking()">Confirm booking →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Confirmation ── -->
+  <div id="pg5" style="display:none">
+    <div class="booking-card">
+      <div class="bc-body">
+        <div class="confirmation">
+          <div class="conf-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="conf-title">You're booked.</div>
+          <div class="conf-sub">A confirmation email is on its way to <span id="confEmail" style="font-weight:500;color:var(--ink)"></span>. Your intake form has been sent via your client portal.</div>
+          <div class="conf-card">
+            <div class="cc-row"><span class="cc-label">Therapist</span><span class="cc-val">Dr. Abena Osei-Mensah, RP</span></div>
+            <div class="cc-row"><span class="cc-label">Session</span><span class="cc-val">Initial consultation · 50 min</span></div>
+            <div class="cc-row"><span class="cc-label">Date & time</span><span class="cc-val" id="confDateTime">Monday March 30 at 10:00 AM ET</span></div>
+            <div class="cc-row"><span class="cc-label">Format</span><span class="cc-val">Video (secure link sent separately)</span></div>
+            <div class="cc-row"><span class="cc-label">Fee</span><span class="cc-val">$140 CAD · Invoiced after session</span></div>
+          </div>
+          <button class="portal-btn" onclick="window.location='client-portal-full.html'">Open your client portal →</button>
+          <div style="font-size:12px;color:var(--ink-muted);margin-top:10px;">Complete your intake form before the session</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+let selectedDate = null;
+let selectedSlot = null;
+let calYear = 2026, calMonth = 2;
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const AVAILABLE_DAYS = [1,2,3,4]; // Mon-Thu
+const SLOTS = ['9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM'];
+
+function buildCal() {
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  days.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-day-name';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const offset = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = new Date();
+  for (let i = 0; i < offset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    el.textContent = ' ';
+    grid.appendChild(el);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    const date = new Date(calYear, calMonth, d);
+    const dow = date.getDay();
+    const past = date < today && !(date.toDateString() === today.toDateString());
+    const available = !past && AVAILABLE_DAYS.includes(dow === 0 ? 6 : dow - 1);
+    el.className = 'cal-day ' + (past ? 'past' : available ? 'available has-slots' : 'past');
+    if (date.toDateString() === today.toDateString()) el.classList.add('today');
+    el.textContent = d;
+    if (available) {
+      el.addEventListener('click', () => selectDate(d, el));
+    }
+    grid.appendChild(el);
+  }
+  document.getElementById('calMonth').textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+}
+
+function selectDate(d, el) {
+  document.querySelectorAll('.cal-day').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDate = d;
+  const date = new Date(calYear, calMonth, d);
+  document.getElementById('selectedDateLabel').textContent = date.toLocaleDateString('en-CA', {weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('timeSlots').style.display = 'block';
+  buildSlots();
+  selectedSlot = null;
+  document.getElementById('nextBtn2').disabled = true;
+}
+
+function buildSlots() {
+  const grid = document.getElementById('slotsGrid');
+  grid.innerHTML = '';
+  SLOTS.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'slot';
+    el.innerHTML = `${s}<div class="slot-sub">50 min</div>`;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.slot').forEach(sl => sl.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedSlot = s;
+      document.getElementById('nextBtn2').disabled = false;
+    });
+    grid.appendChild(el);
+  });
+}
+
+function prevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } buildCal(); }
+function nextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } buildCal(); }
+
+function selectType(el) {
+  document.querySelectorAll('.st-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function nextStep(n) {
+  document.getElementById('pg'+currentStep).style.display = 'none';
+  document.getElementById('pg'+n).style.display = 'block';
+  ['step1','step2','step3','step4','step5'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('on','done');
+    if (i + 1 === n) el.classList.add('on');
+    else if (i + 1 < n) el.classList.add('done');
+  });
+  currentStep = n;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function confirmBooking() {
+  const email = document.getElementById('email').value || 'you@email.com';
+  document.getElementById('confEmail').textContent = email;
+  const date = new Date(calYear, calMonth, selectedDate);
+  document.getElementById('confDateTime').textContent = date.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'}) + ' at ' + (selectedSlot || '10:00 AM') + ' ET';
+  nextStep(5);
+}
+
+buildCal();
+</script>
+</body>
+</html>

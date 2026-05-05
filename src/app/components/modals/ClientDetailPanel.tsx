@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { X, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { X, Lock, ArrowRight } from 'lucide-react';
 
 type Client = {
   initials: string;
@@ -15,6 +16,7 @@ type Client = {
 
 export function ClientDetailPanel({ client, onClose }: { client: Client; onClose: () => void }) {
   const [activeTab, setActiveTab] = useState<'info' | 'notes' | 'billing'>('info');
+  const navigate = useNavigate();
 
   return (
     <>
@@ -127,6 +129,16 @@ export function ClientDetailPanel({ client, onClose }: { client: Client; onClose
               </div>
             </Section>
           )}
+        </div>
+
+        <div className="px-5 py-4 border-t border-[var(--border)] bg-[var(--warm)]">
+          <button
+            onClick={() => { onClose(); navigate('/dashboard/clients'); }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-white border border-[var(--border)] text-[13px] font-medium text-[var(--ink)] hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] transition-all cursor-pointer"
+          >
+            View full profile
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </>
