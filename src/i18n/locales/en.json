@@ -38,24 +38,222 @@
     }
   },
   "dashboard": {
-    "greeting": "Good morning, {{name}}",
+    "greetings": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "trial": {
+      "daysLeft": "{{days}} days left in trial —",
+      "upgrade": "Upgrade"
+    },
     "stats": {
       "sessionsToday": "Sessions today",
-      "billedThisWeek": "Billed this week",
       "activeClients": "Active clients",
-      "todaysSessions": "Today's sessions",
-      "now": "Now",
-      "noteDue": "Note due"
+      "billedThisMonth": "Billed this month",
+      "notesDue": "Notes due",
+      "deltas": {
+        "sessionsCompleted": "2 completed · upcoming",
+        "activeClients": "+2 this month",
+        "outstandingPending": "Outstanding pending",
+        "within24hrs": "Within 24hrs"
+      }
     },
-    "compliance": "Data stored in Canada · PHIPA compliant · Encrypted at rest"
+    "appointments": {
+      "titleFull": "Today's appointments — Monday March 16",
+      "titleShort": "Today's appointments",
+      "viewCalendar": "View calendar",
+      "done": "Done",
+      "now": "Now",
+      "addNote": "Add note"
+    },
+    "tasks": {
+      "title": "Tasks",
+      "addTask": "Add task"
+    },
+    "revenue": {
+      "title": "Monthly revenue",
+      "subtitle": "{{amount}} collected · Outstanding pending",
+      "months": {
+        "Nov": "Nov",
+        "Dec": "Dec",
+        "Jan": "Jan",
+        "Feb": "Feb",
+        "Mar": "Mar"
+      }
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "newNote": "New {{type}} note",
+      "newInvoice": "New invoice",
+      "insuranceReceipt": "Insurance receipt",
+      "addClient": "Add client"
+    },
+    "date": "Monday March 16, 2026"
+  },
+  "clients": {
+    "searchPlaceholder": "Search clients...",
+    "activeClients": "active clients",
+    "onWaitlist": "on waitlist",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "waitlist": "Waitlist",
+      "inactive": "Inactive"
+    },
+    "newClientBtn": "+ New Client",
+    "addNewClientBtn": "+ Add New Client",
+    "addNoteBtn": "+ Note",
+    "addNoteMobileBtn": "+ Add Note",
+    "prepIntakeBtn": "Prep",
+    "prepIntakeMobileBtn": "Prep Intake",
+    "columns": {
+      "client": "Client",
+      "status": "Status",
+      "nextSession": "Next session",
+      "sessions": "Sessions",
+      "culturalContext": "Cultural context",
+      "rate": "Rate"
+    },
+    "mobileLabels": {
+      "nextSession": "Next session:",
+      "progress": "Progress:",
+      "rate": "Rate:"
+    },
+    "since": "Since",
+    "rp": "RP"
+  },
+  "clientPortalApp": {
+    "header": {
+      "security": "PHIPA-compliant · Encrypted · Canadian servers",
+      "backToHome": "Back to Home"
+    },
+    "banner": {
+      "therapistDesc": "Registered Psychotherapist · CRPO #004821 · Toronto, ON",
+      "securePortal": "Secure portal"
+    },
+    "steps": {
+      "book": "Book",
+      "aboutYou": "About you",
+      "yourNeeds": "Your needs",
+      "consent": "Consent",
+      "confirm": "Confirm",
+      "stepOf": "Step {{current}} of {{total}}"
+    },
+    "booking": {
+      "title": "Choose a session time",
+      "subtitle": "All times shown in Eastern Time (ET). Sessions are 50 minutes.",
+      "previous": "← Previous",
+      "next": "Next →",
+      "availableTimes": "Available times",
+      "date": "Date",
+      "time": "Time",
+      "duration": "Duration",
+      "durationValue": "50 minutes",
+      "continueButton": "Select a time to continue →"
+    },
+    "about": {
+      "title": "About you",
+      "subtitle": "Your information is stored securely on Canadian servers and never shared without your consent.",
+      "contactInfo": "Contact information",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "dob": "Date of birth",
+      "pronouns": {
+        "label": "Pronouns",
+        "preferNotToSay": "Prefer not to say",
+        "sheHer": "She/her",
+        "heHim": "He/him",
+        "theyThem": "They/them",
+        "sheThey": "She/they",
+        "heThey": "He/they"
+      },
+      "sessionPreferences": "Session preferences",
+      "formatPreference": "Session format preference",
+      "formats": {
+        "either": "Either is fine",
+        "video": "Video (online)",
+        "inPerson": "In-person"
+      },
+      "back": "← Back",
+      "continue": "Continue →"
+    },
+    "needs": {
+      "title": "What brings you here?",
+      "subtitle": "This helps your therapist prepare for your first session. All responses are confidential.",
+      "concernsTitle": "Presenting concerns",
+      "concernsQuestion": "What are you hoping to work on? (select all that apply)",
+      "reasonQuestion": "In your own words, what is bringing you to therapy at this time?",
+      "reasonPlaceholder": "Feel free to share as much or as little as you're comfortable with...",
+      "wellbeingTitle": "Wellbeing check-in",
+      "wellbeingQuestion": "How would you rate your overall wellbeing right now? (1 = very low, 10 = very good)",
+      "veryLow": "Very low",
+      "veryGood": "Very good",
+      "concerns": {
+        "anxiety": "Anxiety",
+        "depression": "Depression",
+        "workplaceStress": "Workplace stress",
+        "racializedStress": "Racialized stress / discrimination",
+        "culturalAdjustment": "Cultural adjustment",
+        "trauma": "Trauma / PTSD",
+        "relationship": "Relationship difficulties",
+        "immigration": "Immigration stress",
+        "identity": "Identity / self-worth",
+        "grief": "Grief / loss",
+        "family": "Family conflict",
+        "other": "Something else"
+      }
+    },
+    "consent": {
+      "title": "Informed consent & privacy",
+      "subtitle": "Please read and sign before your first session. This is a legal requirement under PHIPA and CRPO guidelines.",
+      "noticeTitle": "Consent to Services & Privacy Notice",
+      "noticeIntro": "By proceeding, you acknowledge and agree to the following:",
+      "natureLabel": "Nature of Services.",
+      "natureDesc": "Psychotherapy involves a collaborative process to address emotional, psychological, and relational concerns.",
+      "confidentialityLabel": "Confidentiality.",
+      "confidentialityDesc": "All information shared in therapy is strictly confidential. Your therapist will not disclose your personal information to any third party without your written consent.",
+      "privacyLabel": "Your Privacy Rights (PHIPA).",
+      "privacyDesc": "Under the Personal Health Information Protection Act (Ontario), you have the right to access your health records and request corrections.",
+      "checkboxServices": "I have read and understood the consent form and privacy notice. I consent to receiving psychotherapy services.",
+      "checkboxPrivacy": "I understand my information is stored on Canadian servers and protected under PHIPA."
+    },
+    "confirmation": {
+      "title": "You're all set!",
+      "description": "Your intake form has been submitted and your session is booked. You'll receive a confirmation email at {{email}} with calendar invite and video link.",
+      "therapist": "Therapist",
+      "close": "Close window",
+      "successMessage": "Session booked successfully!"
+    },
+    "validation": {
+      "requiredFields": "Please fill in all required fields (First name, Last name, Email)",
+      "validEmail": "Please enter a valid email address",
+      "consentRequired": "Please check both consent boxes to continue"
+    }
   },
   "login": {
     "tagline": "One platform.",
     "taglineEm": "Every regulated",
     "taglineSub": "health profession.",
     "subtitle": "PHIPA-compliant practice management built for Canadian regulated practitioners — from psychotherapists to chiropractors, physiotherapists, RMTs, and more.",
-    "leftBadges": ["PHIPA compliant", "Canadian servers", "7-day free trial"],
-    "professions": ["Psychotherapists", "Psychologists", "Social Workers", "Chiropractors", "Physiotherapists", "RMTs", "Naturopaths", "OTs", "SLPs"],
+    "leftBadges": [
+      "PHIPA compliant",
+      "Canadian servers",
+      "7-day free trial"
+    ],
+    "professions": [
+      "Psychotherapists",
+      "Psychologists",
+      "Social Workers",
+      "Chiropractors",
+      "Physiotherapists",
+      "RMTs",
+      "Naturopaths",
+      "OTs",
+      "SLPs"
+    ],
     "welcome": "Welcome back",
     "welcomeSub": "Sign in to your MentalPath account",
     "demoTitle": "Demo accounts — click to sign in as",
@@ -73,7 +271,11 @@
     "badgeTrial": "Trial",
     "badgeGroup": "Group",
     "badgeSolo": "Solo",
-    "bottomBadges": ["PHIPA compliant", "Canadian servers", "Encrypted at rest"]
+    "bottomBadges": [
+      "PHIPA compliant",
+      "Canadian servers",
+      "Encrypted at rest"
+    ]
   },
   "ticker": [
     "PHIPA Compliant",
@@ -161,7 +363,12 @@
     "billing": {
       "tag": "Billing & Receipts",
       "title": "Official insurance receipts, sliding scale, Stripe, T2125 export.",
-      "tags": ["CAD billing", "Sliding scale", "Stripe", "Tax export"]
+      "tags": [
+        "CAD billing",
+        "Sliding scale",
+        "Stripe",
+        "Tax export"
+      ]
     },
     "scheduling": {
       "tag": "Online Scheduling",
@@ -236,7 +443,12 @@
         "price": "Free",
         "period": "forever · 1 active client",
         "description": "Try MentalPath with a real client before committing. Full feature access, single client limit.",
-        "features": ["1 active client", "All note templates", "Canadian server storage", "Basic scheduling"],
+        "features": [
+          "1 active client",
+          "All note templates",
+          "Canadian server storage",
+          "Basic scheduling"
+        ],
         "cta": "Get started free"
       },
       "solo": {
@@ -329,5 +541,384 @@
       "support": "Support"
     },
     "copyright": "© 2026 MentalPath. Made in Canada. PHIPA & PIPEDA compliant."
+  },
+  "onboarding": {
+    "leftPanel": {
+      "title": {
+        "line1": "Built for ",
+        "line2": "every",
+        "line3": "regulated health professional."
+      },
+      "description": "Note templates, receipt formats, outcome measures, and College standards configured automatically for your profession. PHIPA-compliant from minute one.",
+      "testimonial": "\"Switched from TherapyNotes in an afternoon. The culturally-adapted intake templates alone saved me two weeks of work — and I'm finally PHIPA-compliant.\"",
+      "author": "Dr. Abena Osei-Mensah, RP",
+      "authorRole": "Registered Psychotherapist · Toronto, ON",
+      "badges": {
+        "phipa": "PHIPA compliant",
+        "servers": "Canadian servers",
+        "trial": "7-day free trial"
+      }
+    },
+    "step1": {
+      "title": "Create your account",
+      "subtitle": "Free for 7 days. No credit card required.",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Dr. Jane Smith",
+      "workEmail": "Work email",
+      "workEmailPlaceholder": "you@practice.ca",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "passwordHint": "Use 8+ characters, a number, and a symbol",
+      "continue": "Continue →",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "step2": {
+      "title": "What's your profession?",
+      "subtitle": "MentalPath configures note templates, receipt formats, outcome measures, and College compliance automatically.",
+      "configuresFor": "MentalPath will configure for {{profession}}:",
+      "noteFormats": "Note formats:",
+      "outcomeMeasures": "Outcome measures:",
+      "billing": "Billing:",
+      "hst": "HST:",
+      "continue": "Continue →",
+      "back": "← Back"
+    },
+    "step3": {
+      "title": "Your practice details",
+      "subtitle": "This appears on invoices and receipts sent to your clients.",
+      "practiceName": "Practice / clinic name",
+      "practiceNamePlaceholder": "Smith Psychotherapy & Wellness",
+      "practiceNameHint": "Leave blank to use your full name",
+      "credentials": "Credentials",
+      "credentialsPlaceholder": "RP, PhD",
+      "registrationNum": "Registration #",
+      "registrationPlaceholder": "CRPO-004821",
+      "college": "Regulatory college",
+      "province": "Province",
+      "sessionRate": "Default session rate",
+      "sessionRatePlaceholder": "$140",
+      "continue": "Continue →",
+      "back": "← Back"
+    },
+    "step4": {
+      "title": "Choose your plan",
+      "subtitle": "Both plans include a 7-day free trial. Cancel anytime.",
+      "solo": "Solo practitioner",
+      "soloPrice": "$49",
+      "soloPeriod": "/mo",
+      "soloDesc": "Unlimited clients, all features, 1 clinician",
+      "group": "Group practice",
+      "groupPrice": "$79",
+      "groupPeriod": "/clinician",
+      "groupDesc": "Multi-clinician, shared scheduling, owner dashboard",
+      "trialNotice": "Your 7-day free trial starts today. You will not be charged until your trial ends. Cancel anytime from your settings.",
+      "startTrial": "Start free trial →",
+      "back": "← Back"
+    },
+    "step5": {
+      "title": "Add your first client",
+      "subtitle": "Optional — you can skip this and add clients from your dashboard.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email (for portal invite)",
+      "intakeTemplate": "Intake template",
+      "completeSetup": "Complete setup →",
+      "skip": "Skip and go to dashboard"
+    }
+  },
+  "sessionNotes": {
+    "summary": "{{dueCount}} notes due within 24hrs · {{completedCount}} completed notes",
+    "newNote": "New session note",
+    "dueTitle": "Due — complete within 24hrs",
+    "writeNote": "Write note",
+    "recentCompleted": "Recent completed notes",
+    "locked": "Locked",
+    "view": "View"
+  },
+  "billing": {
+    "alerts": {
+      "noInvoices": "No paid invoices to export.",
+      "receiptExportFail": "Failed to export receipts. Please try again.",
+      "t2125Success": "T2125 summary for {{year}} downloaded successfully!",
+      "t2125Fail": "Failed to export T2125 summary. Please try again."
+    },
+    "summary": {
+      "collected": "Collected — {{month}}",
+      "outstanding": "Outstanding",
+      "ytd": "YTD collected"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "new": "New invoice",
+      "newMobile": "New",
+      "filters": {
+        "all": "All",
+        "paid": "Paid",
+        "pending": "Pending",
+        "overdue": "Overdue"
+      },
+      "columns": {
+        "invoiceNum": "Invoice #",
+        "client": "Client",
+        "date": "Date",
+        "sessions": "Sessions",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "sessionsCount": "{{count}} session(s)",
+      "actionReceipt": "Receipt",
+      "actionReminder": "Send reminder"
+    },
+    "taxPrep": {
+      "title": "Tax prep — T2125 self-employment summary",
+      "description": "MentalPath generates a year-end income summary formatted for Schedule T2125 (Statement of Business Activities). Download at tax time — no accountant needed for the basics.",
+      "exportT2125": "Export {{year}} T2125 summary",
+      "exporting": "Exporting…",
+      "downloadReceipts": "Download all receipts (CSV)"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "unreadCount": "{{count}} unread",
+    "searchPlaceholder": "Search clients...",
+    "activeClient": "Active client",
+    "phipaNotice": "End-to-end encrypted · PHIPA compliant · Messages auto-delete after 90 days",
+    "noMessages": "No messages yet. Start the conversation.",
+    "typeMessage": "Type your message...",
+    "send": "Send"
+  },
+  "calendar": {
+    "title": "Calendar view",
+    "comingSoon": "Full calendar with booking link management coming in Phase 2."
+  },
+  "settings": {
+    "title": "Practice Settings",
+    "saved": "Saved",
+    "saveChanges": "Save changes",
+    "tabs": {
+      "profile": "Profile",
+      "practice": "Practice Info",
+      "scheduling": "Scheduling",
+      "billing": "Billing",
+      "subscription": "Subscription",
+      "regions": "Region / Language",
+      "notifications": "Notifications",
+      "security": "Security",
+      "danger": "Danger Zone"
+    },
+    "profile": {
+      "title": "Your Profile",
+      "subtitle": "This information appears on invoices and receipts",
+      "uploadHint": "Upload a profile photo (optional)",
+      "uploadBtn": "Upload photo",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email address",
+      "phone": "Phone number",
+      "pronouns": "Preferred pronouns",
+      "pronounsPlaceholder": "e.g. she/her, they/them"
+    },
+    "practice": {
+      "title": "Practice Information",
+      "subtitle": "Professional credentials and registration",
+      "clinicName": "Practice / clinic name",
+      "clinicNamePlaceholder": "Leave blank to use your full name",
+      "credentials": "Credentials",
+      "registrationNumber": "Registration number",
+      "college": "Regulatory college",
+      "noteFormat": "Note format (auto-configured for your profession)",
+      "colleges": {
+        "CRPO": "CRPO — Registered Psychotherapists (ON)",
+        "CPO": "CPO — Psychologists (ON)",
+        "OCSWSSW": "OCSWSSW — Social Workers (ON)",
+        "CCO": "CCO — Chiropractors (ON)",
+        "CPT": "CPO — Physiotherapists (ON)",
+        "CMTO": "CMTO — Massage Therapists (ON)",
+        "COTO": "COTO — Occupational Therapists (ON)",
+        "CONO": "CONO — Naturopaths (ON)",
+        "CTCMPAO": "CTCMPAO — Acupuncturists (ON)",
+        "CDO": "CDO — Dietitians (ON)",
+        "CASLPO": "CASLPO — Speech-Language Pathologists (ON)"
+      }
+    },
+    "scheduling": {
+      "title": "Online Booking",
+      "subtitle": "Share your booking link with clients",
+      "bookingUrl": "Your booking URL",
+      "copyLink": "Copy link",
+      "workingDays": "Working days",
+      "days": {
+        "Mon": "Mon",
+        "Tue": "Tue",
+        "Wed": "Wed",
+        "Thu": "Thu",
+        "Fri": "Fri",
+        "Sat": "Sat",
+        "Sun": "Sun"
+      },
+      "startTime": "Start time",
+      "endTime": "End time",
+      "sessionDuration": "Default session duration",
+      "durations": {
+        "30": "30 minutes",
+        "45": "45 minutes",
+        "50": "50 minutes",
+        "60": "60 minutes",
+        "80": "80 minutes (couples)"
+      }
+    },
+    "billing": {
+      "title": "Billing & Payments",
+      "subtitle": "Default rates and payment settings",
+      "sessionRate": "Default session rate",
+      "currency": "Currency",
+      "currencies": {
+        "CAD": "CAD (C$) — Canadian Dollar",
+        "USD": "USD ($) — US Dollar"
+      },
+      "hstRegistered": "HST/GST registered",
+      "hstExempt": "Your profession is HST-exempt in most provinces.",
+      "hstAdded": "HST will be added to invoices where applicable.",
+      "acceptStripe": "Accept online payments (Stripe)",
+      "stripeDesc": "Clients can pay invoices via credit card through Stripe",
+      "slidingScale": "Enable sliding scale billing",
+      "slidingScaleDesc": "Set reduced rates per client"
+    },
+    "subscription": {
+      "notSignedIn": "Sign in to view your subscription details",
+      "signIn": "Sign in",
+      "currentPlan": "Current Plan",
+      "trialRemaining": "Free trial — {{days}} days remaining",
+      "activeSince": "Active since {{date}}",
+      "trial": "Trial",
+      "group": "Group",
+      "enterprise": "Enterprise",
+      "solo": "Solo",
+      "plan": "Plan",
+      "billingCycle": "Billing cycle",
+      "trialEnds": "Trial ends",
+      "nextBilling": "Next billing",
+      "seats": "Seats",
+      "clinician": "clinician",
+      "clinicians": "clinicians",
+      "ratePerSeat": "Rate per seat",
+      "free": "Free",
+      "nextCharge": "Next charge",
+      "expires": "Expires {{date}}",
+      "update": "Update",
+      "addPaymentKeepDataTitle": "Add payment to keep your data",
+      "addPaymentKeepDataDesc": "Your trial ends in {{days}} days. Add a card now and your data stays safe — you won't be charged until your trial ends.",
+      "addPaymentMethod": "Add payment method",
+      "updatePaymentMethod": "Update payment method",
+      "cancelPlan": "Cancel plan",
+      "cancelConfirmTitle": "Cancel your MentalPath subscription?",
+      "cancelConfirmDesc": "Your data will be retained for 90 days after cancellation, then permanently deleted. You can export your records first.",
+      "confirmCancellation": "Confirm cancellation",
+      "keepMyPlan": "Keep my plan",
+      "changePlan": "Change Plan",
+      "allPlansInclude": "All plans include full features — same platform, same compliance",
+      "mostPopular": "Most popular",
+      "custom": "Custom",
+      "perClinicianMo": "/clinician/mo",
+      "billedAnnually": "Billed annually (C${{amount}}/yr)",
+      "contactSales": "Contact sales",
+      "currentPlanBtn": "Current plan",
+      "downgradeTo": "Downgrade to {{name}}",
+      "upgradeTo": "Upgrade to {{name}}",
+      "billingHistory": "Billing History",
+      "download": "Download",
+      "cycles": {
+        "monthly": "Monthly",
+        "annual": "Annual",
+        "discount": "−13%"
+      },
+      "plans": {
+        "solo": {
+          "name": "Solo",
+          "description": "Perfect for independent practitioners",
+          "features": [
+            "Unlimited clients",
+            "AI note drafting",
+            "Online booking page",
+            "Insurance receipts",
+            "Outcome measures",
+            "PHIPA-compliant records",
+            "Canadian server hosting",
+            "Email & chat support"
+          ]
+        },
+        "group": {
+          "name": "Group",
+          "description": "For clinics and multi-clinician practices",
+          "features": [
+            "Everything in Solo",
+            "Per-seat pricing",
+            "Group practice dashboard",
+            "Shared schedule view",
+            "Practice analytics",
+            "Compliance dashboard",
+            "Clinician onboarding",
+            "Priority support"
+          ]
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "description": "For health networks and large clinics",
+          "features": [
+            "Everything in Group",
+            "Custom seat pricing",
+            "White-label option",
+            "EMR/EHR integration",
+            "Dedicated CSM",
+            "SLA guarantee",
+            "Custom compliance reporting",
+            "SSO / SAML"
+          ]
+        }
+      }
+    },
+    "regions": {
+      "title": "Region & Language",
+      "subtitle": "Timezone and language preferences",
+      "timezone": "Timezone",
+      "canadianTimezones": "Canadian Timezones",
+      "usTimezones": "US Timezones",
+      "dateFormat": "Date format",
+      "language": "Interface language",
+      "english": "English",
+      "french": "Français (French)"
+    },
+    "notifications": {
+      "title": "Email Notifications",
+      "subtitle": "Choose which emails you receive",
+      "items": {
+        "bookings": { "label": "New client bookings", "hint": "When a client books an appointment" },
+        "reminders": { "label": "Session reminders", "hint": "24 hours before each session" },
+        "payment": { "label": "Payment received", "hint": "When an invoice is paid" },
+        "summary": { "label": "Weekly summary", "hint": "Overview of your week every Monday" },
+        "renewal": { "label": "{{college}} renewal reminders", "hint": "60 days before renewal deadlines" },
+        "cpd": { "label": "CPD hour tracking", "hint": "Monthly progress update toward your cycle requirement" }
+      }
+    },
+    "security": {
+      "title": "Security",
+      "subtitle": "Password and session management",
+      "changePassword": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "updatePassword": "Update password",
+      "autoLock": "Auto-lock after 15 minutes of inactivity",
+      "phipaRequired": "Required for PHIPA/HIPAA compliance",
+      "enable2fa": "Enable two-factor authentication (2FA)",
+      "desc2fa": "Adds an extra layer of security to your account"
+    },
+    "danger": {
+      "deleteAccount": "Delete account",
+      "deleteWarning": "This will permanently delete your client records, session notes, and all associated data. Your data is retained for 90 days before permanent deletion. This action cannot be undone.",
+      "deleteBtn": "Delete my account",
+      "exportBtn": "Export my data first"
+    }
   }
 }

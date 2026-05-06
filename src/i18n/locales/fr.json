@@ -38,24 +38,222 @@
     }
   },
   "dashboard": {
-    "greeting": "Bonjour, {{name}}",
+    "greetings": {
+      "morning": "Bonjour",
+      "afternoon": "Bon après-midi",
+      "evening": "Bonsoir"
+    },
+    "trial": {
+      "daysLeft": "Il reste {{days}} jours d'essai —",
+      "upgrade": "Mettre à niveau"
+    },
     "stats": {
       "sessionsToday": "Séances aujourd'hui",
-      "billedThisWeek": "Facturé cette semaine",
       "activeClients": "Clients actifs",
-      "todaysSessions": "Séances d'aujourd'hui",
-      "now": "Maintenant",
-      "noteDue": "Note à compléter"
+      "billedThisMonth": "Facturé ce mois-ci",
+      "notesDue": "Notes à compléter",
+      "deltas": {
+        "sessionsCompleted": "2 terminées · à venir",
+        "activeClients": "+2 ce mois-ci",
+        "outstandingPending": "En attente de paiement",
+        "within24hrs": "Moins de 24h"
+      }
     },
-    "compliance": "Données stockées au Canada · Conforme LPRPS · Chiffrement au repos"
+    "appointments": {
+      "titleFull": "Rendez-vous d'aujourd'hui — Lundi 16 mars",
+      "titleShort": "Rendez-vous d'aujourd'hui",
+      "viewCalendar": "Voir le calendrier",
+      "done": "Terminé",
+      "now": "Maintenant",
+      "addNote": "Ajouter note"
+    },
+    "tasks": {
+      "title": "Tâches",
+      "addTask": "Ajouter tâche"
+    },
+    "revenue": {
+      "title": "Revenus mensuels",
+      "subtitle": "{{amount}} perçus · En attente",
+      "months": {
+        "Nov": "Nov",
+        "Dec": "Déc",
+        "Jan": "Jan",
+        "Feb": "Fév",
+        "Mar": "Mar"
+      }
+    },
+    "quickActions": {
+      "title": "Actions rapides",
+      "newNote": "Nouvelle note {{type}}",
+      "newInvoice": "Nouvelle facture",
+      "insuranceReceipt": "Reçu d'assurance",
+      "addClient": "Ajouter un client"
+    },
+    "date": "Lundi 16 mars 2026"
+  },
+  "clients": {
+    "searchPlaceholder": "Rechercher des clients...",
+    "activeClients": "clients actifs",
+    "onWaitlist": "en liste d'attente",
+    "filters": {
+      "all": "Tous",
+      "active": "Actifs",
+      "waitlist": "En attente",
+      "inactive": "Inactifs"
+    },
+    "newClientBtn": "+ Nouveau client",
+    "addNewClientBtn": "+ Ajouter un client",
+    "addNoteBtn": "+ Note",
+    "addNoteMobileBtn": "+ Ajouter une note",
+    "prepIntakeBtn": "Prépa",
+    "prepIntakeMobileBtn": "Préparer l'évaluation",
+    "columns": {
+      "client": "Client",
+      "status": "Statut",
+      "nextSession": "Prochaine séance",
+      "sessions": "Séances",
+      "culturalContext": "Contexte culturel",
+      "rate": "Tarif"
+    },
+    "mobileLabels": {
+      "nextSession": "Prochaine séance :",
+      "progress": "Progrès :",
+      "rate": "Tarif :"
+    },
+    "since": "Depuis",
+    "rp": "PR"
+  },
+  "clientPortalApp": {
+    "header": {
+      "security": "Conforme à la LPRPS · Crypté · Serveurs canadiens",
+      "backToHome": "Retour à l'accueil"
+    },
+    "banner": {
+      "therapistDesc": "Psychothérapeute autorisé(e) · CRPO #004821 · Toronto, ON",
+      "securePortal": "Portail sécurisé"
+    },
+    "steps": {
+      "book": "Réserver",
+      "aboutYou": "À propos",
+      "yourNeeds": "Vos besoins",
+      "consent": "Consentement",
+      "confirm": "Confirmer",
+      "stepOf": "Étape {{current}} sur {{total}}"
+    },
+    "booking": {
+      "title": "Choisissez l'heure de la séance",
+      "subtitle": "Toutes les heures sont affichées en heure de l'Est (HE). Les séances durent 50 minutes.",
+      "previous": "← Précédent",
+      "next": "Suivant →",
+      "availableTimes": "Heures disponibles",
+      "date": "Date",
+      "time": "Heure",
+      "duration": "Durée",
+      "durationValue": "50 minutes",
+      "continueButton": "Sélectionnez une heure pour continuer →"
+    },
+    "about": {
+      "title": "À propos de vous",
+      "subtitle": "Vos informations sont stockées en toute sécurité sur des serveurs canadiens et ne sont jamais partagées sans votre consentement.",
+      "contactInfo": "Coordonnées",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Courriel",
+      "phone": "Téléphone",
+      "dob": "Date de naissance",
+      "pronouns": {
+        "label": "Pronouns",
+        "preferNotToSay": "Je préfère ne pas répondre",
+        "sheHer": "Elle",
+        "heHim": "Il",
+        "theyThem": "Iel",
+        "sheThey": "Elle/iel",
+        "heThey": "Il/iel"
+      },
+      "sessionPreferences": "Préférences de séance",
+      "formatPreference": "Format de séance préféré",
+      "formats": {
+        "either": "Peu importe",
+        "video": "Vidéo (en ligne)",
+        "inPerson": "En personne"
+      },
+      "back": "← Retour",
+      "continue": "Continuer →"
+    },
+    "needs": {
+      "title": "Qu'est-ce qui vous amène ici ?",
+      "subtitle": "Cela aide votre thérapeute à préparer votre première séance. Toutes les réponses sont confidentielles.",
+      "concernsTitle": "Motifs de consultation",
+      "concernsQuestion": "Sur quoi aimeriez-vous travailler ? (cochez toutes les cases applicables)",
+      "reasonQuestion": "Dans vos propres mots, qu'est-ce qui vous amène en thérapie en ce moment ?",
+      "reasonPlaceholder": "N'hésitez pas à partager autant ou aussi peu que vous le souhaitez...",
+      "wellbeingTitle": "Évaluation du bien-être",
+      "wellbeingQuestion": "Comment évalueriez-vous votre bien-être général en ce moment ? (1 = très bas, 10 = très bon)",
+      "veryLow": "Très bas",
+      "veryGood": "Très bon",
+      "concerns": {
+        "anxiety": "Anxiété",
+        "depression": "Dépression",
+        "workplaceStress": "Stress au travail",
+        "racializedStress": "Stress lié à la discrimination/racisation",
+        "culturalAdjustment": "Adaptation culturelle",
+        "trauma": "Traumatisme / TSPT",
+        "relationship": "Difficultés relationnelles",
+        "immigration": "Stress lié à l'immigration",
+        "identity": "Identité / estime de soi",
+        "grief": "Deuil / perte",
+        "family": "Conflit familial",
+        "other": "Autre chose"
+      }
+    },
+    "consent": {
+      "title": "Consentement éclairé et confidentialité",
+      "subtitle": "Veuillez lire et signer avant votre première séance. C'est une obligation légale selon la LPRPS et les lignes directrices de l'Ordre.",
+      "noticeTitle": "Consentement aux services et avis de confidentialité",
+      "noticeIntro": "En poursuivant, vous reconnaissez et acceptez ce qui suit :",
+      "natureLabel": "Nature des services.",
+      "natureDesc": "La psychothérapie implique un processus de collaboration pour aborder les problèmes émotionnels, psychologiques et relationnels.",
+      "confidentialityLabel": "Confidentialité.",
+      "confidentialityDesc": "Toutes les informations partagées en thérapie sont strictement confidentielles. Votre thérapeute ne divulguera pas vos informations personnelles à un tiers sans votre consentement écrit.",
+      "privacyLabel": "Vos droits en matière de confidentialité (LPRPS).",
+      "privacyDesc": "En vertu de la Loi sur la protection des renseignements personnels sur la santé (Ontario), vous avez le droit d'accéder à vos dossiers de santé et de demander des corrections.",
+      "checkboxServices": "J'ai lu et compris le formulaire de consentement et l'avis de confidentialité. Je consens à recevoir des services de psychothérapie.",
+      "checkboxPrivacy": "Je comprends que mes informations sont stockées sur des serveurs canadiens et protégées en vertu de la LPRPS."
+    },
+    "confirmation": {
+      "title": "Tout est prêt !",
+      "description": "Votre formulaire d'admission a été soumis et votre séance est réservée. Vous recevrez un e-mail de confirmation à {{email}} avec une invitation de calendrier et un lien vidéo.",
+      "therapist": "Thérapeute",
+      "close": "Fermer la fenêtre",
+      "successMessage": "Séance réservée avec succès !"
+    },
+    "validation": {
+      "requiredFields": "Veuillez remplir tous les champs obligatoires (Prénom, Nom, Courriel)",
+      "validEmail": "Veuillez entrer une adresse courriel valide",
+      "consentRequired": "Veuillez cocher les deux cases de consentement pour continuer"
+    }
   },
   "login": {
     "tagline": "Une plateforme.",
     "taglineEm": "Toutes les professions",
     "taglineSub": "de santé réglementées.",
     "subtitle": "Gestion de pratique conforme LPRPS pour les professionnels de santé réglementés au Canada — psychothérapeutes, chiropraticiens, physiothérapeutes, TRM et plus.",
-    "leftBadges": ["Conforme LPRPS", "Serveurs canadiens", "Essai gratuit 7 jours"],
-    "professions": ["Psychothérapeutes", "Psychologues", "Travailleurs sociaux", "Chiropraticiens", "Physiothérapeutes", "TRM", "Naturopathes", "Ergothérapeutes", "Orthophonistes"],
+    "leftBadges": [
+      "Conforme LPRPS",
+      "Serveurs canadiens",
+      "Essai gratuit 7 jours"
+    ],
+    "professions": [
+      "Psychothérapeutes",
+      "Psychologues",
+      "Travailleurs sociaux",
+      "Chiropraticiens",
+      "Physiothérapeutes",
+      "TRM",
+      "Naturopathes",
+      "Ergothérapeutes",
+      "Orthophonistes"
+    ],
     "welcome": "Bon retour",
     "welcomeSub": "Connectez-vous à votre compte MentalPath",
     "demoTitle": "Comptes démo — cliquez pour vous connecter",
@@ -73,7 +271,11 @@
     "badgeTrial": "Essai",
     "badgeGroup": "Groupe",
     "badgeSolo": "Solo",
-    "bottomBadges": ["Conforme LPRPS", "Serveurs canadiens", "Chiffrement au repos"]
+    "bottomBadges": [
+      "Conforme LPRPS",
+      "Serveurs canadiens",
+      "Chiffrement au repos"
+    ]
   },
   "ticker": [
     "Conforme LPRPS",
@@ -161,7 +363,12 @@
     "billing": {
       "tag": "Facturation et reçus",
       "title": "Reçus d'assurance officiels, tarif modulé, Stripe, export T2125.",
-      "tags": ["Facturation en CAD", "Tarif modulé", "Stripe", "Export fiscal"]
+      "tags": [
+        "Facturation en CAD",
+        "Tarif modulé",
+        "Stripe",
+        "Export fiscal"
+      ]
     },
     "scheduling": {
       "tag": "Planification en ligne",
@@ -236,7 +443,12 @@
         "price": "Gratuit",
         "period": "pour toujours · 1 client actif",
         "description": "Essayez MentalPath avec un vrai client avant de vous engager. Accès complet, limite d'un seul client.",
-        "features": ["1 client actif", "Tous les modèles de notes", "Stockage serveur canadien", "Planification de base"],
+        "features": [
+          "1 client actif",
+          "Tous les modèles de notes",
+          "Stockage serveur canadien",
+          "Planification de base"
+        ],
         "cta": "Commencer gratuitement"
       },
       "solo": {
@@ -329,5 +541,384 @@
       "support": "Assistance"
     },
     "copyright": "© 2026 MentalPath. Fabriqué au Canada. Conforme LPRPS et LPRPDE."
+  },
+  "onboarding": {
+    "leftPanel": {
+      "title": {
+        "line1": "Conçu pour ",
+        "line2": "chaque",
+        "line3": "professionnel de la santé réglementé."
+      },
+      "description": "Modèles de notes, formats de reçus, mesures de résultats et normes des Ordres configurés automatiquement pour votre profession. Conforme LPRPS dès la première minute.",
+      "testimonial": "\"J'ai quitté TherapyNotes en un après-midi. Les modèles d'admission adaptés culturellement m'ont fait gagner deux semaines de travail — et je suis enfin conforme à la LPRPS.\"",
+      "author": "Dre Abena Osei-Mensah, PA",
+      "authorRole": "Psychothérapeute autorisée · Toronto, ON",
+      "badges": {
+        "phipa": "Conforme LPRPS",
+        "servers": "Serveurs canadiens",
+        "trial": "Essai gratuit 7 jours"
+      }
+    },
+    "step1": {
+      "title": "Créez votre compte",
+      "subtitle": "Gratuit pendant 7 jours. Aucune carte de crédit requise.",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Dre Jeanne Tremblay",
+      "workEmail": "Courriel professionnel",
+      "workEmailPlaceholder": "vous@pratique.ca",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Au moins 8 caractères",
+      "passwordHint": "Utilisez 8+ caractères, un chiffre et un symbole",
+      "continue": "Continuer →",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter"
+    },
+    "step2": {
+      "title": "Quelle est votre profession ?",
+      "subtitle": "MentalPath configure automatiquement les modèles de notes, les formats de reçus, les mesures de résultats et la conformité à votre Ordre.",
+      "configuresFor": "MentalPath configurera pour {{profession}} :",
+      "noteFormats": "Formats de notes :",
+      "outcomeMeasures": "Mesures de résultats :",
+      "billing": "Facturation :",
+      "hst": "TVH/TPS :",
+      "continue": "Continuer →",
+      "back": "← Retour"
+    },
+    "step3": {
+      "title": "Détails de votre pratique",
+      "subtitle": "Ces informations apparaîtront sur les factures et les reçus envoyés à vos clients.",
+      "practiceName": "Nom de la pratique / clinique",
+      "practiceNamePlaceholder": "Psychothérapie & Bien-être Tremblay",
+      "practiceNameHint": "Laissez vide pour utiliser votre nom complet",
+      "credentials": "Titres de compétences",
+      "credentialsPlaceholder": "PA, Ph.D.",
+      "registrationNum": "Numéro d'inscription",
+      "registrationPlaceholder": "CRPO-004821",
+      "college": "Ordre professionnel",
+      "province": "Province",
+      "sessionRate": "Tarif de séance par défaut",
+      "sessionRatePlaceholder": "140 $",
+      "continue": "Continuer →",
+      "back": "← Retour"
+    },
+    "step4": {
+      "title": "Choisissez votre forfait",
+      "subtitle": "Les deux forfaits incluent un essai gratuit de 7 jours. Annulez à tout moment.",
+      "solo": "Praticien solo",
+      "soloPrice": "49 $",
+      "soloPeriod": "/mois",
+      "soloDesc": "Clients illimités, toutes les fonctionnalités, 1 clinicien",
+      "group": "Cabinet de groupe",
+      "groupPrice": "79 $",
+      "groupPeriod": "/clinicien",
+      "groupDesc": "Multi-cliniciens, planification partagée, tableau de bord propriétaire",
+      "trialNotice": "Votre essai gratuit de 7 jours commence aujourd'hui. Vous ne serez pas facturé avant la fin de l'essai. Annulez à tout moment dans vos paramètres.",
+      "startTrial": "Démarrer l'essai gratuit →",
+      "back": "← Retour"
+    },
+    "step5": {
+      "title": "Ajoutez votre premier client",
+      "subtitle": "Optionnel — vous pouvez ignorer cette étape et ajouter des clients depuis votre tableau de bord.",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Courriel (pour l'invitation au portail)",
+      "intakeTemplate": "Modèle d'admission",
+      "completeSetup": "Terminer la configuration →",
+      "skip": "Ignorer et aller au tableau de bord"
+    }
+  },
+  "sessionNotes": {
+    "summary": "{{dueCount}} notes à faire sous 24h · {{completedCount}} notes terminées",
+    "newNote": "Nouvelle note de session",
+    "dueTitle": "À faire — compléter sous 24h",
+    "writeNote": "Rédiger",
+    "recentCompleted": "Notes terminées récentes",
+    "locked": "Verrouillé",
+    "view": "Voir"
+  },
+  "billing": {
+    "alerts": {
+      "noInvoices": "Aucune facture payée à exporter.",
+      "receiptExportFail": "Échec de l'exportation des reçus. Veuillez réessayer.",
+      "t2125Success": "Résumé T2125 pour {{year}} téléchargé avec succès !",
+      "t2125Fail": "Échec de l'exportation du résumé T2125. Veuillez réessayer."
+    },
+    "summary": {
+      "collected": "Encaissé — {{month}}",
+      "outstanding": "En attente",
+      "ytd": "Encaissé (depuis janvier)"
+    },
+    "invoices": {
+      "title": "Factures",
+      "new": "Nouvelle facture",
+      "newMobile": "Nouveau",
+      "filters": {
+        "all": "Toutes",
+        "paid": "Payé",
+        "pending": "En attente",
+        "overdue": "En retard"
+      },
+      "columns": {
+        "invoiceNum": "Facture n°",
+        "client": "Client",
+        "date": "Date",
+        "sessions": "Sessions",
+        "amount": "Montant",
+        "status": "Statut"
+      },
+      "sessionsCount": "{{count}} session(s)",
+      "actionReceipt": "Reçu",
+      "actionReminder": "Rappel"
+    },
+    "taxPrep": {
+      "title": "Préparation des impôts — Résumé T2125 (travailleur autonome)",
+      "description": "MentalPath génère un résumé de fin d'année formaté pour l'annexe T2125 (État des résultats des activités d'une entreprise). Téléchargez-le pendant la période des impôts — aucun comptable n'est nécessaire pour la base.",
+      "exportT2125": "Exporter le résumé T2125 pour {{year}}",
+      "exporting": "Exportation…",
+      "downloadReceipts": "Télécharger tous les reçus (CSV)"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "unreadCount": "{{count}} non lus",
+    "searchPlaceholder": "Rechercher des clients...",
+    "activeClient": "Client actif",
+    "phipaNotice": "Chiffrement de bout en bout · Conforme à la LPRPS · Les messages sont supprimés automatiquement après 90 jours",
+    "noMessages": "Aucun message pour l'instant. Commencez la conversation.",
+    "typeMessage": "Tapez votre message...",
+    "send": "Envoyer"
+  },
+  "calendar": {
+    "title": "Vue calendrier",
+    "comingSoon": "Calendrier complet avec gestion des liens de réservation à venir lors de la phase 2."
+  },
+  "settings": {
+    "title": "Paramètres de pratique",
+    "saved": "Enregistré",
+    "saveChanges": "Enregistrer",
+    "tabs": {
+      "profile": "Profil",
+      "practice": "Infos cabinet",
+      "scheduling": "Planification",
+      "billing": "Facturation",
+      "subscription": "Abonnement",
+      "regions": "Région / Langue",
+      "notifications": "Notifications",
+      "security": "Sécurité",
+      "danger": "Zone de danger"
+    },
+    "profile": {
+      "title": "Votre Profil",
+      "subtitle": "Ces informations apparaissent sur les factures et les reçus",
+      "uploadHint": "Télécharger une photo de profil (facultatif)",
+      "uploadBtn": "Télécharger une photo",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Adresse e-mail",
+      "phone": "Numéro de téléphone",
+      "pronouns": "Pronoms préférés",
+      "pronounsPlaceholder": "ex: elle, il, iel"
+    },
+    "practice": {
+      "title": "Informations sur le cabinet",
+      "subtitle": "Titres professionnels et inscription",
+      "clinicName": "Nom du cabinet / clinique",
+      "clinicNamePlaceholder": "Laissez vide pour utiliser votre nom complet",
+      "credentials": "Titres professionnels",
+      "registrationNumber": "Numéro d'inscription",
+      "college": "Ordre de réglementation",
+      "noteFormat": "Format de note (configuré automatiquement)",
+      "colleges": {
+        "CRPO": "CRPO — Psychothérapeutes autorisés (ON)",
+        "CPO": "CPO — Psychologues (ON)",
+        "OCSWSSW": "OCSWSSW — Travailleurs sociaux (ON)",
+        "CCO": "CCO — Chiropraticiens (ON)",
+        "CPT": "CPO — Physiothérapeutes (ON)",
+        "CMTO": "CMTO — Massothérapeutes (ON)",
+        "COTO": "COTO — Ergothérapeutes (ON)",
+        "CONO": "CONO — Naturopathes (ON)",
+        "CTCMPAO": "CTCMPAO — Acupuncteurs (ON)",
+        "CDO": "CDO — Diététistes (ON)",
+        "CASLPO": "CASLPO — Orthophonistes (ON)"
+      }
+    },
+    "scheduling": {
+      "title": "Réservation en ligne",
+      "subtitle": "Partagez votre lien de réservation avec vos clients",
+      "bookingUrl": "Votre URL de réservation",
+      "copyLink": "Copier le lien",
+      "workingDays": "Jours de travail",
+      "days": {
+        "Mon": "Lun",
+        "Tue": "Mar",
+        "Wed": "Mer",
+        "Thu": "Jeu",
+        "Fri": "Ven",
+        "Sat": "Sam",
+        "Sun": "Dim"
+      },
+      "startTime": "Heure de début",
+      "endTime": "Heure de fin",
+      "sessionDuration": "Durée de séance par défaut",
+      "durations": {
+        "30": "30 minutes",
+        "45": "45 minutes",
+        "50": "50 minutes",
+        "60": "60 minutes",
+        "80": "80 minutes (couples)"
+      }
+    },
+    "billing": {
+      "title": "Facturation et Paiements",
+      "subtitle": "Tarifs par défaut et paramètres de paiement",
+      "sessionRate": "Tarif de séance par défaut",
+      "currency": "Devise",
+      "currencies": {
+        "CAD": "CAD (C$) — Dollar Canadien",
+        "USD": "USD ($) — Dollar Américain"
+      },
+      "hstRegistered": "Inscrit à la TVH/TPS",
+      "hstExempt": "Votre profession est exonérée de la TVH dans la plupart des provinces.",
+      "hstAdded": "La TVH sera ajoutée aux factures le cas échéant.",
+      "acceptStripe": "Accepter les paiements en ligne (Stripe)",
+      "stripeDesc": "Les clients peuvent payer leurs factures par carte de crédit via Stripe",
+      "slidingScale": "Activer la facturation à échelle mobile",
+      "slidingScaleDesc": "Fixer des tarifs réduits par client"
+    },
+    "subscription": {
+      "notSignedIn": "Connectez-vous pour voir les détails de votre abonnement",
+      "signIn": "Se connecter",
+      "currentPlan": "Forfait actuel",
+      "trialRemaining": "Essai gratuit — {{days}} jours restants",
+      "activeSince": "Actif depuis {{date}}",
+      "trial": "Essai",
+      "group": "Groupe",
+      "enterprise": "Entreprise",
+      "solo": "Solo",
+      "plan": "Forfait",
+      "billingCycle": "Cycle de facturation",
+      "trialEnds": "Fin de l'essai",
+      "nextBilling": "Prochaine facturation",
+      "seats": "Sièges",
+      "clinician": "clinicien",
+      "clinicians": "clinicians",
+      "ratePerSeat": "Tarif par siège",
+      "free": "Gratuit",
+      "nextCharge": "Prochain prélèvement",
+      "expires": "Expire le {{date}}",
+      "update": "Mettre à jour",
+      "addPaymentKeepDataTitle": "Ajouter un paiement pour conserver vos données",
+      "addPaymentKeepDataDesc": "Votre essai se termine dans {{days}} jours. Ajoutez une carte maintenant et vos données resteront en sécurité — vous ne serez facturé qu'à la fin de votre essai.",
+      "addPaymentMethod": "Ajouter un mode de paiement",
+      "updatePaymentMethod": "Mettre à jour le mode de paiement",
+      "cancelPlan": "Annuler le forfait",
+      "cancelConfirmTitle": "Annuler votre abonnement MentalPath ?",
+      "cancelConfirmDesc": "Vos données seront conservées pendant 90 jours après l'annulation, puis définitivement supprimées. Vous pouvez d'abord exporter vos dossiers.",
+      "confirmCancellation": "Confirmer l'annulation",
+      "keepMyPlan": "Garder mon forfait",
+      "changePlan": "Changer de forfait",
+      "allPlansInclude": "Tous les forfaits incluent toutes les fonctionnalités — même plateforme, même conformité",
+      "mostPopular": "Le plus populaire",
+      "custom": "Personnalisé",
+      "perClinicianMo": "/clinicien/mois",
+      "billedAnnually": "Facturé annuellement (C${{amount}}/an)",
+      "contactSales": "Contacter les ventes",
+      "currentPlanBtn": "Forfait actuel",
+      "downgradeTo": "Passer à {{name}}",
+      "upgradeTo": "Passer à {{name}}",
+      "billingHistory": "Historique de facturation",
+      "download": "Télécharger",
+      "cycles": {
+        "monthly": "Mensuel",
+        "annual": "Annuel",
+        "discount": "−13%"
+      },
+      "plans": {
+        "solo": {
+          "name": "Solo",
+          "description": "Parfait pour les praticiens indépendants",
+          "features": [
+            "Clients illimités",
+            "Rédaction de notes par IA",
+            "Page de réservation en ligne",
+            "Reçus d'assurance",
+            "Mesures de résultats",
+            "Dossiers conformes à la LPRPS",
+            "Hébergement de serveurs canadiens",
+            "Assistance par e-mail et chat"
+          ]
+        },
+        "group": {
+          "name": "Groupe",
+          "description": "Pour les cliniques et cabinets multi-cliniciens",
+          "features": [
+            "Tout ce qui est dans Solo",
+            "Tarification par siège",
+            "Tableau de bord de pratique de groupe",
+            "Vue de calendrier partagée",
+            "Analyses de pratique",
+            "Tableau de bord de conformité",
+            "Intégration des cliniciens",
+            "Assistance prioritaire"
+          ]
+        },
+        "enterprise": {
+          "name": "Entreprise",
+          "description": "Pour les réseaux de santé et grandes cliniques",
+          "features": [
+            "Tout ce qui est dans Groupe",
+            "Tarification des sièges personnalisée",
+            "Option marque blanche",
+            "Intégration EMR/EHR",
+            "CSM dédié",
+            "Garantie SLA",
+            "Rapports de conformité personnalisés",
+            "SSO / SAML"
+          ]
+        }
+      }
+    },
+    "regions": {
+      "title": "Région et Langue",
+      "subtitle": "Préférences de fuseau horaire et de langue",
+      "timezone": "Fuseau horaire",
+      "canadianTimezones": "Fuseaux horaires canadiens",
+      "usTimezones": "Fuseaux horaires américains",
+      "dateFormat": "Format de date",
+      "language": "Langue de l'interface",
+      "english": "English (Anglais)",
+      "french": "Français"
+    },
+    "notifications": {
+      "title": "Notifications par E-mail",
+      "subtitle": "Choisissez quels e-mails vous recevez",
+      "items": {
+        "bookings": { "label": "Nouvelles réservations de clients", "hint": "Lorsqu'un client réserve un rendez-vous" },
+        "reminders": { "label": "Rappels de session", "hint": "24 heures avant chaque session" },
+        "payment": { "label": "Paiement reçu", "hint": "Lorsqu'une facture est payée" },
+        "summary": { "label": "Résumé hebdomadaire", "hint": "Aperçu de votre semaine tous les lundis" },
+        "renewal": { "label": "Rappels de renouvellement {{college}}", "hint": "60 jours avant les dates limites de renouvellement" },
+        "cpd": { "label": "Suivi des heures de DPC", "hint": "Mise à jour mensuelle de vos progrès par rapport à vos exigences de cycle" }
+      }
+    },
+    "security": {
+      "title": "Sécurité",
+      "subtitle": "Gestion des mots de passe et sessions",
+      "changePassword": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "updatePassword": "Mettre à jour le mot de passe",
+      "autoLock": "Verrouillage automatique après 15 min d'inactivité",
+      "phipaRequired": "Requis pour la conformité PHIPA/HIPAA",
+      "enable2fa": "Activer l'authentification à deux facteurs (2FA)",
+      "desc2fa": "Ajoute une couche de sécurité supplémentaire à votre compte"
+    },
+    "danger": {
+      "deleteAccount": "Supprimer le compte",
+      "deleteWarning": "Ceci supprimera définitivement vos dossiers clients, vos notes de séance et toutes les données associées. Vos données sont conservées 90 jours avant d'être supprimées définitivement. Cette action ne peut pas être annulée.",
+      "deleteBtn": "Supprimer mon compte",
+      "exportBtn": "Exporter mes données d'abord"
+    }
   }
 }

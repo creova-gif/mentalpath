@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Check, Eye, EyeOff, Shield, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { startTrial } from '../../hooks/useTrialStatus';
 
 type OnboardingStep = 1 | 2 | 3 | 4 | 5;
@@ -53,6 +54,7 @@ const intakeTemplates = [
 ];
 
 export function Onboarding() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(1);
   const [showPassword, setShowPassword] = useState(false);
@@ -126,10 +128,10 @@ export function Onboarding() {
 
         <div>
           <h1 className="font-[var(--font-display)] text-[32px] text-white leading-[1.25] mb-4">
-            Built for <em className="italic text-[var(--sage-light)]">every</em><br/>regulated health<br/>professional.
+            {t('onboarding.leftPanel.title.line1')}<em className="italic text-[var(--sage-light)]">{t('onboarding.leftPanel.title.line2')}</em><br/>{t('onboarding.leftPanel.title.line3')}
           </h1>
           <p className="text-[15px] text-white/50 leading-relaxed mb-6">
-            Note templates, receipt formats, outcome measures, and College standards configured automatically for your profession. PHIPA-compliant from minute one.
+            {t('onboarding.leftPanel.description')}
           </p>
           <div className="flex flex-wrap gap-1.5 mb-6">
             {['Psychotherapists', 'Psychologists', 'Social Workers', 'Chiropractors', 'Physiotherapists', 'RMTs', 'OTs', 'Naturopaths', 'Acupuncturists', 'Dietitians', 'SLPs'].map(tag => (
@@ -139,15 +141,15 @@ export function Onboarding() {
 
           <div className="bg-white/5 rounded-xl p-6 border border-white/[0.08]">
             <p className="text-[15px] text-white/75 leading-relaxed italic mb-3.5">
-              "Switched from TherapyNotes in an afternoon. The culturally-adapted intake templates alone saved me two weeks of work — and I'm finally PHIPA-compliant."
+              {t('onboarding.leftPanel.testimonial')}
             </p>
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-[var(--sage)] flex items-center justify-center text-[11px] font-medium text-white">
                 AO
               </div>
               <div>
-                <div className="text-[13px] font-medium text-white/75">Dr. Abena Osei-Mensah, RP</div>
-                <div className="text-xs text-white/35">Registered Psychotherapist · Toronto, ON</div>
+                <div className="text-[13px] font-medium text-white/75">{t('onboarding.leftPanel.author')}</div>
+                <div className="text-xs text-white/35">{t('onboarding.leftPanel.authorRole')}</div>
               </div>
             </div>
           </div>
@@ -156,21 +158,21 @@ export function Onboarding() {
         <div className="flex gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 bg-[rgba(74,124,111,0.15)] border border-[rgba(74,124,111,0.25)] rounded-md px-2.5 py-1.5 text-xs text-[var(--sage-light)]">
             <Shield className="w-3 h-3" />
-            PHIPA compliant
+            {t('onboarding.leftPanel.badges.phipa')}
           </div>
           <div className="flex items-center gap-1.5 bg-[rgba(74,124,111,0.15)] border border-[rgba(74,124,111,0.25)] rounded-md px-2.5 py-1.5 text-xs text-[var(--sage-light)]">
             <svg viewBox="0 0 16 16" className="w-3 h-3 fill-none stroke-current stroke-[1.5]">
               <rect x="2" y="2" width="12" height="12" rx="2"/>
               <path d="M5 8h6M8 5v6"/>
             </svg>
-            Canadian servers
+            {t('onboarding.leftPanel.badges.servers')}
           </div>
           <div className="flex items-center gap-1.5 bg-[rgba(74,124,111,0.15)] border border-[rgba(74,124,111,0.25)] rounded-md px-2.5 py-1.5 text-xs text-[var(--sage-light)]">
             <svg viewBox="0 0 16 16" className="w-3 h-3 fill-none stroke-current stroke-[1.5]">
               <circle cx="8" cy="8" r="6"/>
               <path d="M8 5v3l2 2"/>
             </svg>
-            7-day free trial
+            {t('onboarding.leftPanel.badges.trial')}
           </div>
         </div>
       </div>
@@ -198,48 +200,48 @@ export function Onboarding() {
           {currentStep === 1 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
-                Create your account
+                {t('onboarding.step1.title')}
               </h2>
               <p className="text-sm text-[var(--ink-muted)] mb-7">
-                Free for 7 days. No credit card required.
+                {t('onboarding.step1.subtitle')}
               </p>
 
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Full name <span className="text-[var(--sage)]">*</span>
+                  {t('onboarding.step1.fullName')} <span className="text-[var(--sage)]">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder="Dr. Jane Smith"
+                  placeholder={t('onboarding.step1.fullNamePlaceholder')}
                   className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                 />
               </div>
 
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Work email <span className="text-[var(--sage)]">*</span>
+                  {t('onboarding.step1.workEmail')} <span className="text-[var(--sage)]">*</span>
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="you@practice.ca"
+                  placeholder={t('onboarding.step1.workEmailPlaceholder')}
                   className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                 />
               </div>
 
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Password <span className="text-[var(--sage)]">*</span>
+                  {t('onboarding.step1.password')} <span className="text-[var(--sage)]">*</span>
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(e) => handlePasswordChange(e.target.value)}
-                    placeholder="At least 8 characters"
+                    placeholder={t('onboarding.step1.passwordPlaceholder')}
                     className="w-full px-3.5 py-2.5 pr-10 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                   />
                   <button
@@ -259,7 +261,7 @@ export function Onboarding() {
                     }}
                   />
                 </div>
-                <p className="text-[11px] text-[var(--ink-muted)] mt-1">Use 8+ characters, a number, and a symbol</p>
+                <p className="text-[11px] text-[var(--ink-muted)] mt-1">{t('onboarding.step1.passwordHint')}</p>
               </div>
 
               <button
@@ -267,11 +269,11 @@ export function Onboarding() {
                 disabled={!canContinueStep1}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
-                Continue →
+                {t('onboarding.step1.continue')}
               </button>
 
               <div className="text-center mt-4 text-[13px] text-[var(--ink-muted)]">
-                Already have an account? <a href="/login" className="text-[var(--sage)] font-medium hover:text-[var(--sage-deep)]">Sign in</a>
+                {t('onboarding.step1.alreadyHaveAccount')} <a href="/login" className="text-[var(--sage)] font-medium hover:text-[var(--sage-deep)]">{t('onboarding.step1.signIn')}</a>
               </div>
             </div>
           )}
@@ -280,10 +282,10 @@ export function Onboarding() {
           {currentStep === 2 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
-                What's your profession?
+                {t('onboarding.step2.title')}
               </h2>
               <p className="text-sm text-[var(--ink-muted)] mb-5">
-                MentalPath configures note templates, receipt formats, outcome measures, and College compliance automatically.
+                {t('onboarding.step2.subtitle')}
               </p>
 
               <div className="grid grid-cols-3 gap-2 mb-4">
@@ -306,12 +308,12 @@ export function Onboarding() {
 
               {selectedProfession && (
                 <div className="bg-[var(--sage-pale)] border border-[rgba(74,124,111,0.2)] rounded-xl p-4 mb-4 text-[13px] text-[var(--sage-deep)] leading-relaxed">
-                  <div className="font-medium mb-2">MentalPath will configure for {selectedProfession.name}:</div>
+                  <div className="font-medium mb-2">{t('onboarding.step2.configuresFor', { profession: selectedProfession.name })}</div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[12px]">
-                    <div><span className="text-[var(--sage)]">Note formats:</span> {selectedProfession.notes}</div>
-                    <div><span className="text-[var(--sage)]">Outcome measures:</span> {selectedProfession.outcomes}</div>
-                    <div><span className="text-[var(--sage)]">Billing:</span> {selectedProfession.billing}</div>
-                    <div><span className="text-[var(--sage)]">HST:</span> {selectedProfession.hst}</div>
+                    <div><span className="text-[var(--sage)]">{t('onboarding.step2.noteFormats')}</span> {selectedProfession.notes}</div>
+                    <div><span className="text-[var(--sage)]">{t('onboarding.step2.outcomeMeasures')}</span> {selectedProfession.outcomes}</div>
+                    <div><span className="text-[var(--sage)]">{t('onboarding.step2.billing')}</span> {selectedProfession.billing}</div>
+                    <div><span className="text-[var(--sage)]">{t('onboarding.step2.hst')}</span> {selectedProfession.hst}</div>
                   </div>
                 </div>
               )}
@@ -321,13 +323,13 @@ export function Onboarding() {
                 disabled={!canContinueStep2}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
-                Continue →
+                {t('onboarding.step2.continue')}
               </button>
               <button
                 onClick={() => setCurrentStep(1)}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
-                ← Back
+                {t('onboarding.step2.back')}
               </button>
             </div>
           )}
@@ -336,48 +338,48 @@ export function Onboarding() {
           {currentStep === 3 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
-                Your practice details
+                {t('onboarding.step3.title')}
               </h2>
               <p className="text-sm text-[var(--ink-muted)] mb-7">
-                This appears on invoices and receipts sent to your clients.
+                {t('onboarding.step3.subtitle')}
               </p>
 
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Practice / clinic name
+                  {t('onboarding.step3.practiceName')}
                 </label>
                 <input
                   type="text"
                   value={formData.practiceName}
                   onChange={(e) => setFormData({ ...formData, practiceName: e.target.value })}
-                  placeholder="Smith Psychotherapy & Wellness"
+                  placeholder={t('onboarding.step3.practiceNamePlaceholder')}
                   className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                 />
-                <p className="text-[11px] text-[var(--ink-muted)] mt-1">Leave blank to use your full name</p>
+                <p className="text-[11px] text-[var(--ink-muted)] mt-1">{t('onboarding.step3.practiceNameHint')}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                    Credentials <span className="text-[var(--sage)]">*</span>
+                    {t('onboarding.step3.credentials')} <span className="text-[var(--sage)]">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.credentials}
                     onChange={(e) => setFormData({ ...formData, credentials: e.target.value })}
-                    placeholder="RP, PhD"
+                    placeholder={t('onboarding.step3.credentialsPlaceholder')}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                   />
                 </div>
                 <div>
                   <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                    Registration # <span className="text-[var(--sage)]">*</span>
+                    {t('onboarding.step3.registrationNum')} <span className="text-[var(--sage)]">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.registrationNumber}
                     onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
-                    placeholder="CRPO-004821"
+                    placeholder={t('onboarding.step3.registrationPlaceholder')}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                   />
                 </div>
@@ -385,7 +387,7 @@ export function Onboarding() {
 
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Regulatory college <span className="text-[var(--sage)]">*</span>
+                  {t('onboarding.step3.college')} <span className="text-[var(--sage)]">*</span>
                 </label>
                 <div className="flex flex-wrap gap-1.75">
                   {colleges.map((college) => (
@@ -407,7 +409,7 @@ export function Onboarding() {
               <div className="grid grid-cols-2 gap-3 mb-6">
                 <div>
                   <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                    Province <span className="text-[var(--sage)]">*</span>
+                    {t('onboarding.step3.province')} <span className="text-[var(--sage)]">*</span>
                   </label>
                   <select
                     value={formData.province}
@@ -421,13 +423,13 @@ export function Onboarding() {
                 </div>
                 <div>
                   <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                    Default session rate
+                    {t('onboarding.step3.sessionRate')}
                   </label>
                   <input
                     type="text"
                     value={formData.sessionRate}
                     onChange={(e) => setFormData({ ...formData, sessionRate: e.target.value })}
-                    placeholder="$140"
+                    placeholder={t('onboarding.step3.sessionRatePlaceholder')}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                   />
                 </div>
@@ -438,13 +440,13 @@ export function Onboarding() {
                 disabled={!canContinueStep3}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
-                Continue →
+                {t('onboarding.step3.continue')}
               </button>
               <button
                 onClick={() => setCurrentStep(2)}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
-                ← Back
+                {t('onboarding.step3.back')}
               </button>
             </div>
           )}
@@ -453,10 +455,10 @@ export function Onboarding() {
           {currentStep === 4 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
-                Choose your plan
+                {t('onboarding.step4.title')}
               </h2>
               <p className="text-sm text-[var(--ink-muted)] mb-7">
-                Both plans include a 7-day free trial. Cancel anytime.
+                {t('onboarding.step4.subtitle')}
               </p>
 
               <div className="grid grid-cols-2 gap-2.5 mb-4">
@@ -468,12 +470,12 @@ export function Onboarding() {
                       : 'border-[var(--border)] bg-white hover:border-[var(--sage-light)]'
                   }`}
                 >
-                  <div className="text-sm font-medium text-[var(--ink)] mb-0.5">Solo practitioner</div>
+                  <div className="text-sm font-medium text-[var(--ink)] mb-0.5">{t('onboarding.step4.solo')}</div>
                   <div className="text-xl font-medium text-[var(--sage-deep)] mb-1">
-                    $49<span className="text-[13px] font-normal text-[var(--ink-muted)]">/mo</span>
+                    {t('onboarding.step4.soloPrice')}<span className="text-[13px] font-normal text-[var(--ink-muted)]">{t('onboarding.step4.soloPeriod')}</span>
                   </div>
                   <div className="text-[11px] text-[var(--ink-muted)] leading-snug">
-                    Unlimited clients, all features, 1 clinician
+                    {t('onboarding.step4.soloDesc')}
                   </div>
                 </button>
 
@@ -485,31 +487,31 @@ export function Onboarding() {
                       : 'border-[var(--border)] bg-white hover:border-[var(--sage-light)]'
                   }`}
                 >
-                  <div className="text-sm font-medium text-[var(--ink)] mb-0.5">Group practice</div>
+                  <div className="text-sm font-medium text-[var(--ink)] mb-0.5">{t('onboarding.step4.group')}</div>
                   <div className="text-xl font-medium text-[var(--sage-deep)] mb-1">
-                    $79<span className="text-[13px] font-normal text-[var(--ink-muted)]">/clinician</span>
+                    {t('onboarding.step4.groupPrice')}<span className="text-[13px] font-normal text-[var(--ink-muted)]">{t('onboarding.step4.groupPeriod')}</span>
                   </div>
                   <div className="text-[11px] text-[var(--ink-muted)] leading-snug">
-                    Multi-clinician, shared scheduling, owner dashboard
+                    {t('onboarding.step4.groupDesc')}
                   </div>
                 </button>
               </div>
 
               <div className="bg-[var(--sage-pale)] rounded-lg p-3 text-[13px] text-[var(--sage-deep)] leading-relaxed mb-4">
-                Your 7-day free trial starts today. You will not be charged until your trial ends. Cancel anytime from your settings.
+                {t('onboarding.step4.trialNotice')}
               </div>
 
               <button
                 onClick={() => setCurrentStep(5)}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] mt-2"
               >
-                Start free trial →
+                {t('onboarding.step4.startTrial')}
               </button>
               <button
                 onClick={() => setCurrentStep(3)}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
-                ← Back
+                {t('onboarding.step4.back')}
               </button>
             </div>
           )}
@@ -518,34 +520,34 @@ export function Onboarding() {
           {currentStep === 5 && (
             <div>
               <h2 className="font-[var(--font-display)] text-[26px] text-[var(--ink)] mb-1.5 tracking-[-0.3px]">
-                Add your first client
+                {t('onboarding.step5.title')}
               </h2>
               <p className="text-sm text-[var(--ink-muted)] mb-7">
-                Optional — you can skip this and add clients from your dashboard.
+                {t('onboarding.step5.subtitle')}
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                    First name
+                    {t('onboarding.step5.firstName')}
                   </label>
                   <input
                     type="text"
                     value={formData.clientFirstName}
                     onChange={(e) => setFormData({ ...formData, clientFirstName: e.target.value })}
-                    placeholder="First name"
+                    placeholder={t('onboarding.step5.firstName')}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                   />
                 </div>
                 <div>
                   <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                    Last name
+                    {t('onboarding.step5.lastName')}
                   </label>
                   <input
                     type="text"
                     value={formData.clientLastName}
                     onChange={(e) => setFormData({ ...formData, clientLastName: e.target.value })}
-                    placeholder="Last name"
+                    placeholder={t('onboarding.step5.lastName')}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                   />
                 </div>
@@ -553,7 +555,7 @@ export function Onboarding() {
 
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Email (for portal invite)
+                  {t('onboarding.step5.email')}
                 </label>
                 <input
                   type="email"
@@ -566,7 +568,7 @@ export function Onboarding() {
 
               <div className="mb-6">
                 <label className="block text-[13px] font-medium text-[var(--ink-soft)] mb-1.5">
-                  Intake template
+                  {t('onboarding.step5.intakeTemplate')}
                 </label>
                 <select
                   value={formData.clientTemplate}
@@ -583,13 +585,13 @@ export function Onboarding() {
                 onClick={handleSubmit}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] mt-2"
               >
-                Complete setup →
+                {t('onboarding.step5.completeSetup')}
               </button>
               <button
                 onClick={handleSubmit}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
-                Skip and go to dashboard
+                {t('onboarding.step5.skip')}
               </button>
             </div>
           )}

@@ -1,9 +1,13 @@
+import { useTranslation } from 'react-i18next';
+
 export function Calendar() {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-[60px] text-center">
-      <div className="font-[var(--font-display)] text-[22px] text-[var(--ink)] mb-2">Calendar view</div>
+      <div className="font-[var(--font-display)] text-[22px] text-[var(--ink)] mb-2">{t('calendar.title')}</div>
       <div className="text-sm text-[var(--ink-muted)]">
-        Full calendar with booking link management coming in Phase 2.
+        {t('calendar.comingSoon')}
       </div>
     </div>
   );

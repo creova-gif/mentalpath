@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { NoteModal } from '../modals/NoteModal';
 import { useUser } from '../../context/UserContext';
 
@@ -78,6 +79,7 @@ const DEFAULT_STATS = { sessions: '6', clients: '23', billed: '$4,200', notes: '
 export function Overview() {
   const navigate = useNavigate();
   const { user, subscription } = useUser();
+  const { t } = useTranslation();
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   const profession = user?.profession ?? '';
@@ -94,9 +96,9 @@ export function Overview() {
 
   const greeting = (() => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('dashboard.greetings.morning');
+    if (hour < 17) return t('dashboard.greetings.afternoon');
+    return t('dashboard.greetings.evening');
   })();
 
   const firstName = user?.firstName ?? 'there';
@@ -108,22 +110,22 @@ export function Overview() {
         <div>
           <h1 className="font-[var(--font-display)] text-xl text-[var(--ink)]">{greeting}, {firstName}</h1>
           <p className="text-xs text-[var(--ink-muted)] mt-0.5">
-            Monday March 16, 2026 · {user?.profession}{user?.registrationNumber ? ` · ${user.registrationNumber}` : ''}
+            {t('dashboard.date')} · {user?.profession}{user?.registrationNumber ? ` · ${user.registrationNumber}` : ''}
           </p>
         </div>
         {subscription?.isTrial && (
           <div className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
-            {subscription.trialDaysRemaining} days left in trial — <button onClick={() => navigate('/dashboard/settings')} className="underline bg-transparent border-none cursor-pointer text-amber-700 text-xs font-medium p-0">Upgrade</button>
+            {t('dashboard.trial.daysLeft', { days: subscription.trialDaysRemaining })} <button onClick={() => navigate('/dashboard/settings')} className="underline bg-transparent border-none cursor-pointer text-amber-700 text-xs font-medium p-0">{t('dashboard.trial.upgrade')}</button>
           </div>
         )}
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-7">
-        <StatCard label="Sessions today" value={stats.sessions} delta="2 completed · upcoming" />
-        <StatCard label="Active clients" value={stats.clients} delta="+2 this month" />
-        <StatCard label="Billed this month" value={stats.billed} delta="Outstanding pending" />
-        <StatCard label="Notes due" value={stats.notes} delta="Within 24hrs" negative />
+        <StatCard label={t('dashboard.stats.sessionsToday')} value={stats.sessions} delta={t('dashboard.stats.deltas.sessionsCompleted')} />
+        <StatCard label={t('dashboard.stats.activeClients')} value={stats.clients} delta={t('dashboard.stats.deltas.activeClients')} />
+        <StatCard label={t('dashboard.stats.billedThisMonth')} value={stats.billed} delta={t('dashboard.stats.deltas.outstandingPending')} />
+        <StatCard label={t('dashboard.stats.notesDue')} value={stats.notes} delta={t('dashboard.stats.deltas.within24hrs')} negative />
       </div>
 
       {/* Main Content */}
@@ -132,11 +134,11 @@ export function Overview() {
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-5 lg:mb-0">
           <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border)]">
             <span className="text-sm font-medium text-[var(--ink)]">
-              <span className="hidden sm:inline">Today's appointments — Monday March 16</span>
-              <span className="sm:hidden">Today's appointments</span>
+              <span className="hidden sm:inline">{t('dashboard.appointments.titleFull')}</span>
+              <span className="sm:hidden">{t('dashboard.appointments.titleShort')}</span>
             </span>
             <button onClick={() => navigate('/dashboard/calendar')} className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-transparent border-none px-2 py-1 rounded hover:bg-[var(--sage-pale)]">
-              View calendar
+              {t('dashboard.appointments.viewCalendar')}
             </button>
           </div>
           <div className="flex flex-col gap-0">
@@ -157,17 +159,17 @@ export function Overview() {
                   <div className="text-xs text-[var(--ink-muted)] truncate">{session.type}</div>
                 </div>
                 {session.status === 'done' && (
-                  <span className="text-[11px] bg-[#e8f4f0] text-[var(--sage-deep)] px-2 py-[3px] rounded font-medium flex-shrink-0">Done</span>
+                  <span className="text-[11px] bg-[#e8f4f0] text-[var(--sage-deep)] px-2 py-[3px] rounded font-medium flex-shrink-0">{t('dashboard.appointments.done')}</span>
                 )}
                 {session.status === 'now' && (
-                  <span className="bg-[var(--sage)] text-white text-[11px] px-2 py-[3px] rounded font-medium flex-shrink-0">Now</span>
+                  <span className="bg-[var(--sage)] text-white text-[11px] px-2 py-[3px] rounded font-medium flex-shrink-0">{t('dashboard.appointments.now')}</span>
                 )}
                 {session.status === 'note-due' && (
                   <button
                     onClick={e => { e.stopPropagation(); setSelectedClient(session.name); }}
                     className="px-2 sm:px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)] flex-shrink-0"
                   >
-                    Add note
+                    {t('dashboard.appointments.addNote')}
                   </button>
                 )}
               </div>
@@ -180,8 +182,8 @@ export function Overview() {
           {/* Tasks */}
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border)]">
-              <span className="text-sm font-medium text-[var(--ink)]">Tasks</span>
-              <button className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-transparent border-none px-2 py-1 rounded hover:bg-[var(--sage-pale)]">Add task</button>
+              <span className="text-sm font-medium text-[var(--ink)]">{t('dashboard.tasks.title')}</span>
+              <button className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-transparent border-none px-2 py-1 rounded hover:bg-[var(--sage-pale)]">{t('dashboard.tasks.addTask')}</button>
             </div>
             <div>
               {taskList.map((task, i) => (
@@ -203,14 +205,14 @@ export function Overview() {
 
           {/* Monthly Revenue */}
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 pb-5">
-            <div className="text-sm font-medium text-[var(--ink)] mb-3">Monthly revenue</div>
+            <div className="text-sm font-medium text-[var(--ink)] mb-3">{t('dashboard.revenue.title')}</div>
             <div className="h-20 flex items-end gap-2">
               {[
-                { month: 'Nov', height: 45 },
-                { month: 'Dec', height: 52 },
-                { month: 'Jan', height: 38 },
-                { month: 'Feb', height: 60 },
-                { month: 'Mar', height: 70, active: true },
+                { month: t('dashboard.revenue.months.Nov'), height: 45 },
+                { month: t('dashboard.revenue.months.Dec'), height: 52 },
+                { month: t('dashboard.revenue.months.Jan'), height: 38 },
+                { month: t('dashboard.revenue.months.Feb'), height: 60 },
+                { month: t('dashboard.revenue.months.Mar'), height: 70, active: true },
               ].map((bar, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div className={`w-full rounded-t ${bar.active ? 'bg-[var(--sage)]' : 'bg-[var(--sage-pale)]'}`} style={{ height: `${bar.height}px` }} />
@@ -219,21 +221,21 @@ export function Overview() {
               ))}
             </div>
             <div className="mt-2.5 text-xs text-[var(--ink-muted)]">
-              {stats.billed} collected · Outstanding pending
+              {t('dashboard.revenue.subtitle', { amount: stats.billed })}
             </div>
           </div>
 
           {/* Quick actions */}
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
             <div className="px-4 py-3 border-b border-[var(--border)]">
-              <span className="text-sm font-medium text-[var(--ink)]">Quick actions</span>
+              <span className="text-sm font-medium text-[var(--ink)]">{t('dashboard.quickActions.title')}</span>
             </div>
             <div className="grid grid-cols-2 divide-x divide-y divide-[var(--border)]">
               {[
-                { label: `New ${notesLabel.split(' ')[0]} note`, icon: '📝', path: '/session-note-editor' },
-                { label: 'New invoice', icon: '💳', path: '/dashboard/billing' },
-                { label: 'Insurance receipt', icon: '🧾', path: '/dashboard/insurance-receipts' },
-                { label: 'Add client', icon: '👤', path: '/dashboard/clients' },
+                { label: t('dashboard.quickActions.newNote', { type: notesLabel.split(' ')[0] }), icon: '📝', path: '/session-note-editor' },
+                { label: t('dashboard.quickActions.newInvoice'), icon: '💳', path: '/dashboard/billing' },
+                { label: t('dashboard.quickActions.insuranceReceipt'), icon: '🧾', path: '/dashboard/insurance-receipts' },
+                { label: t('dashboard.quickActions.addClient'), icon: '👤', path: '/dashboard/clients' },
               ].map((action, i) => (
                 <button
                   key={i}

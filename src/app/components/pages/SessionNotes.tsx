@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { NoteModal } from '../modals/NoteModal';
 
 const dueNotes = [
@@ -17,26 +18,29 @@ const completedNotes = [
 ];
 
 export function SessionNotes() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   return (
     <>
       <div className="flex justify-between items-center mb-5">
-        <div className="text-sm text-[var(--ink-muted)]">3 notes due within 24hrs · 47 completed notes</div>
+        <div className="text-sm text-[var(--ink-muted)]">
+          {t('sessionNotes.summary', { dueCount: 3, completedCount: 47 })}
+        </div>
         <button
           onClick={() => navigate('/session-note-editor')}
           className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
         >
           <Plus className="w-3.5 h-3.5" strokeWidth={2} />
-          New session note
+          {t('sessionNotes.newNote')}
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-5">
         <div>
           <div className="text-xs font-medium uppercase tracking-[0.6px] text-[var(--red)] mb-2.5">
-            Due — complete within 24hrs
+            {t('sessionNotes.dueTitle')}
           </div>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-0">
             <div className="flex flex-col gap-0">
@@ -57,7 +61,7 @@ export function SessionNotes() {
                     onClick={(e) => { e.stopPropagation(); setSelectedClient(note.name); }}
                     className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                   >
-                    Write note
+                    {t('sessionNotes.writeNote')}
                   </button>
                 </div>
               ))}
@@ -67,7 +71,7 @@ export function SessionNotes() {
 
         <div>
           <div className="text-xs font-medium uppercase tracking-[0.6px] text-[var(--ink-muted)] mb-2.5">
-            Recent completed notes
+            {t('sessionNotes.recentCompleted')}
           </div>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-0">
             <div className="flex flex-col gap-0">
@@ -83,7 +87,7 @@ export function SessionNotes() {
                     <div className="text-sm font-medium text-[var(--ink)]">{note.name}</div>
                     <div className="text-xs text-[var(--ink-muted)] flex items-center gap-1">
                       {note.date} · <span className="text-[var(--sage)] text-[11px] flex items-center gap-1">
-                        <Lock className="w-3 h-3" /> Locked
+                        <Lock className="w-3 h-3" /> {t('sessionNotes.locked')}
                       </span>
                     </div>
                   </div>
@@ -91,7 +95,7 @@ export function SessionNotes() {
                     onClick={() => setSelectedClient(note.name)}
                     className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                   >
-                    View
+                    {t('sessionNotes.view')}
                   </button>
                 </div>
               ))}

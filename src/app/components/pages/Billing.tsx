@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/utils/supabase/client';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 
@@ -36,6 +37,7 @@ const MOCK_INVOICES: Invoice[] = [
 ];
 
 export function Billing() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('all');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -166,10 +168,10 @@ export function Billing() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      alert(`T2125 summary for ${year} downloaded successfully!`);
+      alert(t('billing.alerts.t2125Success', { year }));
     } catch (error) {
       console.error('T2125 export error:', error);
-      alert('Failed to export T2125 summary. Please try again.');
+      alert(t('billing.alerts.t2125Fail'));
     } finally {
       setExporting(false);
     }
@@ -182,7 +184,7 @@ export function Billing() {
       // In production this would call an edge function to generate real PDFs.
       const paidInvoices = invoices.filter(inv => inv.status === 'paid');
       if (paidInvoices.length === 0) {
-        alert('No paid invoices to export.');
+        alert(t('billing.alerts.noInvoices'));
         return;
       }
       const header = 'Invoice #,Client,Date,Sessions,Amount ($),Status';
@@ -201,7 +203,7 @@ export function Billing() {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Receipt export error:', err);
-      alert('Failed to export receipts. Please try again.');
+      alert(t('billing.alerts.receiptExportFail'));
     } finally {
       setExportingZip(false);
     }
@@ -238,28 +240,28 @@ export function Billing() {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-        <SummaryBox label={`Collected — ${currentMonth}`} value={`$${monthRevenue.toFixed(0)}`} highlight />
-        <SummaryBox label="Outstanding" value={`$${outstanding.toFixed(0)}`} />
-        <SummaryBox label="YTD collected" value={`$${ytdRevenue.toFixed(0)}`} />
+        <SummaryBox label={t('billing.summary.collected', { month: currentMonth })} value={`$${monthRevenue.toFixed(0)}`} highlight />
+        <SummaryBox label={t('billing.summary.outstanding')} value={`$${outstanding.toFixed(0)}`} />
+        <SummaryBox label={t('billing.summary.ytd')} value={`$${ytdRevenue.toFixed(0)}`} />
       </div>
 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-5">
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border)]">
-          <span className="text-sm font-medium text-[var(--ink)]">Invoices</span>
+          <span className="text-sm font-medium text-[var(--ink)]">{t('billing.invoices.title')}</span>
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex gap-1.5 overflow-x-auto">
-              <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterButton>
-              <FilterButton active={filter === 'paid'} onClick={() => setFilter('paid')}>Paid</FilterButton>
-              <FilterButton active={filter === 'pending'} onClick={() => setFilter('pending')}>Pending</FilterButton>
-              <FilterButton active={filter === 'overdue'} onClick={() => setFilter('overdue')}>Overdue</FilterButton>
+              <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>{t('billing.invoices.filters.all')}</FilterButton>
+              <FilterButton active={filter === 'paid'} onClick={() => setFilter('paid')}>{t('billing.invoices.filters.paid')}</FilterButton>
+              <FilterButton active={filter === 'pending'} onClick={() => setFilter('pending')}>{t('billing.invoices.filters.pending')}</FilterButton>
+              <FilterButton active={filter === 'overdue'} onClick={() => setFilter('overdue')}>{t('billing.invoices.filters.overdue')}</FilterButton>
             </div>
             <button
               onClick={() => setShowInvoiceModal(true)}
               className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)] flex-shrink-0"
             >
               <Plus className="w-[13px] h-[13px]" strokeWidth={2} />
-              <span className="hidden sm:inline">New invoice</span>
-              <span className="sm:hidden">New</span>
+              <span className="hidden sm:inline">{t('billing.invoices.new')}</span>
+              <span className="sm:hidden">{t('billing.invoices.newMobile')}</span>
             </button>
           </div>
         </div>
@@ -268,22 +270,22 @@ export function Billing() {
           <thead>
             <tr>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Invoice #
+                {t('billing.invoices.columns.invoiceNum')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Client
+                {t('billing.invoices.columns.client')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Date
+                {t('billing.invoices.columns.date')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Sessions
+                {t('billing.invoices.columns.sessions')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Amount
+                {t('billing.invoices.columns.amount')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Status
+                {t('billing.invoices.columns.status')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]"></th>
             </tr>
@@ -301,7 +303,7 @@ export function Billing() {
                   {new Date(invoice.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </td>
                 <td className="px-5 py-3.5 border-t border-[var(--border)] text-[13px] text-[var(--ink-soft)] align-middle">
-                  {invoice.sessions} session(s)
+                  {t('billing.invoices.sessionsCount', { count: invoice.sessions })}
                 </td>
                 <td className="px-5 py-3.5 border-t border-[var(--border)] font-medium text-[var(--ink)] text-sm align-middle">
                   ${invoice.amount.toFixed(2)}
@@ -311,7 +313,7 @@ export function Billing() {
                 </td>
                 <td className="px-5 py-3.5 border-t border-[var(--border)] text-[13px] text-[var(--ink-soft)] align-middle">
                   <button className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]">
-                    {invoice.status === 'paid' ? 'Receipt' : 'Send reminder'}
+                    {invoice.status === 'paid' ? t('billing.invoices.actionReceipt') : t('billing.invoices.actionReminder')}
                   </button>
                 </td>
               </tr>
@@ -322,10 +324,9 @@ export function Billing() {
       </div>
 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-        <div className="text-[13px] font-medium text-[var(--ink)] mb-3">Tax prep — T2125 self-employment summary</div>
+        <div className="text-[13px] font-medium text-[var(--ink)] mb-3">{t('billing.taxPrep.title')}</div>
         <div className="text-[13px] text-[var(--ink-muted)] mb-4 leading-[1.6]">
-          MentalPath generates a year-end income summary formatted for Schedule T2125 (Statement of Business Activities).
-          Download at tax time — no accountant needed for the basics.
+          {t('billing.taxPrep.description')}
         </div>
         <div className="flex gap-2.5">
           <button
@@ -337,7 +338,7 @@ export function Billing() {
             ) : (
               <FileText className="w-[13px] h-[13px]" strokeWidth={2} />
             )}
-            Export 2025 T2125 summary
+            {t('billing.taxPrep.exportT2125', { year: '2025' })}
           </button>
           <button
             onClick={handleExportReceiptsZip}
@@ -349,7 +350,7 @@ export function Billing() {
             ) : (
               <Archive className="w-[13px] h-[13px]" strokeWidth={2} />
             )}
-            {exportingZip ? 'Exporting…' : 'Download all receipts (CSV)'}
+            {exportingZip ? t('billing.taxPrep.exporting') : t('billing.taxPrep.downloadReceipts')}
           </button>
         </div>
       </div>
@@ -390,6 +391,7 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
 }
 
 function InvoiceStatus({ status }: { status: 'paid' | 'pending' | 'overdue' }) {
+  const { t } = useTranslation();
   const styles = {
     paid: 'bg-[#e8f4f0] text-[var(--sage-deep)]',
     pending: 'bg-[#fef3e2] text-[#7a4a00]',
@@ -398,7 +400,7 @@ function InvoiceStatus({ status }: { status: 'paid' | 'pending' | 'overdue' }) {
 
   return (
     <span className={`inline-block text-[11px] font-medium px-[9px] py-[3px] rounded ${styles[status]}`}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
+      {t(`billing.invoices.filters.${status}`)}
     </span>
   );
 }

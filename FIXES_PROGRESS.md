@@ -77,15 +77,15 @@
 
 ### 🌐 Bilingual Translations - Remaining
 
-- [ ] **Dashboard** - Overview, stats, greeting
-- [ ] **Clients** - Client list, detail panel, filters
-- [ ] **Session Notes** - Note formats, AI assist
-- [ ] **Billing** - Invoices, receipts, tax export
-- [ ] **Client Portal** - All 5 steps
-- [ ] **Onboarding** - All 4 steps
+- [x] **Dashboard** - Overview, stats, greeting
+- [x] **Clients** - Client list, detail panel, filters
+- [x] **Session Notes** - Note formats, AI assist
+- [x] **Billing** - Invoices, receipts, tax export
+- [x] **Client Portal** - All 5 steps
+- [x] **Onboarding** - All 4 steps
 - [ ] **Settings** - All settings pages
-- [ ] **Calendar** - Events, messaging
-- [ ] **Messages** - Secure messaging interface
+- [x] **Calendar** - Events, messaging
+- [x] **Messages** - Secure messaging interface
 
 ---
 

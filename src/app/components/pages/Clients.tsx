@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import { Search } from 'lucide-react';
 import { ClientDetailPanel } from '../modals/ClientDetailPanel';
 import { NoteModal } from '../modals/NoteModal';
 import { NewClientModal } from '../modals/NewClientModal';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@/app/context/UserContext';
+import { useDebounce } from '@/app/hooks/useDebounce';
 
 export type Client = {
   id: string;
@@ -23,15 +26,21 @@ export type Client = {
 const AVATAR_COLORS = ['c-av-a', 'c-av-b', 'c-av-c', 'c-av-d', 'c-av-e', 'c-av-f'];
 
 export function Clients() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useUser();
   const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [noteModalClient, setNoteModalClient] = useState<Client | null>(null);
   const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  
+  const [sortBy, setSortBy] = useState('newest');
+  const [selectedTag, setSelectedTag] = useState('all');
 
   useEffect(() => {
     async function fetchClients() {
@@ -55,7 +64,7 @@ export function Clients() {
         const initials = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
         
         const createdDate = new Date(row.created_at);
-        const sinceStr = `Since ${createdDate.toLocaleString('default', { month: 'short' })} ${createdDate.getFullYear()} · RP: ${user.lastName}`;
+        const sinceStr = `${t('clients.since')} ${createdDate.toLocaleString('default', { month: 'short' })} ${createdDate.getFullYear()} · ${t('clients.rp')}: ${user.lastName}`;
 
         return {
           id: row.id,
@@ -79,31 +88,90 @@ export function Clients() {
     fetchClients();
   }, [user, refreshKey]);
 
+  const allTags = Array.from(new Set(clients.flatMap(c => c.tags))).filter(Boolean);
+
   const filteredClients = clients.filter((client) => {
-    if (filter === 'all') return true;
-    return client.status === filter;
+    const matchesFilter = filter === 'all' || client.status === filter;
+    const matchesSearch = !debouncedSearchQuery || 
+      client.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      client.tags.some(tag => tag.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
+    const matchesTag = selectedTag === 'all' || client.tags.includes(selectedTag);
+      
+    return matchesFilter && matchesSearch && matchesTag;
+  }).sort((a, b) => {
+    if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+    if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
+    if (sortBy === 'newest') return new Date(b.dbClient?.created_at || 0).getTime() - new Date(a.dbClient?.created_at || 0).getTime();
+    if (sortBy === 'oldest') return new Date(a.dbClient?.created_at || 0).getTime() - new Date(b.dbClient?.created_at || 0).getTime();
+    return 0;
   });
 
   return (
     <>
       {/* Header and filters */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-5">
-        <div className="text-sm text-[var(--ink-muted)]">
-          {clients.filter(c => c.status === 'active').length} active clients · {clients.filter(c => c.status === 'waitlist').length} on waitlist
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterButton>
-            <FilterButton active={filter === 'active'} onClick={() => setFilter('active')}>Active</FilterButton>
-            <FilterButton active={filter === 'waitlist'} onClick={() => setFilter('waitlist')}>Waitlist</FilterButton>
-            <FilterButton active={filter === 'inactive'} onClick={() => setFilter('inactive')}>Inactive</FilterButton>
+      <div className="flex flex-col mb-5 gap-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <div className="text-sm text-[var(--ink-muted)]">
+            {clients.filter(c => c.status === 'active').length} {t('clients.activeClients')} · {clients.filter(c => c.status === 'waitlist').length} {t('clients.onWaitlist')}
           </div>
-          <button 
-            onClick={() => setIsNewClientModalOpen(true)}
-            className="hidden sm:block px-4 py-1.5 rounded-[20px] text-xs font-medium border border-[var(--sage)] bg-[var(--sage)] text-white cursor-pointer transition-all hover:bg-[var(--sage-deep)] hover:border-[var(--sage-deep)] whitespace-nowrap shadow-sm"
-          >
-            + New Client
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsNewClientModalOpen(true)}
+              className="hidden sm:block px-4 py-1.5 rounded-[20px] text-xs font-medium border border-[var(--sage)] bg-[var(--sage)] text-white cursor-pointer transition-all hover:bg-[var(--sage-deep)] hover:border-[var(--sage-deep)] whitespace-nowrap shadow-sm"
+            >
+              {t('clients.newClientBtn')}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+          <div className="relative max-w-sm w-full">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-[var(--ink-muted)]" />
+            </div>
+            <input
+              type="text"
+              placeholder={t('clients.searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-9 pr-3 py-2 border border-[var(--border)] rounded-lg text-sm bg-white placeholder-[var(--ink-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--sage)] focus:border-transparent transition-all"
+            />
+          </div>
+          
+          <div className="flex gap-2 overflow-x-auto pb-1 flex-1 items-center scrollbar-none">
+            <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>{t('clients.filters.all')}</FilterButton>
+            <FilterButton active={filter === 'active'} onClick={() => setFilter('active')}>{t('clients.filters.active')}</FilterButton>
+            <FilterButton active={filter === 'waitlist'} onClick={() => setFilter('waitlist')}>{t('clients.filters.waitlist')}</FilterButton>
+            <FilterButton active={filter === 'inactive'} onClick={() => setFilter('inactive')}>{t('clients.filters.inactive')}</FilterButton>
+            
+            <div className="h-5 w-px bg-[var(--border)] mx-1 hidden sm:block"></div>
+
+            <select
+              title={t('clients.sort.title', 'Sort by')}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium border border-[var(--border)] bg-transparent text-[var(--ink-soft)] outline-none focus:border-[var(--sage)] focus:ring-1 focus:ring-[var(--sage)] transition-all cursor-pointer"
+            >
+              <option value="newest">{t('clients.sort.newest', 'Newest First')}</option>
+              <option value="oldest">{t('clients.sort.oldest', 'Oldest First')}</option>
+              <option value="name-asc">{t('clients.sort.nameAsc', 'Name (A-Z)')}</option>
+              <option value="name-desc">{t('clients.sort.nameDesc', 'Name (Z-A)')}</option>
+            </select>
+
+            {allTags.length > 0 && (
+              <select
+                title={t('clients.tags.title', 'Filter by tag')}
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value)}
+                className="px-3 py-1.5 rounded-[20px] text-xs font-medium border border-[var(--border)] bg-transparent text-[var(--ink-soft)] outline-none focus:border-[var(--sage)] focus:ring-1 focus:ring-[var(--sage)] transition-all cursor-pointer max-w-[120px] text-ellipsis"
+              >
+                <option value="all">{t('clients.tags.all', 'All Tags')}</option>
+                {allTags.map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
       </div>
       
@@ -112,7 +180,7 @@ export function Clients() {
           onClick={() => setIsNewClientModalOpen(true)}
           className="w-full px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--sage)] bg-[var(--sage)] text-white cursor-pointer transition-all hover:bg-[var(--sage-deep)] hover:border-[var(--sage-deep)] shadow-sm"
         >
-          + Add New Client
+          {t('clients.addNewClientBtn')}
         </button>
       </div>
 
@@ -122,22 +190,22 @@ export function Clients() {
           <thead>
             <tr>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Client
+                {t('clients.columns.client')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Status
+                {t('clients.columns.status')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Next session
+                {t('clients.columns.nextSession')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Sessions
+                {t('clients.columns.sessions')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Cultural context
+                {t('clients.columns.culturalContext')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]">
-                Rate
+                {t('clients.columns.rate')}
               </th>
               <th className="text-left text-[11px] font-medium uppercase tracking-[0.5px] text-[var(--ink-muted)] px-5 py-2.5 bg-[var(--warm)]"></th>
             </tr>
@@ -191,7 +259,7 @@ export function Clients() {
                       }}
                       className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                     >
-                      + Note
+                      {t('clients.addNoteBtn')}
                     </button>
                   )}
                   {client.sessions === 'Intake' && (
@@ -202,7 +270,7 @@ export function Clients() {
                       }}
                       className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--sage)] bg-transparent cursor-pointer text-[var(--sage)] transition-all duration-150 hover:bg-[var(--sage-pale)]"
                     >
-                      Prep
+                      {t('clients.prepIntakeBtn')}
                     </button>
                   )}
                 </td>
@@ -233,15 +301,15 @@ export function Clients() {
             
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-[var(--ink-muted)]">Next session:</span>
+                <span className="text-[var(--ink-muted)]">{t('clients.mobileLabels.nextSession')}</span>
                 <span className="text-[var(--ink)] font-medium">{client.nextSession}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--ink-muted)]">Progress:</span>
+                <span className="text-[var(--ink-muted)]">{t('clients.mobileLabels.progress')}</span>
                 <span className="text-[var(--ink)]">{client.sessions}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--ink-muted)]">Rate:</span>
+                <span className="text-[var(--ink-muted)]">{t('clients.mobileLabels.rate')}</span>
                 <span className="text-[var(--ink)]">{client.rate}</span>
               </div>
             </div>
@@ -267,7 +335,7 @@ export function Clients() {
                 }}
                 className="mt-3 w-full px-3 py-2 rounded-md text-sm font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
               >
-                + Add Note
+                {t('clients.addNoteMobileBtn')}
               </button>
             )}
             {client.sessions === 'Intake' && (
@@ -278,7 +346,7 @@ export function Clients() {
                 }}
                 className="mt-3 w-full px-3 py-2 rounded-md text-sm font-medium border border-[var(--sage)] bg-transparent cursor-pointer text-[var(--sage)] transition-all duration-150 hover:bg-[var(--sage-pale)]"
               >
-                Prep Intake
+                {t('clients.prepIntakeMobileBtn')}
               </button>
             )}
           </div>
@@ -313,6 +381,7 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
 }
 
 function StatusPill({ status }: { status: 'active' | 'waitlist' | 'inactive' }) {
+  const { t } = useTranslation();
   const styles = {
     active: 'bg-[#e8f4f0] text-[var(--sage-deep)] before:bg-[var(--sage)]',
     waitlist: 'bg-[#fef3e2] text-[#7a4a00] before:bg-[var(--gold)]',
@@ -323,7 +392,7 @@ function StatusPill({ status }: { status: 'active' | 'waitlist' | 'inactive' }) 
     <span
       className={`inline-flex items-center gap-[5px] text-xs font-medium px-2.5 py-[3px] rounded-[20px] before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full ${styles[status]}`}
     >
-      {status.charAt(0).toUpperCase() + status.slice(1)}
+      {t(`clients.filters.${status}`)}
     </span>
   );
 }

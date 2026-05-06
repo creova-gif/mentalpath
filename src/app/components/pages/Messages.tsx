@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Search, Lock, Send, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type Message = { from: 'client' | 'therapist'; text: string; time: string };
 
@@ -33,6 +34,7 @@ function nowTime() {
 }
 
 export function Messages() {
+  const { t } = useTranslation();
   const [selectedClient, setSelectedClient] = useState(clients[1]);
   const [messageText, setMessageText] = useState('');
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
@@ -68,15 +70,15 @@ export function Messages() {
         {/* Client List Sidebar */}
         <div className={`border-r border-[var(--border)] flex flex-col ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'}`}>
           <div className="px-4 py-3.5 border-b border-[var(--border)] flex items-center justify-between">
-            <div className="text-sm font-medium text-[var(--ink)]">Messages</div>
-            <div className="text-xs text-[var(--sage)]">3 unread</div>
+            <div className="text-sm font-medium text-[var(--ink)]">{t('messages.title')}</div>
+            <div className="text-xs text-[var(--sage)]">{t('messages.unreadCount', { count: 3 })}</div>
           </div>
 
           <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center gap-2 bg-[var(--warm)]">
             <Search className="w-3.5 h-3.5 text-[var(--ink-muted)]" />
             <input
               type="text"
-              placeholder="Search clients..."
+              placeholder={t('messages.searchPlaceholder')}
               className="border-none bg-transparent text-[13px] text-[var(--ink)] outline-none flex-1 placeholder:text-[var(--ink-muted)]"
             />
           </div>
@@ -129,21 +131,21 @@ export function Messages() {
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium text-[var(--ink)]">{selectedClient.name}</div>
-              <div className="text-xs text-[var(--sage)]">Active client</div>
+              <div className="text-xs text-[var(--sage)]">{t('messages.activeClient')}</div>
             </div>
           </div>
 
           {/* PHIPA Notice */}
           <div className="bg-[var(--sage-pale)] px-5 py-1.5 flex items-center gap-1.5 text-[11px] text-[var(--sage-deep)]">
             <Lock className="w-2.75 h-2.75" />
-            End-to-end encrypted · PHIPA compliant · Messages auto-delete after 90 days
+            {t('messages.phipaNotice')}
           </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-3.5">
             {currentMessages.length === 0 && (
               <div className="flex-1 flex items-center justify-center text-[13px] text-[var(--ink-muted)]">
-                No messages yet. Start the conversation.
+                {t('messages.noMessages')}
               </div>
             )}
             {currentMessages.map((msg, idx) => (
@@ -175,7 +177,7 @@ export function Messages() {
                   handleSend();
                 }
               }}
-              placeholder="Type your message..."
+              placeholder={t('messages.typeMessage')}
               className="flex-1 px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[var(--ink)] text-sm outline-none resize-none h-11 leading-normal transition-colors focus:border-[var(--sage)]"
             />
             <button
@@ -184,7 +186,7 @@ export function Messages() {
               className="px-4 py-2.5 rounded-lg bg-[var(--sage)] text-white border-none cursor-pointer text-[13px] font-medium transition-colors hover:bg-[var(--sage-deep)] flex-shrink-0 h-11 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="w-3.5 h-3.5" />
-              Send
+              {t('messages.send')}
             </button>
           </div>
         </div>
