@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { ClientDetailPanel } from '../modals/ClientDetailPanel';
 import { NoteModal } from '../modals/NoteModal';
+import { NewClientModal } from '../modals/NewClientModal';
+import { supabase } from '@/utils/supabase/client';
+import { useUser } from '@/app/context/UserContext';
 
-type Client = {
+export type Client = {
+  id: string;
   initials: string;
   name: string;
   since: string;
@@ -13,93 +17,67 @@ type Client = {
   tags: string[];
   rate: string;
   color: string;
+  dbClient?: any;
 };
 
-const clients: Client[] = [
-  {
-    initials: 'AM',
-    name: 'Amara Mensah',
-    since: 'Since Jan 2024 · RP: Dr. Osei',
-    status: 'active',
-    nextSession: 'Today 10:00am',
-    sessions: 'Session 14',
-    tags: ['Newcomer', 'Racialized stress'],
-    rate: '$140/hr',
-    color: 'c-av-b',
-  },
-  {
-    initials: 'SM',
-    name: 'Sadia Mohamoud',
-    since: 'Since Mar 2024 · RP: Dr. Osei',
-    status: 'active',
-    nextSession: 'Thu Mar 19, 9:00am',
-    sessions: 'Session 8',
-    tags: ['Refugee trauma', 'Cultural adjustment'],
-    rate: '$70/hr (sliding)',
-    color: 'c-av-a',
-  },
-  {
-    initials: 'JL',
-    name: 'Jamal Lee',
-    since: 'Since Sep 2023 · RP: Dr. Osei',
-    status: 'active',
-    nextSession: 'Today 11:30am',
-    sessions: 'Session 22',
-    tags: ['Anti-Black racism', 'Workplace trauma'],
-    rate: '$140/hr',
-    color: 'c-av-c',
-  },
-  {
-    initials: 'PC',
-    name: 'Priya & Chetan Choudhary',
-    since: 'Since Feb 2025 · Couples',
-    status: 'active',
-    nextSession: 'Today 2:00pm',
-    sessions: 'Session 3',
-    tags: ['Intergenerational', 'Cultural identity'],
-    rate: '$180/session',
-    color: 'c-av-d',
-  },
-  {
-    initials: 'RB',
-    name: 'Riya Bhatt',
-    since: 'Since Mar 2025 · RP: Dr. Osei',
-    status: 'active',
-    nextSession: 'Today 3:30pm',
-    sessions: 'Session 2',
-    tags: ['Newcomer', 'Anxiety'],
-    rate: '$110/hr',
-    color: 'c-av-e',
-  },
-  {
-    initials: 'MN',
-    name: 'Marcus Nwosu',
-    since: 'New — intake today · RP: Dr. Osei',
-    status: 'active',
-    nextSession: 'Today 5:00pm',
-    sessions: 'Intake',
-    tags: ['Pending intake'],
-    rate: '$140/hr',
-    color: 'c-av-f',
-  },
-  {
-    initials: 'DK',
-    name: 'Daniyah Khalil',
-    since: 'Waitlist since Feb 2025',
-    status: 'waitlist',
-    nextSession: '—',
-    sessions: '—',
-    tags: ['Trauma', 'Newcomer'],
-    rate: 'TBD',
-    color: 'bg-[#e8d4e8] text-[#5a1a5a]',
-  },
-];
+const AVATAR_COLORS = ['c-av-a', 'c-av-b', 'c-av-c', 'c-av-d', 'c-av-e', 'c-av-f'];
 
 export function Clients() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [filter, setFilter] = useState('all');
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [noteModalClient, setNoteModalClient] = useState<string | null>(null);
+  const [noteModalClient, setNoteModalClient] = useState<Client | null>(null);
+  const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    async function fetchClients() {
+      if (!user) return;
+      setIsLoading(true);
+      
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching clients:', error);
+        setIsLoading(false);
+        return;
+      }
+
+      const formattedClients: Client[] = data.map((row: any, i: number) => {
+        const firstName = row.first_name || '';
+        const lastName = row.last_name || '';
+        const initials = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+        
+        const createdDate = new Date(row.created_at);
+        const sinceStr = `Since ${createdDate.toLocaleString('default', { month: 'short' })} ${createdDate.getFullYear()} · RP: ${user.lastName}`;
+
+        return {
+          id: row.id,
+          initials: initials || '?',
+          name: `${firstName} ${lastName}`.trim(),
+          since: sinceStr,
+          status: row.status as any,
+          nextSession: '—', // Need additional tables (e.g. sessions) to populate
+          sessions: '—',    
+          tags: row.pronouns ? [row.pronouns] : [], 
+          rate: `$${user.sessionRate}/hr`,
+          color: AVATAR_COLORS[i % AVATAR_COLORS.length],
+          dbClient: row,
+        };
+      });
+
+      setClients(formattedClients);
+      setIsLoading(false);
+    }
+
+    fetchClients();
+  }, [user, refreshKey]);
 
   const filteredClients = clients.filter((client) => {
     if (filter === 'all') return true;
@@ -110,13 +88,32 @@ export function Clients() {
     <>
       {/* Header and filters */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-5">
-        <div className="text-sm text-[var(--ink-muted)]">23 active clients · 2 on waitlist</div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterButton>
-          <FilterButton active={filter === 'active'} onClick={() => setFilter('active')}>Active</FilterButton>
-          <FilterButton active={filter === 'waitlist'} onClick={() => setFilter('waitlist')}>Waitlist</FilterButton>
-          <FilterButton active={filter === 'inactive'} onClick={() => setFilter('inactive')}>Inactive</FilterButton>
+        <div className="text-sm text-[var(--ink-muted)]">
+          {clients.filter(c => c.status === 'active').length} active clients · {clients.filter(c => c.status === 'waitlist').length} on waitlist
         </div>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>All</FilterButton>
+            <FilterButton active={filter === 'active'} onClick={() => setFilter('active')}>Active</FilterButton>
+            <FilterButton active={filter === 'waitlist'} onClick={() => setFilter('waitlist')}>Waitlist</FilterButton>
+            <FilterButton active={filter === 'inactive'} onClick={() => setFilter('inactive')}>Inactive</FilterButton>
+          </div>
+          <button 
+            onClick={() => setIsNewClientModalOpen(true)}
+            className="hidden sm:block px-4 py-1.5 rounded-[20px] text-xs font-medium border border-[var(--sage)] bg-[var(--sage)] text-white cursor-pointer transition-all hover:bg-[var(--sage-deep)] hover:border-[var(--sage-deep)] whitespace-nowrap shadow-sm"
+          >
+            + New Client
+          </button>
+        </div>
+      </div>
+      
+      <div className="sm:hidden mb-4">
+        <button 
+          onClick={() => setIsNewClientModalOpen(true)}
+          className="w-full px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--sage)] bg-[var(--sage)] text-white cursor-pointer transition-all hover:bg-[var(--sage-deep)] hover:border-[var(--sage-deep)] shadow-sm"
+        >
+          + Add New Client
+        </button>
       </div>
 
       {/* Desktop Table View - Hidden on mobile */}
@@ -190,7 +187,7 @@ export function Clients() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setNoteModalClient(client.name);
+                        setNoteModalClient(client);
                       }}
                       className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                     >
@@ -266,7 +263,7 @@ export function Clients() {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setNoteModalClient(client.name);
+                  setNoteModalClient(client as any);
                 }}
                 className="mt-3 w-full px-3 py-2 rounded-md text-sm font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
               >
@@ -289,7 +286,13 @@ export function Clients() {
       </div>
 
       {selectedClient && <ClientDetailPanel client={selectedClient} onClose={() => setSelectedClient(null)} />}
-      {noteModalClient && <NoteModal clientName={noteModalClient} onClose={() => setNoteModalClient(null)} />}
+      {noteModalClient && <NoteModal client={noteModalClient} onClose={() => setNoteModalClient(null)} />}
+      {isNewClientModalOpen && (
+        <NewClientModal 
+          onClose={() => setIsNewClientModalOpen(false)} 
+          onClientAdded={() => setRefreshKey(prev => prev + 1)} 
+        />
+      )}
     </>
   );
 }

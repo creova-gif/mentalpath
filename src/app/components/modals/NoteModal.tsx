@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { X, Sparkles, Lock, Loader2, CheckCircle, Zap } from 'lucide-react';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
+import { Client } from '../pages/Clients';
+import { supabase } from '@/utils/supabase/client';
 
 const noteFormats = [
   { id: 'dap', name: 'DAP', description: 'Data · Assessment · Plan' },
@@ -10,7 +12,7 @@ const noteFormats = [
   { id: 'progress', name: 'Progress', description: 'Narrative progress note' },
 ];
 
-export function NoteModal({ clientName, onClose }: { clientName: string; onClose: () => void }) {
+export function NoteModal({ client, onClose }: { client: Client; onClose: () => void }) {
   const [selectedFormat, setSelectedFormat] = useState('dap');
   const [aiAssisting, setAiAssisting] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -22,10 +24,54 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
     section3: '',
     section4: '',
   });
+  
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onClose();
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      // Format the note text
+      const sections = getSections(selectedFormat);
+      let noteText = `[${new Date().toLocaleDateString()}] ${selectedFormat.toUpperCase()} Note:\n\n`;
+      
+      sections.forEach((section, idx) => {
+        const val = sectionValues[`section${idx + 1}`];
+        if (val?.trim()) {
+          noteText += `${section.label}:\n${val.trim()}\n\n`;
+        }
+      });
+
+      // Fetch existing notes first to append to them
+      const { data: clientData, error: fetchError } = await supabase
+        .from('clients')
+        .select('notes')
+        .eq('id', client.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const existingNotes = clientData.notes || '';
+      const updatedNotes = existingNotes 
+        ? `${noteText.trim()}\n\n---\n\n${existingNotes}`
+        : noteText.trim();
+
+      const { error: updateError } = await supabase
+        .from('clients')
+        .update({ notes: updatedNotes })
+        .eq('id', client.id);
+
+      if (updateError) throw updateError;
+      
+      onClose();
+    } catch (err: any) {
+      console.error('Error saving note:', err);
+      setSaveError(err.message || 'Failed to save note');
+      setIsSaving(false);
+    }
   };
 
   const handleAiAssist = async () => {
@@ -115,7 +161,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div>
             <h2 className="text-lg sm:text-xl font-serif text-gray-900">Session Note</h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{clientName} · Session {new Date().toLocaleDateString()}</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{client.name} · Session {new Date().toLocaleDateString()}</p>
           </div>
           <button
             onClick={onClose}
@@ -234,11 +280,18 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
           </button>
           <button
             onClick={handleSubmit}
-            className="w-full sm:flex-1 px-4 py-2 bg-[#4a7c6f] text-white rounded-lg hover:bg-[#3d6b5f] transition-colors text-sm sm:text-base"
+            disabled={isSaving}
+            className="w-full sm:flex-1 px-4 py-2 bg-[#4a7c6f] text-white rounded-lg hover:bg-[#3d6b5f] disabled:bg-[#4a7c6f]/50 disabled:cursor-not-allowed flex justify-center items-center gap-2 transition-colors text-sm sm:text-base"
           >
-            Save Note
+            {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isSaving ? 'Saving...' : 'Save Note'}
           </button>
         </div>
+        {saveError && (
+          <div className="px-6 pb-4 text-center text-sm text-red-600">
+            {saveError}
+          </div>
+        )}
       </div>
     </div>
   );

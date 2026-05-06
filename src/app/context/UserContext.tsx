@@ -96,21 +96,24 @@ export const DEMO_ACCOUNTS = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// therapists table — real schema confirmed from DB
-interface TherapistRow {
+// clinicians table — real schema confirmed from DB
+interface ClinicianRow {
   id: string;
-  email: string | null;
-  // Profile fields (actual column names from DB)
-  full_name: string | null;          // real column (not first_name/last_name)
-  profession_code: string | null;    // 'psychotherapist' | 'chiropractor' | 'physiotherapist' | 'rmt'
-  province: string | null;
-  hourly_rate: number | null;        // real column (not session_rate)
-  // Subscription / Stripe fields
-  subscription_tier: string | null;    // 'solo' | 'group' | 'enterprise'
-  subscription_status: string | null;  // 'active' | 'trialing' | 'past_due' | 'cancelled'
+  first_name: string;
+  last_name: string;
+  profession: string;
+  reg_number: string | null;
+  city: string | null;
+  session_rate: number | null;
+  hst_exempt: boolean | null;
+  plan_type: string | null;
+  plan_cycle: string | null;
+  plan_seats: number | null;
+  price_per_seat: number | null;
+  is_trial: boolean | null;
   trial_ends_at: string | null;
-  stripe_customer_id: string | null;
-  cancel_at: string | null;
+  plan_starts_at: string | null;
+  plan_renews_at: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -170,38 +173,37 @@ function buildProfileFromDemoAndAuth(
   };
 }
 
-function buildSubscriptionFromTherapistRow(
-  row: TherapistRow | null,
+function buildSubscriptionFromClinicianRow(
+  row: ClinicianRow | null,
   email: string,
 ): SubscriptionPlan {
   // Prefer live DB data; fall back to demo account metadata
   const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
 
-  const tier = (row?.subscription_tier ?? demo?.planType ?? 'solo') as PlanType;
-  // Map subscription_status → isTrial
-  const status = row?.subscription_status ?? '';
-  const isTrial = status === 'trialing' || (demo?.isTrial ?? false);
+  const tier = (row?.plan_type ?? demo?.planType ?? 'solo') as PlanType;
+  // Map is_trial directly
+  const isTrial = row?.is_trial ?? demo?.isTrial ?? false;
   const trialEndsAt = row?.trial_ends_at ? new Date(row.trial_ends_at) : null;
   const now = new Date();
   const trialDaysRemaining = isTrial && trialEndsAt
     ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / 86_400_000))
     : null;
 
-  const pricePerSeat = demo?.pricePerSeat ?? 79;
-  const seats = demo?.seats ?? 1;
+  const pricePerSeat = row?.price_per_seat ?? demo?.pricePerSeat ?? 79;
+  const seats = row?.plan_seats ?? demo?.seats ?? 1;
 
   const fmtDate = (val: string | null | undefined) =>
     val ? new Date(val).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 
   return {
     type: tier,
-    cycle: (demo?.planCycle ?? 'monthly') as BillingCycle,
+    cycle: (row?.plan_cycle ?? demo?.planCycle ?? 'monthly') as BillingCycle,
     seats,
     pricePerSeat,
     trialDaysRemaining: isTrial ? trialDaysRemaining : null,
     isTrial,
-    startDate: fmtDate(demo?.starts),
-    renewsOn: fmtDate(demo?.renews),
+    startDate: fmtDate(row?.plan_starts_at ?? demo?.starts),
+    renewsOn: fmtDate(row?.plan_renews_at ?? demo?.renews),
     nextBillingAmount: pricePerSeat * seats,
   };
 }
@@ -214,53 +216,56 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load profile: query 'therapists' for all data (profile + subscription).
-  // Load profile: query 'therapists' for all data (profile + subscription).
+  // Load profile: query 'clinicians' for all data (profile + subscription).
   // Falls back to DEMO_ACCOUNTS for any missing profile fields.
   const loadProfile = useCallback(async (session: Session) => {
     const email = session.user.email ?? '';
 
-    // Get live data from therapists table using REAL column names
+    // Get live data from clinicians table using REAL column names
     const { data } = await supabase
-      .from('therapists')
-      .select('id, email, full_name, profession_code, province, hourly_rate, subscription_tier, subscription_status, trial_ends_at, stripe_customer_id, cancel_at, created_at, updated_at')
+      .from('clinicians')
+      .select('id, first_name, last_name, profession, reg_number, city, session_rate, hst_exempt, plan_type, plan_cycle, plan_seats, price_per_seat, is_trial, trial_ends_at, plan_starts_at, plan_renews_at, created_at, updated_at')
       .eq('id', session.user.id)
       .maybeSingle();
 
-    const row = data as TherapistRow | null;
+    const row = data as ClinicianRow | null;
 
     // Build profile: prefer DB values, fall back to DEMO_ACCOUNTS by email
     const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
 
-    const professionSlug = row?.profession_code ?? '';
-    const profession: Profession = PROFESSION_TYPE_MAP[professionSlug] ?? demo?.profession ?? 'Registered Psychotherapist';
+    const professionSlug = row?.profession ?? '';
+    const mappedProfession = PROFESSION_TYPE_MAP[professionSlug] ?? professionSlug;
+    
+    // We check if it's a valid Profession type by seeing if it's in PROFESSION_META
+    const isValideProfession = mappedProfession in PROFESSION_META;
+    const profession: Profession = isValideProfession 
+      ? (mappedProfession as Profession)
+      : (demo?.profession ?? 'Registered Psychotherapist');
+
     const meta = PROFESSION_META[profession];
 
-    // full_name from DB → split into firstName/lastName for profile
-    const fullNameFromDB = row?.full_name ?? null;
-    const [dbFirst = '', ...rest] = fullNameFromDB ? fullNameFromDB.split(' ') : [];
-    const dbLast = rest.join(' ');
-
-    const firstName = dbFirst || demo?.firstName || email.split('@')[0];
-    const lastName  = dbLast  || demo?.lastName  || '';
-    const city      = row?.province ? row.province : (demo?.city ?? '');
-    const rateFromDB = row?.hourly_rate ? Number(row.hourly_rate) : null;
+    const firstName = row?.first_name || demo?.firstName || email.split('@')[0];
+    const lastName  = row?.last_name || demo?.lastName  || '';
+    const city      = row?.city ? row.city : (demo?.city ?? '');
+    const rateFromDB = row?.session_rate ? Number(row.session_rate) : null;
+    const hstExemptFromDB = row?.hst_exempt ?? null;
 
     setUser({
       id: session.user.id,
-      name: fullNameFromDB || `${firstName} ${lastName}`.trim() || email,
+      name: `${firstName} ${lastName}`.trim() || email,
       firstName,
       lastName,
       initials: `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || email[0]?.toUpperCase() || 'U',
       email,
       profession,
-      registrationNumber: demo?.regNumber ?? '',
+      registrationNumber: row?.reg_number || demo?.regNumber || '',
       city,
       ...meta,
       sessionRate: rateFromDB ?? meta.sessionRate,
+      hstExempt: hstExemptFromDB !== null ? hstExemptFromDB : meta.hstExempt,
     });
 
-    setSubscriptionState(buildSubscriptionFromTherapistRow(row, email));
+    setSubscriptionState(buildSubscriptionFromClinicianRow(row, email));
   }, []);
 
 
