@@ -118,6 +118,8 @@ export function Messages() {
           <div className="px-4 py-3.5 border-b border-[var(--border)] flex items-center gap-3">
             <button
               onClick={() => setMobileView('list')}
+              aria-label="Back"
+              title="Back"
               className="md:hidden p-1 -ml-1 text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />

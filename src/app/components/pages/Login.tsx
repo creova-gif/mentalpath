@@ -172,7 +172,6 @@ export function Login() {
                 placeholder={t('login.emailPlaceholder')}
                 autoComplete="email"
                 aria-required="true"
-                aria-invalid={!!error}
                 required
                 style={{ width: '100%', padding: '10px 13px', borderRadius: 9, border: `1px solid ${error ? '#c0392b' : 'var(--bmed)'}`, background: 'white', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit' }}
                 onFocus={e => { if (!error) e.target.style.borderColor = 'var(--sage)'; }}
@@ -194,7 +193,6 @@ export function Login() {
                   placeholder="••••••••"
                   autoComplete="current-password"
                   aria-required="true"
-                  aria-invalid={!!error}
                   required
                   style={{ width: '100%', padding: '10px 40px 10px 13px', borderRadius: 9, border: `1px solid ${error ? '#c0392b' : 'var(--bmed)'}`, background: 'white', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit' }}
                   onFocus={e => { if (!error) e.target.style.borderColor = 'var(--sage)'; }}
@@ -204,7 +202,6 @@ export function Login() {
                   type="button"
                   onClick={() => setShowPw(s => !s)}
                   aria-label={showPw ? 'Hide password' : 'Show password'}
-                  aria-pressed={showPw}
                   style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 2 }}
                 >
                   {showPw ? (
