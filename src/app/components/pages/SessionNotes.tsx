@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { NoteModal } from '../modals/NoteModal';
+import { supabase } from '../../../utils/supabase/client';
+import { decryptText } from '../../../utils/encryption';
+import { useUser } from '../../context/UserContext';
 
 const dueNotes = [
   { initials: 'JL', name: 'Jamal Lee', time: 'Today 11:30am', type: 'Individual · Session 22 · DAP format', color: 'c-av-c' },
@@ -20,7 +23,37 @@ const completedNotes = [
 export function SessionNotes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useUser();
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
+  const [dbNotes, setDbNotes] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadNotes() {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('session_notes')
+        .select('*')
+        .eq('clinician_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (data) {
+        const decryptedNotes = await Promise.all(data.map(async (n: any) => {
+           let decryptedPreview = 'No content';
+           try {
+             if (n.section_1) decryptedPreview = await decryptText(n.section_1, user.id);
+           } catch (e) {
+             console.error('Decryption failed for note', n.id);
+           }
+           return { ...n, decryptedPreview };
+        }));
+        setDbNotes(decryptedNotes);
+      }
+    }
+    loadNotes();
+  }, [user]);
+
+  const drafts = dbNotes.filter(n => !n.is_locked);
+  const completed = dbNotes.filter(n => n.is_locked);
 
   return (
     <>
@@ -43,29 +76,29 @@ export function SessionNotes() {
             {t('sessionNotes.dueTitle')}
           </div>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-0">
-            <div className="flex flex-col gap-0">
-              {dueNotes.map((note, i) => (
+              {drafts.length === 0 && <div className="p-4 text-sm text-gray-500">No due notes</div>}
+              {drafts.map((note) => (
                 <div
-                  key={i}
-                  onClick={() => setSelectedClient(note.name)}
+                  key={note.id}
+                  onClick={() => navigate(`/session-note-editor?noteId=${note.id}`)}
                   className="flex items-center gap-3.5 px-5 py-3.5 border-t border-[var(--border)] cursor-pointer transition-all duration-100 hover:bg-[var(--warm)] first:border-t-0"
                 >
-                  <div className={`w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor(note.color)}`}>
-                    {note.initials}
+                  <div className={`w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor('c-av-c')}`}>
+                    CS
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-[var(--ink)]">{note.name}</div>
-                    <div className="text-xs text-[var(--ink-muted)]">{note.time} · {note.type}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-[var(--ink)]">Client Session — Session {note.session_number || 1}</div>
+                    <div className="text-xs text-[var(--ink-muted)]">{new Date(note.session_date).toLocaleDateString()} · {note.note_format?.toUpperCase()} format</div>
+                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
                   </div>
                   <button
-                    onClick={(e) => { e.stopPropagation(); setSelectedClient(note.name); }}
+                    onClick={(e) => { e.stopPropagation(); navigate(`/session-note-editor?noteId=${note.id}`); }}
                     className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                   >
                     {t('sessionNotes.writeNote')}
                   </button>
                 </div>
               ))}
-            </div>
           </div>
         </div>
 
@@ -75,24 +108,26 @@ export function SessionNotes() {
           </div>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-0">
             <div className="flex flex-col gap-0">
-              {completedNotes.map((note, i) => (
+              {completed.length === 0 && <div className="p-4 text-sm text-gray-500">No completed notes</div>}
+              {completed.map((note) => (
                 <div
-                  key={i}
+                  key={note.id}
                   className="flex items-center gap-3.5 px-5 py-3.5 border-t border-[var(--border)] cursor-pointer transition-all duration-100 hover:bg-[var(--warm)] first:border-t-0"
                 >
-                  <div className={`w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor(note.color)}`}>
-                    {note.initials}
+                  <div className={`w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor('c-av-b')}`}>
+                    CS
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-[var(--ink)]">{note.name}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-[var(--ink)]">Client Session — Session {note.session_number || 1}</div>
                     <div className="text-xs text-[var(--ink-muted)] flex items-center gap-1">
-                      {note.date} · <span className="text-[var(--sage)] text-[11px] flex items-center gap-1">
+                      {new Date(note.session_date).toLocaleDateString()} · {note.note_format?.toUpperCase()} · <span className="text-[var(--sage)] text-[11px] flex items-center gap-1">
                         <Lock className="w-3 h-3" /> {t('sessionNotes.locked')}
                       </span>
                     </div>
+                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
                   </div>
                   <button
-                    onClick={() => setSelectedClient(note.name)}
+                    onClick={() => navigate(`/session-note-editor?noteId=${note.id}`)}
                     className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                   >
                     {t('sessionNotes.view')}

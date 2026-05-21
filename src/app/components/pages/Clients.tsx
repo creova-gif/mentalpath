@@ -354,7 +354,7 @@ export function Clients() {
       </div>
 
       {selectedClient && <ClientDetailPanel client={selectedClient} onClose={() => setSelectedClient(null)} />}
-      {noteModalClient && <NoteModal client={noteModalClient} onClose={() => setNoteModalClient(null)} />}
+      {noteModalClient && <NoteModal clientName={noteModalClient.name} onClose={() => setNoteModalClient(null)} />}
       {isNewClientModalOpen && (
         <NewClientModal 
           onClose={() => setIsNewClientModalOpen(false)} 

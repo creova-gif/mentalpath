@@ -31,11 +31,7 @@ app.use(
         return allowedOrigins.includes(origin) ? origin : null;
       }
       // In dev (no ALLOWED_ORIGINS set): allow localhost on any port + Replit
-      const devAllowed =
-        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
-        /^https?:\/\/[\w-]+\.[\w-]+\.repl\.co$/.test(origin) ||
-        /^https?:\/\/[\w-]+\.replit\.app$/.test(origin);
-      return devAllowed ? origin : null;
+      return isDev ? (origin || '*') : null;
     },
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -43,6 +39,11 @@ app.use(
     maxAge: 600,
   }),
 );
+
+// Explicit OPTIONS handler for preflight requests
+app.options('*', (c) => {
+  return c.text('', 204);
+});
 
 // Health check endpoint
 app.get("/make-server-4d1a502d/health", (c) => {

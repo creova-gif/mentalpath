@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { supabase } from '@/utils/supabase/client';
 import type { Session } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 // ── Types (unchanged — all 45 pages that consume useUser() need zero changes) ─
 export type Profession =
@@ -216,6 +217,34 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Inactivity Timeout Listener
+  useEffect(() => {
+    if (!user) return;
+
+    let timeoutId: NodeJS.Timeout;
+
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        logout().then(() => {
+          toast.error("Session Expired", {
+            description: "You have been logged out due to 15 minutes of inactivity to protect health data."
+          });
+        });
+      }, 900000); // 15 minutes
+    };
+
+    resetTimer();
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(e => document.addEventListener(e, resetTimer));
+
+    return () => {
+      clearTimeout(timeoutId);
+      events.forEach(e => document.removeEventListener(e, resetTimer));
+    };
+  }, [user]);
+
   // Load profile: query 'clinicians' for all data (profile + subscription).
   // Falls back to DEMO_ACCOUNTS for any missing profile fields.
   const loadProfile = useCallback(async (session: Session) => {
@@ -310,11 +339,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Create a deterministic fake UUID from the email so it's stable
       const fakeId = Array.from(email).reduce(
         (acc, c) => ((acc * 31 + c.charCodeAt(0)) >>> 0), 0
-      ).toString(16).padStart(8, '0') + '-demo-4000-8000-' + Date.now().toString(16).padStart(12, '0');
+      ).toString(16).padStart(8, '0') + '-d000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
 
       const profile = buildProfileFromDemoAndAuth(fakeId, email);
       if (profile) setUser(profile);
-      setSubscriptionState(buildSubscriptionFromTherapistRow(null, email));
+      setSubscriptionState(buildSubscriptionFromClinicianRow(null, email));
       return 'ok';
     }
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
 import { useTranslation } from 'react-i18next';
+import { ProgressBar } from '../ui/ProgressBar';
 import { supabase } from '@/utils/supabase/client';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 
@@ -44,6 +45,8 @@ export function Billing() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [exportingZip, setExportingZip] = useState(false);
+  const [progressT2125, setProgressT2125] = useState(0);
+  const [progressReceipts, setProgressReceipts] = useState(0);
 
   useEffect(() => {
     loadInvoices();
@@ -100,7 +103,7 @@ export function Billing() {
       const { data, error } = await supabase
         .from('invoices')
         .insert({
-          therapist_id: clinicianId,
+          clinician_id: clinicianId,
           client_id: newInvoice.clientId ?? null,
           invoice_number: invoiceNumber,
           client_name: newInvoice.clientName,
@@ -142,6 +145,14 @@ export function Billing() {
 
   const handleExportT2125 = async () => {
     setExporting(true);
+    setProgressT2125(5);
+    const interval = setInterval(() => {
+      setProgressT2125((prev) => {
+        if (prev >= 90) return 90;
+        return prev + Math.floor(Math.random() * 10) + 5;
+      });
+    }, 200);
+
     try {
       const year = '2025'; // Current tax year
       const response = await fetch(
@@ -157,6 +168,10 @@ export function Billing() {
 
       const data = await response.json();
       
+      clearInterval(interval);
+      setProgressT2125(100);
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
       // Download CSV file
       const blob = new Blob([data.csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
@@ -173,20 +188,33 @@ export function Billing() {
       console.error('T2125 export error:', error);
       alert(t('billing.alerts.t2125Fail'));
     } finally {
+      clearInterval(interval);
+      setProgressT2125(0);
       setExporting(false);
     }
   };
 
   const handleExportReceiptsZip = async () => {
     setExportingZip(true);
+    setProgressReceipts(10);
     try {
       // Build a CSV of all paid invoices as a receipt summary
       // In production this would call an edge function to generate real PDFs.
       const paidInvoices = invoices.filter(inv => inv.status === 'paid');
       if (paidInvoices.length === 0) {
         alert(t('billing.alerts.noInvoices'));
+        setProgressReceipts(0);
+        setExportingZip(false);
         return;
       }
+
+      // Simulated progress steps over 1.5 seconds
+      for (let p = 20; p <= 100; p += 10) {
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        setProgressReceipts(p);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       const header = 'Invoice #,Client,Date,Sessions,Amount ($),Status';
       const rows = paidInvoices.map(inv =>
         `${inv.invoiceNumber},"${inv.clientName}",${inv.date},${inv.sessions},${inv.amount.toFixed(2)},${inv.status}`
@@ -205,6 +233,7 @@ export function Billing() {
       console.error('Receipt export error:', err);
       alert(t('billing.alerts.receiptExportFail'));
     } finally {
+      setProgressReceipts(0);
       setExportingZip(false);
     }
   };
@@ -353,6 +382,25 @@ export function Billing() {
             {exportingZip ? t('billing.taxPrep.exporting') : t('billing.taxPrep.downloadReceipts')}
           </button>
         </div>
+
+        {(progressT2125 > 0 || progressReceipts > 0) && (
+          <div className="mt-4 space-y-3 pt-3 border-t border-[var(--border)] animate-[fadeIn_0.2s_ease]">
+            {progressT2125 > 0 && (
+              <ProgressBar
+                value={progressT2125}
+                label={t('billing.taxPrep.generatingT2125')}
+                showPercentage={true}
+              />
+            )}
+            {progressReceipts > 0 && (
+              <ProgressBar
+                value={progressReceipts}
+                label={t('billing.taxPrep.preparingReceipts')}
+                showPercentage={true}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {showInvoiceModal && <InvoiceModal onClose={() => setShowInvoiceModal(false)} />}

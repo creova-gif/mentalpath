@@ -68,7 +68,7 @@ export function ClientProfile() {
               New invoice
             </button>
             <button
-              onClick={() => navigate('/session-note-editor')}
+              onClick={() => navigate('/session-note-editor?clientId=amara-mensah')}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[9px] text-[13px] font-medium cursor-pointer border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
             >
               <svg viewBox="0 0 24 24" className="w-[13px] h-[13px]" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -222,7 +222,7 @@ export function ClientProfile() {
         {tab === 'notes' && (
           <div>
             <div className="flex justify-end mb-3.5">
-              <button onClick={() => navigate('/session-note-editor')} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[9px] text-[13px] font-medium cursor-pointer border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]">
+              <button onClick={() => navigate('/session-note-editor?clientId=amara-mensah')} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[9px] text-[13px] font-medium cursor-pointer border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]">
                 <svg viewBox="0 0 24 24" className="w-[13px] h-[13px]" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 New session note
               </button>

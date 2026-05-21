@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@/app/context/UserContext';
+import { fireSuccessConfetti } from '../ui/SuccessAnimation';
 
 const intakeTemplates = [
   'Standard intake',
@@ -53,6 +54,14 @@ export function NewClientModal({ onClose, onClientAdded }: { onClose: () => void
     
     const tagsArray = formData.culturalTags.split(',').map(tag => tag.trim()).filter(Boolean);
 
+    // Check if this is the first client before inserting
+    const { count } = await supabase
+      .from('clients')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinician_id', user.id);
+
+    const isFirstClient = count === 0;
+
     const { error } = await supabase.from('clients').insert([{
       clinician_id: user.id,
       first_name: formData.firstName,
@@ -77,6 +86,10 @@ export function NewClientModal({ onClose, onClientAdded }: { onClose: () => void
       console.error('Error adding client:', error);
       alert('Failed to add client. Please try again.');
       return;
+    }
+
+    if (isFirstClient) {
+      fireSuccessConfetti();
     }
 
     if (onClientAdded) onClientAdded();
@@ -309,5 +322,4 @@ export function NewClientModal({ onClose, onClientAdded }: { onClose: () => void
       </div>
     </div>
   );
-}
 }

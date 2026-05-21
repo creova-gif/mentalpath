@@ -246,6 +246,7 @@ This note will be reviewed and edited by the therapist before saving.`;
         model: Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-20250514",
         max_tokens: 800,
         temperature: 0.7,
+        stream: false,
         system: `You are a clinical documentation assistant for Canadian registered psychotherapists and mental health professionals.
 
 Your role:

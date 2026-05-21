@@ -211,7 +211,7 @@ export function HEPBuilder() {
                           <div className="text-[10px] font-medium uppercase tracking-[0.4px] text-[var(--ink-muted)] mb-1">{p.label}</div>
                           <input
                             type="number"
-                            value={(ex as Record<string, unknown>)[p.param] as number}
+                            value={(ex as unknown as Record<string, unknown>)[p.param] as number}
                             onChange={e => updateParam(ex.id, p.param, Number(e.target.value))}
                             min={0} max={p.max}
                             className="w-[60px] border border-[rgba(0,0,0,0.08)] rounded-[6px] px-2 py-1 text-[14px] font-medium text-[var(--ink)] outline-none bg-[var(--warm)] focus:border-[var(--sage)] focus:bg-white"

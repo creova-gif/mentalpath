@@ -543,6 +543,13 @@
     "copyright": "© 2026 MentalPath. Made in Canada. PHIPA & PIPEDA compliant."
   },
   "onboarding": {
+    "stepNames": {
+      "1": "Account Details",
+      "2": "Profession",
+      "3": "Practice Info",
+      "4": "Choose Plan",
+      "5": "First Client"
+    },
     "leftPanel": {
       "title": {
         "line1": "Built for ",

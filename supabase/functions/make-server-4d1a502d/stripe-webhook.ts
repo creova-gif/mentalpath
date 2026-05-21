@@ -142,7 +142,7 @@ Deno.serve(async (req: Request) => {
                 stripe_payment_intent_id: paymentIntentId,
               })
               .eq("stripe_payment_intent_id", paymentIntentId)
-              .eq("therapist_id", therapist.id);
+              .eq("clinician_id", therapist.id);
           }
         }
 

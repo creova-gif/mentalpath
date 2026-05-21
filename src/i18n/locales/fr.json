@@ -543,6 +543,13 @@
     "copyright": "© 2026 MentalPath. Fabriqué au Canada. Conforme LPRPS et LPRPDE."
   },
   "onboarding": {
+    "stepNames": {
+      "1": "Détails du compte",
+      "2": "Profession",
+      "3": "Infos pratique",
+      "4": "Choisir forfait",
+      "5": "Premier client"
+    },
     "leftPanel": {
       "title": {
         "line1": "Conçu pour ",

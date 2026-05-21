@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import { Check, Eye, EyeOff, Shield, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { startTrial } from '../../hooks/useTrialStatus';
+import { OnboardingProgress } from '../ui/ProgressBar';
+import { fireSuccessConfetti } from '../ui/SuccessAnimation';
 
 type OnboardingStep = 1 | 2 | 3 | 4 | 5;
 
@@ -93,7 +95,7 @@ export function Onboarding() {
     checkPasswordStrength(value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (isSkip = false) => {
     // Save email for later use
     localStorage.setItem('user_email', formData.email);
     
@@ -103,6 +105,11 @@ export function Onboarding() {
     // In production, this would create the account and redirect to dashboard
     console.log('Onboarding completed:', formData);
     console.log('7-day free trial started for:', formData.email);
+
+    if (!isSkip && formData.clientFirstName && formData.clientLastName) {
+      fireSuccessConfetti();
+    }
+
     navigate('/dashboard');
   };
 
@@ -181,19 +188,18 @@ export function Onboarding() {
       <div className="flex flex-col justify-center items-center p-12 bg-[var(--white)]">
         <div className="w-full max-w-[420px]">
           {/* Step Dots */}
-          <div className="flex gap-1.5 mb-8">
-            {[1, 2, 3, 4, 5].map((step) => (
-              <div
-                key={step}
-                className={`h-1.5 rounded-full transition-all ${
-                  step === currentStep
-                    ? 'w-5 bg-[var(--sage)]'
-                    : step < currentStep
-                    ? 'w-1.5 bg-[var(--sage-light)]'
-                    : 'w-1.5 bg-[var(--border)]'
-                }`}
-              />
-            ))}
+          <div className="w-full mb-8">
+            <OnboardingProgress
+              currentStep={currentStep}
+              totalSteps={5}
+              stepLabels={[
+                t('onboarding.stepNames.1'),
+                t('onboarding.stepNames.2'),
+                t('onboarding.stepNames.3'),
+                t('onboarding.stepNames.4'),
+                t('onboarding.stepNames.5')
+              ]}
+            />
           </div>
 
           {/* Step 1: Account */}
@@ -582,13 +588,13 @@ export function Onboarding() {
               </div>
 
               <button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(false)}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] mt-2"
               >
                 {t('onboarding.step5.completeSetup')}
               </button>
               <button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(true)}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
                 {t('onboarding.step5.skip')}

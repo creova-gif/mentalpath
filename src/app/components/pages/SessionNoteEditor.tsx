@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
+import { useAutoSave } from '../../hooks/useAutoSave';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { toast } from 'sonner';
+import { useUser } from '../../context/UserContext';
+import { supabase } from '../../../utils/supabase/client';
+import { encryptText } from '../../../utils/encryption';
+import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
 
 type Format = 'dap' | 'soap' | 'birp' | 'progress';
 
@@ -115,6 +122,24 @@ function AutoTextarea({
 
 export function SessionNoteEditor() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isOnline = useOnlineStatus();
+  const { user } = useUser();
+  const clientId = searchParams.get('clientId');
+  const initialNoteId = searchParams.get('noteId');
+  const sessionParam = searchParams.get('sessionId');
+
+  const [sessionId] = useState(() => sessionParam || generateSessionId());
+
+  useEffect(() => {
+    if (!sessionParam) {
+      setSearchParams((prev) => {
+        prev.set('sessionId', sessionId);
+        return prev;
+      }, { replace: true });
+    }
+  }, [sessionParam, sessionId, setSearchParams]);
+
   const [format, setFormat] = useState<Format>('dap');
   const [values, setValues] = useState<Record<string, string>>(() => {
     const v: Record<string, string> = {};
@@ -129,7 +154,94 @@ export function SessionNoteEditor() {
   const [duration, setDuration] = useState('50 min');
   const [sessionFormat, setSessionFormat] = useState('Video');
   const [diagnosis, setDiagnosis] = useState('F43.10 PTSD');
+  const [noteId, setNoteId] = useState<string | null>(initialNoteId);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Audit log for note access
+  useEffect(() => {
+    if (user && noteId) {
+      supabase.from('audit_log').insert({
+        clinician_id: user.id,
+        action: 'NOTE_ACCESSED',
+        table_name: 'session_notes',
+        record_id: noteId,
+        details: { accessed_at: new Date().toISOString() }
+      }).then(({ error }) => {
+        if (error) console.error('Failed to log note access:', error);
+      });
+    }
+  }, [user, noteId]);
+
+  const storageKey = 'session_note_draft_amara-mensah';
+  
+  const { restoreFromLocal, clearLocal } = useAutoSave({
+    data: { format, values, duration, sessionFormat, diagnosis },
+    onSave: async (data) => {
+      if (!user) return;
+      console.log('Session note auto-saving securely...');
+      
+      const sectionKeys = SECTIONS[data.format as Format].map(s => s.key);
+      const sectionsToEncrypt = [
+        data.values[sectionKeys[0]] || '',
+        data.values[sectionKeys[1]] || '',
+        data.values[sectionKeys[2]] || '',
+        sectionKeys[3] ? (data.values[sectionKeys[3]] || '') : ''
+      ];
+
+      const [sec1, sec2, sec3, sec4] = await Promise.all(
+        sectionsToEncrypt.map(text => encryptText(text, user.id))
+      );
+
+      const payload: any = {
+        clinician_id: user.id,
+        client_id: clientId || undefined,
+        session_date: new Date().toISOString().split('T')[0],
+        duration_minutes: parseInt(data.duration) || 50,
+        session_type: data.sessionFormat.toLowerCase(),
+        note_format: data.format,
+        section_1: sec1 || null,
+        section_2: sec2 || null,
+        section_3: sec3 || null,
+        section_4: sec4 || null,
+        is_draft: !locked,
+        is_locked: locked,
+        session_number: 15,
+      };
+
+      if (noteId) {
+        const { error } = await supabase
+          .from('session_notes')
+          .update(payload)
+          .eq('id', noteId);
+        if (error) throw error;
+      } else {
+        const { data: result, error } = await supabase
+          .from('session_notes')
+          .insert(payload)
+          .select('id')
+          .single();
+        if (error) throw error;
+        if (result) setNoteId(result.id);
+      }
+    },
+    interval: 10000,
+    enabled: !locked && !!user,
+    storageKey
+  });
+
+  const [hasDraft, setHasDraft] = useState(false);
+  const [draftData, setDraftData] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = restoreFromLocal();
+    if (saved) {
+      const hasContent = Object.values(saved.values || {}).some(val => typeof val === 'string' && val.trim().length > 0);
+      if (hasContent) {
+        setHasDraft(true);
+        setDraftData(saved);
+      }
+    }
+  }, []);
 
   const markUnsaved = () => {
     setStatusDot('unsaved');
@@ -146,17 +258,49 @@ export function SessionNoteEditor() {
     markUnsaved();
   };
 
-  const aiAssist = (section: Section) => {
+  const aiAssist = async (section: Section) => {
     if (!section.hasAI) return;
     setAiLoading(l => ({ ...l, [section.key]: true }));
-    setTimeout(() => {
-      setAiLoading(l => ({ ...l, [section.key]: false }));
+    
+    try {
+      // Find the index of the current section to pass correct context
+      const sectionKeys = SECTIONS[format].map(s => s.key);
+      const request = {
+        sessionId,
+        noteFormat: format.toUpperCase() as any,
+        section1: values[sectionKeys[0]] || '',
+        section2: values[sectionKeys[1]] || '',
+        section3: values[sectionKeys[2]] || '',
+        section4: sectionKeys[3] ? (values[sectionKeys[3]] || '') : undefined,
+        sessionContext: `Presenting Dx: ${diagnosis}, Duration: ${duration}, Type: ${sessionFormat}`,
+      };
+
+      const response = await generateNoteAssist(request);
+      
+      // Update values with the sections returned by the AI
+      if (response.sections) {
+        setValues(prev => {
+          const newValues = { ...prev };
+          if (response.sections?.section1) newValues[sectionKeys[0]] = response.sections.section1;
+          if (response.sections?.section2) newValues[sectionKeys[1]] = response.sections.section2;
+          if (response.sections?.section3) newValues[sectionKeys[2]] = response.sections.section3;
+          if (response.sections?.section4 && sectionKeys[3]) newValues[sectionKeys[3]] = response.sections.section4;
+          return newValues;
+        });
+        markUnsaved();
+        toast.success('AI draft generated successfully', { description: response.disclaimer });
+      }
+    } catch (err: any) {
+      toast.error('AI Assist Failed', { description: err.message });
+      // Fallback for demo if the function fails or isn't deployed properly
       if (!values[section.key]?.trim()) {
-        const draft = AI_DRAFTS[section.key] || 'AI draft would appear here in production, calling the ai-note-assist edge function with PII stripped.';
+        const draft = AI_DRAFTS[section.key] || 'AI draft would appear here in production.';
         setValues(v => ({ ...v, [section.key]: draft }));
         markUnsaved();
       }
-    }, 1400);
+    } finally {
+      setAiLoading(l => ({ ...l, [section.key]: false }));
+    }
   };
 
   const saveDraft = () => {
@@ -166,11 +310,30 @@ export function SessionNoteEditor() {
 
   const lockNote = () => {
     setShowLockWarning(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       if (window.confirm('Lock and finalise this note? It cannot be edited after locking.')) {
         setLocked(true);
         setStatusDot('locked');
         setStatusText('Locked · ' + new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' }));
+        
+        if (user && noteId) {
+          await supabase.from('session_notes').update({ 
+            is_locked: true, 
+            is_draft: false,
+            locked_at: new Date().toISOString()
+          }).eq('id', noteId);
+
+          await supabase.from('audit_log').insert({
+            clinician_id: user.id,
+            action: 'NOTE_LOCKED',
+            table_name: 'session_notes',
+            record_id: noteId,
+            details: { locked_at: new Date().toISOString() }
+          });
+        }
+        
+        clearLocal();
+        toast.success('Note locked and securely saved to database');
       }
     }, 200);
   };
@@ -179,6 +342,115 @@ export function SessionNoteEditor() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--warm)', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+
+      {/* OFFLINE INTERRUPT & DRAFT RECOVERY BANNERS */}
+      {!isOnline && (
+        <div style={{
+          background: '#FFF9E6',
+          borderBottom: '1px solid #FFE0B2',
+          padding: '10px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: 13,
+          color: '#B78103',
+          gap: 12,
+          flexShrink: 0
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>⚠️</span>
+            <span><strong>Working offline.</strong> Your changes are being securely cached in local browser storage.</span>
+          </div>
+          <button
+            onClick={() => {
+              try {
+                localStorage.setItem(storageKey, JSON.stringify({ format, values, duration, sessionFormat, diagnosis }));
+                toast.success('Local backup forced successfully!');
+              } catch (e) {
+                toast.error('Failed to force local backup');
+              }
+            }}
+            style={{
+              background: '#B78103',
+              color: 'white',
+              border: 'none',
+              borderRadius: 6,
+              padding: '4px 10px',
+              fontSize: 11,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            Force local backup
+          </button>
+        </div>
+      )}
+
+      {hasDraft && (
+        <div style={{
+          background: 'var(--sage-pale)',
+          borderBottom: '1px solid var(--sage-light)',
+          padding: '10px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: 13,
+          color: 'var(--sage-deep)',
+          gap: 12,
+          flexShrink: 0
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>📝</span>
+            <span>An unsaved draft for this session was found in local storage. Would you like to restore it?</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => {
+                if (draftData) {
+                  if (draftData.format) setFormat(draftData.format);
+                  if (draftData.values) setValues(draftData.values);
+                  if (draftData.duration) setDuration(draftData.duration);
+                  if (draftData.sessionFormat) setSessionFormat(draftData.sessionFormat);
+                  if (draftData.diagnosis) setDiagnosis(draftData.diagnosis);
+                  toast.success('Draft restored successfully');
+                }
+                setHasDraft(false);
+              }}
+              style={{
+                background: 'var(--sage)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 6,
+                padding: '4px 12px',
+                fontSize: 11,
+                fontWeight: 500,
+                cursor: 'pointer'
+              }}
+            >
+              Restore draft
+            </button>
+            <button
+              onClick={() => {
+                clearLocal();
+                setHasDraft(false);
+                toast.info('Draft discarded');
+              }}
+              style={{
+                background: 'transparent',
+                color: 'var(--ink-muted)',
+                border: '1px solid var(--border)',
+                borderRadius: 6,
+                padding: '4px 12px',
+                fontSize: 11,
+                fontWeight: 500,
+                cursor: 'pointer'
+              }}
+            >
+              Discard
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* TOPBAR */}
       <div style={{ height: 52, background: 'white', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12, position: 'sticky', top: 0, zIndex: 50, flexShrink: 0 }}>

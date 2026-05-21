@@ -1,6 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Sparkles, Lock, Loader2, CheckCircle, Zap } from 'lucide-react';
 import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
+import { useAutoSave } from '../../hooks/useAutoSave';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { toast } from 'sonner';
+import { useUser } from '../../context/UserContext';
+import { supabase } from '../../../utils/supabase/client';
+import { encryptText } from '../../../utils/encryption';
 
 const noteFormats = [
   { id: 'dap', name: 'DAP', description: 'Data · Assessment · Plan' },
@@ -10,6 +16,8 @@ const noteFormats = [
 ];
 
 export function NoteModal({ clientName, onClose }: { clientName: string; onClose: () => void }) {
+  const isOnline = useOnlineStatus();
+  const { user } = useUser();
   const [selectedFormat, setSelectedFormat] = useState('dap');
   const [aiAssisting, setAiAssisting] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -21,10 +29,116 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
     section3: '',
     section4: '',
   });
+  const [noteId, setNoteId] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const storageKey = `note_modal_draft_${clientName.replace(/\s+/g, '_').toLowerCase()}`;
+
+  const { restoreFromLocal, clearLocal } = useAutoSave({
+    data: { selectedFormat, sectionValues },
+    onSave: async (data) => {
+      if (!user) return;
+      console.log('Modal session note auto-saved securely...');
+      
+      const sectionsToEncrypt = [
+        data.sectionValues.section1 || '',
+        data.sectionValues.section2 || '',
+        data.sectionValues.section3 || '',
+        data.sectionValues.section4 || '',
+      ];
+
+      const [sec1, sec2, sec3, sec4] = await Promise.all(
+        sectionsToEncrypt.map(text => encryptText(text, user.id))
+      );
+
+      const payload = {
+        clinician_id: user.id,
+        session_date: new Date().toISOString().split('T')[0],
+        duration_minutes: 50,
+        session_type: 'video',
+        note_format: data.selectedFormat,
+        section_1: sec1 || null,
+        section_2: sec2 || null,
+        section_3: sec3 || null,
+        section_4: sec4 || null,
+        is_draft: true,
+        is_locked: false,
+        session_number: 1,
+      };
+
+      if (noteId) {
+        const { error } = await supabase.from('session_notes').update(payload).eq('id', noteId);
+        if (error) throw error;
+      } else {
+        const { data: result, error } = await supabase.from('session_notes').insert(payload).select('id').single();
+        if (error) throw error;
+        if (result) setNoteId(result.id);
+      }
+    },
+    interval: 10000,
+    enabled: !!user,
+    storageKey
+  });
+
+  const [hasDraft, setHasDraft] = useState(false);
+  const [draftData, setDraftData] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = restoreFromLocal();
+    if (saved) {
+      const hasContent = Object.values(saved.sectionValues || {}).some(val => typeof val === 'string' && val.trim().length > 0);
+      if (hasContent) {
+        setHasDraft(true);
+        setDraftData(saved);
+      }
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onClose();
+    if (!user) return;
+
+    try {
+      const sectionsToEncrypt = [
+        sectionValues.section1 || '',
+        sectionValues.section2 || '',
+        sectionValues.section3 || '',
+        sectionValues.section4 || '',
+      ];
+
+      const [sec1, sec2, sec3, sec4] = await Promise.all(
+        sectionsToEncrypt.map(text => encryptText(text, user.id))
+      );
+
+      const payload = {
+        clinician_id: user.id,
+        session_date: new Date().toISOString().split('T')[0],
+        duration_minutes: 50,
+        session_type: 'video',
+        note_format: selectedFormat,
+        section_1: sec1 || null,
+        section_2: sec2 || null,
+        section_3: sec3 || null,
+        section_4: sec4 || null,
+        is_draft: false,
+        is_locked: true,
+        session_number: 1,
+      };
+
+      if (noteId) {
+        const { error } = await supabase.from('session_notes').update(payload).eq('id', noteId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('session_notes').insert(payload);
+        if (error) throw error;
+      }
+
+      clearLocal();
+      toast.success('Note saved and locked securely');
+      onClose();
+    } catch (error) {
+      toast.error('Failed to save note');
+      console.error(error);
+    }
   };
 
   const handleAiAssist = async () => {
@@ -109,7 +223,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div>
@@ -125,6 +239,66 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
           </button>
         </div>
 
+        {/* OFFLINE INTERRUPT & DRAFT RECOVERY BANNERS */}
+        {!isOnline && (
+          <div className="bg-amber-50 border-b border-amber-200 px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs sm:text-sm text-amber-800 gap-3">
+            <div className="flex items-center gap-2">
+              <span>⚠️</span>
+              <span><strong>Offline Mode.</strong> Working offline. Notes are cached locally in this browser.</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  localStorage.setItem(storageKey, JSON.stringify({ selectedFormat, sectionValues }));
+                  toast.success('Local backup forced successfully!');
+                } catch (e) {
+                  toast.error('Failed to force local backup');
+                }
+              }}
+              className="bg-amber-700 text-white border-none rounded px-2.5 py-1 text-[10px] font-semibold hover:bg-amber-800 transition-colors"
+            >
+              Force local backup
+            </button>
+          </div>
+        )}
+
+        {hasDraft && (
+          <div className="bg-[#E8F3F0] border-b border-[#c2e0d7] px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs sm:text-sm text-[#2d5049] gap-3">
+            <div className="flex items-center gap-2">
+              <span>📝</span>
+              <span>An unsaved local draft was found. Restore it?</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (draftData) {
+                    if (draftData.selectedFormat) setSelectedFormat(draftData.selectedFormat);
+                    if (draftData.sectionValues) setSectionValues(draftData.sectionValues);
+                    toast.success('Draft restored successfully');
+                  }
+                  setHasDraft(false);
+                }}
+                className="bg-[#4a7c6f] text-white border-none rounded px-2.5 py-1 text-[10px] font-semibold hover:bg-[#3d6b5f] transition-colors"
+              >
+                Restore
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clearLocal();
+                  setHasDraft(false);
+                  toast.info('Draft discarded');
+                }}
+                className="bg-transparent text-gray-500 border border-gray-300 rounded px-2.5 py-1 text-[10px] font-semibold hover:bg-gray-50 transition-colors"
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Format Selection */}
         <div className="p-4 sm:p-6 border-b border-gray-200">
           <label className="block text-sm font-medium text-gray-700 mb-3">Note Format</label>
@@ -132,6 +306,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
             {noteFormats.map((format) => (
               <button
                 key={format.id}
+                type="button"
                 onClick={() => setSelectedFormat(format.id)}
                 className={`p-2 sm:p-3 rounded-lg border-2 transition-all text-left ${selectedFormat === format.id
                   ? 'border-[#4a7c6f] bg-[#E8F3F0]'
@@ -231,6 +406,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             className="w-full sm:flex-1 px-4 py-2 bg-[#4a7c6f] text-white rounded-lg hover:bg-[#3d6b5f] transition-colors text-sm sm:text-base"
           >
