@@ -58,7 +58,7 @@ Built with React, Supabase, and Stripe. PHIPA-compliant, culturally-informed, an
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/mentalpath.git
+git clone https://github.com/creova-gif/mentalpath.git
 cd mentalpath
 
 # Install dependencies
