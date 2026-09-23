@@ -14,13 +14,19 @@ const intakeTemplates = [
   'Grief & loss',
 ];
 
-export function NewClientModal({ onClose, onClientAdded }: { onClose: () => void, onClientAdded?: () => void }) {
+export interface NewClientPrefill {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
+
+export function NewClientModal({ onClose, onClientAdded, initial }: { onClose: () => void, onClientAdded?: () => void, initial?: NewClientPrefill }) {
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: initial?.firstName ?? '',
+    lastName: initial?.lastName ?? '',
+    email: initial?.email ?? '',
     phone: '',
     dob: '',
     pronouns: 'They/Them',

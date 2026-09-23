@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useUser, DEMO_ACCOUNTS } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { supabase } from '@/utils/supabase/client';
 
 // Seeded by supabase/seed_demo_users_fixed.sql for local development only.
 const DEMO_PASSWORD = import.meta.env.DEV ? 'demo1234' : '';
@@ -35,6 +37,19 @@ export function Login() {
       setError(t('login.error'));
       setLoading(false);
     }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError(t('login.resetEnterEmail'));
+      return;
+    }
+    setError('');
+    // Same message whether or not the account exists (no account enumeration).
+    await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    toast.success(t('login.resetSent'));
   };
 
   const fillDemo = (acctEmail: string) => {
@@ -187,7 +202,7 @@ export function Login() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <label htmlFor="login-password" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{t('login.passwordLabel')}</label>
-                <button type="button" aria-label={t('login.forgotPassword')} style={{ fontSize: 12, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>{t('login.forgotPassword')}</button>
+                <button type="button" onClick={handleForgotPassword} style={{ fontSize: 12, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>{t('login.forgotPassword')}</button>
               </div>
               <div style={{ position: 'relative' }}>
                 <input

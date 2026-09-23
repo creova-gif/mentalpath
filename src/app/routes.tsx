@@ -5,6 +5,8 @@ const BookingPage = lazy(() => import("./components/pages/BookingPage").then(m =
 const ClientProfile = lazy(() => import("./components/pages/ClientProfile").then(m => ({ default: m.ClientProfile })));
 const SessionNoteEditor = lazy(() => import("./components/pages/SessionNoteEditor").then(m => ({ default: m.SessionNoteEditor })));
 const Login = lazy(() => import("./components/pages/Login").then(m => ({ default: m.Login })));
+const ResetPassword = lazy(() => import("./components/pages/ResetPassword").then(m => ({ default: m.ResetPassword })));
+import { MfaGate } from "./components/auth/MfaGate";
 import { Landing } from "./components/pages/Landing";
 const ClientPortal = lazy(() => import("./components/pages/ClientPortal").then(m => ({ default: m.ClientPortal })));
 const ClientPortalFull = lazy(() => import("./components/pages/ClientPortalFull").then(m => ({ default: m.ClientPortalFull })));
@@ -45,11 +47,21 @@ const TreatmentCourses = lazy(() => import("./components/pages/TreatmentCourses"
 const ProfessionIntake = lazy(() => import("./components/pages/ProfessionIntake").then(m => ({ default: m.ProfessionIntake })));
 const Subscribe = lazy(() => import("./components/pages/Subscribe").then(m => ({ default: m.Subscribe })));
 
-// Auth guard — redirects unauthenticated users to /login
+// Auth guard — redirects unauthenticated users to /login, then requires an
+// MFA-verified session (the database enforces the same rule via RLS).
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
+  if (isLoading) return <PageFallback />;
   if (!user) return <Navigate to="/login" replace />;
-  return <>{children}</>;
+  return <MfaGate>{children}</MfaGate>;
+}
+
+function PageFallback() {
+  return (
+    <div role="status" aria-live="polite" className="min-h-screen flex items-center justify-center text-sm text-[var(--ink-muted)]">
+      Loading…
+    </div>
+  );
 }
 
 // Simple error boundary fallback
@@ -73,47 +85,53 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Suspense fallback={null}><Login /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><Login /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
+    path: "/reset-password",
+    element: <Suspense fallback={<PageFallback />}><ResetPassword /></Suspense>,
+    errorElement: <ErrorBoundary />,
+  },
+  { path: "/signup", element: <Navigate to="/onboarding" replace /> },
+  {
     path: "/client-portal",
-    element: <Suspense fallback={null}><ClientPortal /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><ClientPortal /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/client-portal-full",
-    element: <Suspense fallback={null}><ClientPortalFull /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><ClientPortalFull /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/onboarding",
-    element: <Suspense fallback={null}><Onboarding /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><Onboarding /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/checkout",
-    element: <Suspense fallback={null}><Checkout /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><Checkout /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/checkout-success",
-    element: <Suspense fallback={null}><CheckoutSuccess /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><CheckoutSuccess /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/faq",
-    element: <Suspense fallback={null}><FAQ /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><FAQ /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/contact",
-    element: <Suspense fallback={null}><Contact /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><Contact /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/support",
-    element: <Suspense fallback={null}><Support /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><Support /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   // H-02: Debug admin panel — only accessible in local development builds.
@@ -121,38 +139,38 @@ const router = createBrowserRouter([
   // and its element are tree-shaken out entirely.
   ...(import.meta.env.DEV ? [{
     path: "/trial-admin",
-    element: <Suspense fallback={null}><TrialAdmin /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><TrialAdmin /></Suspense>,
     errorElement: <ErrorBoundary />,
   }] : []),
   // Debug AI playground — local development builds only (never in production).
   ...(import.meta.env.DEV ? [{
     path: "/ai-test",
-    element: <Suspense fallback={null}><AITest /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><AITest /></Suspense>,
     errorElement: <ErrorBoundary />,
   }] : []),
   {
     path: "/book",
-    element: <Suspense fallback={null}><BookingPage /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><BookingPage /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/intake",
-    element: <Suspense fallback={null}><ProfessionIntake /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><ProfessionIntake /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/subscribe",
-    element: <Suspense fallback={null}><Subscribe /></Suspense>,
+    element: <Suspense fallback={<PageFallback />}><Subscribe /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/session-note-editor",
-    element: <RequireAuth><Suspense fallback={null}><SessionNoteEditor /></Suspense></RequireAuth>,
+    element: <RequireAuth><Suspense fallback={<PageFallback />}><SessionNoteEditor /></Suspense></RequireAuth>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/dashboard/clients/:clientId",
-    element: <RequireAuth><Suspense fallback={null}><ClientProfile /></Suspense></RequireAuth>,
+    element: <RequireAuth><Suspense fallback={<PageFallback />}><ClientProfile /></Suspense></RequireAuth>,
     errorElement: <ErrorBoundary />,
   },
   // Dashboard with all nested routes
@@ -161,35 +179,35 @@ const router = createBrowserRouter([
     element: <RequireAuth><DashboardLayout /></RequireAuth>,
     errorElement: <ErrorBoundary />,
     children: [
-      { index: true, element: <Suspense fallback={null}><Overview /></Suspense> },
-      { path: "clients", element: <Suspense fallback={null}><Clients /></Suspense> },
-      { path: "notes", element: <Suspense fallback={null}><SessionNotes /></Suspense> },
-      { path: "billing", element: <Suspense fallback={null}><Billing /></Suspense> },
-      { path: "calendar", element: <Suspense fallback={null}><CalendarView /></Suspense> },
-      { path: "messages", element: <Suspense fallback={null}><Messages /></Suspense> },
-      { path: "settings", element: <Suspense fallback={null}><Settings /></Suspense> },
-      { path: "compliance", element: <Suspense fallback={null}><Compliance /></Suspense> },
-      { path: "cultural-templates", element: <Suspense fallback={null}><CulturalTemplates /></Suspense> },
-      { path: "clinical-tools", element: <Suspense fallback={null}><ClinicalTools /></Suspense> },
-      { path: "session-prep", element: <Suspense fallback={null}><SessionPrep /></Suspense> },
-      { path: "outcome-measures", element: <Suspense fallback={null}><OutcomeMeasures /></Suspense> },
-      { path: "waitlist", element: <Suspense fallback={null}><Waitlist /></Suspense> },
-      { path: "therapist-wellbeing", element: <Suspense fallback={null}><TherapistWellbeing /></Suspense> },
-      { path: "group-practice", element: <Suspense fallback={null}><GroupPractice /></Suspense> },
-      { path: "insurance-receipts", element: <Suspense fallback={null}><InsuranceReceipts /></Suspense> },
-      { path: "treatment-courses", element: <Suspense fallback={null}><TreatmentCourses /></Suspense> },
-      { path: "hep-builder", element: <Suspense fallback={null}><HEPBuilder /></Suspense> },
-      { path: "cost-savings", element: <Suspense fallback={null}><CostSavings /></Suspense> },
-      { path: "resources", element: <Suspense fallback={null}><Resources /></Suspense> },
-      { path: "faq", element: <Suspense fallback={null}><FAQ /></Suspense> },
-      { path: "support", element: <Suspense fallback={null}><Support /></Suspense> },
+      { index: true, element: <Suspense fallback={<PageFallback />}><Overview /></Suspense> },
+      { path: "clients", element: <Suspense fallback={<PageFallback />}><Clients /></Suspense> },
+      { path: "notes", element: <Suspense fallback={<PageFallback />}><SessionNotes /></Suspense> },
+      { path: "billing", element: <Suspense fallback={<PageFallback />}><Billing /></Suspense> },
+      { path: "calendar", element: <Suspense fallback={<PageFallback />}><CalendarView /></Suspense> },
+      { path: "messages", element: <Suspense fallback={<PageFallback />}><Messages /></Suspense> },
+      { path: "settings", element: <Suspense fallback={<PageFallback />}><Settings /></Suspense> },
+      { path: "compliance", element: <Suspense fallback={<PageFallback />}><Compliance /></Suspense> },
+      { path: "cultural-templates", element: <Suspense fallback={<PageFallback />}><CulturalTemplates /></Suspense> },
+      { path: "clinical-tools", element: <Suspense fallback={<PageFallback />}><ClinicalTools /></Suspense> },
+      { path: "session-prep", element: <Suspense fallback={<PageFallback />}><SessionPrep /></Suspense> },
+      { path: "outcome-measures", element: <Suspense fallback={<PageFallback />}><OutcomeMeasures /></Suspense> },
+      { path: "waitlist", element: <Suspense fallback={<PageFallback />}><Waitlist /></Suspense> },
+      { path: "therapist-wellbeing", element: <Suspense fallback={<PageFallback />}><TherapistWellbeing /></Suspense> },
+      { path: "group-practice", element: <Suspense fallback={<PageFallback />}><GroupPractice /></Suspense> },
+      { path: "insurance-receipts", element: <Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense> },
+      { path: "treatment-courses", element: <Suspense fallback={<PageFallback />}><TreatmentCourses /></Suspense> },
+      { path: "hep-builder", element: <Suspense fallback={<PageFallback />}><HEPBuilder /></Suspense> },
+      { path: "cost-savings", element: <Suspense fallback={<PageFallback />}><CostSavings /></Suspense> },
+      { path: "resources", element: <Suspense fallback={<PageFallback />}><Resources /></Suspense> },
+      { path: "faq", element: <Suspense fallback={<PageFallback />}><FAQ /></Suspense> },
+      { path: "support", element: <Suspense fallback={<PageFallback />}><Support /></Suspense> },
     ],
   },
-  { path: "/for-therapists", element: <Suspense fallback={null}><ForTherapists /></Suspense>, errorElement: <ErrorBoundary /> },
-  { path: "/for-chiropractors", element: <Suspense fallback={null}><ForChiropractors /></Suspense>, errorElement: <ErrorBoundary /> },
-  { path: "/for-physiotherapists", element: <Suspense fallback={null}><ForPhysiotherapists /></Suspense>, errorElement: <ErrorBoundary /> },
-  { path: "/for-massage-therapists", element: <Suspense fallback={null}><ForMassageTherapists /></Suspense>, errorElement: <ErrorBoundary /> },
-  { path: "/for-naturopaths", element: <Suspense fallback={null}><ForNaturopaths /></Suspense>, errorElement: <ErrorBoundary /> },
+  { path: "/for-therapists", element: <Suspense fallback={<PageFallback />}><ForTherapists /></Suspense>, errorElement: <ErrorBoundary /> },
+  { path: "/for-chiropractors", element: <Suspense fallback={<PageFallback />}><ForChiropractors /></Suspense>, errorElement: <ErrorBoundary /> },
+  { path: "/for-physiotherapists", element: <Suspense fallback={<PageFallback />}><ForPhysiotherapists /></Suspense>, errorElement: <ErrorBoundary /> },
+  { path: "/for-massage-therapists", element: <Suspense fallback={<PageFallback />}><ForMassageTherapists /></Suspense>, errorElement: <ErrorBoundary /> },
+  { path: "/for-naturopaths", element: <Suspense fallback={<PageFallback />}><ForNaturopaths /></Suspense>, errorElement: <ErrorBoundary /> },
   // Catch-all redirect to landing page
   {
     path: "*",

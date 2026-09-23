@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Check, Eye, EyeOff, Shield, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { startTrial } from '../../hooks/useTrialStatus';
+import { toast } from 'sonner';
+import { supabase } from '@/utils/supabase/client';
 import { OnboardingProgress } from '../ui/ProgressBar';
 import { fireSuccessConfetti } from '../ui/SuccessAnimation';
+
+// Onboarding profession ids → clinicians.profession slugs (see handle_new_user)
+const PROFESSION_SLUG: Record<string, string> = { occupational: 'occupational_therapist' };
 
 type OnboardingStep = 1 | 2 | 3 | 4 | 5;
 
@@ -83,7 +87,7 @@ export function Onboarding() {
 
   const checkPasswordStrength = (password: string) => {
     let strength = 0;
-    if (password.length >= 8) strength += 25;
+    if (password.length >= 12) strength += 25;
     if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
     if (password.match(/[0-9]/)) strength += 25;
     if (password.match(/[^a-zA-Z0-9]/)) strength += 25;
@@ -95,27 +99,90 @@ export function Onboarding() {
     checkPasswordStrength(value);
   };
 
-  const handleSubmit = (isSkip = false) => {
-    // Save email for later use
-    localStorage.setItem('user_email', formData.email);
-    
-    // Start the 7-day free trial with user's email
-    startTrial();
-    
-    // In production, this would create the account and redirect to dashboard
+  const [submitting, setSubmitting] = useState(false);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
 
-    if (!isSkip && formData.clientFirstName && formData.clientLastName) {
-      fireSuccessConfetti();
+  const handleSubmit = async (isSkip = false) => {
+    if (submitting) return;
+    setSubmitting(true);
+
+    const [firstName = '', ...rest] = formData.fullName.trim().split(/\s+/);
+    const profession = professions.find(p => p.id === selectedProfessionId);
+    const province = provinces.find(p => p.code === formData.province);
+
+    // The clinicians row (and the 7-day trial) is created server-side by the
+    // handle_new_user trigger from this metadata; billing fields are never
+    // taken from the browser.
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email.trim(),
+      password: formData.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        data: {
+          first_name: firstName,
+          last_name: rest.join(' '),
+          profession: PROFESSION_SLUG[selectedProfessionId] ?? selectedProfessionId,
+          reg_number: formData.registrationNumber,
+          city: province?.name ?? '',
+          session_rate: formData.sessionRate,
+          hst_exempt: String(profession?.hst.startsWith('Exempt') ?? true),
+          practice_name: formData.practiceName,
+        },
+      },
+    });
+
+    if (error) {
+      toast.error(t('onboarding.account.error', { message: error.message }));
+      setSubmitting(false);
+      return;
     }
 
-    navigate('/dashboard');
+    const prefillClient = !isSkip && formData.clientFirstName && formData.clientLastName
+      ? {
+          firstName: formData.clientFirstName,
+          lastName: formData.clientLastName,
+          email: formData.clientEmail,
+          intakeTemplate: formData.clientTemplate,
+        }
+      : undefined;
+
+    // Email confirmation enabled → no session yet.
+    if (!data.session) {
+      setAwaitingConfirmation(true);
+      setSubmitting(false);
+      return;
+    }
+
+    if (prefillClient) fireSuccessConfetti();
+    // First client is created from the Clients page once MFA is set up
+    // (clinical data requires an MFA-verified session).
+    navigate(prefillClient ? '/dashboard/clients' : '/dashboard', {
+      state: prefillClient ? { prefillClient } : undefined,
+    });
   };
 
   const selectedProfession = professions.find(p => p.id === selectedProfessionId);
 
-  const canContinueStep1 = formData.fullName && formData.email && formData.password.length >= 8;
+  const canContinueStep1 = formData.fullName && formData.email && formData.password.length >= 12;
   const canContinueStep2 = !!selectedProfessionId;
   const canContinueStep3 = formData.credentials && formData.registrationNumber && selectedCollege;
+
+  if (awaitingConfirmation) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-[var(--warm)] p-6">
+        <div role="status" className="max-w-md w-full bg-white rounded-2xl border border-[var(--border)] p-8 text-center">
+          <h1 className="font-serif text-2xl text-[var(--ink)] mb-3">{t('onboarding.account.checkEmailTitle')}</h1>
+          <p className="text-sm text-[var(--ink-soft)] mb-6">{t('onboarding.account.checkEmailBody', { email: formData.email })}</p>
+          <button
+            onClick={() => navigate('/login')}
+            className="w-full py-3 rounded-[10px] bg-[var(--sage)] text-white text-sm font-medium border-none cursor-pointer hover:bg-[var(--sage-deep)]"
+          >
+            {t('onboarding.account.goToLogin')}
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="grid md:grid-cols-2 min-h-screen">
@@ -587,12 +654,15 @@ export function Onboarding() {
 
               <button
                 onClick={() => handleSubmit(false)}
+                disabled={submitting}
+                aria-busy={submitting}
                 className="w-full py-3.5 rounded-[10px] bg-[var(--sage)] text-white text-[15px] font-medium border-none cursor-pointer transition-all hover:bg-[var(--sage-deep)] mt-2"
               >
-                {t('onboarding.step5.completeSetup')}
+                {submitting ? t('onboarding.account.creating') : t('onboarding.step5.completeSetup')}
               </button>
               <button
                 onClick={() => handleSubmit(true)}
+                disabled={submitting}
                 className="w-full py-3 rounded-[10px] bg-transparent text-[var(--ink-soft)] text-sm border border-[var(--border)] cursor-pointer transition-all hover:bg-[var(--warm)] mt-2"
               >
                 {t('onboarding.step5.skip')}

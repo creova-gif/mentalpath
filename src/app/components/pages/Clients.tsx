@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { ClientDetailPanel } from '../modals/ClientDetailPanel';
 import { NoteModal } from '../modals/NoteModal';
-import { NewClientModal } from '../modals/NewClientModal';
+import { NewClientModal, type NewClientPrefill } from '../modals/NewClientModal';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@/app/context/UserContext';
 import { useDebounce } from '@/app/hooks/useDebounce';
@@ -36,7 +36,10 @@ export function Clients() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [noteModalClient, setNoteModalClient] = useState<Client | null>(null);
-  const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
+  // Onboarding hands over the first client's details via router state (memory only).
+  const location = useLocation();
+  const prefillClient = (location.state as { prefillClient?: NewClientPrefill } | null)?.prefillClient;
+  const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(!!prefillClient);
   const [refreshKey, setRefreshKey] = useState(0);
   
   const [sortBy, setSortBy] = useState('newest');
@@ -356,9 +359,13 @@ export function Clients() {
       {selectedClient && <ClientDetailPanel client={selectedClient} onClose={() => setSelectedClient(null)} />}
       {noteModalClient && <NoteModal clientName={noteModalClient.name} onClose={() => setNoteModalClient(null)} />}
       {isNewClientModalOpen && (
-        <NewClientModal 
-          onClose={() => setIsNewClientModalOpen(false)} 
-          onClientAdded={() => setRefreshKey(prev => prev + 1)} 
+        <NewClientModal
+          initial={prefillClient}
+          onClose={() => {
+            setIsNewClientModalOpen(false);
+            if (prefillClient) navigate(location.pathname, { replace: true, state: null });
+          }}
+          onClientAdded={() => setRefreshKey(prev => prev + 1)}
         />
       )}
     </>

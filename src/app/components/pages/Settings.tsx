@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { User, Briefcase, Calendar, DollarSign, Globe, Bell, Lock, Trash2, Save, Check, CreditCard, Zap, Users, ChevronRight } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
+import { SecuritySettings } from '../settings/SecuritySettings';
 import type { PlanType, BillingCycle } from '../../context/UserContext';
 
 type SettingsTab = 'profile' | 'practice' | 'scheduling' | 'billing' | 'subscription' | 'regions' | 'notifications' | 'security' | 'danger';
@@ -741,31 +742,7 @@ export function Settings() {
                   <div className="text-xs text-[var(--ink-muted)] mt-0.5">{t('settings.security.subtitle')}</div>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <div className="text-sm font-medium text-[var(--ink)] mb-3">{t('settings.security.changePassword')}</div>
-                  <div className="space-y-2.5 max-w-[400px]">
-                    <input type="password" placeholder={t('settings.security.currentPassword')} className="w-full px-3 py-2.5 rounded-lg border border-[var(--border)] text-[13px] outline-none focus:border-[var(--sage)]" />
-                    <input type="password" placeholder={t('settings.security.newPassword')} className="w-full px-3 py-2.5 rounded-lg border border-[var(--border)] text-[13px] outline-none focus:border-[var(--sage)]" />
-                    <input type="password" placeholder={t('settings.security.confirmPassword')} className="w-full px-3 py-2.5 rounded-lg border border-[var(--border)] text-[13px] outline-none focus:border-[var(--sage)]" />
-                  </div>
-                  <button className="mt-3 px-4 py-2 rounded-lg bg-[var(--sage)] text-white text-[13px] font-medium border-none cursor-pointer hover:bg-[var(--sage-deep)]">{t('settings.security.updatePassword')}</button>
-                </div>
-                <div className="pt-4 border-t border-[var(--border)]">
-                  <label className="flex items-center gap-2 text-[13px] text-[var(--ink-soft)] cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-[var(--sage)] cursor-pointer" />
-                    {t('settings.security.autoLock')}
-                  </label>
-                  <div className="text-xs text-[var(--ink-muted)] ml-6 mt-1">{t('settings.security.phipaRequired')}</div>
-                </div>
-                <div className="pt-3 border-t border-[var(--border)]">
-                  <label className="flex items-center gap-2 text-[13px] text-[var(--ink-soft)] cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 accent-[var(--sage)] cursor-pointer" />
-                    {t('settings.security.enable2fa')}
-                  </label>
-                  <div className="text-xs text-[var(--ink-muted)] ml-6 mt-1">{t('settings.security.desc2fa')}</div>
-                </div>
-              </div>
+              <SecuritySettings />
             </div>
           )}
 

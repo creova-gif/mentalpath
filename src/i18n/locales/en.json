@@ -275,7 +275,9 @@
       "PHIPA compliant",
       "Canadian servers",
       "Encrypted at rest"
-    ]
+    ],
+    "resetEnterEmail": "Enter your email above, then choose “Forgot password?” again.",
+    "resetSent": "If an account exists for that email, we’ve sent a password reset link."
   },
   "ticker": [
     "PHIPA Compliant",
@@ -574,8 +576,8 @@
       "workEmail": "Work email",
       "workEmailPlaceholder": "you@practice.ca",
       "password": "Password",
-      "passwordPlaceholder": "At least 8 characters",
-      "passwordHint": "Use 8+ characters, a number, and a symbol",
+      "passwordPlaceholder": "At least 12 characters",
+      "passwordHint": "Use 12+ characters — a passphrase works well",
       "continue": "Continue →",
       "alreadyHaveAccount": "Already have an account?",
       "signIn": "Sign in"
@@ -632,6 +634,13 @@
       "intakeTemplate": "Intake template",
       "completeSetup": "Complete setup →",
       "skip": "Skip and go to dashboard"
+    },
+    "account": {
+      "creating": "Creating your account…",
+      "error": "We couldn't create your account: {{message}}",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "We sent a confirmation link to {{email}}. Open it to activate your account, then sign in and set up two-factor authentication.",
+      "goToLogin": "Go to sign in"
     }
   },
   "sessionNotes": {
@@ -900,12 +909,30 @@
       "title": "Email Notifications",
       "subtitle": "Choose which emails you receive",
       "items": {
-        "bookings": { "label": "New client bookings", "hint": "When a client books an appointment" },
-        "reminders": { "label": "Session reminders", "hint": "24 hours before each session" },
-        "payment": { "label": "Payment received", "hint": "When an invoice is paid" },
-        "summary": { "label": "Weekly summary", "hint": "Overview of your week every Monday" },
-        "renewal": { "label": "{{college}} renewal reminders", "hint": "60 days before renewal deadlines" },
-        "cpd": { "label": "CPD hour tracking", "hint": "Monthly progress update toward your cycle requirement" }
+        "bookings": {
+          "label": "New client bookings",
+          "hint": "When a client books an appointment"
+        },
+        "reminders": {
+          "label": "Session reminders",
+          "hint": "24 hours before each session"
+        },
+        "payment": {
+          "label": "Payment received",
+          "hint": "When an invoice is paid"
+        },
+        "summary": {
+          "label": "Weekly summary",
+          "hint": "Overview of your week every Monday"
+        },
+        "renewal": {
+          "label": "{{college}} renewal reminders",
+          "hint": "60 days before renewal deadlines"
+        },
+        "cpd": {
+          "label": "CPD hour tracking",
+          "hint": "Monthly progress update toward your cycle requirement"
+        }
       }
     },
     "security": {
@@ -916,10 +943,15 @@
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
       "updatePassword": "Update password",
-      "autoLock": "Auto-lock after 15 minutes of inactivity",
+      "autoLock": "Automatic sign-out after 15 minutes of inactivity",
       "phipaRequired": "Required for PHIPA/HIPAA compliance",
       "enable2fa": "Enable two-factor authentication (2FA)",
-      "desc2fa": "Adds an extra layer of security to your account"
+      "desc2fa": "Adds an extra layer of security to your account",
+      "passwordUpdated": "Password updated.",
+      "autoLockAlwaysOn": "Always on to protect client health information.",
+      "mfaTitle": "Two-factor authentication (required)",
+      "mfaStatus_one": "{{count}} authenticator app registered. Required for access to client records.",
+      "mfaStatus_other": "{{count}} authenticator apps registered. Required for access to client records."
     },
     "danger": {
       "deleteAccount": "Delete account",
@@ -927,5 +959,32 @@
       "deleteBtn": "Delete my account",
       "exportBtn": "Export my data first"
     }
+  },
+  "resetPassword": {
+    "title": "Choose a new password",
+    "subtitle": "Use at least 12 characters. A passphrase works well.",
+    "newPassword": "New password",
+    "confirm": "Confirm new password",
+    "submit": "Update password",
+    "mismatch": "Passwords don’t match.",
+    "tooShort": "Use at least 12 characters.",
+    "invalidLink": "This reset link is invalid or has expired. Request a new one from the sign-in page.",
+    "success": "Password updated. Please sign in again.",
+    "backToLogin": "Back to sign in"
+  },
+  "mfa": {
+    "checking": "Checking your sign-in security…",
+    "errorTitle": "We couldn’t verify two-factor authentication",
+    "retry": "Try again",
+    "enrolTitle": "Set up two-factor authentication",
+    "enrolBody": "Client health records require two-factor authentication. Scan this code with an authenticator app (1Password, Google Authenticator, Authy, Microsoft Authenticator), then enter the 6-digit code it shows.",
+    "challengeTitle": "Two-factor verification",
+    "challengeBody": "Enter the 6-digit code from your authenticator app.",
+    "qrAlt": "QR code for your authenticator app",
+    "manualKey": "Can’t scan? Enter this key manually:",
+    "codeLabel": "6-digit code",
+    "verify": "Verify",
+    "invalidCode": "That code didn’t work. Check your device’s clock and try the newest code.",
+    "signOut": "Sign out"
   }
 }
