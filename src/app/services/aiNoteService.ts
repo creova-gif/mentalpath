@@ -1,4 +1,5 @@
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { projectId } from '/utils/supabase/info';
+import { authHeaders } from '@/utils/supabase/client';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
 
@@ -82,7 +83,7 @@ export async function generateNoteAssist(request: AINoteRequest): Promise<AINote
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        ...(await authHeaders()),
       },
       body: JSON.stringify({
         session_id: request.sessionId,

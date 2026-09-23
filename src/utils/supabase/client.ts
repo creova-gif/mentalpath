@@ -15,3 +15,11 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 export type { User, Session } from '@supabase/supabase-js';
+
+// Authorization header for calls to our Edge Functions. Always sends the signed-in
+// user's access token — never the public anon key, which identifies no one.
+export async function authHeaders(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not signed in');
+  return { Authorization: `Bearer ${session.access_token}` };
+}

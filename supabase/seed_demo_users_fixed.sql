@@ -1,6 +1,7 @@
 -- ============================================================
 -- MentalPath — Demo user re-seed (FIXED for GoTrue compatibility)
--- Run in: https://supabase.com/dashboard/project/hkhwgbkijepsxtixdmrs/sql
+-- ⚠️  LOCAL / DEV PROJECTS ONLY. NEVER run against production.
+--     These accounts share a publicly known password (demo1234).
 -- ============================================================
 -- This script uses the correct auth.users field format that GoTrue
 -- can validate passwords against (bcrypt via pgcrypto).

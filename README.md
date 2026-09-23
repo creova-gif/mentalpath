@@ -2,7 +2,9 @@
 
 **Practice management dashboard for Canadian mental health practitioners**
 
-Built with React, Supabase, and Stripe. PHIPA-compliant, culturally-informed, and designed specifically for solo and small-group practices in Canada.
+Built with React, Supabase, and Stripe. Designed for PHIPA-aligned, culturally-informed practice management for solo and small-group practices in Canada.
+
+> **Status: pre-launch.** Several features below are in development and several screens still use sample data. See [`docs/audits/2026-09-23-goal-audit.md`](./docs/audits/2026-09-23-goal-audit.md) for the current production-readiness assessment. Do not store real client data until the P0 items in that audit are closed.
 
 ---
 
@@ -12,13 +14,13 @@ Built with React, Supabase, and Stripe. PHIPA-compliant, culturally-informed, an
 - **Client Management** — Track clients with status pills, cultural context tags, and detailed profiles
 - **Session Notes** — DAP/SOAP/BIRP/Progress formats with AI-powered draft assist
 - **Billing & Invoicing** — Create invoices, track payments, export T2125 for CRA
-- **Calendar** — Appointment scheduling with availability management
-- **Secure Messaging** — PHIPA-compliant client communication
+- **Calendar** — Appointment scheduling *(in development — UI only)*
+- **Secure Messaging** — Client communication *(in development — UI only)*
 
 ### 🤖 AI Note Assist
 - Powered by Claude (Anthropic)
 - Generates draft session notes in professional clinical language
-- PHIPA-safe: No client PII sent to AI service
+- Obvious identifiers (phone, email, 9-digit numbers) are redacted before sending; the remaining clinical text **is** sent to Anthropic (US). Clinicians must not include client names or other identifiers
 - Supports all major note formats (DAP, SOAP, BIRP, Progress)
 - Review and edit before saving
 
@@ -28,20 +30,16 @@ Built with React, Supabase, and Stripe. PHIPA-compliant, culturally-informed, an
 - Automated invoice generation
 - Payment tracking and reminders
 
-### 👥 Client Portal
-- **PHIPA-compliant intake forms** with 7 templates
-- Self-serve booking with calendar integration
-- Culturally-informed intake questions (racialized stress, immigration, etc.)
-- E-signature for informed consent
-- Session reminders via email/SMS
+### 👥 Client Portal *(in development — UI prototype, no backend yet)*
+- Intake form templates, self-serve booking, culturally-informed intake questions
+- E-signature for informed consent and session reminders are planned, not implemented
 
-### 🔒 PHIPA Compliance
-- ✅ Data stored on Canadian servers (ca-central-1)
-- ✅ Encryption at rest and in transit
-- ✅ Auto-lock session notes after 24 hours
-- ✅ Audit logging for all AI assist usage
-- ✅ Client consent management
-- ✅ No client PII exposed to third-party AI services
+### 🔒 Privacy & Security (current state)
+- ✅ Database hosted in Canada (Supabase, ca-central-1)
+- ✅ Row-level security: each clinician can only access their own rows
+- ✅ Automatic sign-out after 15 minutes of inactivity
+- ⏳ Field-level encryption with managed keys — planned (current client-side scheme is not a security control)
+- ⏳ Server-side audit logging, note auto-lock, consent management, data export/deletion — planned
 
 ---
 
@@ -109,10 +107,12 @@ mentalpath/
 │   └── imports/                # Static assets
 ├── supabase/
 │   └── functions/
-│       └── server/
-│           ├── ai-note-assist.ts      # Claude AI integration
-│           ├── stripe-webhook.ts      # Stripe event handler
-│           └── index.tsx              # Main edge function server
+│       └── make-server-4d1a502d/  # Single Hono edge function (deployed under this name)
+│           ├── index.ts               # Entry: CORS + route mounting
+│           ├── ai-routes.ts           # Claude AI note assist
+│           ├── billing-routes.ts      # Invoices + T2125 export
+│           ├── trial-manager.ts       # Trial status
+│           └── stripe-webhook.ts      # Stripe handler (not yet mounted/deployed — Sprint 2)
 ├── .env.example                # Environment variables template
 ├── DEPLOYMENT.md               # Deployment guide
 └── README.md                   # This file
@@ -155,7 +155,7 @@ mentalpath/
 - Body: DM Sans (300/400/500 weights)
 
 **Components**
-- All UI follows WCAG 2.1 AA accessibility standards
+- Targeting WCAG 2.2 AA (not yet audited)
 - Responsive design (mobile-first)
 - Keyboard navigation support
 
@@ -203,16 +203,13 @@ npm run lint
 ### Edge Functions (Supabase)
 
 ```bash
-# Deploy AI note assist function
-npx supabase functions deploy ai-note-assist \
+# Deploy the API edge function (AI assist, billing, trial routes)
+npx supabase functions deploy make-server-4d1a502d \
   --project-ref hkhwgbkijepsxtixdmrs
 
-# Deploy Stripe webhook handler
-npx supabase functions deploy stripe-webhook \
+# Required in production: restrict CORS to your app's origins
+npx supabase secrets set ALLOWED_ORIGINS=https://app.example.ca \
   --project-ref hkhwgbkijepsxtixdmrs
-
-# View logs
-npx supabase functions logs ai-note-assist
 ```
 
 ### Testing
@@ -255,26 +252,22 @@ TWILIO_ACCOUNT_SID=AC...
 
 ## 🔐 Security & Compliance
 
-### PHIPA Compliance
+### Privacy posture (honest current state)
 
-MentalPath is built to meet Ontario's Personal Health Information Protection Act (PHIPA) requirements:
+MentalPath is being built toward Ontario's PHIPA and federal PIPEDA requirements. **It is not yet compliant**, and no compliance certification has been obtained. Current state:
 
-1. **Data Residency** — All data stored in ca-central-1 (Canada)
-2. **Encryption** — AES-256 at rest, TLS 1.3 in transit
-3. **Access Controls** — Role-based access with Supabase RLS
-4. **Audit Logging** — All AI assist calls logged (no PII)
-5. **Data Minimization** — Only collect necessary client information
-6. **Consent Management** — Built-in consent forms with e-signature
+1. **Data residency** — Database in ca-central-1 (Canada). AI assist (Anthropic), and Sentry/PostHog if enabled, process data outside Canada.
+2. **Encryption** — Supabase encryption at rest and TLS in transit. Application-level note encryption with managed keys is planned.
+3. **Access controls** — Supabase RLS scoped to the signed-in clinician. Billing/plan fields are writable only by the server.
+4. **Audit logging** — Planned (server-side). Not yet in place.
+5. **Consent management** — Planned. Not yet in place.
 
-### PII Handling in AI Features
+### AI features and personal health information
 
-When using AI note assist:
-- ❌ Client names are NOT sent to Anthropic
-- ❌ Contact information is NOT sent
-- ❌ Dates of birth are NOT sent
-- ✅ Only clinical note text is sent (sanitized)
-- ✅ Session identified by UUID only
-- ✅ All calls logged for audit trail
+- Session-note text written by the clinician **is sent to Anthropic's API** to produce a draft.
+- The server redacts phone numbers, email addresses and 9-digit numbers. It does **not** remove names, addresses or other identifiers in free text.
+- Clinicians must not enter client names or identifiers into AI-assisted fields.
+- A vendor data-processing agreement and explicit consent flow are required before production use.
 
 ---
 
@@ -282,7 +275,6 @@ When using AI note assist:
 
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** — Full deployment guide with Supabase, Stripe, and Anthropic setup
 - **[.env.example](./.env.example)** — Environment variables reference
-- **College Guidelines** — Compliant with CRPO (College of Registered Psychotherapists of Ontario) record-keeping standards
 
 ---
 

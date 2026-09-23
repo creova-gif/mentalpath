@@ -3,8 +3,8 @@ import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '../ui/ProgressBar';
-import { supabase } from '@/utils/supabase/client';
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { supabase, authHeaders } from '@/utils/supabase/client';
+import { projectId } from '/utils/supabase/info';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
 
@@ -158,7 +158,7 @@ export function Billing() {
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/make-server-4d1a502d/tax-export/t2125/${year}`,
         {
-          headers: { Authorization: `Bearer ${publicAnonKey}` }
+          headers: await authHeaders()
         }
       );
 

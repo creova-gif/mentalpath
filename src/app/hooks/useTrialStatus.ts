@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { projectId } from '/utils/supabase/info';
+import { supabase, authHeaders } from '@/utils/supabase/client';
 
 export interface TrialStatus {
   isActive: boolean;
@@ -15,16 +16,6 @@ export interface TrialStatus {
 const TRIAL_DURATION_DAYS = 7;
 const SERVER_URL = `https://${projectId}.supabase.co/functions/v1/make-server-4d1a502d`;
 
-// Get userId from localStorage (in production, this would come from auth)
-function getUserId(): string {
-  let userId = localStorage.getItem('mentalpath_user_id');
-  if (!userId) {
-    userId = 'user_' + Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('mentalpath_user_id', userId);
-  }
-  return userId;
-}
-
 export function useTrialStatus(): TrialStatus {
   const [status, setStatus] = useState<TrialStatus>({
     isActive: false,
@@ -39,12 +30,11 @@ export function useTrialStatus(): TrialStatus {
   useEffect(() => {
     const fetchTrialStatus = async () => {
       try {
-        const userId = getUserId();
-        
-        const response = await fetch(`${SERVER_URL}/trial/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-          },
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const response = await fetch(`${SERVER_URL}/trial/${session.user.id}`, {
+          headers: await authHeaders(),
         });
 
         if (!response.ok) {
@@ -106,17 +96,15 @@ export function useTrialStatus(): TrialStatus {
 }
 
 // Start a new trial
-export async function startTrial(email: string): Promise<void> {
+export async function startTrial(): Promise<void> {
   try {
-    const userId = getUserId();
-    
+    // The server derives user id + email from the verified access token.
     const response = await fetch(`${SERVER_URL}/trial/start`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        ...(await authHeaders()),
       },
-      body: JSON.stringify({ userId, email }),
     });
 
     const data = await response.json();
@@ -132,49 +120,12 @@ export async function startTrial(email: string): Promise<void> {
   }
 }
 
-// Activate a paid plan (ends trial)
-export async function activatePlan(
-  planType: 'solo' | 'group',
-  email: string,
-  stripeCustomerId?: string,
-  stripeSubscriptionId?: string
-): Promise<void> {
-  try {
-    const userId = getUserId();
-    
-    const response = await fetch(`${SERVER_URL}/trial/upgrade`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
-      },
-      body: JSON.stringify({
-        userId,
-        email,
-        planType,
-        stripeCustomerId,
-        stripeSubscriptionId,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('Failed to activate plan:', data.error);
-      return;
-    }
-
-    console.log('Plan activated successfully:', data);
-  } catch (error) {
-    console.error('Error activating plan:', error);
-  }
-}
-
 // Reset trial (for testing purposes)
 export function resetTrial(): void {
   try {
+    // Trials are keyed to the authenticated user server-side; the only local
+    // state left to clear is the legacy anonymous id from older builds.
     localStorage.removeItem('mentalpath_user_id');
-    console.log('Trial reset - user ID cleared');
     window.location.reload();
   } catch (error) {
     console.error('Error resetting trial:', error);
@@ -184,12 +135,11 @@ export function resetTrial(): void {
 // Get trial info
 export async function getTrialInfo(): Promise<any> {
   try {
-    const userId = getUserId();
-    
-    const response = await fetch(`${SERVER_URL}/trial/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${publicAnonKey}`,
-      },
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return null;
+
+    const response = await fetch(`${SERVER_URL}/trial/${session.user.id}`, {
+      headers: await authHeaders(),
     });
 
     if (!response.ok) {

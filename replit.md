@@ -30,7 +30,7 @@ src/
   styles/           # Global CSS and theme tokens
   main.tsx          # Entry point
 supabase/
-  functions/server/ # Deno Edge Functions (Hono server, AI/billing routes)
+  functions/make-server-4d1a502d/ # Deno Edge Function (Hono server, AI/billing routes)
 utils/supabase/     # Supabase configuration
 ```
 

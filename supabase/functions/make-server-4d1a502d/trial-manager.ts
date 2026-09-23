@@ -165,62 +165,9 @@ app.get("/make-server-4d1a502d/trial/:userId", async (c) => {
   }
 });
 
-// Activate subscription (upgrade from trial)
-app.post("/make-server-4d1a502d/trial/upgrade", async (c) => {
-  try {
-    const authResult = await requireAuth(c);
-    if (authResult instanceof Response) return authResult;
-    const { user } = authResult;
-
-    const body = await c.req.json();
-    const { planType, stripeCustomerId, stripeSubscriptionId } = body;
-
-    if (!planType) {
-      return c.json({ error: "planType is required" }, 400);
-    }
-
-    if (planType !== 'solo' && planType !== 'group') {
-      return c.json({ error: "planType must be 'solo' or 'group'" }, 400);
-    }
-
-    const userId = user.id;
-    const email = user.email ?? "";
-
-    const now = new Date();
-    const subscriptionData: SubscriptionData = {
-      userId,
-      email,
-      planType,
-      stripeCustomerId,
-      stripeSubscriptionId,
-      status: 'active',
-      startDate: now.toISOString(),
-      updatedAt: now.toISOString(),
-    };
-
-    await kv.set(`subscription:${userId}`, subscriptionData);
-
-    // Update trial status to upgraded
-    const trial = await kv.get<TrialData>(`trial:${userId}`);
-    if (trial) {
-      trial.status = 'upgraded';
-      trial.planType = planType;
-      trial.updatedAt = now.toISOString();
-      await kv.set(`trial:${userId}`, trial);
-    }
-
-    console.log(`User ${userId} upgraded to ${planType} plan`);
-
-    return c.json({
-      success: true,
-      subscription: subscriptionData,
-      message: `Successfully upgraded to ${planType} plan`
-    });
-  } catch (error) {
-    console.error("Error upgrading subscription:", error);
-    return c.json({ error: "Failed to upgrade subscription" }, 500);
-  }
-});
+// NOTE: there is intentionally no client-callable "upgrade" route. A paid
+// plan may only be activated by the signature-verified Stripe webhook after
+// payment succeeds — never from a request body the user controls.
 
 // Cancel subscription
 app.post("/make-server-4d1a502d/subscription/cancel", async (c) => {

@@ -100,11 +100,9 @@ export function Onboarding() {
     localStorage.setItem('user_email', formData.email);
     
     // Start the 7-day free trial with user's email
-    startTrial(formData.email);
+    startTrial();
     
     // In production, this would create the account and redirect to dashboard
-    console.log('Onboarding completed:', formData);
-    console.log('7-day free trial started for:', formData.email);
 
     if (!isSkip && formData.clientFirstName && formData.clientLastName) {
       fireSuccessConfetti();

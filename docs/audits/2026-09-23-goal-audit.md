@@ -374,3 +374,27 @@ None of this is architecturally hard to fix. The Supabase + RLS foundation is ri
 - No live penetration test. Findings are code-evident and should be confirmed in an authorized engagement.
 - Compliance observations identify applicable requirements (PHIPA, PIPEDA, Quebec Law 25, provincial College record-keeping). They are not legal advice or certification.
 - Standards referenced: OWASP Top 10:2025, WCAG 2.2 AA. Re-verify versions per engagement.
+
+---
+
+## 19. Remediation Log
+
+### Sprint 0 — completed 2026-09-23 (branch `claude/goal-audit-1fv67r`)
+
+| Item | Change | Verified |
+|---|---|---|
+| Build / CI red (P0-9) | Removed the unused duplicate `ui/Tooltip.tsx` (case collision with `ui/tooltip.tsx`) | `tsc --noEmit` ✅, `npm run build` ✅ on Linux, Playwright ✅ |
+| Demo login bypass (P0-2) | Deleted the client-side fallback in `UserContext.login`. Login is Supabase Auth only. Demo account picker on `/login` is rendered only in `import.meta.env.DEV` builds | `demo1234` absent from the production bundle |
+| Demo users in production auth (P0-2) | `seed_production.sql` no longer creates demo users. `seed_demo_users_fixed.sql` marked dev-only. Added `supabase/scripts/disable_demo_users.sql` (ban + random password + revoke sessions, no row deletes) | **Action required:** run the script in the production project |
+| Self-serve paid plan (P0-1) | Removed `POST /trial/upgrade` and the browser `activatePlan()` call from `CheckoutSuccess`. New migration `20260923_lock_clinician_billing_columns.sql` limits browser `INSERT`/`UPDATE` on `clinicians` to profile columns, and revokes all browser access to `kv_store_4d1a502d` | Tested on local Postgres 16 with Supabase-style roles: self-upgrade and billing-column insert → `permission denied`. Profile update ✅. `service_role` billing update ✅ |
+| Unauthenticated AI proxy / real users locked out (P0-5) | AI route rejects the anon key and requires a verified user JWT. Entitlement is read from the now server-only `clinicians.is_trial/trial_ends_at` (a trial with unset `trial_ends_at` counts as active until signup sets it in Sprint 1). Frontend sends the session access token (`authHeaders()`). Same fix applied to T2125 export and trial status calls, which were also sending the anon key | `deno check`: no new errors (9 → 7 pre-existing `kv.get<T>` typing issues remain) |
+| `/ai-test` public (A02) | Route is registered only in DEV builds | Absent from the production bundle |
+| CORS fallback reflected any origin (A02) | Dev fallback now allows only localhost / Replit. Production uses `ALLOWED_ORIGINS` | **Action required:** set `ALLOWED_ORIGINS` secret |
+| Duplicate edge-function trees (§3) | Kept `supabase/functions/make-server-4d1a502d/` (matches the deployed URL). Removed `supabase/functions/server/`, `index.tsx`, `kv_store.tsx` | — |
+| Unverified compliance claims (P0-6) | README rewritten to state the current privacy posture, AI data flow, and pre-launch status | In-app marketing copy (Landing, Compliance, profession pages) still carries claims. It needs a founder/legal wording pass |
+
+**Deployment steps to make Sprint 0 effective:**
+1. Apply `supabase/migrations/20260923_lock_clinician_billing_columns.sql`.
+2. Run `supabase/scripts/disable_demo_users.sql` in production.
+3. `supabase secrets set ALLOWED_ORIGINS=<prod origins>`, then redeploy `make-server-4d1a502d`.
+4. Deploy the frontend.

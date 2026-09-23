@@ -3,6 +3,9 @@ import { useNavigate, Link } from 'react-router';
 import { useUser, DEMO_ACCOUNTS } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
 
+// Seeded by supabase/seed_demo_users_fixed.sql for local development only.
+const DEMO_PASSWORD = import.meta.env.DEV ? 'demo1234' : '';
+
 const professionEmoji: Record<string, string> = {
   'Registered Psychotherapist': '🧠',
   'Chiropractor': '🦴',
@@ -36,7 +39,7 @@ export function Login() {
 
   const fillDemo = (acctEmail: string) => {
     setEmail(acctEmail);
-    setPassword('demo1234');
+    setPassword(DEMO_PASSWORD);
     setError('');
   };
 
@@ -99,7 +102,8 @@ export function Login() {
             <p style={{ fontSize: 13, color: 'var(--ink-muted)' }}>{t('login.welcomeSub')}</p>
           </div>
 
-          {/* DEMO ACCOUNTS */}
+          {/* DEMO ACCOUNTS — local development only. Demo users must never exist in production auth. */}
+          {import.meta.env.DEV && (<>
           <div style={{ marginBottom: 22 }}>
             <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--sage-deep)', marginBottom: 8 }}>
               ✦ {t('login.demoTitle')}
@@ -151,7 +155,7 @@ export function Login() {
               })}
             </div>
             <p style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 8, textAlign: 'center' }}>
-              {t('login.demoPassword')} <code style={{ background: 'var(--surface)', padding: '1px 5px', borderRadius: 4, fontSize: 11 }}>demo1234</code>
+              {t('login.demoPassword')} <code style={{ background: 'var(--surface)', padding: '1px 5px', borderRadius: 4, fontSize: 11 }}>{DEMO_PASSWORD}</code>
             </p>
           </div>
 
@@ -160,6 +164,7 @@ export function Login() {
             <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{t('login.orEmail')}</span>
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
+          </>)}
 
           <form onSubmit={handleSubmit} aria-label={t('login.welcomeSub')} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>

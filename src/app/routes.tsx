@@ -124,11 +124,12 @@ const router = createBrowserRouter([
     element: <Suspense fallback={null}><TrialAdmin /></Suspense>,
     errorElement: <ErrorBoundary />,
   }] : []),
-  {
+  // Debug AI playground — local development builds only (never in production).
+  ...(import.meta.env.DEV ? [{
     path: "/ai-test",
     element: <Suspense fallback={null}><AITest /></Suspense>,
     errorElement: <ErrorBoundary />,
-  },
+  }] : []),
   {
     path: "/book",
     element: <Suspense fallback={null}><BookingPage /></Suspense>,

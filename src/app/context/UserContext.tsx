@@ -85,9 +85,10 @@ const PROFESSION_META: Record<
   'Speech-Language Pathologist': { college: 'College of Audiologists and Speech-Language Pathologists of Ontario', collegeAbbr: 'CASLPO', notesLabel: 'Clinical Notes', noteFormat: 'SOAP / Progress Notes', hstExempt: true, sessionRate: 175 },
 };
 
-// ── Demo accounts (kept for seeding + local dev fallback) ────────────────────
-// These are seeded into Supabase Auth and the `clinicians` table.
-// Password for all demo accounts: demo1234
+// ── Demo accounts (local development only) ───────────────────────────────────
+// Seeded by supabase/seed_demo_users_fixed.sql into a *local/dev* project only.
+// They must never exist in production auth. Login always goes through
+// Supabase Auth — there is no client-side bypass.
 export const DEMO_ACCOUNTS = [
   { email: 'dr.osei@mentalpath.ca',       firstName: 'Abena',  lastName: 'Osei-Mensah', profession: 'Registered Psychotherapist' as Profession, regNumber: 'CRPO-004821', city: 'Toronto, ON',    planType: 'solo' as PlanType,  planCycle: 'monthly' as BillingCycle, pricePerSeat: 79,  seats: 1, isTrial: false, starts: 'September 1, 2025',  renews: 'April 1, 2026',    nextAmount: 79  },
   { email: 'dr.chen@spine360.ca',         firstName: 'Marcus', lastName: 'Chen',         profession: 'Chiropractor' as Profession,                regNumber: 'CCO-012047', city: 'Vancouver, BC', planType: 'solo' as PlanType,  planCycle: 'annual' as BillingCycle,  pricePerSeat: 69,  seats: 1, isTrial: false, starts: 'January 15, 2026',  renews: 'January 15, 2027', nextAmount: 828 },
@@ -133,46 +134,6 @@ const PROFESSION_TYPE_MAP: Record<string, Profession> = {
   dietitian:             'Dietitian',
   slp:                   'Speech-Language Pathologist',
 };
-
-function buildProfileFromDemoAndAuth(
-  userId: string,
-  email: string,
-): UserProfile | null {
-  // Find matching demo account for profile fields
-  const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
-  if (!demo) {
-    // New sign-up not in demo list — return a minimal profile
-    const firstName = email.split('@')[0] ?? 'User';
-    const lastName = '';
-    const profession: Profession = 'Registered Psychotherapist';
-    const meta = PROFESSION_META[profession];
-    return {
-      id: userId,
-      name: firstName,
-      firstName,
-      lastName,
-      initials: firstName[0]?.toUpperCase() ?? 'U',
-      email,
-      profession,
-      registrationNumber: '',
-      city: '',
-      ...meta,
-    };
-  }
-  const meta = PROFESSION_META[demo.profession];
-  return {
-    id: userId,
-    name: `${demo.firstName} ${demo.lastName}`.trim(),
-    firstName: demo.firstName,
-    lastName: demo.lastName,
-    initials: `${demo.firstName[0] ?? ''}${demo.lastName[0] ?? ''}`.toUpperCase(),
-    email,
-    profession: demo.profession,
-    registrationNumber: demo.regNumber,
-    city: demo.city,
-    ...meta,
-  };
-}
 
 function buildSubscriptionFromClinicianRow(
   row: ClinicianRow | null,
@@ -323,29 +284,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [loadProfile]);
 
   const login = async (email: string, password: string): Promise<'ok' | 'bad_credentials'> => {
-    // ── 1. Try real Supabase Auth ─────────────────────────────────────────────
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (!error) return 'ok';
-
-    // ── 2. Demo bypass (GoTrue seed compatibility workaround) ─────────────────
-    // Direct auth.users inserts via SQL don't always produce GoTrue-compatible
-    // password hashes. If Supabase auth fails but this is a known demo account
-    // with the correct demo password, log in locally.
-    const DEMO_PASSWORD = 'demo1234';
-    const demo = DEMO_ACCOUNTS.find(
-      a => a.email.toLowerCase() === email.toLowerCase()
-    );
-    if (demo && password === DEMO_PASSWORD) {
-      // Create a deterministic fake UUID from the email so it's stable
-      const fakeId = Array.from(email).reduce(
-        (acc, c) => ((acc * 31 + c.charCodeAt(0)) >>> 0), 0
-      ).toString(16).padStart(8, '0') + '-d000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
-
-      const profile = buildProfileFromDemoAndAuth(fakeId, email);
-      if (profile) setUser(profile);
-      setSubscriptionState(buildSubscriptionFromClinicianRow(null, email));
-      return 'ok';
-    }
 
     console.error('Login error:', error.message);
     return 'bad_credentials';

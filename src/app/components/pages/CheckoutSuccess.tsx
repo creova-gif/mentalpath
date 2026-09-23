@@ -1,20 +1,14 @@
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { CheckCircle, ArrowRight, Calendar, CreditCard } from 'lucide-react';
-import { activatePlan } from '../../hooks/useTrialStatus';
 
 export function CheckoutSuccess() {
   const [searchParams] = useSearchParams();
   const plan = searchParams.get('plan') || 'solo'; // Get plan from URL params
 
   useEffect(() => {
-    // Activate the paid plan (ends trial)
-    // In production, this would get email from authenticated user
-    const email = localStorage.getItem('user_email') || 'user@example.com';
-    
-    if (plan === 'solo' || plan === 'group') {
-      activatePlan(plan, email);
-    }
+    // Plan activation is NOT done from the browser. Entitlements are granted
+    // only by the verified Stripe webhook once payment actually succeeds.
 
     // Fire confetti on mount - simple inline version to avoid import issues
     const duration = 3000;

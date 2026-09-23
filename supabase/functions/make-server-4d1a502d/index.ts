@@ -31,7 +31,12 @@ app.use(
         return allowedOrigins.includes(origin) ? origin : null;
       }
       // In dev (no ALLOWED_ORIGINS set): allow localhost on any port + Replit
-      return isDev ? (origin || '*') : null;
+      // only. Never reflect arbitrary origins — set ALLOWED_ORIGINS in prod.
+      const devAllowed =
+        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+        /^https?:\/\/[\w-]+\.[\w-]+\.repl\.co$/.test(origin) ||
+        /^https?:\/\/[\w-]+\.replit\.(app|dev)$/.test(origin);
+      return devAllowed ? origin : null;
     },
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
