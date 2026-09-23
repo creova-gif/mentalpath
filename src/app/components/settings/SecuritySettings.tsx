@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ShieldCheck } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
+import { useUser } from '../../context/UserContext';
+import { AiConsentDialog } from '../modals/AiConsentDialog';
 
 const MIN_LENGTH = 12;
 
@@ -13,6 +15,13 @@ export function SecuritySettings() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [factorCount, setFactorCount] = useState<number | null>(null);
+  const { user, setAiAssistEnabled } = useUser();
+  const [showAiConsent, setShowAiConsent] = useState(false);
+
+  const toggleAi = async (enabled: boolean) => {
+    if (enabled) return setShowAiConsent(true);
+    if (await setAiAssistEnabled(false)) toast.success(t('settings.security.aiOff'));
+  };
 
   useEffect(() => {
     supabase.auth.mfa.listFactors().then(({ data }) => {
@@ -71,6 +80,29 @@ export function SecuritySettings() {
           </div>
         </div>
       </div>
+
+      <div className="pt-3 border-t border-[var(--border)] text-[13px] text-[var(--ink-soft)]">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!user?.aiAssistEnabled}
+            onChange={e => toggleAi(e.target.checked)}
+            className="w-4 h-4 accent-[var(--sage)] cursor-pointer"
+          />
+          <span className="font-medium text-[var(--ink)]">{t('settings.security.aiTitle')}</span>
+        </label>
+        <div className="text-xs text-[var(--ink-muted)] ml-6 mt-1">{t('settings.security.aiDesc')}</div>
+      </div>
+
+      {showAiConsent && (
+        <AiConsentDialog
+          onCancel={() => setShowAiConsent(false)}
+          onAccept={async () => {
+            setShowAiConsent(false);
+            if (await setAiAssistEnabled(true)) toast.success(t('settings.security.aiOn'));
+          }}
+        />
+      )}
     </div>
   );
 }

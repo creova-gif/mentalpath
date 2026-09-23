@@ -644,13 +644,18 @@
     }
   },
   "sessionNotes": {
-    "summary": "{{dueCount}} notes à faire sous 24h · {{completedCount}} notes terminées",
+    "summary": "{{draftCount}} brouillons · {{lockedCount}} notes verrouillées",
     "newNote": "Nouvelle note de session",
-    "dueTitle": "À faire — compléter sous 24h",
+    "dueTitle": "Brouillons — verrouiller dans les 24 heures suivant la séance",
     "writeNote": "Rédiger",
-    "recentCompleted": "Notes terminées récentes",
+    "recentCompleted": "Notes verrouillées",
     "locked": "Verrouillé",
-    "view": "Voir"
+    "view": "Voir",
+    "noDrafts": "Aucun brouillon. Commencez une note depuis le dossier d’un client ou avec « Nouvelle note de séance ».",
+    "noLocked": "Aucune note verrouillée pour l’instant.",
+    "loadError": "Impossible de charger vos notes. Actualisez pour réessayer.",
+    "sessionLabel": "Séance {{number}}",
+    "loading": "Chargement des notes…"
   },
   "billing": {
     "alerts": {
@@ -951,7 +956,11 @@
       "autoLockAlwaysOn": "Toujours activée pour protéger les renseignements de santé des clients.",
       "mfaTitle": "Authentification à deux facteurs (obligatoire)",
       "mfaStatus_one": "{{count}} application d’authentification enregistrée. Obligatoire pour accéder aux dossiers des clients.",
-      "mfaStatus_other": "{{count}} applications d’authentification enregistrées. Obligatoire pour accéder aux dossiers des clients."
+      "mfaStatus_other": "{{count}} applications d’authentification enregistrées. Obligatoire pour accéder aux dossiers des clients.",
+      "aiTitle": "Assistant de notes IA",
+      "aiDesc": "Envoie le texte de note que vous rédigez à Anthropic (É.-U.) pour générer une ébauche. Désactivé par défaut.",
+      "aiOn": "Assistant de notes IA activé.",
+      "aiOff": "Assistant de notes IA désactivé."
     },
     "danger": {
       "deleteAccount": "Supprimer le compte",

@@ -121,6 +121,19 @@ async function incrementAIUsage(userId: string): Promise<void> {
 //   paid  — not on trial (plan activated by the Stripe webhook)
 //   trial — on trial and trial_ends_at is unset or in the future
 //   none  — no clinician row, or trial has ended
+async function hasAiConsent(
+  // deno-lint-ignore no-explicit-any
+  supabase: any,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("clinicians")
+    .select("ai_assist_enabled")
+    .eq("id", userId)
+    .maybeSingle();
+  return data?.ai_assist_enabled === true;
+}
+
 async function getEntitlement(
   // deno-lint-ignore no-explicit-any
   supabase: any,
@@ -166,6 +179,12 @@ app.post("/make-server-4d1a502d/ai-note-assist", async (c) => {
       return c.json({
         error: "AI Assist requires an active subscription or trial period.",
         code: "SUBSCRIPTION_REQUIRED"
+      }, 403);
+    }
+    if (!(await hasAiConsent(supabase, userId))) {
+      return c.json({
+        error: "Turn on AI Assist first. You'll be shown what is sent before it's enabled.",
+        code: "AI_NOT_ENABLED"
       }, 403);
     }
     const currentStatus = entitlement;
@@ -274,6 +293,20 @@ Your drafts should be concise, clinically sound, and suitable for regulated prac
     
     // Get updated usage info
     const updatedUsage = await checkAIUsageLimit(userId, currentStatus);
+
+    // Server-side audit row (metadata only — never note text)
+    await supabase.from("audit_log").insert({
+      clinician_id: userId,
+      action: "AI_ASSIST_USED",
+      table_name: "session_notes",
+      details: {
+        note_format: fmt,
+        model: data.model,
+        input_tokens: data.usage?.input_tokens,
+        output_tokens: data.usage?.output_tokens,
+        request_id: session_id,
+      },
+    });
 
     // Log usage for audit (no PII — just session_id + token counts)
     console.log(JSON.stringify({

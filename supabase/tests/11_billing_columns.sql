@@ -15,3 +15,23 @@ DO $$ BEGIN
   ASSERT (SELECT plan_type FROM clinicians WHERE id = '11111111-1111-1111-1111-111111111111') = 'solo';
 END $$;
 ROLLBACK;
+
+-- AI Assist opt-in is user-controlled, but the consent timestamp is server-set
+BEGIN;
+SELECT test_seed_users();
+SELECT test_login('11111111-1111-1111-1111-111111111111');
+SELECT expect_error($$UPDATE clinicians SET ai_assist_consented_at = '2000-01-01' WHERE id = auth.uid()$$, '%permission denied%');
+UPDATE clinicians SET ai_assist_enabled = true WHERE id = auth.uid();
+RESET ROLE;
+DO $$ BEGIN
+  ASSERT (SELECT ai_assist_consented_at > now() - interval '1 minute' FROM clinicians
+          WHERE id = '11111111-1111-1111-1111-111111111111'), 'consent stamped';
+END $$;
+SELECT test_login('11111111-1111-1111-1111-111111111111');
+UPDATE clinicians SET ai_assist_enabled = false WHERE id = auth.uid();
+RESET ROLE;
+DO $$ BEGIN
+  ASSERT (SELECT ai_assist_consented_at IS NULL FROM clinicians
+          WHERE id = '11111111-1111-1111-1111-111111111111'), 'consent cleared';
+END $$;
+ROLLBACK;

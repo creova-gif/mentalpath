@@ -4,7 +4,6 @@ import { authHeaders } from '@/utils/supabase/client';
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
 
 export interface AINoteRequest {
-  sessionId: string;
   noteFormat: 'DAP' | 'SOAP' | 'BIRP' | 'PROGRESS';
   section1: string;
   section2: string;
@@ -86,7 +85,8 @@ export async function generateNoteAssist(request: AINoteRequest): Promise<AINote
         ...(await authHeaders()),
       },
       body: JSON.stringify({
-        session_id: request.sessionId,
+        // Correlation id for server logs only — not linked to any client.
+        session_id: crypto.randomUUID(),
         note_format: request.noteFormat,
         section_1: request.section1,
         section_2: request.section2,
@@ -122,16 +122,4 @@ export async function generateNoteAssist(request: AINoteRequest): Promise<AINote
         : 'AI assist is currently unavailable. Please write your note manually.'
     );
   }
-}
-
-/**
- * Generate a session ID (in production, this would come from your database)
- */
-export function generateSessionId(): string {
-  // Generate a UUID v4
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
 }

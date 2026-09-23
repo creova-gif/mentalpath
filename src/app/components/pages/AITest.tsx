@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sparkles, CheckCircle, XCircle, Loader2 } from 'lucide-react';
-import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
+import { generateNoteAssist } from '../../services/aiNoteService';
 
 export function AITest() {
   const [format, setFormat] = useState<'DAP' | 'SOAP' | 'BIRP' | 'PROGRESS'>('DAP');
@@ -20,7 +20,6 @@ export function AITest() {
 
     try {
       const response = await generateNoteAssist({
-        sessionId: generateSessionId(),
         noteFormat: format,
         section1,
         section2,

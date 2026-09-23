@@ -1,157 +1,95 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { NoteModal } from '../modals/NoteModal';
-import { supabase } from '../../../utils/supabase/client';
-import { decryptText } from '../../../utils/encryption';
-import { useUser } from '../../context/UserContext';
+import { listNotes, type NoteSummary } from '../../services/sessionNotes';
 
-const dueNotes = [
-  { initials: 'JL', name: 'Jamal Lee', time: 'Today 11:30am', type: 'Individual · Session 22 · DAP format', color: 'c-av-c' },
-  { initials: 'SM', name: 'Sadia Mohamoud', time: 'Today 9:00am', type: 'Individual · Session 8 · SOAP format', color: 'c-av-a' },
-  { initials: 'AM', name: 'Amara Mensah', time: 'Today 10:00am', type: 'Individual · Session 14 · DAP format', color: 'c-av-b' },
-];
+function initials(name: string) {
+  return name.split(/\s+/).map(p => p[0] ?? '').join('').slice(0, 2).toUpperCase() || '—';
+}
 
-const completedNotes = [
-  { initials: 'AM', name: 'Amara Mensah — Session 13', date: 'Mar 9 · DAP', color: 'c-av-b' },
-  { initials: 'JL', name: 'Jamal Lee — Session 21', date: 'Mar 9 · DAP', color: 'c-av-c' },
-  { initials: 'PC', name: 'Priya & Chetan — Session 2', date: 'Mar 7 · BIRP', color: 'c-av-d' },
-  { initials: 'SM', name: 'Sadia Mohamoud — Session 7', date: 'Mar 6 · SOAP', color: 'c-av-a' },
-];
+function NoteRow({ note, action, onOpen }: { note: NoteSummary; action: string; onOpen: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <li className="flex items-center gap-3.5 px-5 py-3.5 border-t border-[var(--border)] first:border-t-0 hover:bg-[var(--warm)]">
+      <div aria-hidden="true" className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 bg-[#d4e8e4] text-[var(--sage-deep)]">
+        {initials(note.clientName)}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-[var(--ink)] truncate">
+          {note.clientName}{note.sessionNumber ? ` — ${t('sessionNotes.sessionLabel', { number: note.sessionNumber })}` : ''}
+        </div>
+        <div className="text-xs text-[var(--ink-muted)] flex items-center gap-1">
+          {new Date(note.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {note.noteFormat.toUpperCase()}
+          {note.isLocked && (
+            <span className="text-[var(--sage)] text-[11px] inline-flex items-center gap-1">
+              · <Lock className="w-3 h-3" aria-hidden="true" /> {t('sessionNotes.locked')}
+            </span>
+          )}
+        </div>
+      </div>
+      <button
+        onClick={onOpen}
+        className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] hover:bg-[var(--sage-pale)] hover:text-[var(--sage-deep)]"
+      >
+        {action}
+      </button>
+    </li>
+  );
+}
 
 export function SessionNotes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useUser();
-  const [selectedClient, setSelectedClient] = useState<string | null>(null);
-  const [dbNotes, setDbNotes] = useState<any[]>([]);
+  const [notes, setNotes] = useState<NoteSummary[] | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    async function loadNotes() {
-      if (!user) return;
-      const { data, error } = await supabase
-        .from('session_notes')
-        .select('*')
-        .eq('clinician_id', user.id)
-        .order('created_at', { ascending: false });
-      
-      if (data) {
-        const decryptedNotes = await Promise.all(data.map(async (n: any) => {
-           let decryptedPreview = 'No content';
-           try {
-             if (n.section_1) decryptedPreview = await decryptText(n.section_1, user.id);
-           } catch (e) {
-             console.error('Decryption failed for note', n.id);
-           }
-           return { ...n, decryptedPreview };
-        }));
-        setDbNotes(decryptedNotes);
-      }
-    }
-    loadNotes();
-  }, [user]);
+    listNotes({ limit: 200 }).then(setNotes).catch(() => setError(true));
+  }, []);
 
-  const drafts = dbNotes.filter(n => !n.is_locked);
-  const completed = dbNotes.filter(n => n.is_locked);
+  const drafts = (notes ?? []).filter(n => !n.isLocked);
+  const locked = (notes ?? []).filter(n => n.isLocked);
+  const open = (id: string) => navigate(`/session-note-editor?noteId=${id}`);
 
   return (
     <>
       <div className="flex justify-between items-center mb-5">
-        <div className="text-sm text-[var(--ink-muted)]">
-          {t('sessionNotes.summary', { dueCount: 3, completedCount: 47 })}
+        <div className="text-sm text-[var(--ink-muted)]" aria-live="polite">
+          {notes === null && !error ? t('sessionNotes.loading') : t('sessionNotes.summary', { draftCount: drafts.length, lockedCount: locked.length })}
         </div>
         <button
           onClick={() => navigate('/session-note-editor')}
-          className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
+          className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
         >
-          <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+          <Plus className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
           {t('sessionNotes.newNote')}
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
-        <div>
-          <div className="text-xs font-medium uppercase tracking-[0.6px] text-[var(--red)] mb-2.5">
+      {error && <p role="alert" className="mb-4 text-sm text-[var(--red)]">{t('sessionNotes.loadError')}</p>}
+
+      <div className="grid md:grid-cols-2 gap-5">
+        <section aria-labelledby="drafts-heading">
+          <h2 id="drafts-heading" className="text-xs font-medium uppercase tracking-[0.6px] text-[var(--red)] mb-2.5">
             {t('sessionNotes.dueTitle')}
-          </div>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-0">
-              {drafts.length === 0 && <div className="p-4 text-sm text-gray-500">No due notes</div>}
-              {drafts.map((note) => (
-                <div
-                  key={note.id}
-                  onClick={() => navigate(`/session-note-editor?noteId=${note.id}`)}
-                  className="flex items-center gap-3.5 px-5 py-3.5 border-t border-[var(--border)] cursor-pointer transition-all duration-100 hover:bg-[var(--warm)] first:border-t-0"
-                >
-                  <div className={`w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor('c-av-c')}`}>
-                    CS
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-[var(--ink)]">Client Session — Session {note.session_number || 1}</div>
-                    <div className="text-xs text-[var(--ink-muted)]">{new Date(note.session_date).toLocaleDateString()} · {note.note_format?.toUpperCase()} format</div>
-                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(`/session-note-editor?noteId=${note.id}`); }}
-                    className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
-                  >
-                    {t('sessionNotes.writeNote')}
-                  </button>
-                </div>
-              ))}
-          </div>
-        </div>
+          </h2>
+          <ul className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+            {notes !== null && drafts.length === 0 && <li className="p-4 text-sm text-[var(--ink-muted)]">{t('sessionNotes.noDrafts')}</li>}
+            {drafts.map(n => <NoteRow key={n.id} note={n} action={t('sessionNotes.writeNote')} onOpen={() => open(n.id)} />)}
+          </ul>
+        </section>
 
-        <div>
-          <div className="text-xs font-medium uppercase tracking-[0.6px] text-[var(--ink-muted)] mb-2.5">
+        <section aria-labelledby="locked-heading">
+          <h2 id="locked-heading" className="text-xs font-medium uppercase tracking-[0.6px] text-[var(--ink-muted)] mb-2.5">
             {t('sessionNotes.recentCompleted')}
-          </div>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-0">
-            <div className="flex flex-col gap-0">
-              {completed.length === 0 && <div className="p-4 text-sm text-gray-500">No completed notes</div>}
-              {completed.map((note) => (
-                <div
-                  key={note.id}
-                  className="flex items-center gap-3.5 px-5 py-3.5 border-t border-[var(--border)] cursor-pointer transition-all duration-100 hover:bg-[var(--warm)] first:border-t-0"
-                >
-                  <div className={`w-[34px] h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor('c-av-b')}`}>
-                    CS
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-[var(--ink)]">Client Session — Session {note.session_number || 1}</div>
-                    <div className="text-xs text-[var(--ink-muted)] flex items-center gap-1">
-                      {new Date(note.session_date).toLocaleDateString()} · {note.note_format?.toUpperCase()} · <span className="text-[var(--sage)] text-[11px] flex items-center gap-1">
-                        <Lock className="w-3 h-3" /> {t('sessionNotes.locked')}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
-                  </div>
-                  <button
-                    onClick={() => navigate(`/session-note-editor?noteId=${note.id}`)}
-                    className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
-                  >
-                    {t('sessionNotes.view')}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+          </h2>
+          <ul className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
+            {notes !== null && locked.length === 0 && <li className="p-4 text-sm text-[var(--ink-muted)]">{t('sessionNotes.noLocked')}</li>}
+            {locked.map(n => <NoteRow key={n.id} note={n} action={t('sessionNotes.view')} onOpen={() => open(n.id)} />)}
+          </ul>
+        </section>
       </div>
-
-      {selectedClient !== null && <NoteModal clientName={selectedClient} onClose={() => setSelectedClient(null)} />}
     </>
   );
-}
-
-function getAvatarColor(color: string) {
-  const colors: Record<string, string> = {
-    'c-av-a': 'bg-[#d4e8e4] text-[var(--sage-deep)]',
-    'c-av-b': 'bg-[#e8d4d4] text-[#7a3030]',
-    'c-av-c': 'bg-[#d4d4e8] text-[#303070]',
-    'c-av-d': 'bg-[#e8e4d4] text-[#5a4a10]',
-    'c-av-e': 'bg-[#e4d4e8] text-[#5a1a6a]',
-    'c-av-f': 'bg-[#d4e8d4] text-[#1a5a1a]',
-  };
-  return colors[color] || colors['c-av-a'];
 }

@@ -17,7 +17,7 @@ echo "✓ migrations applied ($(ls migrations/*.sql | wc -l))"
 
 status=0
 for t in tests/[1-9]*.sql; do
-  if out=$("${PSQL[@]}" -d "$DB" -f "$t" 2>&1); then
+  if out=$("${PSQL[@]}" -o /dev/null -d "$DB" -f "$t" 2>&1); then
     echo "✓ $(basename "$t")"
   else
     echo "✗ $(basename "$t")"; echo "$out" | sed 's/^/    /'; status=1

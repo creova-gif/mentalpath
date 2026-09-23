@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { NoteModal } from '../modals/NoteModal';
 import { useUser } from '../../context/UserContext';
 
 const PROFESSION_SESSIONS: Record<string, Array<{ time: string; initials: string; name: string; type: string; status: string; color: string }>> = {
@@ -80,7 +79,6 @@ export function Overview() {
   const navigate = useNavigate();
   const { user, subscription } = useUser();
   const { t } = useTranslation();
-  const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   const profession = user?.profession ?? '';
   const sessions = PROFESSION_SESSIONS[profession] ?? DEFAULT_SESSIONS;
@@ -166,7 +164,7 @@ export function Overview() {
                 )}
                 {session.status === 'note-due' && (
                   <button
-                    onClick={e => { e.stopPropagation(); setSelectedClient(session.name); }}
+                    onClick={e => { e.stopPropagation(); navigate('/session-note-editor'); }}
                     className="px-2 sm:px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)] flex-shrink-0"
                   >
                     {t('dashboard.appointments.addNote')}
@@ -251,7 +249,6 @@ export function Overview() {
         </div>
       </div>
 
-      {selectedClient && <NoteModal clientName={selectedClient} onClose={() => setSelectedClient(null)} />}
     </>
   );
 }

@@ -43,6 +43,8 @@ export interface UserProfile {
   noteFormat: string;
   hstExempt: boolean;
   sessionRate: number;
+  /** Clinician has opted in to AI Note Assist (see migration 20260924000300). */
+  aiAssistEnabled: boolean;
 }
 
 export interface SubscriptionPlan {
@@ -65,6 +67,7 @@ interface UserContextType {
   login: (email: string, password: string) => Promise<'ok' | 'bad_credentials'>;
   logout: () => Promise<void>;
   setSubscription: (plan: SubscriptionPlan) => void;
+  setAiAssistEnabled: (enabled: boolean) => Promise<boolean>;
 }
 
 // ── Profession metadata (unchanged) ──────────────────────────────────────────
@@ -118,6 +121,7 @@ interface ClinicianRow {
   plan_renews_at: string | null;
   created_at: string | null;
   updated_at: string | null;
+  ai_assist_enabled: boolean | null;
 }
 
 // Map DB profession_code slug → Profession display string
@@ -170,6 +174,23 @@ function buildSubscriptionFromClinicianRow(
   };
 }
 
+// Older builds mirrored note drafts (plaintext PHI) and identifiers into
+// localStorage. Remove anything they left behind on this device.
+const LEGACY_STORAGE_PREFIXES = ['session_note_draft_', 'note_modal_draft_'];
+const LEGACY_STORAGE_KEYS = ['mentalpath_user_id', 'user_email'];
+export function purgeLegacyLocalData() {
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && (LEGACY_STORAGE_KEYS.includes(key) || LEGACY_STORAGE_PREFIXES.some(p => key.startsWith(p)))) {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch {
+    // Storage unavailable (private mode) — nothing to purge.
+  }
+}
+
 // ── Context ───────────────────────────────────────────────────────────────────
 const UserContext = createContext<UserContextType | null>(null);
 
@@ -214,7 +235,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Get live data from clinicians table using REAL column names
     const { data } = await supabase
       .from('clinicians')
-      .select('id, first_name, last_name, profession, reg_number, city, session_rate, hst_exempt, plan_type, plan_cycle, plan_seats, price_per_seat, is_trial, trial_ends_at, plan_starts_at, plan_renews_at, created_at, updated_at')
+      .select('id, first_name, last_name, profession, reg_number, city, session_rate, hst_exempt, plan_type, plan_cycle, plan_seats, price_per_seat, is_trial, trial_ends_at, plan_starts_at, plan_renews_at, created_at, updated_at, ai_assist_enabled')
       .eq('id', session.user.id)
       .maybeSingle();
 
@@ -253,6 +274,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       ...meta,
       sessionRate: rateFromDB ?? meta.sessionRate,
       hstExempt: hstExemptFromDB !== null ? hstExemptFromDB : meta.hstExempt,
+      aiAssistEnabled: row?.ai_assist_enabled ?? false,
     });
 
     setSubscriptionState(buildSubscriptionFromClinicianRow(row, email));
@@ -261,6 +283,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Bootstrap: listen to Supabase auth state changes
   useEffect(() => {
+    purgeLegacyLocalData();
     // Get the current session immediately
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) await loadProfile(session);
@@ -292,6 +315,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    purgeLegacyLocalData();
     await supabase.auth.signOut();
   };
 
@@ -299,8 +323,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setSubscriptionState(plan);
   };
 
+  const setAiAssistEnabled = async (enabled: boolean): Promise<boolean> => {
+    if (!user) return false;
+    const { error } = await supabase.from('clinicians').update({ ai_assist_enabled: enabled }).eq('id', user.id);
+    if (error) return false;
+    setUser({ ...user, aiAssistEnabled: enabled });
+    return true;
+  };
+
   return (
-    <UserContext.Provider value={{ user, subscription, isLoggedIn: !!user, isLoading, login, logout, setSubscription }}>
+    <UserContext.Provider value={{ user, subscription, isLoggedIn: !!user, isLoading, login, logout, setSubscription, setAiAssistEnabled }}>
       {children}
     </UserContext.Provider>
   );

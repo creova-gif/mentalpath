@@ -1,90 +1,62 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
+import { toast } from 'sonner';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
-import { toast } from 'sonner';
 import { useUser } from '../../context/UserContext';
-import { supabase } from '../../../utils/supabase/client';
-import { encryptText } from '../../../utils/encryption';
-import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
+import { generateNoteAssist } from '../../services/aiNoteService';
+import {
+  addAmendment, getNote, listAmendments, listClientOptions, listNotes, lockNote, saveDraft,
+  type Amendment, type ClientOption, type NoteFormat, type NoteSummary,
+} from '../../services/sessionNotes';
+import { AiConsentDialog } from '../modals/AiConsentDialog';
 
-type Format = 'dap' | 'soap' | 'birp' | 'progress';
-
-const FORMAT_LABELS: Record<Format, string> = {
+const FORMAT_LABELS: Record<NoteFormat, string> = {
   dap: 'DAP — Data · Assessment · Plan',
   soap: 'SOAP — Subjective · Objective · Assessment · Plan',
   birp: 'BIRP — Behaviour · Intervention · Response · Plan',
   progress: 'Progress note',
 };
 
-type Section = {
-  key: string;
-  tagLabel: string;
-  tagBg: string;
-  tagColor: string;
-  hint: string;
-  placeholder: string;
-  defaultValue?: string;
-  hasAI?: boolean;
-};
+type Section = { tagLabel: string; tagBg: string; tagColor: string; hint: string; placeholder: string };
 
-const SECTIONS: Record<Format, Section[]> = {
+// Each format maps onto the four stored columns section_1..section_4.
+const SECTIONS: Record<NoteFormat, Section[]> = {
   dap: [
-    {
-      key: 'dap-data', tagLabel: 'D', tagBg: '#e8f0ed', tagColor: '#2d5049',
-      hint: 'Client presentation, what was discussed, direct observations',
-      placeholder: 'Client presented with... Reported that... Discussed... Affect was... Mood appeared...',
-      hasAI: true,
-      defaultValue: "Client presented as engaged and reflective. Reported completing the journaling exercise between sessions, noting it helped her identify and name emotions in real time — described this as a shift from 'just feeling it' to 'understanding it.' Mood was notably elevated compared to previous sessions; affect bright, appropriate, and congruent. Raised questions about workplace rights resources independently, suggesting increased self-advocacy capacity. Initiated conversation about treatment plan review without prompting.",
-    },
-    {
-      key: 'dap-assessment', tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806',
-      hint: 'Clinical interpretation, formulation, risk assessment',
-      placeholder: 'Presentation consistent with... Progress toward... Clinical formulation suggests... Risk assessment...',
-      hasAI: true,
-      defaultValue: "Progress is consistent with resolution of acute RBTS symptoms and consolidation of treatment gains. Client demonstrates strong integration of anti-racism externalisation framework in daily life — a primary treatment goal. PHQ-9 trajectory (10→7→3) indicates clinically significant improvement. Client's unprompted self-advocacy behaviour and readiness for treatment review suggest approaching discharge readiness. No safety concerns identified. Therapeutic alliance remains strong.",
-    },
-    {
-      key: 'dap-plan', tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C',
-      hint: 'Next steps, interventions, homework, follow-up plan',
-      placeholder: 'Continue... Next session will focus on... Client to... Referrals... Review date...',
-      hasAI: true,
-      defaultValue: "Conducted formal treatment plan 3-month review. All three treatment goals assessed as substantially met. Initiated discharge planning conversation — client receptive and expressed readiness. Discussed maintenance strategies and return-to-treatment indicators. Provide workplace rights resource (OHRC). Next session: Session 16 (likely penultimate). Offer 3-month follow-up contact post-discharge. Update treatment plan status to 'completed.'",
-    },
+    { tagLabel: 'D', tagBg: '#e8f0ed', tagColor: '#2d5049', hint: 'Client presentation, what was discussed, direct observations', placeholder: 'Client presented with… Reported that… Discussed… Affect was…' },
+    { tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806', hint: 'Clinical interpretation, formulation, risk assessment', placeholder: 'Presentation consistent with… Progress toward… Risk assessment…' },
+    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Next steps, interventions, homework, follow-up plan', placeholder: 'Continue… Next session will focus on… Client to…' },
   ],
   soap: [
-    { key: 'soap-subjective', tagLabel: 'S', tagBg: '#fde8e8', tagColor: '#791F1F', hint: 'Subjective — what the client reports', placeholder: 'Client reports...', hasAI: true },
-    { key: 'soap-objective', tagLabel: 'O', tagBg: '#faeeda', tagColor: '#633806', hint: 'Objective — clinician observations', placeholder: 'Client appeared... Affect was... Mood...', hasAI: true },
-    { key: 'soap-assessment', tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806', hint: 'Assessment — clinical interpretation', placeholder: 'Presentation consistent with...', hasAI: true },
-    { key: 'soap-plan', tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan — next steps and interventions', placeholder: 'Continue... Next session...', hasAI: true },
+    { tagLabel: 'S', tagBg: '#fde8e8', tagColor: '#791F1F', hint: 'Subjective — what the client reports', placeholder: 'Client reports…' },
+    { tagLabel: 'O', tagBg: '#faeeda', tagColor: '#633806', hint: 'Objective — clinician observations', placeholder: 'Client appeared… Affect was…' },
+    { tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806', hint: 'Assessment — clinical interpretation', placeholder: 'Presentation consistent with…' },
+    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan — next steps and interventions', placeholder: 'Continue… Next session…' },
   ],
   birp: [
-    { key: 'birp-behaviour', tagLabel: 'B', tagBg: '#EEEDFE', tagColor: '#3C3489', hint: 'Behaviour — observable behaviours and presentation', placeholder: 'Client demonstrated...', hasAI: true },
-    { key: 'birp-intervention', tagLabel: 'I', tagBg: '#fde8e8', tagColor: '#791F1F', hint: 'Intervention — what the therapist did', placeholder: 'Therapist provided...', hasAI: true },
-    { key: 'birp-response', tagLabel: 'R', tagBg: '#e8f4f0', tagColor: '#2d5049', hint: 'Response — how client responded to interventions', placeholder: 'Client responded by...' },
-    { key: 'birp-plan', tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan — next steps', placeholder: 'Plan for next session...' },
+    { tagLabel: 'B', tagBg: '#EEEDFE', tagColor: '#3C3489', hint: 'Behaviour — observable behaviours and presentation', placeholder: 'Client demonstrated…' },
+    { tagLabel: 'I', tagBg: '#fde8e8', tagColor: '#791F1F', hint: 'Intervention — what the clinician did', placeholder: 'Clinician provided…' },
+    { tagLabel: 'R', tagBg: '#e8f4f0', tagColor: '#2d5049', hint: 'Response — how the client responded', placeholder: 'Client responded by…' },
+    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan — next steps', placeholder: 'Plan for next session…' },
   ],
   progress: [
-    { key: 'progress-status', tagLabel: 'Status', tagBg: '#faeeda', tagColor: '#633806', hint: 'Current status relative to treatment goals', placeholder: 'Progress toward goals...' },
-    { key: 'progress-content', tagLabel: 'Content', tagBg: '#e8f0ed', tagColor: '#2d5049', hint: 'Session content and client presentation', placeholder: 'Session focused on...' },
-    { key: 'progress-assessment', tagLabel: 'Assessment', tagBg: '#faeeda', tagColor: '#633806', hint: 'Clinical formulation update', placeholder: 'Clinical assessment...' },
-    { key: 'progress-next', tagLabel: 'Next steps', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan for upcoming sessions', placeholder: 'Next session will...' },
+    { tagLabel: 'Summary', tagBg: '#faeeda', tagColor: '#633806', hint: 'Session content and client presentation', placeholder: 'Session focused on…' },
+    { tagLabel: 'Observations', tagBg: '#e8f0ed', tagColor: '#2d5049', hint: 'Progress, strengths, barriers, risk or safety considerations', placeholder: 'Observed…' },
+    { tagLabel: 'Plan', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Treatment direction and next steps', placeholder: 'Next session will…' },
   ],
 };
 
-const AI_DRAFTS: Record<string, string> = {
-  'dap-data': 'Client presented as engaged and reflective. Initiated review of treatment goals unprompted, suggesting readiness. Affect bright, mood notably elevated from previous sessions.',
-  'dap-assessment': 'Progress consistent with resolution of acute RBTS symptoms. PHQ-9 trajectory indicates clinically significant improvement. Client approaching discharge readiness.',
-  'dap-plan': 'Conducted 3-month treatment plan review. Initiated discharge planning conversation. Discuss maintenance strategies and return-to-treatment indicators next session.',
-};
+const DURATIONS = [25, 50, 60, 80, 90];
+const SESSION_TYPES = ['video', 'in-person', 'phone'];
+const EMPTY: [string, string, string, string] = ['', '', '', ''];
 
 function countWords(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function AutoTextarea({
-  id, value, onChange, placeholder, readOnly,
-}: { id: string; value: string; onChange: (v: string) => void; placeholder: string; readOnly?: boolean }) {
+function AutoTextarea({ id, label, value, onChange, placeholder, readOnly }: {
+  id: string; label: string; value: string; onChange: (v: string) => void; placeholder: string; readOnly?: boolean;
+}) {
   const ref = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (ref.current) {
@@ -96,26 +68,14 @@ function AutoTextarea({
     <textarea
       ref={ref}
       id={id}
+      aria-label={label}
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
       readOnly={readOnly}
       rows={5}
-      style={{
-        width: '100%',
-        padding: '4px 0 20px',
-        border: 'none',
-        background: 'transparent',
-        fontSize: '14px',
-        color: readOnly ? 'var(--ink-muted)' : 'var(--ink-soft)',
-        lineHeight: '1.75',
-        resize: 'none',
-        outline: 'none',
-        minHeight: '80px',
-        fontFamily: 'inherit',
-      }}
-      onFocus={e => { if (!readOnly) e.target.style.color = 'var(--ink)'; }}
-      onBlur={e => { if (!readOnly) e.target.style.color = 'var(--ink-soft)'; }}
+      className="w-full bg-transparent border-none outline-none resize-none text-sm leading-7 min-h-[80px] pt-1 pb-5"
+      style={{ color: readOnly ? 'var(--ink-muted)' : 'var(--ink)', fontFamily: 'inherit' }}
     />
   );
 }
@@ -124,583 +84,433 @@ export function SessionNoteEditor() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isOnline = useOnlineStatus();
-  const { user } = useUser();
-  const clientId = searchParams.get('clientId');
-  const initialNoteId = searchParams.get('noteId');
-  const sessionParam = searchParams.get('sessionId');
+  const { user, setAiAssistEnabled } = useUser();
 
-  const [sessionId] = useState(() => sessionParam || generateSessionId());
+  const [noteId, setNoteId] = useState<string | null>(searchParams.get('noteId'));
+  const [clientId, setClientId] = useState<string | null>(searchParams.get('clientId'));
+  const [clients, setClients] = useState<ClientOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!sessionParam) {
-      setSearchParams((prev) => {
-        prev.set('sessionId', sessionId);
-        return prev;
-      }, { replace: true });
-    }
-  }, [sessionParam, sessionId, setSearchParams]);
-
-  const [format, setFormat] = useState<Format>('dap');
-  const [values, setValues] = useState<Record<string, string>>(() => {
-    const v: Record<string, string> = {};
-    Object.values(SECTIONS).flat().forEach(s => { v[s.key] = s.defaultValue || ''; });
-    return v;
-  });
-  const [aiLoading, setAiLoading] = useState<Record<string, boolean>>({});
-  const [statusDot, setStatusDot] = useState<'saved' | 'unsaved' | 'locked'>('saved');
-  const [statusText, setStatusText] = useState('Draft saved');
+  const [format, setFormat] = useState<NoteFormat>('dap');
+  const [sections, setSections] = useState<[string, string, string, string]>(EMPTY);
+  const [sessionDate, setSessionDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [duration, setDuration] = useState(50);
+  const [sessionType, setSessionType] = useState('video');
+  const [aiUsed, setAiUsed] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [showLockWarning, setShowLockWarning] = useState(false);
-  const [duration, setDuration] = useState('50 min');
-  const [sessionFormat, setSessionFormat] = useState('Video');
-  const [diagnosis, setDiagnosis] = useState('F43.10 PTSD');
-  const [noteId, setNoteId] = useState<string | null>(initialNoteId);
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [lockedAt, setLockedAt] = useState<string | null>(null);
+  const [sessionNumber, setSessionNumber] = useState<number | null>(null);
 
-  // Audit log for note access
+  const [aiLoading, setAiLoading] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
+  const [previousNotes, setPreviousNotes] = useState<NoteSummary[]>([]);
+  const [amendments, setAmendments] = useState<Amendment[]>([]);
+  const [amendBody, setAmendBody] = useState('');
+  const [amendReason, setAmendReason] = useState('');
+
+  const client = clients.find(c => c.id === clientId) ?? null;
+
+  // ── Load clients + existing note ────────────────────────────────────────────
   useEffect(() => {
-    if (user && noteId) {
-      supabase.from('audit_log').insert({
-        clinician_id: user.id,
-        action: 'NOTE_ACCESSED',
-        table_name: 'session_notes',
-        record_id: noteId,
-        details: { accessed_at: new Date().toISOString() }
-      }).then(({ error }) => {
-        if (error) console.error('Failed to log note access:', error);
-      });
-    }
-  }, [user, noteId]);
-
-  const storageKey = 'session_note_draft_amara-mensah';
-  
-  const { restoreFromLocal, clearLocal } = useAutoSave({
-    data: { format, values, duration, sessionFormat, diagnosis },
-    onSave: async (data) => {
-      if (!user) return;
-      console.log('Session note auto-saving securely...');
-      
-      const sectionKeys = SECTIONS[data.format as Format].map(s => s.key);
-      const sectionsToEncrypt = [
-        data.values[sectionKeys[0]] || '',
-        data.values[sectionKeys[1]] || '',
-        data.values[sectionKeys[2]] || '',
-        sectionKeys[3] ? (data.values[sectionKeys[3]] || '') : ''
-      ];
-
-      const [sec1, sec2, sec3, sec4] = await Promise.all(
-        sectionsToEncrypt.map(text => encryptText(text, user.id))
-      );
-
-      const payload: any = {
-        clinician_id: user.id,
-        client_id: clientId || undefined,
-        session_date: new Date().toISOString().split('T')[0],
-        duration_minutes: parseInt(data.duration) || 50,
-        session_type: data.sessionFormat.toLowerCase(),
-        note_format: data.format,
-        section_1: sec1 || null,
-        section_2: sec2 || null,
-        section_3: sec3 || null,
-        section_4: sec4 || null,
-        is_draft: !locked,
-        is_locked: locked,
-        session_number: 15,
-      };
-
-      if (noteId) {
-        const { error } = await supabase
-          .from('session_notes')
-          .update(payload)
-          .eq('id', noteId);
-        if (error) throw error;
-      } else {
-        const { data: result, error } = await supabase
-          .from('session_notes')
-          .insert(payload)
-          .select('id')
-          .single();
-        if (error) throw error;
-        if (result) setNoteId(result.id);
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const options = await listClientOptions();
+        if (cancelled) return;
+        setClients(options);
+        const id = searchParams.get('noteId');
+        if (id) {
+          const note = await getNote(id, user.id);
+          if (cancelled) return;
+          if (!note) {
+            setLoadError('This note does not exist or you do not have access to it.');
+          } else {
+            setClientId(note.clientId);
+            setFormat(note.noteFormat);
+            setSections(note.sections);
+            setSessionDate(note.sessionDate);
+            setDuration(note.durationMinutes ?? 50);
+            setSessionType(note.sessionType ?? 'video');
+            setAiUsed(note.aiUsed);
+            setLocked(note.isLocked);
+            setLockedAt(note.lockedAt);
+            setSessionNumber(note.sessionNumber);
+            if (note.isLocked) setAmendments(await listAmendments(note.id));
+          }
+        }
+      } catch (err) {
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : 'Could not load this note.');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    },
-    interval: 10000,
-    enabled: !locked && !!user,
-    storageKey
+    })();
+    return () => { cancelled = true; };
+    // Load once per mount; later URL updates come from our own saves.
+  }, [user]);
+
+  useEffect(() => {
+    if (!clientId) return;
+    listNotes({ clientId, limit: 6 })
+      .then(notes => setPreviousNotes(notes.filter(n => n.id !== noteId).slice(0, 5)))
+      .catch(() => setPreviousNotes([]));
+  }, [clientId, noteId]);
+
+  // ── Autosave ───────────────────────────────────────────────────────────────
+  const draft = useMemo(
+    () => ({ clientId, format, sections, sessionDate, duration, sessionType, aiUsed }),
+    [clientId, format, sections, sessionDate, duration, sessionType, aiUsed],
+  );
+
+  const persist = useCallback(async (d: typeof draft) => {
+    if (!user || !d.clientId) return;
+    const id = await saveDraft(noteId, {
+      clientId: d.clientId,
+      sessionDate: d.sessionDate,
+      sessionType: d.sessionType,
+      durationMinutes: d.duration,
+      noteFormat: d.format,
+      sections: d.sections,
+      aiUsed: d.aiUsed,
+    }, user.id);
+    if (id !== noteId) {
+      setNoteId(id);
+      setSearchParams(prev => { prev.set('noteId', id); prev.delete('clientId'); return prev; }, { replace: true });
+    }
+  }, [user, noteId, setSearchParams]);
+
+  const { status, flush, markSaved, dirty } = useAutoSave({
+    data: draft,
+    onSave: persist,
+    enabled: !loading && !locked && !!clientId && !loadError,
   });
 
-  const [hasDraft, setHasDraft] = useState(false);
-  const [draftData, setDraftData] = useState<any>(null);
-
+  // Loaded content is the saved baseline.
+  const baselineSet = useRef(false);
   useEffect(() => {
-    const saved = restoreFromLocal();
-    if (saved) {
-      const hasContent = Object.values(saved.values || {}).some(val => typeof val === 'string' && val.trim().length > 0);
-      if (hasContent) {
-        setHasDraft(true);
-        setDraftData(saved);
-      }
+    if (!loading && !baselineSet.current) {
+      baselineSet.current = true;
+      markSaved(draft);
     }
-  }, []);
+  }, [loading, draft, markSaved]);
 
-  const markUnsaved = () => {
-    setStatusDot('unsaved');
-    setStatusText('Unsaved changes');
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      setStatusDot('saved');
-      setStatusText('Draft saved');
-    }, 2000);
+  const setSection = (index: number, value: string) => {
+    setSections(prev => {
+      const next = [...prev] as [string, string, string, string];
+      next[index] = value;
+      return next;
+    });
   };
 
-  const handleChange = (key: string, val: string) => {
-    setValues(v => ({ ...v, [key]: val }));
-    markUnsaved();
-  };
-
-  const aiAssist = async (section: Section) => {
-    if (!section.hasAI) return;
-    setAiLoading(l => ({ ...l, [section.key]: true }));
-    
+  // ── AI assist ──────────────────────────────────────────────────────────────
+  const runAiAssist = async () => {
+    setAiLoading(true);
     try {
-      // Find the index of the current section to pass correct context
-      const sectionKeys = SECTIONS[format].map(s => s.key);
-      const request = {
-        sessionId,
-        noteFormat: format.toUpperCase() as any,
-        section1: values[sectionKeys[0]] || '',
-        section2: values[sectionKeys[1]] || '',
-        section3: values[sectionKeys[2]] || '',
-        section4: sectionKeys[3] ? (values[sectionKeys[3]] || '') : undefined,
-        sessionContext: `Presenting Dx: ${diagnosis}, Duration: ${duration}, Type: ${sessionFormat}`,
-      };
-
-      const response = await generateNoteAssist(request);
-      
-      // Update values with the sections returned by the AI
-      if (response.sections) {
-        setValues(prev => {
-          const newValues = { ...prev };
-          if (response.sections?.section1) newValues[sectionKeys[0]] = response.sections.section1;
-          if (response.sections?.section2) newValues[sectionKeys[1]] = response.sections.section2;
-          if (response.sections?.section3) newValues[sectionKeys[2]] = response.sections.section3;
-          if (response.sections?.section4 && sectionKeys[3]) newValues[sectionKeys[3]] = response.sections.section4;
-          return newValues;
-        });
-        markUnsaved();
-        toast.success('AI draft generated successfully', { description: response.disclaimer });
-      }
-    } catch (err: any) {
-      toast.error('AI Assist Failed', { description: err.message });
-      // Fallback for demo if the function fails or isn't deployed properly
-      if (!values[section.key]?.trim()) {
-        const draft = AI_DRAFTS[section.key] || 'AI draft would appear here in production.';
-        setValues(v => ({ ...v, [section.key]: draft }));
-        markUnsaved();
-      }
+      const response = await generateNoteAssist({
+        noteFormat: format.toUpperCase() as 'DAP' | 'SOAP' | 'BIRP' | 'PROGRESS',
+        section1: sections[0],
+        section2: sections[1],
+        section3: sections[2],
+        section4: SECTIONS[format].length > 3 ? sections[3] : undefined,
+        sessionContext: `${sessionType} session, ${duration} minutes`,
+      });
+      const s = response.sections ?? {};
+      setSections(prev => [
+        s.section1 ?? prev[0], s.section2 ?? prev[1], s.section3 ?? prev[2], s.section4 ?? prev[3],
+      ]);
+      setAiUsed(true);
+      toast.success('AI draft added — review and edit before locking', { description: response.disclaimer });
+    } catch (err) {
+      toast.error('AI Assist is unavailable', { description: err instanceof Error ? err.message : undefined });
     } finally {
-      setAiLoading(l => ({ ...l, [section.key]: false }));
+      setAiLoading(false);
     }
   };
 
-  const saveDraft = () => {
-    setStatusDot('saved');
-    setStatusText('Draft saved');
+  const handleAiClick = () => {
+    if (!user?.aiAssistEnabled) return setShowConsent(true);
+    runAiAssist();
   };
 
-  const lockNote = () => {
-    setShowLockWarning(true);
-    setTimeout(async () => {
-      if (window.confirm('Lock and finalise this note? It cannot be edited after locking.')) {
-        setLocked(true);
-        setStatusDot('locked');
-        setStatusText('Locked · ' + new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' }));
-        
-        if (user && noteId) {
-          await supabase.from('session_notes').update({ 
-            is_locked: true, 
-            is_draft: false,
-            locked_at: new Date().toISOString()
-          }).eq('id', noteId);
-
-          await supabase.from('audit_log').insert({
-            clinician_id: user.id,
-            action: 'NOTE_LOCKED',
-            table_name: 'session_notes',
-            record_id: noteId,
-            details: { locked_at: new Date().toISOString() }
-          });
-        }
-        
-        clearLocal();
-        toast.success('Note locked and securely saved to database');
-      }
-    }, 200);
+  // ── Lock & amend ───────────────────────────────────────────────────────────
+  const handleLock = async () => {
+    if (!noteId) {
+      toast.error('Write the note before locking it.');
+      return;
+    }
+    if (!window.confirm('Lock and finalise this note? Locked notes cannot be edited or deleted — corrections are added as dated amendments.')) return;
+    try {
+      await flush();
+      await lockNote(noteId);
+      setLocked(true);
+      setLockedAt(new Date().toISOString());
+      toast.success('Note locked');
+    } catch (err) {
+      toast.error('Could not lock the note', { description: err instanceof Error ? err.message : undefined });
+    }
   };
 
-  const dotColor = statusDot === 'saved' ? 'var(--sage)' : statusDot === 'locked' ? 'var(--ink-muted)' : '#BA7517';
+  const handleAmend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!noteId || !amendBody.trim()) return;
+    try {
+      await addAmendment(noteId, amendBody.trim(), amendReason.trim());
+      setAmendments(await listAmendments(noteId));
+      setAmendBody('');
+      setAmendReason('');
+      toast.success('Amendment added');
+    } catch (err) {
+      toast.error('Could not add amendment', { description: err instanceof Error ? err.message : undefined });
+    }
+  };
+
+  const statusLabel = locked
+    ? `Locked${lockedAt ? ' · ' + new Date(lockedAt).toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short' }) : ''}`
+    : { idle: noteId ? 'Saved' : 'Not saved yet', unsaved: 'Unsaved changes', saving: 'Saving…', saved: 'Saved', error: 'Save failed — retrying on next change' }[status];
+  const dotColor = locked ? 'var(--ink-muted)' : status === 'error' ? 'var(--red)' : dirty ? '#BA7517' : 'var(--sage)';
+
+  if (loading) {
+    return <div role="status" className="min-h-screen flex items-center justify-center text-sm text-[var(--ink-muted)]">Loading note…</div>;
+  }
+  if (loadError) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <p role="alert" className="text-sm text-[var(--ink-soft)] max-w-md">{loadError}</p>
+        <Link to="/dashboard/notes" className="text-sm text-[var(--sage)] underline">Back to notes</Link>
+      </main>
+    );
+  }
+
+  const sectionDefs = SECTIONS[format];
+  const backTo = clientId ? `/dashboard/clients/${clientId}` : '/dashboard/notes';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--warm)', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
-
-      {/* OFFLINE INTERRUPT & DRAFT RECOVERY BANNERS */}
-      {!isOnline && (
-        <div style={{
-          background: '#FFF9E6',
-          borderBottom: '1px solid #FFE0B2',
-          padding: '10px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontSize: 13,
-          color: '#B78103',
-          gap: 12,
-          flexShrink: 0
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>⚠️</span>
-            <span><strong>Working offline.</strong> Your changes are being securely cached in local browser storage.</span>
-          </div>
-          <button
-            onClick={() => {
-              try {
-                localStorage.setItem(storageKey, JSON.stringify({ format, values, duration, sessionFormat, diagnosis }));
-                toast.success('Local backup forced successfully!');
-              } catch (e) {
-                toast.error('Failed to force local backup');
-              }
-            }}
-            style={{
-              background: '#B78103',
-              color: 'white',
-              border: 'none',
-              borderRadius: 6,
-              padding: '4px 10px',
-              fontSize: 11,
-              fontWeight: 500,
-              cursor: 'pointer'
-            }}
-          >
-            Force local backup
-          </button>
-        </div>
-      )}
-
-      {hasDraft && (
-        <div style={{
-          background: 'var(--sage-pale)',
-          borderBottom: '1px solid var(--sage-light)',
-          padding: '10px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontSize: 13,
-          color: 'var(--sage-deep)',
-          gap: 12,
-          flexShrink: 0
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>📝</span>
-            <span>An unsaved draft for this session was found in local storage. Would you like to restore it?</span>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => {
-                if (draftData) {
-                  if (draftData.format) setFormat(draftData.format);
-                  if (draftData.values) setValues(draftData.values);
-                  if (draftData.duration) setDuration(draftData.duration);
-                  if (draftData.sessionFormat) setSessionFormat(draftData.sessionFormat);
-                  if (draftData.diagnosis) setDiagnosis(draftData.diagnosis);
-                  toast.success('Draft restored successfully');
-                }
-                setHasDraft(false);
-              }}
-              style={{
-                background: 'var(--sage)',
-                color: 'white',
-                border: 'none',
-                borderRadius: 6,
-                padding: '4px 12px',
-                fontSize: 11,
-                fontWeight: 500,
-                cursor: 'pointer'
-              }}
-            >
-              Restore draft
-            </button>
-            <button
-              onClick={() => {
-                clearLocal();
-                setHasDraft(false);
-                toast.info('Draft discarded');
-              }}
-              style={{
-                background: 'transparent',
-                color: 'var(--ink-muted)',
-                border: '1px solid var(--border)',
-                borderRadius: 6,
-                padding: '4px 12px',
-                fontSize: 11,
-                fontWeight: 500,
-                cursor: 'pointer'
-              }}
-            >
-              Discard
-            </button>
-          </div>
+    <div className="flex flex-col h-screen bg-[var(--warm)] text-[var(--ink)]" style={{ fontFamily: 'var(--font-body)' }}>
+      {!isOnline && !locked && (
+        <div role="alert" className="bg-[#FFF9E6] border-b border-[#FFE0B2] px-5 py-2.5 text-[13px] text-[#8a6100]">
+          <strong>You're offline.</strong> Changes are kept in this tab only and will save when you reconnect — don't close this tab.
         </div>
       )}
 
       {/* TOPBAR */}
-      <div style={{ height: 52, background: 'white', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12, position: 'sticky', top: 0, zIndex: 50, flexShrink: 0 }}>
+      <header className="h-[52px] bg-white border-b border-[var(--border)] flex items-center px-5 gap-3 flex-shrink-0">
         <button
-          onClick={() => navigate('/dashboard/clients/amara-mensah')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--ink-muted)', cursor: 'pointer', padding: '6px 10px', borderRadius: 7, border: 'none', background: 'transparent' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--warm)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          onClick={async () => { if (dirty) await flush(); navigate(backTo); }}
+          className="flex items-center gap-1.5 text-[13px] text-[var(--ink-muted)] px-2.5 py-1.5 rounded-md border-none bg-transparent cursor-pointer hover:bg-[var(--warm)]"
         >
-          <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' }}><path d="M15 18l-6-6 6-6"/></svg>
-          Dashboard
+          ← Back
         </button>
-        <div style={{ width: 1, height: 20, background: 'var(--border)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--sage-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 500, color: 'var(--sage-deep)' }}>AM</div>
-          <div>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>Amara Mensah</span>
-            <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}> · Session 15 · March 16, 2026</span>
+        <div className="w-px h-5 bg-[var(--border)]" />
+        {client ? (
+          <div className="text-[13px]">
+            <span className="font-medium">{client.name}</span>
+            <span className="text-[var(--ink-muted)]">
+              {sessionNumber ? ` · Session ${sessionNumber}` : ''} · {new Date(sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })}
+            </span>
           </div>
-        </div>
-        <div style={{ flex: 1 }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor }} />
-          <span style={{ color: 'var(--ink-muted)' }}>{statusText}</span>
+        ) : (
+          <label className="text-[13px] flex items-center gap-2">
+            <span className="text-[var(--ink-muted)]">Client</span>
+            <select
+              value=""
+              onChange={e => setClientId(e.target.value || null)}
+              className="border border-[var(--border)] rounded-md px-2 py-1 text-[13px] bg-white"
+            >
+              <option value="">Select a client…</option>
+              {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </label>
+        )}
+        <div className="flex-1" />
+        <div className="flex items-center gap-1.5 text-xs" aria-live="polite">
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: dotColor }} aria-hidden="true" />
+          <span className="text-[var(--ink-muted)]">{statusLabel}</span>
         </div>
         {!locked && (
           <>
             <button
-              onClick={saveDraft}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: 'var(--sage)', color: 'white', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--sage-deep)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--sage)')}
+              onClick={() => flush()}
+              disabled={!clientId}
+              className="px-3.5 py-[7px] rounded-lg bg-[var(--sage)] text-white text-[13px] font-medium border-none cursor-pointer hover:bg-[var(--sage-deep)] disabled:opacity-50"
             >
-              <svg viewBox="0 0 16 16" style={{ width: 13, height: 13, fill: 'none', stroke: 'white', strokeWidth: 1.5 }}><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V5l-3-3z"/><path d="M11 2v4H5V2M5 9h6"/></svg>
               Save draft
             </button>
             <button
-              onClick={lockNote}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', background: 'var(--ink)', color: 'white', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#333')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ink)')}
+              onClick={handleLock}
+              disabled={!noteId}
+              className="px-4 py-[7px] rounded-lg bg-[var(--ink)] text-white text-[13px] font-medium border-none cursor-pointer hover:bg-[#333] disabled:opacity-50"
             >
-              <svg viewBox="0 0 16 16" style={{ width: 13, height: 13, fill: 'none', stroke: 'white', strokeWidth: 2 }}><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
-              Lock & finalise
+              Lock &amp; finalise
             </button>
           </>
         )}
-      </div>
+      </header>
 
-      {/* EDITOR SHELL */}
-      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr 280px', flex: 1, overflow: 'hidden', minHeight: 0 }}>
-
-        {/* LEFT SIDEBAR */}
-        <div style={{ background: 'white', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-          <div style={{ padding: '14px 14px 6px', fontSize: 10, fontWeight: 500, letterSpacing: '0.7px', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>Note format</div>
-          {(['dap', 'soap', 'birp', 'progress'] as Format[]).map(f => (
-            <button
-              key={f}
-              onClick={() => !locked && setFormat(f)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '9px 14px',
-                border: 'none', borderLeft: `2px solid ${format === f ? 'var(--sage)' : 'transparent'}`,
-                background: format === f ? 'var(--sage-pale)' : 'transparent',
-                fontSize: 13, color: format === f ? 'var(--sage-deep)' : 'var(--ink-soft)',
-                cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { if (format !== f) { e.currentTarget.style.background = 'var(--warm)'; e.currentTarget.style.color = 'var(--ink)'; } }}
-              onMouseLeave={e => { if (format !== f) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ink-soft)'; } }}
-            >
-              {f === 'dap' ? 'DAP' : f === 'soap' ? 'SOAP' : f === 'birp' ? 'BIRP' : 'Progress'}
-              <span style={{
-                fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 3, marginLeft: 'auto',
-                background: format === f ? 'var(--sage)' : 'var(--sage-pale)',
-                color: format === f ? 'white' : 'var(--sage)',
-              }}>
-                {f === 'dap' ? 'DAP' : f === 'soap' ? 'SOAP' : f === 'birp' ? 'BIRP' : 'PROG'}
-              </span>
-            </button>
-          ))}
-
-          <div style={{ height: 1, background: 'var(--border)', margin: '8px 0' }} />
-          <div style={{ padding: '14px 14px 6px', fontSize: 10, fontWeight: 500, letterSpacing: '0.7px', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>Session prep AI</div>
-          <div style={{ margin: 12, background: 'var(--sage-pale)', borderRadius: 9, padding: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--sage)', marginBottom: 7 }}>✦ Pre-session brief</div>
-            {[
-              { label: 'Where we left off', text: 'Explored workplace microaggression incident using anti-racism framework. Strong externalisation. Cautiously hopeful tone.' },
-              { label: 'Watch for', text: 'Treatment plan 3-month review due today. PHQ-9 now 3 (minimal). Watch for premature closure impulse.' },
-              { label: 'Suggested focus', text: 'Formal treatment plan review. Celebrate progress. Begin discharge planning discussion if criteria met.' },
-            ].map((s, i) => (
-              <div key={i} style={{ marginBottom: i < 2 ? 8 : 0 }}>
-                <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--sage-deep)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{s.label}</div>
-                <div style={{ fontSize: 12, color: 'var(--sage-deep)', lineHeight: 1.55 }}>{s.text}</div>
-              </div>
+      <div className="grid flex-1 min-h-0 overflow-hidden" style={{ gridTemplateColumns: '220px 1fr 280px' }}>
+        {/* LEFT: format + session details */}
+        <aside className="bg-white border-r border-[var(--border)] overflow-y-auto">
+          <div className="px-3.5 pt-3.5 pb-1.5 text-[10px] font-medium tracking-[0.7px] uppercase text-[var(--ink-muted)]">Note format</div>
+          <div role="radiogroup" aria-label="Note format">
+            {(Object.keys(FORMAT_LABELS) as NoteFormat[]).map(f => (
+              <button
+                key={f}
+                role="radio"
+                aria-checked={format === f}
+                disabled={locked}
+                onClick={() => setFormat(f)}
+                className="flex items-center w-full px-3.5 py-2 text-[13px] text-left border-none cursor-pointer disabled:cursor-default"
+                style={{
+                  borderLeft: `2px solid ${format === f ? 'var(--sage)' : 'transparent'}`,
+                  background: format === f ? 'var(--sage-pale)' : 'transparent',
+                  color: format === f ? 'var(--sage-deep)' : 'var(--ink-soft)',
+                }}
+              >
+                {f === 'progress' ? 'Progress' : f.toUpperCase()}
+              </button>
             ))}
           </div>
 
-          <div style={{ height: 1, background: 'var(--border)', margin: '8px 0' }} />
-          <div style={{ padding: '14px 14px 6px', fontSize: 10, fontWeight: 500, letterSpacing: '0.7px', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>Session details</div>
-          <div style={{ padding: '0 14px 12px' }}>
-            {[
-              { label: 'Date', value: 'Mar 16, 2026', static: true },
-              { label: 'Duration', value: duration, options: ['50 min', '25 min', '80 min'], onChange: setDuration },
-              { label: 'Format', value: sessionFormat, options: ['Video', 'In-person', 'Phone'], onChange: setSessionFormat },
-              { label: 'Session #', value: '15', static: true },
-              { label: 'Presenting Dx', value: diagnosis, options: ['F43.10 PTSD', 'F41.1 GAD', 'F32.1 MDD'], onChange: setDiagnosis },
-            ].map((row, i, arr) => (
-              <div key={row.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, borderBottom: i < arr.length - 1 ? '0.5px solid var(--border)' : 'none' }}>
-                <span style={{ color: 'var(--ink-muted)' }}>{row.label}</span>
-                {row.static ? (
-                  <span style={{ color: 'var(--ink)', fontWeight: 500 }}>{row.value}</span>
-                ) : (
-                  <select
-                    value={row.value}
-                    onChange={e => row.onChange?.(e.target.value)}
-                    style={{ border: 'none', background: 'transparent', fontSize: 12, color: 'var(--ink)', fontWeight: 500, cursor: 'pointer', padding: 0, outline: 'none' }}
-                  >
-                    {row.options?.map(o => <option key={o}>{o}</option>)}
-                  </select>
-                )}
-              </div>
-            ))}
+          <div className="h-px bg-[var(--border)] my-2" />
+          <div className="px-3.5 pt-3.5 pb-1.5 text-[10px] font-medium tracking-[0.7px] uppercase text-[var(--ink-muted)]">Session details</div>
+          <div className="px-3.5 pb-3 text-xs space-y-2">
+            <label className="flex justify-between items-center gap-2">
+              <span className="text-[var(--ink-muted)]">Date</span>
+              <input type="date" value={sessionDate} disabled={locked} onChange={e => setSessionDate(e.target.value)}
+                className="text-xs border-none bg-transparent text-right" />
+            </label>
+            <label className="flex justify-between items-center gap-2">
+              <span className="text-[var(--ink-muted)]">Duration</span>
+              <select value={duration} disabled={locked} onChange={e => setDuration(Number(e.target.value))} className="text-xs border-none bg-transparent">
+                {DURATIONS.map(d => <option key={d} value={d}>{d} min</option>)}
+              </select>
+            </label>
+            <label className="flex justify-between items-center gap-2">
+              <span className="text-[var(--ink-muted)]">Type</span>
+              <select value={sessionType} disabled={locked} onChange={e => setSessionType(e.target.value)} className="text-xs border-none bg-transparent">
+                {SESSION_TYPES.map(t => <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>)}
+              </select>
+            </label>
+            <div className="flex justify-between">
+              <span className="text-[var(--ink-muted)]">Session #</span>
+              <span className="font-medium">{sessionNumber ?? 'Assigned on save'}</span>
+            </div>
+            {aiUsed && <div className="text-[11px] text-[var(--sage-deep)]">✦ AI Assist was used for this note</div>}
           </div>
-        </div>
+        </aside>
 
         {/* MAIN EDITOR */}
-        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: 24 }}>
+        <main className="overflow-y-auto px-10 py-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-[11px] tracking-[1px] uppercase text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-display)' }}>
               {FORMAT_LABELS[format]}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {SECTIONS[format].map((section, i, arr) => (
-                <div key={section.key} style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 0 10px' }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '3px 9px', borderRadius: 4, flexShrink: 0, background: section.tagBg, color: section.tagColor }}>
-                      {section.tagLabel}
-                    </span>
-                    <span style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4, flex: 1 }}>{section.hint}</span>
-                    {section.hasAI && !locked && (
-                      <button
-                        onClick={() => aiAssist(section)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', border: '1px solid rgba(74,124,111,0.25)', borderRadius: 6, background: 'var(--sage-pale)', color: 'var(--sage-deep)', fontSize: 11, fontWeight: 500, cursor: 'pointer', flexShrink: 0 }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--sage)'; e.currentTarget.style.color = 'white'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'var(--sage-pale)'; e.currentTarget.style.color = 'var(--sage-deep)'; }}
-                      >
-                        {aiLoading[section.key] ? (
-                          <svg viewBox="0 0 24 24" style={{ width: 11, height: 11, fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, animation: 'spin 1s linear infinite' }}><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
-                        ) : (
-                          <svg viewBox="0 0 16 16" style={{ width: 11, height: 11, fill: 'none', stroke: 'currentColor', strokeWidth: 1.5 }}><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
-                        )}
-                        {aiLoading[section.key] ? 'Drafting...' : 'AI assist'}
-                      </button>
-                    )}
-                  </div>
-                  {aiLoading[section.key] && (
-                    <div style={{ background: 'var(--sage-pale)', borderRadius: 8, padding: '10px 13px', marginBottom: 8, fontSize: 12, color: 'var(--sage-deep)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: 'none', stroke: 'var(--sage)', strokeWidth: 1.5, flexShrink: 0, animation: 'spin 1s linear infinite' }}><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
-                      Drafting from session context and last 3 notes...
-                    </div>
-                  )}
-                  <AutoTextarea
-                    id={section.key}
-                    value={values[section.key] || ''}
-                    onChange={val => handleChange(section.key, val)}
-                    placeholder={section.placeholder}
-                    readOnly={locked}
-                  />
-                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', textAlign: 'right', paddingBottom: 8 }}>
-                    {countWords(values[section.key] || '')} word{countWords(values[section.key] || '') !== 1 ? 's' : ''}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT SIDEBAR */}
-        <div style={{ background: 'white', borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', fontSize: 12, fontWeight: 500, color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            Amara Mensah
-            <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--ink-muted)' }}>Session 15</span>
-          </div>
-
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>Outcome scores</div>
-          <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)' }}>
-            {[
-              { label: 'PHQ-9', val: '3', max: '27', trend: '↓ from 10', up: true },
-              { label: 'GAD-7', val: '4', max: '21', trend: '↓ from 8', up: true },
-              { label: 'Wellbeing (portal)', val: '7', max: '10', trend: '↑ +2', up: true },
-            ].map((r, i, arr) => (
-              <div key={r.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '0.5px solid var(--border)' : 'none', fontSize: 12 }}>
-                <span style={{ color: 'var(--ink-muted)' }}>{r.label}</span>
-                <span style={{ fontWeight: 500, color: 'var(--ink)' }}>{r.val} <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>/ {r.max}</span></span>
-                <span style={{ fontSize: 10, color: r.up ? 'var(--sage)' : '#c0392b' }}>{r.trend}</span>
-              </div>
-            ))}
-            <button
-              style={{ width: '100%', padding: 8, border: '1.5px dashed var(--sage-light)', borderRadius: 8, background: 'transparent', color: 'var(--sage)', fontSize: 12, fontWeight: 500, cursor: 'pointer', marginTop: 4 }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--sage-pale)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              + Assign PHQ-9 for today
-            </button>
-          </div>
-
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>Treatment goals</div>
-          <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)' }}>
-            {[
-              { text: 'Develop grounding techniques for acute stress responses', pct: 100, note: '✓ Met — session 8' },
-              { text: 'Externalise systemic nature of racism, reduce self-blame', pct: 90, note: '90% · Substantially met' },
-              { text: 'Rebuild professional identity integrating cultural heritage', pct: 80, note: '80% · Strong progress' },
-            ].map((g, i, arr) => (
-              <div key={i} style={{ padding: '8px 0', borderBottom: i < arr.length - 1 ? '0.5px solid var(--border)' : 'none' }}>
-                <div style={{ fontSize: 12, color: 'var(--ink-soft)', lineHeight: 1.5, marginBottom: 5 }}>{g.text}</div>
-                <div style={{ height: 3, background: 'var(--warm)', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${g.pct}%`, borderRadius: 2, background: 'var(--sage)' }} />
-                </div>
-                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{g.note}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>Previous notes</div>
-          <div style={{ padding: '12px 14px' }}>
-            {[
-              { date: 'Session 14 · Mar 10, 2026 · DAP', text: 'Client explored workplace microaggression incident from the previous week using anti-racism framework. Demonstrated strong externalisation skills and showed reduced self-blame...' },
-              { date: 'Session 13 · Mar 3, 2026 · DAP', text: 'Session focused on somatic responses to hypervigilance at work. Introduced body scan technique. Client receptive. Practiced in-session grounding...' },
-              { date: 'Session 12 · Feb 24, 2026 · DAP', text: 'Explored family-of-origin patterns and their intersection with current workplace dynamics. Cultural genogram exercise initiated...' },
-            ].map((n, i) => (
-              <div
-                key={i}
-                style={{ background: 'var(--warm)', borderRadius: 8, padding: '10px 12px', marginBottom: 8, cursor: 'pointer' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--sage-pale)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'var(--warm)')}
+            </h1>
+            {!locked && (
+              <button
+                onClick={handleAiClick}
+                disabled={aiLoading || !isOnline}
+                aria-busy={aiLoading}
+                className="px-2.5 py-1.5 rounded-md border border-[rgba(74,124,111,0.25)] bg-[var(--sage-pale)] text-[var(--sage-deep)] text-xs font-medium cursor-pointer hover:bg-[var(--sage)] hover:text-white disabled:opacity-60"
               >
-                <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 4 }}>{n.date}</div>
-                <div style={{ fontSize: 12, color: 'var(--ink-soft)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{n.text}</div>
-              </div>
-            ))}
+                {aiLoading ? 'Drafting…' : '✦ AI assist'}
+              </button>
+            )}
           </div>
 
-          {showLockWarning && (
-            <div style={{ background: '#faeeda', border: '1px solid rgba(186,117,23,0.3)', borderRadius: 8, padding: '10px 12px', margin: 12, fontSize: 12, color: '#633806', lineHeight: 1.5 }}>
-              Once locked, this note cannot be edited. It will be retained for 10 years per PHIPA s.20. Locked notes appear in your audit log.
-            </div>
+          {!clientId && (
+            <p role="status" className="mb-6 text-sm text-[var(--ink-soft)] bg-white border border-[var(--border)] rounded-lg p-3">
+              Choose a client above to start this note. Notes are saved to that client's record.
+            </p>
           )}
-        </div>
+
+          {sectionDefs.map((section, i) => (
+            <section key={`${format}-${i}`} className={i < sectionDefs.length - 1 ? 'border-b border-[var(--border)]' : ''}>
+              <div className="flex items-center gap-2.5 pt-4 pb-2.5">
+                <span className="text-[10px] font-semibold tracking-[0.8px] uppercase px-2 py-[3px] rounded"
+                  style={{ background: section.tagBg, color: section.tagColor }}>
+                  {section.tagLabel}
+                </span>
+                <span className="text-[11px] text-[var(--ink-muted)]">{section.hint}</span>
+              </div>
+              <AutoTextarea
+                id={`note-section-${i + 1}`}
+                label={`${section.tagLabel}: ${section.hint}`}
+                value={sections[i]}
+                onChange={v => setSection(i, v)}
+                placeholder={section.placeholder}
+                readOnly={locked || !clientId}
+              />
+              <div className="text-[11px] text-[var(--ink-muted)] text-right pb-2">
+                {countWords(sections[i])} word{countWords(sections[i]) !== 1 ? 's' : ''}
+              </div>
+            </section>
+          ))}
+
+          {locked && (
+            <section className="mt-8" aria-labelledby="amendments-heading">
+              <h2 id="amendments-heading" className="text-sm font-medium mb-3">Amendments</h2>
+              {amendments.length === 0 && <p className="text-xs text-[var(--ink-muted)] mb-3">No amendments.</p>}
+              <ol className="space-y-3 mb-4">
+                {amendments.map(a => (
+                  <li key={a.id} className="bg-white border border-[var(--border)] rounded-lg p-3 text-sm">
+                    <div className="text-[11px] text-[var(--ink-muted)] mb-1">
+                      {new Date(a.createdAt).toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short' })}
+                      {a.reason ? ` · ${a.reason}` : ''}
+                    </div>
+                    <p className="whitespace-pre-wrap">{a.body}</p>
+                  </li>
+                ))}
+              </ol>
+              <form onSubmit={handleAmend} className="bg-white border border-[var(--border)] rounded-lg p-3 space-y-2">
+                <label htmlFor="amend-body" className="block text-xs font-medium">Add an amendment</label>
+                <textarea id="amend-body" required value={amendBody} onChange={e => setAmendBody(e.target.value)} rows={3}
+                  className="w-full border border-[var(--border)] rounded-md p-2 text-sm" />
+                <label htmlFor="amend-reason" className="block text-xs text-[var(--ink-muted)]">Reason (optional)</label>
+                <input id="amend-reason" value={amendReason} onChange={e => setAmendReason(e.target.value)} maxLength={500}
+                  className="w-full border border-[var(--border)] rounded-md p-2 text-sm" />
+                <button type="submit" className="px-3 py-1.5 rounded-md bg-[var(--ink)] text-white text-xs border-none cursor-pointer">
+                  Add amendment
+                </button>
+              </form>
+            </section>
+          )}
+        </main>
+
+        {/* RIGHT: context */}
+        <aside className="bg-white border-l border-[var(--border)] overflow-y-auto">
+          <div className="px-4 py-3.5 border-b border-[var(--border)] text-xs font-medium">
+            {client ? client.name : 'No client selected'}
+          </div>
+          <div className="px-4 py-3.5 text-xs font-medium">Previous notes</div>
+          <ul className="px-3.5 pb-3 space-y-2">
+            {previousNotes.length === 0 && <li className="text-xs text-[var(--ink-muted)]">No previous notes for this client.</li>}
+            {previousNotes.map(n => (
+              <li key={n.id}>
+                <Link to={`/session-note-editor?noteId=${n.id}`} reloadDocument
+                  className="block bg-[var(--warm)] rounded-lg px-3 py-2.5 text-xs text-[var(--ink-soft)] no-underline hover:bg-[var(--sage-pale)]">
+                  Session {n.sessionNumber ?? '—'} · {new Date(n.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {n.noteFormat.toUpperCase()}
+                  {n.isLocked ? ' · Locked' : ' · Draft'}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="px-4 pb-4 text-[11px] text-[var(--ink-muted)] leading-relaxed">
+            Locked notes can't be edited or deleted. Keep records for the period your College requires; corrections are added as dated amendments.
+          </p>
+        </aside>
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      {showConsent && (
+        <AiConsentDialog
+          onCancel={() => setShowConsent(false)}
+          onAccept={async () => {
+            const ok = await setAiAssistEnabled(true);
+            setShowConsent(false);
+            if (ok) runAiAssist();
+            else toast.error('Could not save your AI Assist preference.');
+          }}
+        />
+      )}
     </div>
   );
 }

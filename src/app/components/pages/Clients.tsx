@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { ClientDetailPanel } from '../modals/ClientDetailPanel';
-import { NoteModal } from '../modals/NoteModal';
 import { NewClientModal, type NewClientPrefill } from '../modals/NewClientModal';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@/app/context/UserContext';
@@ -35,7 +34,6 @@ export function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [noteModalClient, setNoteModalClient] = useState<Client | null>(null);
   // Onboarding hands over the first client's details via router state (memory only).
   const location = useLocation();
   const prefillClient = (location.state as { prefillClient?: NewClientPrefill } | null)?.prefillClient;
@@ -258,7 +256,7 @@ export function Clients() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setNoteModalClient(client);
+                        navigate(`/session-note-editor?clientId=${client.id}`);
                       }}
                       className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
                     >
@@ -334,7 +332,7 @@ export function Clients() {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setNoteModalClient(client as any);
+                  navigate(`/session-note-editor?clientId=${client.id}`);
                 }}
                 className="mt-3 w-full px-3 py-2 rounded-md text-sm font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]"
               >
@@ -357,7 +355,6 @@ export function Clients() {
       </div>
 
       {selectedClient && <ClientDetailPanel client={selectedClient} onClose={() => setSelectedClient(null)} />}
-      {noteModalClient && <NoteModal clientName={noteModalClient.name} onClose={() => setNoteModalClient(null)} />}
       {isNewClientModalOpen && (
         <NewClientModal
           initial={prefillClient}

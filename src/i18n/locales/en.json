@@ -644,13 +644,18 @@
     }
   },
   "sessionNotes": {
-    "summary": "{{dueCount}} notes due within 24hrs · {{completedCount}} completed notes",
+    "summary": "{{draftCount}} drafts · {{lockedCount}} locked notes",
     "newNote": "New session note",
-    "dueTitle": "Due — complete within 24hrs",
+    "dueTitle": "Drafts — lock within 24 hours of the session",
     "writeNote": "Write note",
-    "recentCompleted": "Recent completed notes",
+    "recentCompleted": "Locked notes",
     "locked": "Locked",
-    "view": "View"
+    "view": "View",
+    "noDrafts": "No drafts. Start a note from a client’s record or with “New session note”.",
+    "noLocked": "No locked notes yet.",
+    "loadError": "Couldn’t load your notes. Refresh to try again.",
+    "sessionLabel": "Session {{number}}",
+    "loading": "Loading notes…"
   },
   "billing": {
     "alerts": {
@@ -951,7 +956,11 @@
       "autoLockAlwaysOn": "Always on to protect client health information.",
       "mfaTitle": "Two-factor authentication (required)",
       "mfaStatus_one": "{{count}} authenticator app registered. Required for access to client records.",
-      "mfaStatus_other": "{{count}} authenticator apps registered. Required for access to client records."
+      "mfaStatus_other": "{{count}} authenticator apps registered. Required for access to client records.",
+      "aiTitle": "AI Note Assist",
+      "aiDesc": "Sends the note text you write to Anthropic (US) to generate a draft. Off by default.",
+      "aiOn": "AI Note Assist turned on.",
+      "aiOff": "AI Note Assist turned off."
     },
     "danger": {
       "deleteAccount": "Delete account",

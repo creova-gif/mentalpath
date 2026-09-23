@@ -32,7 +32,7 @@ RESET ROLE;
 SELECT set_config('request.jwt.claims', '{"role":"anon"}', false);
 SET ROLE anon;
 SELECT expect_count('SELECT 1 FROM clients', 0);
-SELECT expect_count('SELECT 1 FROM session_notes', 0);
+SELECT expect_error('SELECT 1 FROM session_notes', '%permission denied%');
 
 RESET ROLE;
 DO $$ BEGIN
