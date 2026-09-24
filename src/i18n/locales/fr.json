@@ -457,7 +457,7 @@
         "name": "Praticien solo",
         "price": "49 $",
         "period": "/mois · clients illimités",
-        "description": "Tout ce dont un praticien solo canadien a besoin. Conforme LPRPS dès le premier jour.",
+        "description": "Tout ce dont un praticien solo canadien a besoin, avec des données hébergées au Canada.",
         "badge": "Le plus populaire",
         "features": [
           "Clients illimités",
@@ -474,7 +474,7 @@
       "group": {
         "name": "Cabinet de groupe",
         "price": "79 $",
-        "period": "/mois par clinicien · 2+ cliniciens",
+        "period": "/mois par clinicien · bientôt disponible",
         "description": "Planification multi-cliniciens, tableau de bord propriétaire, facturation séparée, gestion partagée des clients.",
         "features": [
           "Tout ce qui est dans Solo",
@@ -484,7 +484,7 @@
           "Rapports de paiement par clinicien",
           "Assistance prioritaire"
         ],
-        "cta": "Commencer l'essai gratuit"
+        "cta": "Bientôt disponible — liste d’attente"
       }
     }
   },

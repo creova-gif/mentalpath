@@ -16,7 +16,6 @@ const CheckoutSuccess = lazy(() => import("./components/pages/CheckoutSuccess").
 const FAQ = lazy(() => import("./components/pages/FAQ").then(m => ({ default: m.FAQ })));
 const Contact = lazy(() => import("./components/pages/Contact").then(m => ({ default: m.Contact })));
 const Support = lazy(() => import("./components/pages/Support").then(m => ({ default: m.Support })));
-const TrialAdmin = lazy(() => import("./components/pages/TrialAdmin").then(m => ({ default: m.TrialAdmin })));
 const AITest = lazy(() => import("./components/pages/AITest").then(m => ({ default: m.AITest })));
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 const Overview = lazy(() => import("./components/pages/Overview").then(m => ({ default: m.Overview })));
@@ -134,14 +133,6 @@ const router = createBrowserRouter([
     element: <Suspense fallback={<PageFallback />}><Support /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
-  // H-02: Debug admin panel — only accessible in local development builds.
-  // import.meta.env.DEV is false in production Vite builds, so this route
-  // and its element are tree-shaken out entirely.
-  ...(import.meta.env.DEV ? [{
-    path: "/trial-admin",
-    element: <Suspense fallback={<PageFallback />}><TrialAdmin /></Suspense>,
-    errorElement: <ErrorBoundary />,
-  }] : []),
   // Debug AI playground — local development builds only (never in production).
   ...(import.meta.env.DEV ? [{
     path: "/ai-test",

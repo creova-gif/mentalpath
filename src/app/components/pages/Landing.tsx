@@ -670,7 +670,7 @@ export function Landing() {
                   </li>
                 ))}
               </ul>
-              <Link to="/onboarding" style={{ display: 'block', textAlign: 'center', padding: '13px 0', borderRadius: 10, fontSize: 15, fontWeight: 500, background: '#1a1a18', color: 'white', textDecoration: 'none', transition: 'background 0.2s' }}
+              <Link to="/checkout?plan=group" style={{ display: 'block', textAlign: 'center', padding: '13px 0', borderRadius: 10, fontSize: 15, fontWeight: 500, background: '#1a1a18', color: 'white', textDecoration: 'none', transition: 'background 0.2s' }}
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#2a5448')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#1a1a18')}
               >

@@ -9,6 +9,7 @@ import {
 import { supabase } from '@/utils/supabase/client';
 import type { Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { PLANS, type PlanId } from '@/config/pricing';
 
 // ── Types (unchanged — all 45 pages that consume useUser() need zero changes) ─
 export type Profession =
@@ -24,7 +25,9 @@ export type Profession =
   | 'Dietitian'
   | 'Speech-Language Pathologist';
 
-export type PlanType = 'solo' | 'group' | 'enterprise';
+export type PlanType = PlanId;
+export type SubscriptionStatus =
+  | 'none' | 'trialing' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'paused';
 export type BillingCycle = 'monthly' | 'annual';
 
 export interface UserProfile {
@@ -48,14 +51,21 @@ export interface UserProfile {
 }
 
 export interface SubscriptionPlan {
+  /** Effective plan right now — mirrors public.effective_plan() in SQL. */
   type: PlanType;
+  status: SubscriptionStatus;
   cycle: BillingCycle;
   seats: number;
   pricePerSeat: number;
-  trialDaysRemaining: number | null;
+  /** On the no-card signup trial, or a Stripe trial. */
   isTrial: boolean;
-  startDate: string;
+  trialDaysRemaining: number | null;
+  /** Payment failed; Stripe is retrying. */
+  isPastDue: boolean;
+  hasBillingAccount: boolean;
+  /** Next renewal / trial end, formatted for display, or '—'. */
   renewsOn: string;
+  cancelAt: string | null;
   nextBillingAmount: number;
 }
 
@@ -66,7 +76,7 @@ interface UserContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<'ok' | 'bad_credentials'>;
   logout: () => Promise<void>;
-  setSubscription: (plan: SubscriptionPlan) => void;
+  refreshProfile: () => Promise<void>;
   setAiAssistEnabled: (enabled: boolean) => Promise<boolean>;
 }
 
@@ -122,6 +132,10 @@ interface ClinicianRow {
   created_at: string | null;
   updated_at: string | null;
   ai_assist_enabled: boolean | null;
+  subscription_status: string | null;
+  stripe_customer_id: string | null;
+  current_period_end: string | null;
+  cancel_at: string | null;
 }
 
 // Map DB profession_code slug → Profession display string
@@ -139,38 +153,36 @@ const PROFESSION_TYPE_MAP: Record<string, Profession> = {
   slp:                   'Speech-Language Pathologist',
 };
 
-function buildSubscriptionFromClinicianRow(
-  row: ClinicianRow | null,
-  email: string,
-): SubscriptionPlan {
-  // Prefer live DB data; fall back to demo account metadata
-  const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
+const PAID_STATUSES = new Set(['active', 'trialing', 'past_due']);
 
-  const tier = (row?.plan_type ?? demo?.planType ?? 'solo') as PlanType;
-  // Map is_trial directly
-  const isTrial = row?.is_trial ?? demo?.isTrial ?? false;
+export function buildSubscriptionFromClinicianRow(row: ClinicianRow | null, now = new Date()): SubscriptionPlan {
+  const status = (row?.subscription_status ?? 'none') as SubscriptionStatus;
+  const paid = PAID_STATUSES.has(status);
   const trialEndsAt = row?.trial_ends_at ? new Date(row.trial_ends_at) : null;
-  const now = new Date();
+  const onSignupTrial = !paid && !!row?.is_trial && !!trialEndsAt && trialEndsAt > now;
+  const type: PlanType = paid ? ((row?.plan_type as PlanType) ?? 'solo') : onSignupTrial ? 'solo' : 'starter';
+  const isTrial = onSignupTrial || status === 'trialing';
   const trialDaysRemaining = isTrial && trialEndsAt
     ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / 86_400_000))
     : null;
-
-  const pricePerSeat = row?.price_per_seat ?? demo?.pricePerSeat ?? 79;
-  const seats = row?.plan_seats ?? demo?.seats ?? 1;
-
   const fmtDate = (val: string | null | undefined) =>
     val ? new Date(val).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+  const seats = row?.plan_seats ?? 1;
+  const pricePerSeat = type === 'starter' ? 0 : Number(row?.price_per_seat ?? PLANS[type].priceCad);
 
   return {
-    type: tier,
-    cycle: (row?.plan_cycle ?? demo?.planCycle ?? 'monthly') as BillingCycle,
+    type,
+    status,
+    cycle: (row?.plan_cycle ?? 'monthly') as BillingCycle,
     seats,
     pricePerSeat,
-    trialDaysRemaining: isTrial ? trialDaysRemaining : null,
     isTrial,
-    startDate: fmtDate(row?.plan_starts_at ?? demo?.starts),
-    renewsOn: fmtDate(row?.plan_renews_at ?? demo?.renews),
-    nextBillingAmount: pricePerSeat * seats,
+    trialDaysRemaining,
+    isPastDue: status === 'past_due',
+    hasBillingAccount: !!row?.stripe_customer_id,
+    renewsOn: fmtDate(paid ? (row?.current_period_end ?? row?.plan_renews_at) : isTrial ? row?.trial_ends_at : null),
+    cancelAt: row?.cancel_at ?? null,
+    nextBillingAmount: paid ? pricePerSeat * seats : 0,
   };
 }
 
@@ -235,14 +247,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Get live data from clinicians table using REAL column names
     const { data } = await supabase
       .from('clinicians')
-      .select('id, first_name, last_name, profession, reg_number, city, session_rate, hst_exempt, plan_type, plan_cycle, plan_seats, price_per_seat, is_trial, trial_ends_at, plan_starts_at, plan_renews_at, created_at, updated_at, ai_assist_enabled')
+      .select('id, first_name, last_name, profession, reg_number, city, session_rate, hst_exempt, plan_type, plan_cycle, plan_seats, price_per_seat, is_trial, trial_ends_at, plan_starts_at, plan_renews_at, created_at, updated_at, ai_assist_enabled, subscription_status, stripe_customer_id, current_period_end, cancel_at')
       .eq('id', session.user.id)
       .maybeSingle();
 
     const row = data as ClinicianRow | null;
 
     // Build profile: prefer DB values, fall back to DEMO_ACCOUNTS by email
-    const demo = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase());
+    const demo = import.meta.env.DEV ? DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === email.toLowerCase()) : undefined;
 
     const professionSlug = row?.profession ?? '';
     const mappedProfession = PROFESSION_TYPE_MAP[professionSlug] ?? professionSlug;
@@ -277,7 +289,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       aiAssistEnabled: row?.ai_assist_enabled ?? false,
     });
 
-    setSubscriptionState(buildSubscriptionFromClinicianRow(row, email));
+    setSubscriptionState(buildSubscriptionFromClinicianRow(row));
   }, []);
 
 
@@ -319,9 +331,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
-  const setSubscription = (plan: SubscriptionPlan) => {
-    setSubscriptionState(plan);
-  };
+  const refreshProfile = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) await loadProfile(session);
+  }, [loadProfile]);
 
   const setAiAssistEnabled = async (enabled: boolean): Promise<boolean> => {
     if (!user) return false;
@@ -332,7 +345,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, subscription, isLoggedIn: !!user, isLoading, login, logout, setSubscription, setAiAssistEnabled }}>
+    <UserContext.Provider value={{ user, subscription, isLoggedIn: !!user, isLoading, login, logout, refreshProfile, setAiAssistEnabled }}>
       {children}
     </UserContext.Provider>
   );

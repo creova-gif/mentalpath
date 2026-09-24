@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "supabase:types": "supabase gen types typescript --project-id jbmsddrddtyhllfowtxe > src/integrations/supabase/types.ts"
+    "supabase:types": "supabase gen types typescript --project-id hkhwgbkijepsxtixdmrs > src/types/database.ts",
+    "test:db": "supabase/tests/run.sh",
+    "test:functions": "cd supabase/functions && deno test --allow-env"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -45,8 +47,6 @@
     "@radix-ui/react-toggle-group": "1.1.2",
     "@radix-ui/react-tooltip": "1.1.8",
     "@sentry/react": "^10.53.1",
-    "@stripe/react-stripe-js": "^5.6.1",
-    "@stripe/stripe-js": "^8.10.0",
     "@supabase/supabase-js": "^2.105.3",
     "canvas-confetti": "1.9.4",
     "class-variance-authority": "0.7.1",

@@ -2,8 +2,7 @@ import { Outlet } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { useState } from 'react';
-import { TrialBanner } from '../dashboard/TrialBanner';
-import { TrialGate } from '../dashboard/TrialGate';
+import { PlanBanner } from '../dashboard/PlanBanner';
 
 export function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,10 +13,8 @@ export function DashboardLayout() {
       <main className="md:ml-[230px] flex-1 flex flex-col min-h-screen w-full">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
         <div className="p-4 sm:p-6 md:p-7 flex-1">
-          <TrialBanner />
-          <TrialGate>
-            <Outlet />
-          </TrialGate>
+          <PlanBanner />
+          <Outlet />
         </div>
       </main>
     </div>

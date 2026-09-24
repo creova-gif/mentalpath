@@ -1,377 +1,165 @@
-// MentalPath — AI Note Assist Routes
-// Integrated with Hono web server
-// PHIPA note: client PII is NEVER sent to Anthropic API
-
+// MentalPath — AI Note Assist routes.
+// Sends clinician-written note text (after identifier scrubbing) to Claude.
+// Clinicians must opt in first (clinicians.ai_assist_enabled); every use is
+// metered in Postgres and recorded in the audit log without note content.
 import { Hono } from "npm:hono";
-import { createClient } from "npm:@supabase/supabase-js";
-import * as kv from "./kv_store.ts";
+import Anthropic from "npm:@anthropic-ai/sdk";
+import { requireUser, serviceClient } from "./auth.ts";
+import { buildUserPrompt, SYSTEM_PROMPT, type NoteAssistInput } from "./ai-prompts.ts";
 
 const app = new Hono();
 
-const ANTHROPIC_API = "https://api.anthropic.com/v1/messages";
-
-// Usage limits
-const AI_ASSIST_LIMITS = {
-  TRIAL: 20, // 20 AI assists during 7-day trial
-  PAID: 500, // 500 per month for paid users (generous limit)
+// Monthly allowance by effective plan (see public.effective_plan()).
+export const AI_ASSIST_LIMITS: Record<string, number> = {
+  solo_trial: 20,
+  solo: 500,
+  group: 500,
 };
 
-const NOTE_FORMAT_PROMPTS: Record<string, { labels: string[]; instruction: string }> = {
-  DAP: {
-    labels: ["Data", "Assessment", "Plan"],
-    instruction: `Generate a concise, clinically appropriate DAP note for a Canadian registered psychotherapist.
+const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-opus-5";
 
-Data: Summarize what the client reported, presented concerns, and observable session content. Use person-centred language. Include relevant affect and presentation observations.
+// deno-lint-ignore no-explicit-any
+type Db = any;
 
-Assessment: Provide clinical formulation of themes, progress toward goals, and therapeutic process. Reference evidence-based frameworks (e.g., CBT, DBT, emotion-focused, narrative therapy) where applicable. Note any risk factors or protective factors observed.
-
-Plan: Outline therapeutic interventions planned, homework assigned, goals for next session, and any follow-up required. Include frequency recommendations if relevant.
-
-Use formal clinical language suitable for College of Registered Psychotherapists of Ontario (CRPO) records. Be specific, evidence-based, and person-centred. Avoid diagnostic language unless clearly indicated by the therapist's notes. Total length: 200-350 words.`,
-  },
-  SOAP: {
-    labels: ["Subjective", "Objective", "Assessment", "Plan"],
-    instruction: `Generate a concise SOAP note for a Canadian mental health practice.
-
-Subjective: Client's self-report, presenting concerns, and subjective experience of symptoms or progress. Use the client's own language where possible.
-
-Objective: Observable behaviours, affect, appearance, engagement level, and therapist observations. Include mental status observations where relevant.
-
-Assessment: Clinical interpretation, progress toward treatment goals, effectiveness of interventions, and any shifts in presentation or functioning. Reference therapeutic modalities used.
-
-Plan: Goals for upcoming sessions, interventions to continue or modify, any referrals or collateral contacts needed, and session frequency recommendations.
-
-Maintain professional clinical standards appropriate for CRPO documentation. Be concise and evidence-based. Total length: 200-350 words.`,
-  },
-  BIRP: {
-    labels: ["Behavior", "Intervention", "Response", "Plan"],
-    instruction: `Generate a concise BIRP note for a Canadian psychotherapy practice.
-
-Behavior: Presenting behaviors, client report, affect, and engagement. Note any significant changes from previous sessions.
-
-Intervention: Specific therapeutic techniques and approaches used this session. Name modalities (e.g., CBT thought records, mindfulness exercises, emotion regulation skills, psychoeducation on [topic]). Include any resources provided.
-
-Response: Client's response to interventions—engagement level, insights gained, skills practiced, barriers encountered. Note progress or setbacks.
-
-Plan: Goals and therapeutic focus for upcoming sessions. Homework or between-session practice assigned. Any adjustments to treatment approach.
-
-Use evidence-based language suitable for regulated mental health practice in Canada. Be specific about interventions. Total length: 200-350 words.`,
-  },
-  PROGRESS: {
-    labels: ["Summary", "Observations", "Plan"],
-    instruction: `Generate a narrative progress note suitable for a Canadian psychotherapy practice regulated by CRPO.
-
-Summary: Provide a cohesive narrative of session content, themes explored, and client presentation. Integrate subjective report with therapeutic process.
-
-Observations: Clinical observations about progress, therapeutic relationship, client strengths and resources, barriers to progress, and any risk or safety considerations.
-
-Plan: Treatment direction, goals for continued work, interventions to employ, and any collaborative planning with client.
-
-Use person-centred, non-pathologising language that respects client dignity and agency. Maintain clinical professionalism while being warm and humanistic. Avoid jargon. Total length: 200-400 words.`,
-  },
-};
-
-interface NoteAssistRequest {
-  session_id: string;
-  note_format: string;
-  section_1: string;
-  section_2: string;
-  section_3: string;
-  section_4?: string;
-  session_context?: string;
+async function planAndTrial(db: Db, userId: string): Promise<{ plan: string; trial: boolean; consent: boolean }> {
+  const [{ data: plan }, { data: row }] = await Promise.all([
+    db.rpc("plan_for", { p_clinician: userId }),
+    db.from("clinicians").select("subscription_status, ai_assist_enabled").eq("id", userId).maybeSingle(),
+  ]);
+  const paid = ["active", "trialing", "past_due"].includes(row?.subscription_status);
+  return { plan: plan ?? "none", trial: !paid, consent: row?.ai_assist_enabled === true };
 }
 
-// Sanitise input — strip any obvious PII patterns before sending to Claude
-const sanitize = (text: string): string => {
-  if (!text) return "";
-  return text
-    .replace(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g, "[phone redacted]")
-    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/gi, "[email redacted]")
-    .replace(/\b\d{9}\b/g, "[SIN redacted]")
-    .trim();
-};
-
-// Check AI usage limit for user
-async function checkAIUsageLimit(userId: string, userStatus: string): Promise<{ allowed: boolean; remaining: number; limit: number }> {
-  const limit = userStatus === 'trial' ? AI_ASSIST_LIMITS.TRIAL : AI_ASSIST_LIMITS.PAID;
-  const usageKey = `ai_usage:${userId}:${new Date().toISOString().slice(0, 7)}`; // Monthly tracking
-  
-  const currentUsage = await kv.get(usageKey);
-  const used = currentUsage ? parseInt(currentUsage as string, 10) : 0;
-  const remaining = Math.max(0, limit - used);
-  
-  return {
-    allowed: used < limit,
-    remaining,
-    limit,
-  };
-}
-
-// Increment AI usage for user
-async function incrementAIUsage(userId: string): Promise<void> {
-  const usageKey = `ai_usage:${userId}:${new Date().toISOString().slice(0, 7)}`;
-  const currentUsage = await kv.get(usageKey);
-  const used = currentUsage ? parseInt(currentUsage as string, 10) : 0;
-  await kv.set(usageKey, String(used + 1));
-}
-
-// Resolve AI entitlement from the clinicians row. Billing columns on that row
-// are writable only by the service role (migration 20260923), so the values
-// cannot be self-granted from the browser.
-//   paid  — not on trial (plan activated by the Stripe webhook)
-//   trial — on trial and trial_ends_at is unset or in the future
-//   none  — no clinician row, or trial has ended
-async function hasAiConsent(
-  // deno-lint-ignore no-explicit-any
-  supabase: any,
-  userId: string,
-): Promise<boolean> {
-  const { data } = await supabase
-    .from("clinicians")
-    .select("ai_assist_enabled")
-    .eq("id", userId)
-    .maybeSingle();
-  return data?.ai_assist_enabled === true;
-}
-
-async function getEntitlement(
-  // deno-lint-ignore no-explicit-any
-  supabase: any,
-  userId: string,
-): Promise<"paid" | "trial" | "none"> {
-  const { data, error } = await supabase
-    .from("clinicians")
-    .select("is_trial, trial_ends_at")
-    .eq("id", userId)
-    .maybeSingle();
-  if (error || !data) return "none";
-  if (data.is_trial === false) return "paid";
-  if (!data.trial_ends_at || new Date(data.trial_ends_at).getTime() > Date.now()) return "trial";
-  return "none";
+function limitFor(plan: string, trial: boolean): number {
+  if (plan === "starter" || plan === "none") return 0;
+  return trial ? AI_ASSIST_LIMITS.solo_trial : (AI_ASSIST_LIMITS[plan] ?? 0);
 }
 
 // POST /make-server-4d1a502d/ai-note-assist
 app.post("/make-server-4d1a502d/ai-note-assist", async (c) => {
+  const auth = await requireUser(c);
+  if (auth instanceof Response) return auth;
+  const userId = auth.user.id;
+  const db = serviceClient();
+
+  const { plan, trial, consent } = await planAndTrial(db, userId);
+  const limit = limitFor(plan, trial);
+  if (limit === 0) {
+    return c.json({ error: "AI Assist is included in the Solo plan.", code: "SUBSCRIPTION_REQUIRED" }, 403);
+  }
+  if (!consent) {
+    return c.json({
+      error: "Turn on AI Assist first. You'll be shown what is sent before it's enabled.",
+      code: "AI_NOT_ENABLED",
+    }, 403);
+  }
+
+  let body: NoteAssistInput & { session_id?: string };
   try {
-    // Verify authorization header
-    const authHeader = c.req.header("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return c.json({ error: "Unauthorized" }, 401);
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "Invalid JSON" }, 400);
+  }
+  const requestId = typeof body.session_id === "string" && /^[0-9a-f-]{36}$/i.test(body.session_id)
+    ? body.session_id : crypto.randomUUID();
+
+  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
+  if (!apiKey) {
+    console.error("ANTHROPIC_API_KEY not set");
+    return c.json({ error: "AI service configuration error" }, 500);
+  }
+
+  // Atomically reserve one assist; refunded below if the model call fails.
+  const { data: remaining, error: meterError } = await db.rpc("consume_ai_assist", {
+    p_clinician: userId, p_limit: limit,
+  });
+  if (meterError) {
+    console.error("consume_ai_assist failed:", meterError.code);
+    return c.json({ error: "AI Assist is temporarily unavailable." }, 503);
+  }
+  if (remaining < 0) {
+    return c.json({
+      error: trial ? "You've used all trial AI assists. Subscribe to Solo to continue." : "Monthly AI Assist limit reached.",
+      code: "USAGE_LIMIT_REACHED", limit, remaining: 0,
+    }, 429);
+  }
+
+  const { format, prompt } = buildUserPrompt(body);
+
+  try {
+    const client = new Anthropic({ apiKey });
+    // Server-side fallbacks re-run a classifier-declined request on the model
+    // Anthropic recommends for that refusal category, in the same call.
+    // `fallbacks: "default"` is newer than the SDK's published types, hence the cast.
+    const response = await client.beta.messages.create({
+      model: MODEL,
+      max_tokens: 16000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: prompt }],
+    } as unknown as Anthropic.Beta.MessageCreateParamsNonStreaming);
+
+    if (response.stop_reason === "refusal") {
+      await db.rpc("refund_ai_assist", { p_clinician: userId });
+      return c.json({ error: "AI Assist couldn't draft this note. Please write it manually.", code: "REFUSED" }, 422);
     }
 
-    const accessToken = authHeader.split(" ")[1];
-
-    // ── Auth: a real, signed-in user is required ──────────────────────────────
-    // The public anon key is shipped in the browser bundle and identifies no
-    // one, so it is never accepted here. getUser() verifies the JWT with GoTrue.
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
-    if (authError || !user) {
-      return c.json({ error: "Unauthorized - invalid token" }, 401);
-    }
-    const userId = user.id;
-
-    const entitlement = await getEntitlement(supabase, userId);
-    if (entitlement === "none") {
-      return c.json({
-        error: "AI Assist requires an active subscription or trial period.",
-        code: "SUBSCRIPTION_REQUIRED"
-      }, 403);
-    }
-    if (!(await hasAiConsent(supabase, userId))) {
-      return c.json({
-        error: "Turn on AI Assist first. You'll be shown what is sent before it's enabled.",
-        code: "AI_NOT_ENABLED"
-      }, 403);
-    }
-    const currentStatus = entitlement;
-
-    // Check usage limits
-    const usageCheck = await checkAIUsageLimit(userId, currentStatus);
-    
-    if (!usageCheck.allowed) {
-      return c.json({ 
-        error: `AI Assist limit reached. ${currentStatus === 'trial' ? 'Upgrade to continue using AI features.' : 'Monthly limit exceeded.'}`,
-        code: "USAGE_LIMIT_REACHED",
-        limit: usageCheck.limit,
-        remaining: 0,
-      }, 429);
+    const draft = response.content
+      .map((block) => (block.type === "text" ? block.text : ""))
+      .join("")
+      .trim();
+    if (!draft) {
+      await db.rpc("refund_ai_assist", { p_clinician: userId });
+      return c.json({ error: "AI Assist returned an empty draft. Please try again." }, 502);
     }
 
-    // Parse request body
-    let body: NoteAssistRequest;
-    try {
-      body = await c.req.json();
-    } catch {
-      return c.json({ error: "Invalid JSON" }, 400);
-    }
-
-    const { session_id, note_format, section_1, section_2, section_3, section_4, session_context } = body;
-
-    // Validate — session_id must be a UUID (no PII slipping through as ID)
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!session_id || !uuidRegex.test(session_id)) {
-      return c.json({ error: "Invalid session_id - must be a valid UUID" }, 400);
-    }
-
-    const fmt = (note_format || "DAP").toUpperCase() as keyof typeof NOTE_FORMAT_PROMPTS;
-    const formatConfig = NOTE_FORMAT_PROMPTS[fmt] || NOTE_FORMAT_PROMPTS.DAP;
-
-    const s1 = sanitize(section_1);
-    const s2 = sanitize(section_2);
-    const s3 = sanitize(section_3);
-    const s4 = section_4 ? sanitize(section_4) : null;
-    const ctx = session_context ? sanitize(session_context) : "individual therapy session";
-
-    // Build enhanced prompt for Canadian practice
-    const userPrompt = `You are assisting a Canadian registered psychotherapist draft a ${fmt} session note.
-Session context: ${ctx}
-
-${formatConfig.labels[0]} notes: ${s1}
-
-${formatConfig.labels[1]} notes: ${s2}
-
-${formatConfig.labels[2]} notes: ${s3}${s4 ? `\n\n${formatConfig.labels[3]} notes: ${s4}` : ""}
-
-${formatConfig.instruction}
-
-Respond with ONLY the formatted note — no preamble, no explanation, no markdown headers.
-Format each section with its label (e.g. "Data:\n...") separated by blank lines.
-This note will be reviewed and edited by the therapist before saving.`;
-
-    // Call Claude API
-    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!anthropicKey) {
-      console.error("ANTHROPIC_API_KEY not set in environment");
-      return c.json({ error: "AI service configuration error" }, 500);
-    }
-
-    const response = await fetch(ANTHROPIC_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-20250514",
-        max_tokens: 800,
-        temperature: 0.7,
-        stream: false,
-        system: `You are a clinical documentation assistant for Canadian registered psychotherapists and mental health professionals.
-
-Your role:
-- Help therapists draft session notes in professional clinical language
-- Follow College of Registered Psychotherapists of Ontario (CRPO) documentation standards
-- Use person-centred, evidence-based language
-- Never invent clinical details not present in the therapist's notes
-- Never reproduce client names or identifying information
-- Reference common therapeutic modalities in Canada: CBT, DBT, ACT, emotion-focused therapy, narrative therapy, solution-focused brief therapy, trauma-informed approaches
-- Use inclusive, non-pathologising language that respects client dignity
-- Maintain appropriate clinical boundaries and professional tone
-
-All output will be reviewed and edited by a registered professional before saving.
-Your drafts should be concise, clinically sound, and suitable for regulated practice records.`,
-        messages: [{ role: "user", content: userPrompt }],
-      }),
-    });
-
-    if (!response.ok) {
-      const err = await response.text();
-      console.error(`Anthropic API error: ${err}`);
-      return c.json({ error: "AI service temporarily unavailable" }, 503);
-    }
-
-    const data = await response.json();
-    const draft = data.content?.[0]?.text || "";
-
-    // Increment usage counter
-    await incrementAIUsage(userId);
-    
-    // Get updated usage info
-    const updatedUsage = await checkAIUsageLimit(userId, currentStatus);
-
-    // Server-side audit row (metadata only — never note text)
-    await supabase.from("audit_log").insert({
+    await db.from("audit_log").insert({
       clinician_id: userId,
       action: "AI_ASSIST_USED",
       table_name: "session_notes",
       details: {
-        note_format: fmt,
-        model: data.model,
-        input_tokens: data.usage?.input_tokens,
-        output_tokens: data.usage?.output_tokens,
-        request_id: session_id,
+        note_format: format,
+        model: response.model,
+        input_tokens: response.usage?.input_tokens,
+        output_tokens: response.usage?.output_tokens,
+        stop_reason: response.stop_reason,
+        request_id: requestId,
       },
     });
-
-    // Log usage for audit (no PII — just session_id + token counts)
-    console.log(JSON.stringify({
-      event: "ai_note_assist",
-      user_id: userId,
-      session_id,
-      note_format: fmt,
-      input_tokens: data.usage?.input_tokens,
-      output_tokens: data.usage?.output_tokens,
-      remaining_assists: updatedUsage.remaining,
-      timestamp: new Date().toISOString(),
-    }));
 
     return c.json({
       draft,
-      format: fmt,
-      model: data.model,
+      format,
+      model: response.model,
       disclaimer: "AI draft — review and edit before saving. Not a substitute for clinical judgment.",
-      usage: {
-        remaining: updatedUsage.remaining,
-        limit: updatedUsage.limit,
-        used: updatedUsage.limit - updatedUsage.remaining,
-      },
+      usage: { remaining, limit, used: limit - remaining },
     });
-
   } catch (error) {
-    console.error("AI assist error:", error);
-    return c.json({ error: "AI assist unavailable. Please write your note manually." }, 500);
+    await db.rpc("refund_ai_assist", { p_clinician: userId });
+    if (error instanceof Anthropic.RateLimitError) {
+      return c.json({ error: "AI Assist is busy. Please try again in a minute." }, 503);
+    }
+    if (error instanceof Anthropic.APIError) {
+      console.error(`Anthropic API error ${error.status}`);
+    } else {
+      console.error("AI assist error:", (error as Error).message);
+    }
+    return c.json({ error: "AI Assist unavailable. Please write your note manually." }, 503);
   }
 });
 
-// GET /make-server-4d1a502d/ai-usage - Check current usage
+// GET /make-server-4d1a502d/ai-usage
 app.get("/make-server-4d1a502d/ai-usage", async (c) => {
-  try {
-    const authHeader = c.req.header("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
-
-    const accessToken = authHeader.split(" ")[1];
-    
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
-    if (authError || !user) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
-
-    const userId = user.id;
-    const entitlement = await getEntitlement(supabase, userId);
-    const currentStatus = entitlement === "paid" ? "paid" : "trial";
-    const usageInfo = await checkAIUsageLimit(userId, currentStatus);
-
-    return c.json({
-      ...usageInfo,
-      accountType: currentStatus,
-    });
-
-  } catch (error) {
-    console.error("AI usage check error:", error);
-    return c.json({ error: "Unable to check usage" }, 500);
-  }
+  const auth = await requireUser(c);
+  if (auth instanceof Response) return auth;
+  const db = serviceClient();
+  const { plan, trial, consent } = await planAndTrial(db, auth.user.id);
+  const limit = limitFor(plan, trial);
+  const month = new Date().toISOString().slice(0, 7) + "-01";
+  const { data } = await db.from("ai_usage").select("used").eq("clinician_id", auth.user.id).eq("month", month).maybeSingle();
+  const used = data?.used ?? 0;
+  return c.json({ limit, used, remaining: Math.max(0, limit - used), plan, enabled: consent });
 });
 
 export default app;

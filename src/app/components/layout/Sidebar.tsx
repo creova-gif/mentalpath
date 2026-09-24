@@ -1,5 +1,6 @@
 import { NavLink, Link, useNavigate } from 'react-router';
 import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart, LogOut, Dumbbell, GitBranch, DollarSign } from 'lucide-react';
+import { PLANS } from '@/config/pricing';
 import { useUser } from '../../context/UserContext';
 
 interface SidebarProps {
@@ -17,7 +18,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const notesLabel = user?.notesLabel ?? 'Session Notes';
-  const isGroup = subscription?.type === 'group' || subscription?.type === 'enterprise';
+  const isGroup = subscription?.type === 'group';
   const isTrial = subscription?.isTrial;
   const trialDays = subscription?.trialDaysRemaining ?? 0;
   const isMusculoskeletal = user?.profession === 'Physiotherapist' || user?.profession === 'Chiropractor' || user?.profession === 'Registered Massage Therapist';
@@ -106,10 +107,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <path d="M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z"/>
             <path d="M5.5 8l1.5 1.5 3-3"/>
           </svg>
-          <span>CA servers · PHIPA compliant</span>
+          <span>Canadian data residency</span>
           {subscription && (
             <span className="ml-auto text-[9px] text-white/40 uppercase font-semibold tracking-wider">
-              {subscription.type === 'group' ? 'Group' : subscription.type === 'enterprise' ? 'Enterprise' : isTrial ? 'Trial' : 'Solo'}
+              {isTrial ? 'Trial' : PLANS[subscription.type].name.split(' ')[0]}
             </span>
           )}
         </div>

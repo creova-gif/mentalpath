@@ -4,7 +4,7 @@ import { Lock, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 
 const PLANS = {
   solo: { name: 'Solo Practitioner', price: 49, perLabel: 'per month after trial' },
-  group: { name: 'Group Practice', price: 79, perLabel: 'per clinician/month after trial' },
+  group: { name: 'Group Practice (coming soon)', price: 79, perLabel: 'per clinician/month — not yet available' },
 };
 
 type ProfKey = 'physio' | 'chiro' | 'rmt' | 'psychotherapist' | 'ot' | 'naturopath';
@@ -116,7 +116,7 @@ const PROFESSIONS: { id: ProfKey; label: string }[] = [
 const FAQ_ITEMS = [
   {
     q: 'When will I be charged?',
-    a: 'Not until your 30-day free trial ends. You can add your payment method now — nothing is charged until the trial ends. If you cancel before the trial ends, you pay nothing.',
+    a: 'No. The 7-day Solo trial needs no card. When it ends you move to the free Starter plan (1 active client) unless you subscribe — you are never charged automatically without adding a card.',
   },
   {
     q: 'What taxes will I pay?',
@@ -168,13 +168,15 @@ export function Subscribe() {
   const tax = parseFloat((planPrice * 0.13).toFixed(2));
   const total = parseFloat((planPrice + tax).toFixed(2));
 
+  // The trial starts at signup (no card). Group Practice isn't sold yet.
   const handleStartTrial = () => {
-    setIsLoading(true);
     setErrorMsg('');
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate('/login');
-    }, 900);
+    if (plan === 'group') {
+      navigate('/checkout?plan=group');
+      return;
+    }
+    setIsLoading(true);
+    navigate('/onboarding');
   };
 
   return (
@@ -483,7 +485,7 @@ export function Subscribe() {
                 color: '#6dd9b2', marginBottom: 12,
               }}>
                 <Clock size={11} stroke="#6dd9b2" />
-                30-day free trial active
+                7-day free trial · no card required
               </div>
               {/* Plan tabs */}
               <div role="tablist" aria-label="Billing plan" style={{
@@ -619,9 +621,9 @@ export function Subscribe() {
               fontSize: 11, color: 'rgba(232,237,233,0.3)', lineHeight: 1.6,
             }}>
               By starting your trial you agree to MentalPath's{' '}
-              <Link to="#" style={{ color: '#4fb896', textDecoration: 'none' }}>Terms of Service</Link>{' '}
+              <Link to="/terms" style={{ color: '#4fb896', textDecoration: 'none' }}>Terms of Service</Link>{' '}
               and{' '}
-              <Link to="#" style={{ color: '#4fb896', textDecoration: 'none' }}>Privacy Policy</Link>.
+              <Link to="/privacy" style={{ color: '#4fb896', textDecoration: 'none' }}>Privacy Policy</Link>.
               Cancel any time from Settings → Billing. HST/GST collected per Canadian tax law.
             </div>
           </div>

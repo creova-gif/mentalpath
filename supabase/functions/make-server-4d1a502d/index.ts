@@ -1,37 +1,28 @@
 import { Hono } from "npm:hono";
 import { cors } from "npm:hono/cors";
 import { logger } from "npm:hono/logger";
-import * as kv from "./kv_store.ts";
-import trialManager from "./trial-manager.ts";
 import aiRoutes from "./ai-routes.ts";
 import billingRoutes from "./billing-routes.ts";
+import accountRoutes from "./account-routes.ts";
+import { rateLimit } from "./rate-limit.ts";
 
 const app = new Hono();
 
-// Enable logger
-app.use('*', logger(console.log));
+// Log method, path, status and timing only (hono/logger never logs bodies).
+app.use("*", logger(console.log));
 
-// ── M-02: Restrict CORS to explicit allowlist ────────────────────────────────
-// Set ALLOWED_ORIGINS env var to a comma-separated list of production domains.
-// Falls back to common dev origins (localhost variants + Replit) when not set.
+// ── CORS: explicit allowlist ─────────────────────────────────────────────────
+// Set ALLOWED_ORIGINS (comma-separated) in production. Without it, only local
+// development origins are accepted — never arbitrary origins.
 const rawOrigins = Deno.env.get("ALLOWED_ORIGINS");
-const allowedOrigins = rawOrigins
-  ? rawOrigins.split(",").map((o) => o.trim()).filter(Boolean)
-  : [];
-
+const allowedOrigins = rawOrigins ? rawOrigins.split(",").map((o) => o.trim()).filter(Boolean) : [];
 const isDev = !rawOrigins;
 
-// Enable CORS for all routes and methods
 app.use(
   "/*",
   cors({
     origin: (origin) => {
-      // In prod: only exact allowlist matches
-      if (!isDev) {
-        return allowedOrigins.includes(origin) ? origin : null;
-      }
-      // In dev (no ALLOWED_ORIGINS set): allow localhost on any port + Replit
-      // only. Never reflect arbitrary origins — set ALLOWED_ORIGINS in prod.
+      if (!isDev) return allowedOrigins.includes(origin) ? origin : null;
       const devAllowed =
         /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
         /^https?:\/\/[\w-]+\.[\w-]+\.repl\.co$/.test(origin) ||
@@ -39,29 +30,35 @@ app.use(
       return devAllowed ? origin : null;
     },
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    exposeHeaders: ["Content-Length"],
+    allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    exposeHeaders: ["Content-Length", "Retry-After"],
     maxAge: 600,
   }),
 );
 
-// Explicit OPTIONS handler for preflight requests
-app.options('*', (c) => {
-  return c.text('', 204);
+// Security headers on every API response
+app.use("*", async (c, next) => {
+  await next();
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("Referrer-Policy", "no-referrer");
+  c.header("Cache-Control", "no-store");
 });
 
-// Health check endpoint
-app.get("/make-server-4d1a502d/health", (c) => {
-  return c.json({ status: "ok" });
-});
+// Per-IP rate limiting on expensive / abusable endpoints
+app.use("/make-server-4d1a502d/ai-note-assist", rateLimit({ limit: 20, windowSeconds: 60 }));
+app.use("/make-server-4d1a502d/billing/*", rateLimit({ limit: 10, windowSeconds: 60 }));
+app.use("/make-server-4d1a502d/account/*", rateLimit({ limit: 5, windowSeconds: 60 }));
+app.use("/make-server-4d1a502d/contact", rateLimit({ limit: 3, windowSeconds: 300 }));
 
-// Mount trial manager routes
-app.route("/", trialManager);
+app.get("/make-server-4d1a502d/health", (c) => c.json({ status: "ok" }));
 
-// Mount AI note assist routes
 app.route("/", aiRoutes);
-
-// Mount billing routes
 app.route("/", billingRoutes);
+app.route("/", accountRoutes);
+
+app.onError((err, c) => {
+  console.error("Unhandled error:", err.message);
+  return c.json({ error: "Internal error" }, 500);
+});
 
 Deno.serve(app.fetch);

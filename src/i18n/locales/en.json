@@ -457,7 +457,7 @@
         "name": "Solo Practitioner",
         "price": "$49",
         "period": "/month · unlimited clients",
-        "description": "Everything a solo Canadian practitioner needs. PHIPA-compliant from day one.",
+        "description": "Everything a solo Canadian practitioner needs, with data stored in Canada.",
         "badge": "Most popular",
         "features": [
           "Unlimited clients",
@@ -474,7 +474,7 @@
       "group": {
         "name": "Group Practice",
         "price": "$79",
-        "period": "/month per clinician · 2+ clinicians",
+        "period": "/month per clinician · coming soon",
         "description": "Multi-clinician scheduling, owner dashboard, separate billing, shared client management.",
         "features": [
           "Everything in Solo",
@@ -484,7 +484,7 @@
           "Clinician payout reporting",
           "Priority support"
         ],
-        "cta": "Start free trial"
+        "cta": "Coming soon — join the waitlist"
       }
     }
   },

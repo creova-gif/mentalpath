@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@/app/context/UserContext';
 import { fireSuccessConfetti } from '../ui/SuccessAnimation';
+import { toast } from 'sonner';
+import { startCheckout } from '../../services/billing';
 
 const intakeTemplates = [
   'Standard intake',
@@ -52,7 +54,7 @@ export function NewClientModal({ onClose, onClientAdded, initial }: { onClose: (
     if (!user) return;
     
     if (!formData.firstName || !formData.lastName) {
-      alert('First name and last name are required.');
+      toast.error('First name and last name are required.');
       return;
     }
 
@@ -89,8 +91,14 @@ export function NewClientModal({ onClose, onClientAdded, initial }: { onClose: (
     setIsSubmitting(false);
 
     if (error) {
-      console.error('Error adding client:', error);
-      alert('Failed to add client. Please try again.');
+      setIsSubmitting(false);
+      if (error.hint === 'PLAN_LIMIT') {
+        toast.error(error.message, {
+          action: { label: 'Upgrade to Solo', onClick: () => { startCheckout().catch(e => toast.error(e.message)); } },
+        });
+      } else {
+        toast.error('Failed to add client. Please try again.');
+      }
       return;
     }
 
@@ -112,7 +120,7 @@ export function NewClientModal({ onClose, onClientAdded, initial }: { onClose: (
           <div>
             <div className="font-[var(--font-display)] text-xl text-[var(--ink)]">Add new client</div>
             <div className="text-[13px] text-[var(--ink-muted)] mt-1">
-              Client record stored on Canadian servers · PHIPA compliant
+              Client record stored on Canadian servers
             </div>
           </div>
           <button
