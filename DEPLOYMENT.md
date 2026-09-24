@@ -40,6 +40,8 @@ SUPABASE_URL=https://hkhwgbkijepsxtixdmrs.supabase.co SUPABASE_SERVICE_ROLE_KEY=
 
 To rotate the master key: `SELECT private.rewrap_all_deks('<old>', '<new>')` in the SQL editor, then update the Vault secret.
 
+**Retention.** Enable the `pg_cron` extension (Database → Extensions) *before* `db push` so the nightly `private.purge_expired_records()` job is scheduled; otherwise run `SELECT cron.schedule('mentalpath-retention-purge', '17 3 * * *', 'SELECT private.purge_expired_records()')` afterwards. Check runs with `SELECT * FROM private.retention_runs ORDER BY id DESC`.
+
 Never run `supabase/seed_demo_users_fixed.sql` against production. For a local/dev project you may relax MFA:
 
 ```sql

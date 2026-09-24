@@ -54,7 +54,9 @@
 
 - Clinical records must be kept for the period required by each clinician's College (commonly ≥10 years after last contact, longer for minors).
 - Account closure blocks sign-in immediately and records `deletion_requested_at`; records are **not** deleted until retention ends.
-- **Open:** scheduled purge job that deletes a closed account's records after the applicable retention period, with a pre-purge export email to the clinician.
+- `private.purge_expired_records()` (migration `20260925000200_retention_purge.sql`, nightly via pg_cron) destroys each client's record set once `client_retention_until()` has passed: 10 years after the last contact (note, past appointment or invoice) or 10 years after the client's 18th birthday, whichever is later. It covers notes, amendments, appointments, intake forms and invoices. The date is shown on the client profile.
+- A closed account is removed (auth user, profile, data key) 30 days after closure once it holds no client records. The closure screen prompts the clinician to export first.
+- Operational data: contact messages and AI usage counters 2 years; Stripe event ids 400 days; audit rows 10 years. Each run logs counts only (`private.retention_runs`). Tested in `supabase/tests/17_retention_purge.sql`.
 - Clinicians can export all their data at any time (Settings → Danger zone), recorded as `DATA_EXPORTED`.
 
 ## 6. Individual rights (clients of clinicians)
@@ -70,7 +72,7 @@ Clients exercise access/correction rights through their clinician (the custodian
 
 1. Signed agreements (DPA / BAA-equivalent, zero data retention) with Anthropic, Supabase, and any enabled telemetry vendor.
 2. Privacy policy and terms of service reviewed by counsel (current `/privacy` page is a factual summary).
-3. Retention purge job and contact-message retention automation.
+3. ~~Retention purge job and contact-message retention automation~~ — done 2026-09-25 (§5). Confirm pg_cron is enabled on the production project.
 4. Incident response runbook and contact (privacy@mentalpath.ca) staffed.
 5. ~~Application-level encryption with managed keys (ADR 0001, option B)~~ — done 2026-09-25: note content is encrypted at rest with per-clinician keys wrapped by a Vault master key. Residual risk: an attacker with superuser access to the live database can still decrypt. Back up the master key (DEPLOYMENT.md).
 6. Quebec Law 25: privacy officer designation, PIA for transfers outside Quebec, French-language notices across the app.

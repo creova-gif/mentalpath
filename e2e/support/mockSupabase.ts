@@ -100,6 +100,7 @@ export async function mockSupabase(page: Page, options: MockOptions = {}): Promi
       return null;
     },
     get_session_note: (a) => notes().filter(r => r.id === a.p_note_id),
+    client_retention_until: () => '2036-09-25',
   };
 
   const json = (route: Route, body: unknown, status = 200, headers: Record<string, string> = {}) =>

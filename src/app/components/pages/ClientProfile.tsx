@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import {
-  formatCad, getClient, listInvoicesForClient, setClientStatus,
+  formatCad, getClient, getRetentionDate, listInvoicesForClient, setClientStatus,
   type ClientRecord, type ClientStatus, type InvoiceSummary,
 } from '../../services/practice';
 import { listNotes, type NoteSummary } from '../../services/sessionNotes';
@@ -13,11 +13,13 @@ export function ClientProfile() {
   const [client, setClient] = useState<ClientRecord | null | undefined>(undefined);
   const [notes, setNotes] = useState<NoteSummary[]>([]);
   const [invoices, setInvoices] = useState<InvoiceSummary[]>([]);
+  const [retainUntil, setRetainUntil] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getClient(clientId), listNotes({ clientId }), listInvoicesForClient(clientId)])
       .then(([c, n, i]) => { setClient(c); setNotes(n); setInvoices(i); })
       .catch(() => setClient(null));
+    getRetentionDate(clientId).then(setRetainUntil).catch(() => setRetainUntil(null));
   }, [clientId]);
 
   const changeStatus = async (status: ClientStatus) => {
@@ -74,6 +76,11 @@ export function ClientProfile() {
             {row('Referral source', client.referralSource)}
             {row('Cultural context', client.culturalTags.join(', '))}
             {row('Client since', new Date(client.createdAt).toLocaleDateString('en-CA', { dateStyle: 'medium' }))}
+            {row('Record kept until', retainUntil
+              ? <span title="10 years after the last contact, or 10 years after the client turns 18, whichever is later. Destroyed automatically after this date.">
+                  {new Date(`${retainUntil}T00:00:00`).toLocaleDateString('en-CA', { dateStyle: 'medium' })}
+                </span>
+              : null)}
           </dl>
           {client.notes && <p className="mt-3 text-[13px] text-[var(--ink-soft)] whitespace-pre-wrap">{client.notes}</p>}
           <div className="mt-4 flex flex-wrap gap-2 text-xs">

@@ -33,7 +33,7 @@ export function Privacy() {
         </ul>
 
         <h2 className={h2} style={{ fontFamily: 'var(--font-display)' }}>Keeping and deleting records</h2>
-        <p>Clinicians can download all of their data at any time. When an account is closed, sign-in is blocked immediately, and clinical records are kept for the retention period required by the clinician's regulatory College before they are deleted.</p>
+        <p>Clinicians can download all of their data at any time. When an account is closed, sign-in is blocked immediately, and clinical records are kept for the retention period required by Ontario's regulatory Colleges (10 years after the last contact, or 10 years after the client turns 18, whichever is later) and are then destroyed automatically.</p>
 
         <h2 className={h2} style={{ fontFamily: 'var(--font-display)' }}>Your rights</h2>
         <p>If you are a client, contact your clinician to access or correct your records. Clinicians and anyone else can reach our privacy contact at <a className="text-[var(--sage)] underline" href="mailto:privacy@mentalpath.ca">privacy@mentalpath.ca</a>. You can also contact the Information and Privacy Commissioner of Ontario or the Office of the Privacy Commissioner of Canada.</p>

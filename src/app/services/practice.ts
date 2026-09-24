@@ -61,6 +61,13 @@ export async function getClient(id: string): Promise<ClientRecord | null> {
   return data ? toClient(data) : null;
 }
 
+/** Date after which the client's record set is destroyed (College retention rule). */
+export async function getRetentionDate(clientId: string): Promise<string | null> {
+  const { data, error } = await supabase.rpc('client_retention_until', { p_client: clientId });
+  if (error) throw error;
+  return (data as string | null) ?? null;
+}
+
 export async function setClientStatus(id: string, status: ClientStatus): Promise<void> {
   const { error } = await supabase.from('clients').update({ status }).eq('id', id);
   if (error) throw error;
