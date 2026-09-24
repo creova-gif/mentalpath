@@ -1,96 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../context/UserContext';
+import {
+  formatCad, getDashboardStats, listAppointments, type Appointment, type DashboardStats,
+} from '../../services/practice';
+import { listNotes, type NoteSummary } from '../../services/sessionNotes';
 
-const PROFESSION_SESSIONS: Record<string, Array<{ time: string; initials: string; name: string; type: string; status: string; color: string }>> = {
-  'Chiropractor': [
-    { time: '8:30', initials: 'LK', name: 'Lena Kim', type: 'Adjustment · 30 min · Follow-up', status: 'done', color: 'c-av-a' },
-    { time: '9:00', initials: 'TW', name: 'Tom Walsh', type: 'Initial assessment · 45 min', status: 'done', color: 'c-av-b' },
-    { time: '10:00', initials: 'MD', name: 'Maria Diaz', type: 'Adjustment · 30 min · Session 4', status: 'now', color: 'c-av-c' },
-    { time: '11:30', initials: 'JP', name: 'James Park', type: 'Adjustment · 30 min · Note due', status: 'note-due', color: 'c-av-d' },
-    { time: '2:00', initials: 'BN', name: 'Beth Norton', type: 'Follow-up · 45 min · Session 7', status: 'upcoming', color: 'c-av-e' },
-    { time: '3:30', initials: 'RS', name: 'Raj Singh', type: 'Adjustment · 30 min · New patient', status: 'upcoming', color: 'c-av-f' },
-  ],
-  'Physiotherapist': [
-    { time: '8:00', initials: 'AM', name: 'Aisha Mohammed', type: 'Assessment · 60 min · Initial', status: 'done', color: 'c-av-a' },
-    { time: '9:30', initials: 'CH', name: 'Connor Huang', type: 'Rehab · 45 min · Session 6', status: 'done', color: 'c-av-b' },
-    { time: '11:00', initials: 'FL', name: 'Fatima Leblanc', type: 'Manual therapy · 45 min', status: 'now', color: 'c-av-c' },
-    { time: '1:00', initials: 'DO', name: "Declan O'Brien", type: 'Rehab · 45 min · Note due', status: 'note-due', color: 'c-av-d' },
-    { time: '2:30', initials: 'YS', name: 'Yuki Suzuki', type: 'Post-surgical · 60 min · Session 12', status: 'upcoming', color: 'c-av-e' },
-    { time: '4:00', initials: 'PG', name: 'Priya Gill', type: 'Discharge assessment · 45 min', status: 'upcoming', color: 'c-av-f' },
-  ],
-  'Registered Massage Therapist': [
-    { time: '9:00', initials: 'SK', name: 'Sara Kowalski', type: 'Deep tissue · 60 min · Session 3', status: 'done', color: 'c-av-a' },
-    { time: '10:30', initials: 'MT', name: 'Marcus Thompson', type: 'Swedish · 90 min · Relaxation', status: 'done', color: 'c-av-b' },
-    { time: '12:00', initials: 'LB', name: 'Laura Berg', type: 'Sports massage · 60 min', status: 'now', color: 'c-av-c' },
-    { time: '2:00', initials: 'KN', name: 'Kevin Nkrumah', type: 'Hot stone · 75 min · Note due', status: 'note-due', color: 'c-av-d' },
-    { time: '3:30', initials: 'PV', name: 'Priya Verma', type: 'Prenatal · 60 min · Session 5', status: 'upcoming', color: 'c-av-e' },
-    { time: '5:00', initials: 'AD', name: 'Alex Dubois', type: 'Deep tissue · 60 min · New client', status: 'upcoming', color: 'c-av-f' },
-  ],
-};
-
-const DEFAULT_SESSIONS = [
-  { time: '9:00', initials: 'SM', name: 'Sadia Mohamoud', type: 'Individual · 50 min · Session 8', status: 'done', color: 'c-av-a' },
-  { time: '10:00', initials: 'AM', name: 'Amara Mensah', type: 'Individual · 50 min · Session 14', status: 'now', color: 'c-av-b' },
-  { time: '11:30', initials: 'JL', name: 'Jamal Lee', type: 'Individual · 50 min · Note due', status: 'note-due', color: 'c-av-c' },
-  { time: '2:00', initials: 'PC', name: 'Priya & Chetan Choudhary', type: 'Couples · 80 min · Session 3', status: 'upcoming', color: 'c-av-d' },
-  { time: '3:30', initials: 'RB', name: 'Riya Bhatt', type: 'Individual · 50 min · Session 2', status: 'upcoming', color: 'c-av-e' },
-  { time: '5:00', initials: 'MN', name: 'Marcus Nwosu', type: 'Individual · 50 min · Intake', status: 'upcoming', color: 'c-av-f' },
-];
-
-const PROFESSION_TASKS: Record<string, Array<{ text: string; done: boolean; due?: string }>> = {
-  'Chiropractor': [
-    { text: 'Send OHIP receipt to Tom W.', done: true },
-    { text: 'Complete SOAP note — James P.', done: false, due: 'Due tonight 11pm' },
-    { text: 'Review X-ray report — Maria D.', done: false, due: 'Before 5:00 pm today' },
-    { text: 'Follow up — Raj S. extended health authorization', done: false },
-  ],
-  'Physiotherapist': [
-    { text: 'Send treatment summary to Aisha M.', done: true },
-    { text: "Complete SOAP note — Declan O'Brien", done: false, due: 'Due tonight 11pm' },
-    { text: 'Review intake form — Priya G.', done: false, due: 'Before 4:00 pm today' },
-    { text: 'Follow up — Yuki S. WSIB authorization', done: false },
-  ],
-  'Registered Massage Therapist': [
-    { text: 'Send receipt to Sara K.', done: true },
-    { text: 'Complete SOAP note — Kevin N.', done: false, due: 'Due tonight 11pm' },
-    { text: 'Review intake form — Alex D.', done: false, due: 'Before 5:00 pm today' },
-    { text: 'Follow up — Priya V. extended health claim', done: false },
-  ],
-};
-
-const DEFAULT_TASKS = [
-  { text: 'Send receipt to Sadia M.', done: true },
-  { text: 'Complete DAP note — Jamal L.', done: false, due: 'Due tonight 11pm' },
-  { text: 'Review intake form — Marcus N.', done: false, due: 'Before 5:00 pm today' },
-  { text: 'Follow up — Riya B. sliding scale update', done: false },
-];
-
-const PROFESSION_STATS: Record<string, { sessions: string; clients: string; billed: string; notes: string }> = {
-  'Chiropractor': { sessions: '8', clients: '31', billed: '$2,040', notes: '2' },
-  'Physiotherapist': { sessions: '6', clients: '28', billed: '$3,480', notes: '1' },
-  'Registered Massage Therapist': { sessions: '5', clients: '18', billed: '$1,425', notes: '1' },
-};
-
-const DEFAULT_STATS = { sessions: '6', clients: '23', billed: '$4,200', notes: '3' };
+function StatCard({ label, value, hint, onClick }: { label: string; value: string | number; hint?: string; onClick?: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="text-left bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 cursor-pointer hover:border-[var(--sage-light)] transition-colors"
+    >
+      <div className="text-xs text-[var(--ink-muted)] mb-1.5">{label}</div>
+      <div className="text-[26px] leading-none text-[var(--ink)]" style={{ fontFamily: 'var(--font-display)' }}>{value}</div>
+      {hint && <div className="text-[11px] text-[var(--ink-muted)] mt-1.5">{hint}</div>}
+    </button>
+  );
+}
 
 export function Overview() {
-  const navigate = useNavigate();
-  const { user, subscription } = useUser();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [today, setToday] = useState<Appointment[] | null>(null);
+  const [drafts, setDrafts] = useState<NoteSummary[] | null>(null);
+  const [error, setError] = useState(false);
 
-  const profession = user?.profession ?? '';
-  const sessions = PROFESSION_SESSIONS[profession] ?? DEFAULT_SESSIONS;
-  const tasks0 = PROFESSION_TASKS[profession] ?? DEFAULT_TASKS;
-  const stats = PROFESSION_STATS[profession] ?? DEFAULT_STATS;
-  const notesLabel = user?.notesLabel ?? 'Session Notes';
-
-  const [taskList, setTaskList] = useState(tasks0);
-
-  const toggleTask = (index: number) => {
-    setTaskList(prev => prev.map((task, i) => (i === index ? { ...task, done: !task.done } : task)));
-  };
+  useEffect(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    Promise.all([
+      getDashboardStats(),
+      listAppointments(start.toISOString(), end.toISOString()),
+      listNotes({ limit: 50 }),
+    ])
+      .then(([s, appts, notes]) => {
+        setStats(s);
+        setToday(appts.filter(a => a.status !== 'cancelled'));
+        setDrafts(notes.filter(n => !n.isLocked).slice(0, 5));
+      })
+      .catch(() => setError(true));
+  }, []);
 
   const greeting = (() => {
     const hour = new Date().getHours();
@@ -99,178 +54,105 @@ export function Overview() {
     return t('dashboard.greetings.evening');
   })();
 
-  const firstName = user?.firstName ?? 'there';
+  const dateLabel = new Date().toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
+  const time = (iso: string) => new Date(iso).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' });
 
   return (
     <>
-      {/* Welcome bar */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="font-[var(--font-display)] text-xl text-[var(--ink)]">{greeting}, {firstName}</h1>
+          <h1 className="text-xl text-[var(--ink)]" style={{ fontFamily: 'var(--font-display)' }}>
+            {greeting}, {user?.firstName ?? ''}
+          </h1>
           <p className="text-xs text-[var(--ink-muted)] mt-0.5">
-            {t('dashboard.date')} · {user?.profession}{user?.registrationNumber ? ` · ${user.registrationNumber}` : ''}
+            {dateLabel} · {user?.profession}{user?.registrationNumber ? ` · ${user.registrationNumber}` : ''}
           </p>
         </div>
-        {subscription?.isTrial && (
-          <div className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
-            {t('dashboard.trial.daysLeft', { days: subscription.trialDaysRemaining })} <button onClick={() => navigate('/dashboard/settings')} className="underline bg-transparent border-none cursor-pointer text-amber-700 text-xs font-medium p-0">{t('dashboard.trial.upgrade')}</button>
-          </div>
-        )}
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-7">
-        <StatCard label={t('dashboard.stats.sessionsToday')} value={stats.sessions} delta={t('dashboard.stats.deltas.sessionsCompleted')} />
-        <StatCard label={t('dashboard.stats.activeClients')} value={stats.clients} delta={t('dashboard.stats.deltas.activeClients')} />
-        <StatCard label={t('dashboard.stats.billedThisMonth')} value={stats.billed} delta={t('dashboard.stats.deltas.outstandingPending')} />
-        <StatCard label={t('dashboard.stats.notesDue')} value={stats.notes} delta={t('dashboard.stats.deltas.within24hrs')} negative />
+      {error && <p role="alert" className="mb-4 text-sm text-[var(--red)]">Couldn't load your dashboard. Refresh to try again.</p>}
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6" aria-busy={!stats && !error}>
+        <StatCard label="Sessions today" value={today?.length ?? '—'} onClick={() => navigate('/dashboard/calendar')} />
+        <StatCard label="Active clients" value={stats?.activeClients ?? '—'}
+          hint={stats?.waitlist ? `${stats.waitlist} on waitlist` : undefined} onClick={() => navigate('/dashboard/clients')} />
+        <StatCard label="Collected this month" value={stats ? formatCad(stats.collectedThisMonth) : '—'}
+          hint={stats?.outstandingCount ? `${formatCad(stats.outstandingAmount)} outstanding (${stats.outstandingCount})` : undefined}
+          onClick={() => navigate('/dashboard/billing')} />
+        <StatCard label="Draft notes" value={stats?.draftNotes ?? '—'} hint="Lock within 24h of the session" onClick={() => navigate('/dashboard/notes')} />
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4 sm:gap-5">
-        {/* Today's Sessions */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-5 lg:mb-0">
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border)]">
-            <span className="text-sm font-medium text-[var(--ink)]">
-              <span className="hidden sm:inline">{t('dashboard.appointments.titleFull')}</span>
-              <span className="sm:hidden">{t('dashboard.appointments.titleShort')}</span>
-            </span>
-            <button onClick={() => navigate('/dashboard/calendar')} className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-transparent border-none px-2 py-1 rounded hover:bg-[var(--sage-pale)]">
-              {t('dashboard.appointments.viewCalendar')}
-            </button>
+      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5">
+        <section className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden" aria-labelledby="today-heading">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border)]">
+            <h2 id="today-heading" className="text-sm font-medium">Today's sessions</h2>
+            <button onClick={() => navigate('/dashboard/calendar')} className="text-xs text-[var(--sage)] bg-transparent border-none cursor-pointer">Open calendar →</button>
           </div>
-          <div className="flex flex-col gap-0">
-            {sessions.map((session, i) => (
-              <div
-                key={i}
-                onClick={() => navigate('/dashboard/clients')}
-                className={`flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5 py-3 sm:py-3.5 border-t border-[var(--border)] cursor-pointer transition-all duration-100 hover:bg-[var(--warm)] ${
-                  i === 0 ? 'border-t-0' : ''
-                } ${session.status === 'now' ? 'bg-[var(--sage)]/[0.04]' : ''}`}
-              >
-                <div className="text-xs text-[var(--ink-muted)] min-w-[40px] sm:min-w-[48px]">{session.time}</div>
-                <div className={`w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${getAvatarColor(session.color)}`}>
-                  {session.initials}
-                </div>
+          <ul>
+            {today !== null && today.length === 0 && (
+              <li className="px-5 py-6 text-sm text-[var(--ink-muted)]">No sessions scheduled today.</li>
+            )}
+            {today?.map(a => (
+              <li key={a.id} className="flex items-center gap-4 px-5 py-3 border-t border-[var(--border)] first:border-t-0">
+                <div className="text-sm font-medium w-20 text-[var(--ink)]">{time(a.scheduledAt)}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-[var(--ink)] truncate">{session.name}</div>
-                  <div className="text-xs text-[var(--ink-muted)] truncate">{session.type}</div>
+                  <div className="text-sm truncate">{a.clientName}</div>
+                  <div className="text-xs text-[var(--ink-muted)]">{a.durationMinutes} min · {a.sessionType}</div>
                 </div>
-                {session.status === 'done' && (
-                  <span className="text-[11px] bg-[#e8f4f0] text-[var(--sage-deep)] px-2 py-[3px] rounded font-medium flex-shrink-0">{t('dashboard.appointments.done')}</span>
-                )}
-                {session.status === 'now' && (
-                  <span className="bg-[var(--sage)] text-white text-[11px] px-2 py-[3px] rounded font-medium flex-shrink-0">{t('dashboard.appointments.now')}</span>
-                )}
-                {session.status === 'note-due' && (
+                {a.clientId && (
                   <button
-                    onClick={e => { e.stopPropagation(); navigate('/session-note-editor'); }}
-                    className="px-2 sm:px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)] flex-shrink-0"
+                    onClick={() => navigate(a.noteId ? `/session-note-editor?noteId=${a.noteId}` : `/session-note-editor?clientId=${a.clientId}`)}
+                    className="px-2.5 py-[5px] rounded-md text-xs border border-[var(--border)] bg-transparent cursor-pointer hover:bg-[var(--sage-pale)]"
                   >
-                    {t('dashboard.appointments.addNote')}
+                    {a.noteId ? 'Open note' : 'Write note'}
                   </button>
                 )}
-              </div>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
 
-        {/* Right Column */}
-        <div className="flex flex-col gap-4 sm:gap-5">
-          {/* Tasks */}
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border)]">
-              <span className="text-sm font-medium text-[var(--ink)]">{t('dashboard.tasks.title')}</span>
-              <button className="text-xs text-[var(--sage)] font-medium cursor-pointer bg-transparent border-none px-2 py-1 rounded hover:bg-[var(--sage-pale)]">{t('dashboard.tasks.addTask')}</button>
+        <div className="space-y-5">
+          <section className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden" aria-labelledby="drafts-heading">
+            <div className="px-5 py-3.5 border-b border-[var(--border)]">
+              <h2 id="drafts-heading" className="text-sm font-medium">Notes to finish</h2>
             </div>
-            <div>
-              {taskList.map((task, i) => (
-                <div key={i} className="flex items-start gap-2.5 px-4 sm:px-5 py-3 border-t border-[var(--border)] first:border-t-0">
-                  <div
-                    onClick={() => toggleTask(i)}
-                    className={`w-4 h-4 rounded border-[1.5px] flex-shrink-0 mt-0.5 cursor-pointer ${
-                      task.done ? 'bg-[var(--sage)] border-[var(--sage)]' : 'border-[var(--border)]'
-                    }`}
-                  />
-                  <div className="flex-1">
-                    <div className={`text-[13px] text-[var(--ink-soft)] leading-[1.5] ${task.done ? 'line-through text-[var(--ink-muted)]' : ''}`}>{task.text}</div>
-                    {task.due && !task.done && <div className="text-[11px] text-[var(--gold)] font-medium">{task.due}</div>}
-                  </div>
-                </div>
+            <ul>
+              {drafts !== null && drafts.length === 0 && <li className="px-5 py-5 text-sm text-[var(--ink-muted)]">All notes are locked. Nice work.</li>}
+              {drafts?.map(n => (
+                <li key={n.id}>
+                  <button onClick={() => navigate(`/session-note-editor?noteId=${n.id}`)}
+                    className="w-full text-left px-5 py-3 border-t border-[var(--border)] first:border-t-0 bg-transparent cursor-pointer hover:bg-[var(--warm)]">
+                    <div className="text-sm">{n.clientName}</div>
+                    <div className="text-xs text-[var(--ink-muted)]">
+                      {new Date(n.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {n.noteFormat.toUpperCase()}
+                    </div>
+                  </button>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
 
-          {/* Monthly Revenue */}
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 pb-5">
-            <div className="text-sm font-medium text-[var(--ink)] mb-3">{t('dashboard.revenue.title')}</div>
-            <div className="h-20 flex items-end gap-2">
-              {[
-                { month: t('dashboard.revenue.months.Nov'), height: 45 },
-                { month: t('dashboard.revenue.months.Dec'), height: 52 },
-                { month: t('dashboard.revenue.months.Jan'), height: 38 },
-                { month: t('dashboard.revenue.months.Feb'), height: 60 },
-                { month: t('dashboard.revenue.months.Mar'), height: 70, active: true },
-              ].map((bar, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div className={`w-full rounded-t ${bar.active ? 'bg-[var(--sage)]' : 'bg-[var(--sage-pale)]'}`} style={{ height: `${bar.height}px` }} />
-                  <span className={`text-[10px] ${bar.active ? 'text-[var(--sage-deep)] font-medium' : 'text-[var(--ink-muted)]'}`}>{bar.month}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-2.5 text-xs text-[var(--ink-muted)]">
-              {t('dashboard.revenue.subtitle', { amount: stats.billed })}
-            </div>
-          </div>
-
-          {/* Quick actions */}
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-            <div className="px-4 py-3 border-b border-[var(--border)]">
-              <span className="text-sm font-medium text-[var(--ink)]">{t('dashboard.quickActions.title')}</span>
+          <section className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden" aria-labelledby="actions-heading">
+            <div className="px-5 py-3.5 border-b border-[var(--border)]">
+              <h2 id="actions-heading" className="text-sm font-medium">{t('dashboard.quickActions.title')}</h2>
             </div>
             <div className="grid grid-cols-2 divide-x divide-y divide-[var(--border)]">
               {[
-                { label: t('dashboard.quickActions.newNote', { type: notesLabel.split(' ')[0] }), icon: '📝', path: '/session-note-editor' },
-                { label: t('dashboard.quickActions.newInvoice'), icon: '💳', path: '/dashboard/billing' },
-                { label: t('dashboard.quickActions.insuranceReceipt'), icon: '🧾', path: '/dashboard/insurance-receipts' },
-                { label: t('dashboard.quickActions.addClient'), icon: '👤', path: '/dashboard/clients' },
-              ].map((action, i) => (
-                <button
-                  key={i}
-                  onClick={() => navigate(action.path)}
-                  className="flex items-center gap-2 px-4 py-3 bg-transparent border-none cursor-pointer text-left hover:bg-[var(--warm)] transition-colors"
-                >
-                  <span className="text-sm">{action.icon}</span>
-                  <span className="text-[12px] text-[var(--ink-soft)] font-medium">{action.label}</span>
+                { label: t('dashboard.quickActions.newNote', { type: (user?.notesLabel ?? 'Session Notes').split(' ')[0] }), path: '/session-note-editor' },
+                { label: t('dashboard.quickActions.newInvoice'), path: '/dashboard/billing' },
+                { label: 'Schedule a session', path: '/dashboard/calendar' },
+                { label: t('dashboard.quickActions.addClient'), path: '/dashboard/clients' },
+              ].map(action => (
+                <button key={action.path} onClick={() => navigate(action.path)}
+                  className="px-4 py-3 bg-transparent border-none cursor-pointer text-left text-[12px] text-[var(--ink-soft)] font-medium hover:bg-[var(--warm)]">
+                  {action.label}
                 </button>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       </div>
-
     </>
   );
-}
-
-function StatCard({ label, value, delta, negative }: { label: string; value: string; delta: string; negative?: boolean }) {
-  return (
-    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-3 sm:p-5">
-      <div className="text-[10px] sm:text-xs text-[var(--ink-muted)] font-medium uppercase tracking-[0.5px] mb-1 sm:mb-2">{label}</div>
-      <div className="font-[var(--font-display)] text-[20px] sm:text-[28px] text-[var(--ink)] mb-0.5 sm:mb-1">{value}</div>
-      <div className={`text-[10px] sm:text-xs ${negative ? 'text-[var(--red)]' : 'text-[var(--green)]'}`}>{delta}</div>
-    </div>
-  );
-}
-
-function getAvatarColor(color: string) {
-  const colors: Record<string, string> = {
-    'c-av-a': 'bg-[#d4e8e4] text-[var(--sage-deep)]',
-    'c-av-b': 'bg-[#e8d4d4] text-[#7a3030]',
-    'c-av-c': 'bg-[#d4d4e8] text-[#303070]',
-    'c-av-d': 'bg-[#e8e4d4] text-[#5a4a10]',
-    'c-av-e': 'bg-[#e4d4e8] text-[#5a1a6a]',
-    'c-av-f': 'bg-[#d4e8d4] text-[#1a5a1a]',
-  };
-  return colors[color] || colors['c-av-a'];
 }

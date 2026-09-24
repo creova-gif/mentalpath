@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
-import { ClientDetailPanel } from '../modals/ClientDetailPanel';
 import { NewClientModal, type NewClientPrefill } from '../modals/NewClientModal';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@/app/context/UserContext';
@@ -33,7 +32,6 @@ export function Clients() {
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   // Onboarding hands over the first client's details via router state (memory only).
   const location = useLocation();
   const prefillClient = (location.state as { prefillClient?: NewClientPrefill } | null)?.prefillClient;
@@ -75,8 +73,8 @@ export function Clients() {
           status: row.status as any,
           nextSession: '—', // Need additional tables (e.g. sessions) to populate
           sessions: '—',    
-          tags: row.pronouns ? [row.pronouns] : [], 
-          rate: `$${user.sessionRate}/hr`,
+          tags: Array.isArray(row.cultural_tags) ? row.cultural_tags : [],
+          rate: `$${row.rate ?? user.sessionRate}/session`,
           color: AVATAR_COLORS[i % AVATAR_COLORS.length],
           dbClient: row,
         };
@@ -215,7 +213,7 @@ export function Clients() {
             {filteredClients.map((client, i) => (
               <tr
                 key={i}
-                onClick={() => setSelectedClient(client)}
+                onClick={() => navigate(`/dashboard/clients/${client.id}`)}
                 className="transition-all duration-100 cursor-pointer hover:[&>td]:bg-[var(--warm)]"
               >
                 <td className="px-5 py-3.5 border-t border-[var(--border)] text-sm text-[var(--ink-soft)] align-middle">
@@ -252,7 +250,7 @@ export function Clients() {
                   {client.rate}
                 </td>
                 <td className="px-5 py-3.5 border-t border-[var(--border)] text-sm text-[var(--ink-soft)] align-middle">
-                  {client.sessions !== '—' && client.sessions !== 'Intake' && (
+                  {client.status === 'active' && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -286,7 +284,7 @@ export function Clients() {
         {filteredClients.map((client, i) => (
           <div
             key={i}
-            onClick={() => setSelectedClient(client)}
+            onClick={() => navigate(`/dashboard/clients/${client.id}`)}
             className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 cursor-pointer transition-all hover:shadow-md"
           >
             <div className="flex items-start gap-3 mb-3">
@@ -328,7 +326,7 @@ export function Clients() {
               </div>
             )}
 
-            {client.sessions !== '—' && client.sessions !== 'Intake' && (
+            {client.status === 'active' && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -354,7 +352,6 @@ export function Clients() {
         ))}
       </div>
 
-      {selectedClient && <ClientDetailPanel client={selectedClient} onClose={() => setSelectedClient(null)} />}
       {isNewClientModalOpen && (
         <NewClientModal
           initial={prefillClient}

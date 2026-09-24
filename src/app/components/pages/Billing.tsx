@@ -4,6 +4,8 @@ import { InvoiceModal } from '../modals/InvoiceModal';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '../ui/ProgressBar';
 import { supabase, authHeaders } from '@/utils/supabase/client';
+import { toast } from 'sonner';
+import { useUser } from '../../context/UserContext';
 import { projectId } from '/utils/supabase/info';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
@@ -28,17 +30,9 @@ interface InvoiceRow {
   sessions: number;
 }
 
-const MOCK_INVOICES: Invoice[] = [
-  { id: '1', invoiceNumber: 'INV-0031', clientName: 'Amara Mensah',      date: '2026-03-09', sessions: 2, amount: 280.00, status: 'paid'    },
-  { id: '2', invoiceNumber: 'INV-0032', clientName: 'Jamal Lee',          date: '2026-03-09', sessions: 2, amount: 280.00, status: 'pending' },
-  { id: '3', invoiceNumber: 'INV-0030', clientName: 'Sadia Mohamoud',     date: '2026-03-06', sessions: 2, amount: 140.00, status: 'paid'    },
-  { id: '4', invoiceNumber: 'INV-0029', clientName: 'Priya & Chetan C.', date: '2026-03-07', sessions: 1, amount: 180.00, status: 'overdue' },
-  { id: '5', invoiceNumber: 'INV-0028', clientName: 'Amara Mensah',      date: '2026-02-23', sessions: 2, amount: 280.00, status: 'paid'    },
-  { id: '6', invoiceNumber: 'INV-0027', clientName: 'Riya Bhatt',        date: '2026-03-10', sessions: 1, amount: 110.00, status: 'pending' },
-];
-
 export function Billing() {
   const { t } = useTranslation();
+  const { user } = useUser();
   const [filter, setFilter] = useState('all');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -47,6 +41,8 @@ export function Billing() {
   const [exportingZip, setExportingZip] = useState(false);
   const [progressT2125, setProgressT2125] = useState(0);
   const [progressReceipts, setProgressReceipts] = useState(0);
+  // Tax season: default to last year until April, then the current year.
+  const [taxYear, setTaxYear] = useState(() => { const d = new Date(); return d.getMonth() < 4 ? d.getFullYear() - 1 : d.getFullYear(); });
 
   useEffect(() => {
     loadInvoices();
@@ -54,70 +50,15 @@ export function Billing() {
 
   const loadInvoices = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('invoices')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        setInvoices(
-          (data as InvoiceRow[]).map(row => ({
-            id: row.id,
-            invoiceNumber: row.invoice_number,
-            clientName: row.client_name,
-            date: row.date,
-            amount: Number(row.amount),
-            status: row.status as Invoice['status'],
-            sessions: row.sessions,
-          }))
-        );
-        return;
-      }
-    } catch {
-      // fall through to mock
-    }
-    // Fallback: mock data until DB tables are seeded
-    setInvoices(MOCK_INVOICES);
-    setLoading(false);
-  };
-
-  // Called by InvoiceModal when a new invoice is saved
-  const handleInvoiceSaved = async (newInvoice: {
-    clientName: string;
-    clientId?: string;
-    date: string;
-    sessions: number;
-    amount: number;
-  }) => {
-    const maxNum = invoices.reduce((max, inv) => {
-      const n = parseInt(inv.invoiceNumber.replace('INV-', ''), 10);
-      return isNaN(n) ? max : Math.max(max, n);
-    }, 30);
-    const invoiceNumber = `INV-${String(maxNum + 1).padStart(4, '0')}`;
-
-    const { data: sessionData } = await supabase.auth.getSession();
-    const clinicianId = sessionData?.session?.user?.id;
-
-    if (clinicianId) {
-      const { data, error } = await supabase
-        .from('invoices')
-        .insert({
-          clinician_id: clinicianId,
-          client_id: newInvoice.clientId ?? null,
-          invoice_number: invoiceNumber,
-          client_name: newInvoice.clientName,
-          date: newInvoice.date,
-          sessions: newInvoice.sessions,
-          amount: newInvoice.amount,
-          status: 'pending',
-        })
-        .select()
-        .single();
-
-      if (!error && data) {
-        const row = data as InvoiceRow;
-        setInvoices(prev => [{
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*')
+      .order('date', { ascending: false });
+    if (error) {
+      toast.error('Could not load invoices');
+    } else {
+      setInvoices(
+        (data as InvoiceRow[]).map(row => ({
           id: row.id,
           invoiceNumber: row.invoice_number,
           clientName: row.client_name,
@@ -125,23 +66,20 @@ export function Billing() {
           amount: Number(row.amount),
           status: row.status as Invoice['status'],
           sessions: row.sessions,
-        }, ...prev]);
-        return;
-      }
+        }))
+      );
     }
-
-    // Optimistic local update (demo/no DB yet)
-    setInvoices(prev => [{
-      id: String(Date.now()),
-      invoiceNumber,
-      clientName: newInvoice.clientName,
-      date: newInvoice.date,
-      sessions: newInvoice.sessions,
-      amount: newInvoice.amount,
-      status: 'pending',
-    }, ...prev]);
+    setLoading(false);
   };
 
+  const setInvoiceStatus = async (invoice: Invoice, status: Invoice['status']) => {
+    const { error } = await supabase.from('invoices').update({ status }).eq('id', invoice.id);
+    if (error) {
+      toast.error('Could not update the invoice');
+      return;
+    }
+    setInvoices(prev => prev.map(i => (i.id === invoice.id ? { ...i, status } : i)));
+  };
 
   const handleExportT2125 = async () => {
     setExporting(true);
@@ -154,7 +92,7 @@ export function Billing() {
     }, 200);
 
     try {
-      const year = '2025'; // Current tax year
+      const year = String(taxYear);
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/make-server-4d1a502d/tax-export/t2125/${year}`,
         {
@@ -320,8 +258,8 @@ export function Billing() {
             </tr>
           </thead>
           <tbody>
-            {filteredInvoices.map((invoice, i) => (
-              <tr key={i} className="cursor-pointer transition-all duration-100 hover:[&>td]:bg-[var(--warm)]">
+            {filteredInvoices.map((invoice) => (
+              <tr key={invoice.id} className="transition-all duration-100 hover:[&>td]:bg-[var(--warm)]">
                 <td className="px-5 py-3.5 border-t border-[var(--border)] font-medium text-[var(--ink)] text-[13px] align-middle">
                   {invoice.invoiceNumber}
                 </td>
@@ -341,9 +279,22 @@ export function Billing() {
                   <InvoiceStatus status={invoice.status} />
                 </td>
                 <td className="px-5 py-3.5 border-t border-[var(--border)] text-[13px] text-[var(--ink-soft)] align-middle">
-                  <button className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] transition-all duration-150 hover:bg-[var(--sage-pale)] hover:border-[var(--sage-light)] hover:text-[var(--sage-deep)]">
-                    {invoice.status === 'paid' ? t('billing.invoices.actionReceipt') : t('billing.invoices.actionReminder')}
-                  </button>
+                  <div className="flex gap-1.5">
+                    {invoice.status === 'paid' ? (
+                      <>
+                        <button onClick={() => printReceipt(invoice, user)} className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] hover:bg-[var(--sage-pale)]">
+                          {t('billing.invoices.actionReceipt')}
+                        </button>
+                        <button onClick={() => setInvoiceStatus(invoice, 'pending')} className="px-2.5 py-[5px] rounded-md text-xs border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-muted)]">
+                          Undo paid
+                        </button>
+                      </>
+                    ) : (
+                      <button onClick={() => setInvoiceStatus(invoice, 'paid')} className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] hover:bg-[var(--sage-pale)]">
+                        Mark paid
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -357,7 +308,12 @@ export function Billing() {
         <div className="text-[13px] text-[var(--ink-muted)] mb-4 leading-[1.6]">
           {t('billing.taxPrep.description')}
         </div>
-        <div className="flex gap-2.5">
+        <div className="flex gap-2.5 items-center flex-wrap">
+          <label className="text-xs text-[var(--ink-muted)] flex items-center gap-1.5">Tax year
+            <select value={taxYear} onChange={e => setTaxYear(Number(e.target.value))} className="px-2 py-1.5 rounded-md border border-[var(--border)] text-xs bg-white">
+              {[0, 1, 2].map(n => { const y = new Date().getFullYear() - n; return <option key={y} value={y}>{y}</option>; })}
+            </select>
+          </label>
           <button
             onClick={handleExportT2125}
             className="flex items-center gap-[7px] px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border border-[var(--border)] bg-transparent text-[var(--ink-soft)] hover:bg-[var(--warm)] hover:text-[var(--ink)]"
@@ -367,7 +323,7 @@ export function Billing() {
             ) : (
               <FileText className="w-[13px] h-[13px]" strokeWidth={2} />
             )}
-            {t('billing.taxPrep.exportT2125', { year: '2025' })}
+            {t('billing.taxPrep.exportT2125', { year: String(taxYear) })}
           </button>
           <button
             onClick={handleExportReceiptsZip}
@@ -403,7 +359,7 @@ export function Billing() {
         )}
       </div>
 
-      {showInvoiceModal && <InvoiceModal onClose={() => setShowInvoiceModal(false)} />}
+      {showInvoiceModal && <InvoiceModal onClose={() => setShowInvoiceModal(false)} onSaved={inv => setInvoices(prev => [inv, ...prev])} />}
     </>
   );
 }
@@ -451,4 +407,31 @@ function InvoiceStatus({ status }: { status: 'paid' | 'pending' | 'overdue' }) {
       {t(`billing.invoices.filters.${status}`)}
     </span>
   );
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+}
+
+// Printable receipt for the client's insurer. Generated locally; nothing is sent anywhere.
+function printReceipt(invoice: Invoice, user: ReturnType<typeof useUser>['user']) {
+  const w = window.open('', '_blank', 'noopener=no,width=720,height=900');
+  if (!w) return;
+  const rows: [string, string][] = [
+    ['Receipt for', invoice.invoiceNumber],
+    ['Client', invoice.clientName],
+    ['Date of service', invoice.date],
+    ['Sessions', String(invoice.sessions)],
+    ['Amount paid', new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(invoice.amount)],
+    ['Provider', `${user?.name ?? ''}${user?.collegeAbbr ? `, ${user.collegeAbbr}` : ''}`],
+    ['Registration #', user?.registrationNumber ?? ''],
+    ['Profession', user?.profession ?? ''],
+  ];
+  w.document.write(`<!doctype html><html><head><title>${escapeHtml(invoice.invoiceNumber)}</title>
+    <style>body{font-family:system-ui,sans-serif;padding:40px;color:#1a1a18}h1{font-size:20px}table{border-collapse:collapse;width:100%}
+    td{padding:8px 0;border-bottom:1px solid #ddd}td:first-child{color:#666;width:40%}</style></head><body>
+    <h1>Official receipt</h1><table>${rows.map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</table>
+    <p style="margin-top:32px;color:#666;font-size:12px">Issued ${escapeHtml(new Date().toLocaleDateString('en-CA'))} via MentalPath.</p>
+    <script>window.print()</script></body></html>`);
+  w.document.close();
 }

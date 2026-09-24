@@ -7,6 +7,9 @@ const SessionNoteEditor = lazy(() => import("./components/pages/SessionNoteEdito
 const Login = lazy(() => import("./components/pages/Login").then(m => ({ default: m.Login })));
 const ResetPassword = lazy(() => import("./components/pages/ResetPassword").then(m => ({ default: m.ResetPassword })));
 import { MfaGate } from "./components/auth/MfaGate";
+import { PreviewPage, ClientFacingUnavailable } from "./components/ui/PreviewPage";
+
+const CLIENT_FACING_ENABLED = import.meta.env.DEV;
 import { Landing } from "./components/pages/Landing";
 const ClientPortal = lazy(() => import("./components/pages/ClientPortal").then(m => ({ default: m.ClientPortal })));
 const ClientPortalFull = lazy(() => import("./components/pages/ClientPortalFull").then(m => ({ default: m.ClientPortalFull })));
@@ -95,12 +98,12 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Navigate to="/onboarding" replace /> },
   {
     path: "/client-portal",
-    element: <Suspense fallback={<PageFallback />}><ClientPortal /></Suspense>,
+    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ClientPortal /></Suspense> : <ClientFacingUnavailable />,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/client-portal-full",
-    element: <Suspense fallback={<PageFallback />}><ClientPortalFull /></Suspense>,
+    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ClientPortalFull /></Suspense> : <ClientFacingUnavailable />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -141,12 +144,12 @@ const router = createBrowserRouter([
   }] : []),
   {
     path: "/book",
-    element: <Suspense fallback={<PageFallback />}><BookingPage /></Suspense>,
+    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><BookingPage /></Suspense> : <ClientFacingUnavailable />,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/intake",
-    element: <Suspense fallback={<PageFallback />}><ProfessionIntake /></Suspense>,
+    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ProfessionIntake /></Suspense> : <ClientFacingUnavailable />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -175,19 +178,19 @@ const router = createBrowserRouter([
       { path: "notes", element: <Suspense fallback={<PageFallback />}><SessionNotes /></Suspense> },
       { path: "billing", element: <Suspense fallback={<PageFallback />}><Billing /></Suspense> },
       { path: "calendar", element: <Suspense fallback={<PageFallback />}><CalendarView /></Suspense> },
-      { path: "messages", element: <Suspense fallback={<PageFallback />}><Messages /></Suspense> },
+      { path: "messages", element: <PreviewPage><Suspense fallback={<PageFallback />}><Messages /></Suspense></PreviewPage> },
       { path: "settings", element: <Suspense fallback={<PageFallback />}><Settings /></Suspense> },
       { path: "compliance", element: <Suspense fallback={<PageFallback />}><Compliance /></Suspense> },
       { path: "cultural-templates", element: <Suspense fallback={<PageFallback />}><CulturalTemplates /></Suspense> },
-      { path: "clinical-tools", element: <Suspense fallback={<PageFallback />}><ClinicalTools /></Suspense> },
-      { path: "session-prep", element: <Suspense fallback={<PageFallback />}><SessionPrep /></Suspense> },
-      { path: "outcome-measures", element: <Suspense fallback={<PageFallback />}><OutcomeMeasures /></Suspense> },
+      { path: "clinical-tools", element: <PreviewPage><Suspense fallback={<PageFallback />}><ClinicalTools /></Suspense></PreviewPage> },
+      { path: "session-prep", element: <PreviewPage><Suspense fallback={<PageFallback />}><SessionPrep /></Suspense></PreviewPage> },
+      { path: "outcome-measures", element: <PreviewPage><Suspense fallback={<PageFallback />}><OutcomeMeasures /></Suspense></PreviewPage> },
       { path: "waitlist", element: <Suspense fallback={<PageFallback />}><Waitlist /></Suspense> },
       { path: "therapist-wellbeing", element: <Suspense fallback={<PageFallback />}><TherapistWellbeing /></Suspense> },
-      { path: "group-practice", element: <Suspense fallback={<PageFallback />}><GroupPractice /></Suspense> },
-      { path: "insurance-receipts", element: <Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense> },
-      { path: "treatment-courses", element: <Suspense fallback={<PageFallback />}><TreatmentCourses /></Suspense> },
-      { path: "hep-builder", element: <Suspense fallback={<PageFallback />}><HEPBuilder /></Suspense> },
+      { path: "group-practice", element: <PreviewPage><Suspense fallback={<PageFallback />}><GroupPractice /></Suspense></PreviewPage> },
+      { path: "insurance-receipts", element: <PreviewPage><Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense></PreviewPage> },
+      { path: "treatment-courses", element: <PreviewPage><Suspense fallback={<PageFallback />}><TreatmentCourses /></Suspense></PreviewPage> },
+      { path: "hep-builder", element: <PreviewPage><Suspense fallback={<PageFallback />}><HEPBuilder /></Suspense></PreviewPage> },
       { path: "cost-savings", element: <Suspense fallback={<PageFallback />}><CostSavings /></Suspense> },
       { path: "resources", element: <Suspense fallback={<PageFallback />}><Resources /></Suspense> },
       { path: "faq", element: <Suspense fallback={<PageFallback />}><FAQ /></Suspense> },

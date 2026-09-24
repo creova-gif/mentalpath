@@ -1,177 +1,109 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { useUser } from '../../context/UserContext';
+import { supabase } from '@/utils/supabase/client';
+import { formatCad, listClients, type ClientRecord } from '../../services/practice';
 
-export function InvoiceModal({ onClose }: { onClose: () => void }) {
-  const [sessionCount, setSessionCount] = useState(1);
-  const [ratePerSession, setRatePerSession] = useState(140);
-  const [hstApplicable, setHstApplicable] = useState(false);
+const HST_RATE = 0.13; // Ontario HST; other provinces differ — see Settings.
 
-  const subtotal = sessionCount * ratePerSession;
-  const hst = hstApplicable ? subtotal * 0.13 : 0;
-  const total = subtotal + hst;
+export interface SavedInvoice {
+  id: string; invoiceNumber: string; clientName: string; date: string; amount: number; status: 'pending'; sessions: number;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
+export function InvoiceModal({ onClose, onSaved }: { onClose: () => void; onSaved: (invoice: SavedInvoice) => void }) {
+  const { user } = useUser();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [clients, setClients] = useState<ClientRecord[]>([]);
+  const [clientId, setClientId] = useState('');
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [sessions, setSessions] = useState(1);
+  const [rate, setRate] = useState(user?.sessionRate ?? 140);
+  const [hst, setHst] = useState(!(user?.hstExempt ?? true));
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    dialogRef.current?.showModal();
+    listClients().then(cs => setClients(cs.filter(c => c.status !== 'waitlist'))).catch(() => setClients([]));
+  }, []);
+
+  const client = clients.find(c => c.id === clientId);
+  useEffect(() => { if (client?.rate) setRate(client.rate); }, [client]);
+
+  const subtotal = sessions * rate;
+  const tax = hst ? Math.round(subtotal * HST_RATE * 100) / 100 : 0;
+  const total = subtotal + tax;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user || !client) return;
+    setSaving(true);
+    const { data, error } = await supabase.from('invoices').insert({
+      clinician_id: user.id,
+      client_id: client.id,
+      client_name: client.name,
+      date,
+      sessions,
+      amount: total,
+      status: 'pending',
+      notes: hst ? `Includes HST ${formatCad(tax)}` : null,
+    }).select('id, invoice_number, client_name, date, amount, sessions').single();
+    setSaving(false);
+    if (error || !data) {
+      toast.error('Could not create the invoice', { description: error?.message });
+      return;
+    }
+    onSaved({
+      id: data.id, invoiceNumber: data.invoice_number, clientName: data.client_name,
+      date: data.date, amount: Number(data.amount), status: 'pending', sessions: data.sessions,
+    });
+    toast.success(`Invoice ${data.invoice_number} created`);
     onClose();
   };
 
+  const input = 'w-full px-3 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm';
+
   return (
-    <div className="fixed inset-0 bg-black/40 z-[200] flex items-center justify-center p-5" onClick={onClose}>
-      <div
-        className="bg-[var(--surface)] rounded-2xl shadow-[0_20px_80px_rgba(0,0,0,0.2)] w-full max-w-[600px] max-h-[90vh] overflow-y-auto animate-[fadeUp_0.2s_ease]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="px-6 py-5 pb-4 border-b border-[var(--border)] flex justify-between items-start">
-          <div>
-            <div className="font-[var(--font-display)] text-xl text-[var(--ink)]">Create invoice</div>
-            <div className="text-[13px] text-[var(--ink-muted)] mt-1">
-              Generate and send invoice to client
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="bg-none border-none text-xl cursor-pointer text-[var(--ink-muted)] px-2 py-1 rounded-md transition-all duration-150 hover:bg-[var(--warm)]"
-          >
-            <X className="w-5 h-5" />
+    <dialog ref={dialogRef} onCancel={e => { e.preventDefault(); onClose(); }} aria-labelledby="invoice-title"
+      className="rounded-2xl border border-[var(--border)] p-0 w-[calc(100%-32px)] max-w-[560px] backdrop:bg-black/40">
+      <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <div className="flex justify-between items-start">
+          <h2 id="invoice-title" className="text-xl" style={{ fontFamily: 'var(--font-display)' }}>Create invoice</h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="bg-transparent border-none cursor-pointer text-lg">×</button>
+        </div>
+        <label className="block text-[13px] font-medium">Client
+          <select required value={clientId} onChange={e => setClientId(e.target.value)} className={`${input} mt-1.5`}>
+            <option value="">Select a client…</option>
+            {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </label>
+        <div className="grid grid-cols-3 gap-3">
+          <label className="block text-[13px] font-medium">Date
+            <input type="date" required value={date} onChange={e => setDate(e.target.value)} className={`${input} mt-1.5`} />
+          </label>
+          <label className="block text-[13px] font-medium">Sessions
+            <input type="number" min={1} max={100} required value={sessions} onChange={e => setSessions(Number(e.target.value))} className={`${input} mt-1.5`} />
+          </label>
+          <label className="block text-[13px] font-medium">Rate (CAD)
+            <input type="number" min={0} step="0.01" required value={rate} onChange={e => setRate(Number(e.target.value))} className={`${input} mt-1.5`} />
+          </label>
+        </div>
+        <label className="flex items-center gap-2 text-[13px]">
+          <input type="checkbox" checked={hst} onChange={e => setHst(e.target.checked)} className="w-4 h-4 accent-[var(--sage)]" />
+          Charge HST (13%)
+        </label>
+        <dl className="bg-[var(--warm)] rounded-lg p-3 text-[13px] space-y-1">
+          <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatCad(subtotal)}</dd></div>
+          {hst && <div className="flex justify-between"><dt>HST</dt><dd>{formatCad(tax)}</dd></div>}
+          <div className="flex justify-between font-medium"><dt>Total</dt><dd>{formatCad(total)}</dd></div>
+        </dl>
+        <div className="flex justify-end gap-2">
+          <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-[var(--border)] bg-white text-[13px] cursor-pointer">Cancel</button>
+          <button type="submit" disabled={saving || !clientId || total > 99999}
+            className="px-4 py-2 rounded-lg bg-[var(--sage)] text-white text-[13px] font-medium border-none cursor-pointer disabled:opacity-60">
+            {saving ? 'Saving…' : 'Create invoice'}
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="px-6 py-6">
-          <div className="flex flex-col gap-1.5 mb-4">
-            <label className="text-[13px] font-medium text-[var(--ink-soft)]">Client</label>
-            <select className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]">
-              <option>Select a client</option>
-              <option>Amara Mensah</option>
-              <option>Sadia Mohamoud</option>
-              <option>Jamal Lee</option>
-              <option>Priya & Chetan Choudhary</option>
-              <option>Riya Bhatt</option>
-              <option>Marcus Nwosu</option>
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Invoice date</label>
-              <input
-                type="date"
-                defaultValue="2026-03-16"
-                className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Due date</label>
-              <input
-                type="date"
-                defaultValue="2026-03-30"
-                className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5 mb-4">
-            <label className="text-[13px] font-medium text-[var(--ink-soft)]">Service description</label>
-            <input
-              type="text"
-              defaultValue="Registered Psychotherapy — Individual sessions"
-              className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Number of sessions</label>
-              <input
-                type="number"
-                value={sessionCount}
-                onChange={(e) => setSessionCount(Number(e.target.value))}
-                className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-medium text-[var(--ink-soft)]">Rate per session ($)</label>
-              <input
-                type="number"
-                value={ratePerSession}
-                onChange={(e) => setRatePerSession(Number(e.target.value))}
-                className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5 mb-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={hstApplicable}
-                onChange={(e) => setHstApplicable(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <span className="text-sm text-[var(--ink-soft)]">Add HST (13%)</span>
-            </label>
-            <div className="text-[11px] text-[var(--ink-muted)]">
-              In Ontario, psychotherapy is generally HST-exempt unless you've opted in
-            </div>
-          </div>
-
-          <div className="bg-[var(--warm)] border border-[var(--border)] rounded-lg p-4 mb-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-[var(--ink-muted)]">Subtotal</span>
-              <span className="font-medium text-[var(--ink)]">${subtotal.toFixed(2)}</span>
-            </div>
-            {hstApplicable && (
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-[var(--ink-muted)]">HST (13%)</span>
-                <span className="font-medium text-[var(--ink)]">${hst.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="border-t border-[var(--border)] pt-2 flex justify-between">
-              <span className="font-medium text-[var(--ink)]">Total</span>
-              <span className="font-[var(--font-display)] text-xl text-[var(--sage-deep)]">${total.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5 mb-4">
-            <label className="text-[13px] font-medium text-[var(--ink-soft)]">Payment method</label>
-            <select className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]">
-              <option>Stripe (credit card)</option>
-              <option>E-transfer</option>
-              <option>Cash</option>
-              <option>Insurance direct billing</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-medium text-[var(--ink-soft)]">Notes (optional)</label>
-            <textarea
-              placeholder="Payment due within 14 days..."
-              className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)] resize-vertical min-h-[80px] leading-[1.6]"
-            />
-          </div>
-        </form>
-
-        <div className="px-6 py-4 border-t border-[var(--border)] flex justify-end gap-2.5">
-          <button
-            onClick={onClose}
-            className="px-5 py-2.5 rounded-[9px] text-sm font-medium cursor-pointer transition-all duration-150 bg-transparent border border-[var(--border)] text-[var(--ink-soft)] hover:bg-[var(--warm)]"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="px-5 py-2.5 rounded-[9px] text-sm font-medium cursor-pointer transition-all duration-150 bg-transparent border border-[var(--border)] text-[var(--ink-soft)] hover:bg-[var(--warm)]"
-          >
-            Save draft
-          </button>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="px-5 py-2.5 rounded-[9px] text-sm font-medium cursor-pointer transition-all duration-150 bg-[var(--sage)] text-white border-none hover:bg-[var(--sage-deep)]"
-          >
-            Create & send
-          </button>
-        </div>
-      </div>
-    </div>
+      </form>
+    </dialog>
   );
 }

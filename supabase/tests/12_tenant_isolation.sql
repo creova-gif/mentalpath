@@ -40,3 +40,17 @@ DO $$ BEGIN
   ASSERT (SELECT count(*) FROM invoices WHERE client_name = 'Client OfBob') = 1;
 END $$;
 ROLLBACK;
+
+-- Cannot reference another clinician's client from own rows
+BEGIN;
+SELECT test_seed_users();
+INSERT INTO clients (id, clinician_id, first_name, last_name) VALUES
+  ('bbbbbbbb-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 'Client', 'OfBob');
+SELECT test_login('11111111-1111-1111-1111-111111111111');
+SELECT expect_error($$INSERT INTO session_notes (clinician_id, client_id, session_date, note_format)
+  VALUES (auth.uid(), 'bbbbbbbb-0000-0000-0000-000000000001', current_date, 'DAP')$$, '%Client not found%');
+SELECT expect_error($$INSERT INTO appointments (clinician_id, client_id, scheduled_at)
+  VALUES (auth.uid(), 'bbbbbbbb-0000-0000-0000-000000000001', now())$$, '%Client not found%');
+SELECT expect_error($$INSERT INTO invoices (clinician_id, client_id, invoice_number, client_name, amount)
+  VALUES (auth.uid(), 'bbbbbbbb-0000-0000-0000-000000000001', 'INV-9', 'x', 1)$$, '%Client not found%');
+ROLLBACK;

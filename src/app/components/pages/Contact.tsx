@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { Mail, Phone, MapPin, Send, Clock, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { projectId, publicAnonKey } from '/utils/supabase/info';
+
+const CONTACT_URL = `https://${projectId}.supabase.co/functions/v1/make-server-4d1a502d/contact`;
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -12,21 +15,23 @@ export function Contact() {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // TODO: Replace with actual API call to your backend
-      const response = await fetch('/api/contact', {
+      // Public endpoint: the anon key only satisfies the Functions gateway; it
+      // grants no data access (contact_messages is service-role only).
+      const response = await fetch(CONTACT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${publicAnonKey}` },
+        body: JSON.stringify({ ...formData, website: honeypot }),
       });
 
       if (response.ok) {
-        toast.success('Message sent! We\'ll respond within 24 hours.');
+        toast.success('Message sent! We\'ll reply by email.');
         setFormData({
           name: '',
           email: '',
@@ -168,6 +173,11 @@ export function Contact() {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Spam trap: hidden from people and assistive tech */}
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                  value={honeypot} onChange={e => setHoneypot(e.target.value)}
+                  style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, opacity: 0 }} />
+                <p className="text-xs text-[var(--ink-muted)]">Please don't include client health information in this form.</p>
                 {/* Name */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--ink)] mb-1.5">
