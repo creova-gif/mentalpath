@@ -11,18 +11,41 @@ function appUrl(): string {
   return url.replace(/\/$/, "");
 }
 
-// POST /make-server-4d1a502d/billing/checkout-session
-// Starts Stripe Checkout for the Solo plan. Paid status is granted only by the
-// stripe-webhook function once Stripe confirms the subscription.
+export const MAX_GROUP_SEATS = 50;
+
+/** Validates the checkout request body. Exported for unit tests. */
+export function parseCheckoutRequest(body: unknown): { plan: "solo" | "group"; seats: number } | { error: string } {
+  const b = (body ?? {}) as { plan?: unknown; seats?: unknown };
+  const plan = b.plan === undefined ? "solo" : b.plan;
+  if (plan !== "solo" && plan !== "group") return { error: "Unknown plan" };
+  if (plan === "solo") return { plan, seats: 1 };
+  const seats = Number(b.seats);
+  if (!Number.isInteger(seats) || seats < 2 || seats > MAX_GROUP_SEATS) {
+    return { error: `Group practices need between 2 and ${MAX_GROUP_SEATS} seats` };
+  }
+  return { plan, seats };
+}
+
+// POST /make-server-4d1a502d/billing/checkout-session  { plan?: "solo" | "group", seats?: number }
+// Starts Stripe Checkout. Group requires the caller to own a practice; seats =
+// subscription quantity. Paid status is granted only by the stripe-webhook
+// function once Stripe confirms the subscription.
 app.post("/make-server-4d1a502d/billing/checkout-session", async (c) => {
   const auth = await requireUser(c);
   if (auth instanceof Response) return auth;
   const { user } = auth;
 
-  const priceId = Deno.env.get("STRIPE_SOLO_PRICE_ID");
+  const req = parseCheckoutRequest(await c.req.json().catch(() => ({})));
+  if ("error" in req) return c.json({ error: req.error }, 400);
+
+  const priceId = Deno.env.get(req.plan === "group" ? "STRIPE_GROUP_PRICE_ID" : "STRIPE_SOLO_PRICE_ID");
   if (!priceId) return c.json({ error: "Billing is not configured" }, 503);
 
   const db = serviceClient();
+  if (req.plan === "group") {
+    const { data: practice } = await db.from("practices").select("id").eq("owner_id", user.id).maybeSingle();
+    if (!practice) return c.json({ error: "Create your practice first.", code: "NO_PRACTICE" }, 409);
+  }
   const { data: clinician } = await db.from("clinicians")
     .select("stripe_customer_id, subscription_status, is_trial, trial_ends_at")
     .eq("id", user.id).maybeSingle();
@@ -42,7 +65,7 @@ app.post("/make-server-4d1a502d/billing/checkout-session", async (c) => {
     const session = await stripeRequest<{ url: string }>("checkout/sessions", {
       mode: "subscription",
       "line_items[0][price]": priceId,
-      "line_items[0][quantity]": 1,
+      "line_items[0][quantity]": req.seats,
       client_reference_id: user.id,
       "metadata[clinician_id]": user.id,
       "subscription_data[metadata][clinician_id]": user.id,

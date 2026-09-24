@@ -18,7 +18,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const notesLabel = user?.notesLabel ?? 'Session Notes';
-  const isGroup = subscription?.type === 'group';
   const isTrial = subscription?.isTrial;
   const trialDays = subscription?.trialDaysRemaining ?? 0;
   const isMusculoskeletal = user?.profession === 'Physiotherapist' || user?.profession === 'Chiropractor' || user?.profession === 'Registered Massage Therapist';
@@ -65,7 +64,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavItem to="/dashboard/notes" icon={FileText} label={notesLabel} onClick={onClose} />
             <NavItem to="/dashboard/billing" icon={CreditCard} label="Billing" onClick={onClose} />
             <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label="Insurance Receipts" badge="Preview" onClick={onClose} />
-            {isGroup && <NavItem to="/dashboard/group-practice" icon={Building2} label="Group Practice" badge="Preview" onClick={onClose} />}
+            <NavItem to="/dashboard/group-practice" icon={Building2} label="Group Practice" onClick={onClose} />
             <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label="Cultural Templates" onClick={onClose} />
           </div>
 

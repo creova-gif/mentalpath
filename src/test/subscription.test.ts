@@ -46,4 +46,12 @@ describe('buildSubscriptionFromClinicianRow', () => {
   it('no profile row → Starter', () => {
     expect(buildSubscriptionFromClinicianRow(null, NOW).type).toBe('starter');
   });
+
+  it('members of a paid practice get Group without paying themselves', () => {
+    const s = buildSubscriptionFromClinicianRow({ ...base, is_trial: false }, NOW, 'group');
+    expect(s.type).toBe('group');
+    expect(s.viaPractice).toBe(true);
+    expect(s.nextBillingAmount).toBe(0);
+    expect(buildSubscriptionFromClinicianRow({ ...base, is_trial: false }, NOW, 'starter').type).toBe('starter');
+  });
 });

@@ -15,10 +15,10 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
   return data as T;
 }
 
-/** Redirects to Stripe Checkout for the Solo plan. */
-export async function startCheckout(): Promise<void> {
-  track('checkout_started', { plan: 'solo' });
-  const { url } = await post<{ url: string }>('/billing/checkout-session');
+/** Redirects to Stripe Checkout: Solo, or Group with a number of seats (practice owners). */
+export async function startCheckout(options: { plan: 'solo' } | { plan: 'group'; seats: number } = { plan: 'solo' }): Promise<void> {
+  track('checkout_started', { plan: options.plan });
+  const { url } = await post<{ url: string }>('/billing/checkout-session', options);
   window.location.assign(url);
 }
 

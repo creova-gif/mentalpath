@@ -474,17 +474,16 @@
       "group": {
         "name": "Group Practice",
         "price": "$79",
-        "period": "/month per clinician · coming soon",
-        "description": "Multi-clinician scheduling, owner dashboard, separate billing, shared client management.",
+        "period": "/month per clinician",
+        "description": "One subscription for your team. Each clinician keeps a private caseload; the owner manages seats and sees practice-level counts.",
         "features": [
-          "Everything in Solo",
-          "Multi-clinician calendar",
-          "Owner analytics dashboard",
-          "Role-based access control",
-          "Clinician payout reporting",
-          "Priority support"
+          "Everything in Solo, for every member",
+          "Owner dashboard (activity counts, no client data)",
+          "Invite clinicians by email",
+          "Seat-based billing in CAD",
+          "Each clinician's records stay private"
         ],
-        "cta": "Coming soon — join the waitlist"
+        "cta": "Start a group practice"
       }
     }
   },
@@ -995,5 +994,70 @@
     "verify": "Verify",
     "invalidCode": "That code didn’t work. Check your device’s clock and try the newest code.",
     "signOut": "Sign out"
+  },
+  "groupPractice": {
+    "title": "Group practice",
+    "loading": "Loading practice…",
+    "privacyNote": "Each clinician's clients and notes stay private to them. The practice owner pays for seats and sees only counts (active clients, sessions this month, unsigned notes) — never names or note content.",
+    "invite": {
+      "title": "You've been invited to a group practice",
+      "body": "Joining gives you the Group plan while the practice pays for your seat. Your clients and notes stay private to you.",
+      "accept": "Join practice",
+      "joined": "You've joined the practice"
+    },
+    "create": {
+      "title": "Start a group practice",
+      "body": "Bring your team onto one bill: {{price}} per clinician per month, with unlimited clients and AI Note Assist for everyone. You choose how many seats to pay for.",
+      "nameLabel": "Practice name",
+      "submit": "Create practice",
+      "done": "Practice created"
+    },
+    "member": {
+      "covered": "Your seat is paid by the practice, so you have the Group plan.",
+      "notCovered": "The practice's subscription doesn't currently cover your seat, so you're on your own plan.",
+      "leave": "Leave practice",
+      "leaveConfirm": "Leave this practice? You keep all your clients and notes; you'll move to your own plan.",
+      "left": "You've left the practice"
+    },
+    "seats": {
+      "title": "Seats",
+      "none": "Choose how many clinicians (including you) the practice pays for — {{price}} per seat per month, in CAD, taxes shown at checkout.",
+      "countLabel": "Number of seats",
+      "subscribe": "Subscribe — {{total}}/month",
+      "summary": "{{used}} members · {{pending}} pending invites · {{paid}} paid seats",
+      "manage": "Change seats, card or cancel"
+    },
+    "inviteMember": {
+      "title": "Invite a clinician",
+      "emailLabel": "Their email (must match the account they sign in with)",
+      "submit": "Create invite link",
+      "full": "All paid seats are in use. Add seats first.",
+      "created": "Invite created",
+      "linkHelp": "Send this link to them. It works once, for that email only, and expires in 14 days.",
+      "linkLabel": "Invite link",
+      "copy": "Copy",
+      "copied": "Link copied",
+      "pending": "Pending invites",
+      "expires": "expires {{date}}",
+      "revoke": "Revoke",
+      "revoked": "Invite revoked"
+    },
+    "members": {
+      "title": "Members",
+      "name": "Clinician",
+      "activeClients": "Active clients",
+      "sessionsThisMonth": "Sessions this month",
+      "unsignedNotes": "Unsigned notes",
+      "actions": "Actions",
+      "owner": "Owner",
+      "remove": "Remove",
+      "removeConfirm": "Remove {{name}} from the practice? They keep all their clients and notes.",
+      "removed": "Member removed"
+    },
+    "close": {
+      "button": "Close practice",
+      "confirm": "Close this practice? Cancel the Group subscription in the billing portal as well.",
+      "done": "Practice closed"
+    }
   }
 }

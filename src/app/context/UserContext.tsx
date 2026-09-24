@@ -68,6 +68,8 @@ export interface SubscriptionPlan {
   renewsOn: string;
   cancelAt: string | null;
   nextBillingAmount: number;
+  /** Group plan provided by a practice the clinician belongs to (the owner pays). */
+  viaPractice: boolean;
 }
 
 interface UserContextType {
@@ -156,12 +158,17 @@ const PROFESSION_TYPE_MAP: Record<string, Profession> = {
 
 const PAID_STATUSES = new Set(['active', 'trialing', 'past_due']);
 
-export function buildSubscriptionFromClinicianRow(row: ClinicianRow | null, now = new Date()): SubscriptionPlan {
+/**
+ * @param serverPlan result of the current_plan() RPC, which also accounts for
+ *   practice membership; the row alone cannot see the owner's subscription.
+ */
+export function buildSubscriptionFromClinicianRow(row: ClinicianRow | null, now = new Date(), serverPlan?: PlanType | null): SubscriptionPlan {
   const status = (row?.subscription_status ?? 'none') as SubscriptionStatus;
   const paid = PAID_STATUSES.has(status);
   const trialEndsAt = row?.trial_ends_at ? new Date(row.trial_ends_at) : null;
-  const onSignupTrial = !paid && !!row?.is_trial && !!trialEndsAt && trialEndsAt > now;
-  const type: PlanType = paid ? ((row?.plan_type as PlanType) ?? 'solo') : onSignupTrial ? 'solo' : 'starter';
+  const viaPractice = !paid && serverPlan === 'group';
+  const onSignupTrial = !paid && !viaPractice && !!row?.is_trial && !!trialEndsAt && trialEndsAt > now;
+  const type: PlanType = paid ? ((row?.plan_type as PlanType) ?? 'solo') : viaPractice ? 'group' : onSignupTrial ? 'solo' : 'starter';
   const isTrial = onSignupTrial || status === 'trialing';
   const trialDaysRemaining = isTrial && trialEndsAt
     ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / 86_400_000))
@@ -169,7 +176,7 @@ export function buildSubscriptionFromClinicianRow(row: ClinicianRow | null, now 
   const fmtDate = (val: string | null | undefined) =>
     val ? new Date(val).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
   const seats = row?.plan_seats ?? 1;
-  const pricePerSeat = type === 'starter' ? 0 : Number(row?.price_per_seat ?? PLANS[type].priceCad);
+  const pricePerSeat = type === 'starter' || viaPractice ? 0 : Number(row?.price_per_seat ?? PLANS[type].priceCad);
 
   return {
     type,
@@ -184,6 +191,7 @@ export function buildSubscriptionFromClinicianRow(row: ClinicianRow | null, now 
     renewsOn: fmtDate(paid ? (row?.current_period_end ?? row?.plan_renews_at) : isTrial ? row?.trial_ends_at : null),
     cancelAt: row?.cancel_at ?? null,
     nextBillingAmount: paid ? pricePerSeat * seats : 0,
+    viaPractice,
   };
 }
 
@@ -246,6 +254,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const email = session.user.email ?? '';
 
     // Get live data from clinicians table using REAL column names
+    const planPromise = Promise.resolve(supabase.rpc('current_plan'))
+      .then(({ data: p }) => (typeof p === 'string' ? p as PlanType : null))
+      .catch(() => null);
     const { data } = await supabase
       .from('clinicians')
       .select('id, first_name, last_name, profession, reg_number, city, session_rate, hst_exempt, plan_type, plan_cycle, plan_seats, price_per_seat, is_trial, trial_ends_at, plan_starts_at, plan_renews_at, created_at, updated_at, ai_assist_enabled, subscription_status, stripe_customer_id, current_period_end, cancel_at')
@@ -290,7 +301,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       aiAssistEnabled: row?.ai_assist_enabled ?? false,
     });
 
-    setSubscriptionState(buildSubscriptionFromClinicianRow(row));
+    setSubscriptionState(buildSubscriptionFromClinicianRow(row, new Date(), await planPromise));
     identify(session.user.id);
   }, []);
 

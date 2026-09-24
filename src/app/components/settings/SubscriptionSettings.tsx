@@ -12,7 +12,7 @@ const STATUS_LABEL: Record<string, string> = {
 const FEATURES: Record<PlanId, string[]> = {
   starter: ['1 active client', 'All note templates', 'Canadian data residency', 'Invoices & T2125 export'],
   solo: ['Unlimited clients', 'AI Note Assist (500/month)', 'Everything in Starter'],
-  group: ['Multi-clinician practice', 'Owner dashboard & roles', 'Everything in Solo'],
+  group: ['One bill for your team, per seat', 'Owner dashboard (counts only — no client data)', 'Everything in Solo for every member'],
 };
 
 export function SubscriptionSettings() {
@@ -64,7 +64,10 @@ export function SubscriptionSettings() {
         </dl>
 
         <div className="flex flex-wrap gap-2">
-          {!paid && (
+          {subscription.viaPractice && (
+            <p className="text-xs text-[var(--ink-muted)] w-full">Your seat is paid by your group practice. Billing is managed by the practice owner.</p>
+          )}
+          {!paid && !subscription.viaPractice && (
             <button onClick={() => run(startCheckout)} disabled={busy}
               className="px-4 py-2 rounded-lg bg-[var(--sage)] text-white text-[13px] font-medium border-none cursor-pointer hover:bg-[var(--sage-deep)] disabled:opacity-60">
               Subscribe to Solo — {formatPrice(PLANS.solo.priceCad)}/month
@@ -101,8 +104,8 @@ export function SubscriptionSettings() {
               </ul>
               {current ? (
                 <span className="text-xs font-medium text-[var(--sage-deep)]">Current plan</span>
-              ) : !p.available ? (
-                <span className="text-xs text-[var(--ink-muted)]">Coming soon — <a href="/contact" className="underline">join the waitlist</a></span>
+              ) : id === 'group' ? (
+                <a href="/dashboard/group-practice" className="text-xs underline text-[var(--sage-deep)]">Set up a group practice →</a>
               ) : null}
             </div>
           );

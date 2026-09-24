@@ -219,3 +219,47 @@ test('legacy browser-encrypted notes are migrated to envelope encryption, locked
   const { error: browserExport } = await sb.rpc('export_session_notes', { p_clinician: user.id });
   assert.ok(browserExport);
 });
+
+test('group practice: seats, email-bound invites, shared plan, private caseloads', async () => {
+  const owner = await newClinician();
+  const member = await newClinician();
+  const outsider = await newClinician();
+  for (const c of [owner, member, outsider]) await upgradeToAal2(c.sb);
+  for (const c of [owner, member, outsider]) {
+    await service.from('clinicians').update({ is_trial: false, trial_ends_at: null }).eq('id', c.user.id);
+  }
+
+  const { error: pe } = await owner.sb.rpc('create_practice', { p_name: 'Riverside Therapy' });
+  assert.ifError(pe);
+  const { error: noSeats } = await owner.sb.rpc('invite_practice_member', { p_email: member.email });
+  assert.equal(noSeats?.hint, 'SEATS_FULL');
+
+  // What stripe-webhook writes for a 2-seat Group subscription
+  await service.from('clinicians').update({ subscription_status: 'active', plan_type: 'group', plan_seats: 2 }).eq('id', owner.user.id);
+  const { data: token, error: ie } = await owner.sb.rpc('invite_practice_member', { p_email: member.email.toUpperCase() });
+  assert.ifError(ie);
+
+  const { error: wrongUser } = await outsider.sb.rpc('accept_practice_invite', { p_token: token });
+  assert.match(wrongUser?.message ?? '', /different email/);
+
+  const { data: c } = await member.sb.from('clients').insert({ clinician_id: member.user.id, first_name: 'Private', last_name: 'Client' }).select('id').single();
+  assert.equal((await member.sb.rpc('current_plan')).data, 'starter');
+  const { error: ae } = await member.sb.rpc('accept_practice_invite', { p_token: token });
+  assert.ifError(ae);
+  assert.equal((await member.sb.rpc('current_plan')).data, 'group');
+  // Group lifts the Starter client limit for the member
+  assert.ifError((await member.sb.from('clients').insert({ clinician_id: member.user.id, first_name: 'Second', last_name: 'Client' })).error);
+
+  // The owner sees counts, never the member's clients
+  const { data: seen } = await owner.sb.from('clients').select('id').eq('id', c.id);
+  assert.equal(seen.length, 0);
+  const { data: overview, error: oe } = await owner.sb.rpc('practice_overview');
+  assert.ifError(oe);
+  const row = overview.find((r) => r.clinician_id === member.user.id);
+  assert.equal(Number(row.active_clients), 2);
+  assert.deepEqual(Object.keys(row).sort(), ['active_clients', 'clinician_id', 'first_name', 'joined_at', 'last_name', 'profession', 'role', 'sessions_this_month', 'unsigned_notes']);
+  const { error: memberOverview } = await member.sb.rpc('practice_overview');
+  assert.ok(memberOverview);
+  const { error: hashRead } = await owner.sb.from('practice_invites').select('token_hash');
+  assert.ok(hashRead, 'token hashes are not readable');
+});

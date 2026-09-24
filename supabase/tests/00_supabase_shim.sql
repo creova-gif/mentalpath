@@ -41,8 +41,10 @@ CREATE TABLE IF NOT EXISTS public.kv_store_4d1a502d (key text PRIMARY KEY, value
 CREATE OR REPLACE FUNCTION public.test_login(uid uuid, aal text DEFAULT 'aal2') RETURNS void
 LANGUAGE plpgsql AS $$
 BEGIN
+  EXECUTE 'RESET ROLE';
   PERFORM set_config('request.jwt.claims',
-    json_build_object('sub', uid, 'role', 'authenticated', 'aal', aal)::text, false);
+    json_build_object('sub', uid, 'role', 'authenticated', 'aal', aal,
+      'email', (SELECT email FROM auth.users WHERE id = uid))::text, false);
   EXECUTE 'SET ROLE authenticated';
 END $$;
 
@@ -79,6 +81,7 @@ END $$;
 CREATE OR REPLACE FUNCTION public.test_seed_users() RETURNS void LANGUAGE sql AS $$
   INSERT INTO auth.users (id, email, raw_user_meta_data) VALUES
     ('11111111-1111-1111-1111-111111111111', 'alice@test.local', '{"first_name":"Alice","last_name":"A","profession":"psychologist"}'),
-    ('22222222-2222-2222-2222-222222222222', 'bob@test.local',   '{"first_name":"Bob","last_name":"B"}')
+    ('22222222-2222-2222-2222-222222222222', 'bob@test.local',   '{"first_name":"Bob","last_name":"B"}'),
+    ('33333333-3333-3333-3333-333333333333', 'carol@test.local', '{"first_name":"Carol","last_name":"C"}')
   ON CONFLICT DO NOTHING;
 $$;

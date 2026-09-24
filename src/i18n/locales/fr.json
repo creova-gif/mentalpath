@@ -472,19 +472,18 @@
         "cta": "Essai gratuit de 7 jours"
       },
       "group": {
-        "name": "Cabinet de groupe",
+        "name": "Pratique de groupe",
         "price": "79 $",
-        "period": "/mois par clinicien · bientôt disponible",
-        "description": "Planification multi-cliniciens, tableau de bord propriétaire, facturation séparée, gestion partagée des clients.",
+        "period": "/mois par clinicien",
+        "description": "Un seul abonnement pour votre équipe. Chaque clinicien garde une clientèle privée; le propriétaire gère les places et voit des totaux au niveau de la pratique.",
         "features": [
-          "Tout ce qui est dans Solo",
-          "Calendrier multi-cliniciens",
-          "Tableau de bord analytique propriétaire",
-          "Contrôle d'accès par rôles",
-          "Rapports de paiement par clinicien",
-          "Assistance prioritaire"
+          "Tout le forfait Solo, pour chaque membre",
+          "Tableau de bord du propriétaire (totaux d'activité, aucune donnée client)",
+          "Invitation des cliniciens par courriel",
+          "Facturation par place en CAD",
+          "Les dossiers de chaque clinicien restent privés"
         ],
-        "cta": "Bientôt disponible — liste d’attente"
+        "cta": "Créer une pratique de groupe"
       }
     }
   },
@@ -995,5 +994,70 @@
     "verify": "Vérifier",
     "invalidCode": "Ce code n’a pas fonctionné. Vérifiez l’heure de votre appareil et essayez le code le plus récent.",
     "signOut": "Se déconnecter"
+  },
+  "groupPractice": {
+    "title": "Pratique de groupe",
+    "loading": "Chargement de la pratique…",
+    "privacyNote": "Les clients et les notes de chaque clinicien restent privés. Le propriétaire de la pratique paie les places et ne voit que des totaux (clients actifs, séances ce mois-ci, notes non signées), jamais les noms ni le contenu des notes.",
+    "invite": {
+      "title": "Vous avez été invité·e dans une pratique de groupe",
+      "body": "En la rejoignant, vous bénéficiez du forfait Groupe tant que la pratique paie votre place. Vos clients et vos notes restent privés.",
+      "accept": "Rejoindre la pratique",
+      "joined": "Vous avez rejoint la pratique"
+    },
+    "create": {
+      "title": "Créer une pratique de groupe",
+      "body": "Réunissez votre équipe sur une seule facture : {{price}} par clinicien par mois, avec clients illimités et Aide à la rédaction IA pour tous. Vous choisissez le nombre de places.",
+      "nameLabel": "Nom de la pratique",
+      "submit": "Créer la pratique",
+      "done": "Pratique créée"
+    },
+    "member": {
+      "covered": "Votre place est payée par la pratique : vous avez le forfait Groupe.",
+      "notCovered": "L'abonnement de la pratique ne couvre pas votre place actuellement; vous êtes sur votre propre forfait.",
+      "leave": "Quitter la pratique",
+      "leaveConfirm": "Quitter cette pratique? Vous conservez tous vos clients et vos notes et passez à votre propre forfait.",
+      "left": "Vous avez quitté la pratique"
+    },
+    "seats": {
+      "title": "Places",
+      "none": "Choisissez combien de cliniciens (vous compris) la pratique paie — {{price}} par place par mois, en CAD, taxes affichées au paiement.",
+      "countLabel": "Nombre de places",
+      "subscribe": "S'abonner — {{total}}/mois",
+      "summary": "{{used}} membres · {{pending}} invitations en attente · {{paid}} places payées",
+      "manage": "Modifier les places, la carte ou annuler"
+    },
+    "inviteMember": {
+      "title": "Inviter un clinicien",
+      "emailLabel": "Son courriel (celui de son compte)",
+      "submit": "Créer un lien d'invitation",
+      "full": "Toutes les places payées sont utilisées. Ajoutez des places d'abord.",
+      "created": "Invitation créée",
+      "linkHelp": "Envoyez-lui ce lien. Il ne fonctionne qu'une fois, pour ce courriel seulement, et expire dans 14 jours.",
+      "linkLabel": "Lien d'invitation",
+      "copy": "Copier",
+      "copied": "Lien copié",
+      "pending": "Invitations en attente",
+      "expires": "expire le {{date}}",
+      "revoke": "Révoquer",
+      "revoked": "Invitation révoquée"
+    },
+    "members": {
+      "title": "Membres",
+      "name": "Clinicien",
+      "activeClients": "Clients actifs",
+      "sessionsThisMonth": "Séances ce mois-ci",
+      "unsignedNotes": "Notes non signées",
+      "actions": "Actions",
+      "owner": "Propriétaire",
+      "remove": "Retirer",
+      "removeConfirm": "Retirer {{name}} de la pratique? Cette personne conserve tous ses clients et ses notes.",
+      "removed": "Membre retiré"
+    },
+    "close": {
+      "button": "Fermer la pratique",
+      "confirm": "Fermer cette pratique? Annulez aussi l'abonnement Groupe dans le portail de facturation.",
+      "done": "Pratique fermée"
+    }
   }
 }

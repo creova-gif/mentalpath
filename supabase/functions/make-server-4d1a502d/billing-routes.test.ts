@@ -1,5 +1,5 @@
 import { assertEquals, assertStringIncludes } from "jsr:@std/assert@1";
-import { buildT2125Summary, csvSafe, generateT2125CSV } from "./billing-routes.ts";
+import { buildT2125Summary, csvSafe, generateT2125CSV, parseCheckoutRequest } from "./billing-routes.ts";
 
 Deno.test("csvSafe neutralises spreadsheet formulas and quotes special characters", () => {
   assertEquals(csvSafe("=HYPERLINK(\"x\")"), `"'=HYPERLINK(""x"")"`);
@@ -21,4 +21,14 @@ Deno.test("T2125 summary totals by month", () => {
   const csv = generateT2125CSV(summary);
   assertStringIncludes(csv, "Total Gross Revenue,520.50");
   assertStringIncludes(csv, "INV-3,2026-12-01,'=cmd,100.50,1");
+});
+
+Deno.test("checkout request: Solo by default, Group needs 2–50 whole seats", () => {
+  assertEquals(parseCheckoutRequest(undefined), { plan: "solo", seats: 1 });
+  assertEquals(parseCheckoutRequest({ plan: "solo", seats: 9 }), { plan: "solo", seats: 1 });
+  assertEquals(parseCheckoutRequest({ plan: "group", seats: 3 }), { plan: "group", seats: 3 });
+  for (const seats of [undefined, 1, 2.5, 51, "x"]) {
+    assertEquals("error" in parseCheckoutRequest({ plan: "group", seats }), true);
+  }
+  assertEquals("error" in parseCheckoutRequest({ plan: "enterprise" }), true);
 });

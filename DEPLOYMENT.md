@@ -62,11 +62,11 @@ npx supabase secrets set --project-ref hkhwgbkijepsxtixdmrs \
   ANTHROPIC_API_KEY=sk-ant-... \
   STRIPE_SECRET_KEY=sk_live_... \
   STRIPE_WEBHOOK_SECRET=whsec_... \
-  STRIPE_SOLO_PRICE_ID=price_...
+  STRIPE_SOLO_PRICE_ID=price_... \
+  STRIPE_GROUP_PRICE_ID=price_...
 # optional:
 #   ANTHROPIC_MODEL=claude-opus-5
 #   STRIPE_AUTOMATIC_TAX=true            (requires Stripe Tax set up for GST/HST)
-#   STRIPE_GROUP_PRICE_ID=price_...      (only when the Group plan ships)
 
 npx supabase functions deploy make-server-4d1a502d --project-ref hkhwgbkijepsxtixdmrs
 npx supabase functions deploy stripe-webhook --no-verify-jwt --project-ref hkhwgbkijepsxtixdmrs
@@ -77,10 +77,11 @@ npx supabase functions deploy stripe-webhook --no-verify-jwt --project-ref hkhwg
 ## 4. Stripe
 
 1. Create product **MentalPath Solo** with a recurring price of **C$49/month** → `STRIPE_SOLO_PRICE_ID`.
-2. Configure the **Customer Portal** (Settings → Billing → Customer portal): allow payment-method updates, invoice history and cancellation.
-3. Add a webhook endpoint `https://hkhwgbkijepsxtixdmrs.supabase.co/functions/v1/stripe-webhook` for:
+2. Create product **MentalPath Group** with a recurring per-unit price of **C$79/month** → `STRIPE_GROUP_PRICE_ID`. The quantity is the number of seats; the practice owner chooses it at checkout.
+3. Configure the **Customer Portal** (Settings → Billing → Customer portal): allow payment-method updates, invoice history and cancellation, and **quantity updates** for the Group product so owners can add or remove seats.
+4. Add a webhook endpoint `https://hkhwgbkijepsxtixdmrs.supabase.co/functions/v1/stripe-webhook` for:
    `checkout.session.completed`, `customer.subscription.created|updated|deleted|paused|resumed`, `invoice.paid`, `invoice.payment_failed`.
-4. Local testing: `stripe listen --forward-to http://localhost:54321/functions/v1/stripe-webhook`.
+5. Local testing: `stripe listen --forward-to http://localhost:54321/functions/v1/stripe-webhook`.
 
 ## 5. Frontend
 
