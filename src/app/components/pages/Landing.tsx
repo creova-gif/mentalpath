@@ -22,14 +22,14 @@ function ProfessionShowcase() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
           <div>
-            <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#4a7c6f', marginBottom: 12 }}>
+            <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#8abda8', marginBottom: 12 }}>
               {t('professionSection.tag')}
             </div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,3.8vw,50px)', lineHeight: 1.08, letterSpacing: '-1.5px', color: '#f5f0e8' }}>
               {t('professionSection.title')}
             </h2>
           </div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 280, color: 'rgba(245,240,232,0.38)' }}>
+          <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 280, color: 'rgba(245,240,232,0.72)' }}>
             {t('professionSection.subtitle')}
           </div>
         </div>
@@ -41,7 +41,7 @@ function ProfessionShowcase() {
               <div key={p.num} onMouseEnter={() => setActive(p.num)} onMouseLeave={() => setActive(null)} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <Link to={p.path} className="no-underline block">
                   <div className="flex items-center gap-4 md:gap-8 py-5 md:py-6 transition-all duration-200">
-                    <span style={{ fontSize: 11, fontFamily: 'monospace', flexShrink: 0, width: 24, color: isActive ? '#4a7c6f' : 'rgba(255,255,255,0.12)' }}>
+                    <span style={{ fontSize: 11, fontFamily: 'monospace', flexShrink: 0, width: 24, color: isActive ? '#8abda8' : 'rgba(255,255,255,0.7)' }}>
                       {p.num}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -59,8 +59,8 @@ function ProfessionShowcase() {
                       </div>
                     </div>
                     <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0">
-                      <div style={{ fontSize: 11, color: isActive ? 'rgba(245,240,232,0.32)' : 'rgba(255,255,255,0.1)', transition: 'color 0.2s' }}>{p.college}</div>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: isActive ? 'rgba(245,240,232,0.6)' : 'rgba(255,255,255,0.18)', transition: 'color 0.2s' }}>~{p.count} {t('professionSection.inCanada')}</div>
+                      <div style={{ fontSize: 11, color: isActive ? 'rgba(245,240,232,0.8)' : 'rgba(255,255,255,0.7)', transition: 'color 0.2s' }}>{p.college}</div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: isActive ? 'rgba(245,240,232,0.9)' : 'rgba(255,255,255,0.75)', transition: 'color 0.2s' }}>~{p.count} {t('professionSection.inCanada')}</div>
                     </div>
                     <div style={{ flexShrink: 0, width: 32, height: 32, borderRadius: '50%', border: `1px solid ${isActive ? 'rgba(74,124,111,0.45)' : 'rgba(255,255,255,0.07)'}`, background: isActive ? 'rgba(74,124,111,0.12)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                       <svg viewBox="0 0 16 16" style={{ width: 14, height: 14, transform: isActive ? 'translateX(1px)' : 'none', transition: 'transform 0.2s' }} fill="none" stroke={isActive ? '#8abda8' : 'rgba(255,255,255,0.18)'} strokeWidth="1.5">
@@ -75,7 +75,7 @@ function ProfessionShowcase() {
         </div>
 
         <div className="mt-10 flex items-center justify-between flex-wrap gap-4">
-          <p style={{ fontSize: 13, color: 'rgba(245,240,232,0.22)' }}>
+          <p style={{ fontSize: 13, color: 'rgba(245,240,232,0.72)' }}>
             {t('professionSection.comingSoon')}
           </p>
           <Link to="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 500, padding: '10px 18px', borderRadius: 8, background: 'rgba(74,124,111,0.16)', color: '#8abda8', border: '1px solid rgba(74,124,111,0.22)', textDecoration: 'none', transition: 'all 0.15s' }}>
@@ -170,12 +170,12 @@ export function Landing() {
             { label: t('nav.pricing'), href: '/subscribe', anchor: false },
             { label: t('nav.clientPortal'), href: '/client-portal', anchor: false },
           ].map(item => item.anchor ? (
-            <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.5)', textDecoration: 'none', transition: 'color 0.2s' }}
+            <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none', transition: 'color 0.2s' }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#f5f0e8')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.5)')}
             >{item.label}</a>
           ) : (
-            <Link key={item.href} to={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.5)', textDecoration: 'none' }}>{item.label}</Link>
+            <Link key={item.href} to={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</Link>
           ))}
         </div>
 
@@ -190,7 +190,7 @@ export function Landing() {
             </Link>
           ) : (
             <>
-              <Link to="/login" style={{ fontSize: 14, color: 'rgba(245,240,232,0.45)', textDecoration: 'none', padding: '8px 14px' }}>
+              <Link to="/login" style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none', padding: '8px 14px' }}>
                 {t('nav.signIn')}
               </Link>
               <Link to="/onboarding" style={{ fontSize: 14, fontWeight: 500, background: '#4a7c6f', color: 'white', textDecoration: 'none', padding: '9px 20px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'background 0.2s' }}
@@ -222,7 +222,7 @@ export function Landing() {
               </div>
               <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: '#f5f0e8' }}>MentalPath</span>
             </div>
-            <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(245,240,232,0.5)', padding: 8 }}>
+            <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(245,240,232,0.72)', padding: 8 }}>
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -236,12 +236,12 @@ export function Landing() {
               { label: t('nav.dashboard'), href: user ? '/dashboard' : '/login', anchor: false },
             ].map((item, i) => item.anchor ? (
               <a key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '18px 0', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ fontSize: 11, fontWeight: 600, width: 20, color: '#4a7c6f' }}>0{i + 1}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, width: 20, color: '#8abda8' }}>0{i + 1}</span>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 400, letterSpacing: '-0.5px', color: 'rgba(245,240,232,0.85)' }}>{item.label}</span>
               </a>
             ) : (
               <Link key={item.href} to={item.href} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '18px 0', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ fontSize: 11, fontWeight: 600, width: 20, color: '#4a7c6f' }}>0{i + 1}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, width: 20, color: '#8abda8' }}>0{i + 1}</span>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 400, letterSpacing: '-0.5px', color: 'rgba(245,240,232,0.85)' }}>{item.label}</span>
               </Link>
             ))}
@@ -255,7 +255,7 @@ export function Landing() {
               {user ? t('nav.dashboard') : t('nav.signUpFree')}
               <svg viewBox="0 0 16 16" style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
             </Link>
-            <p style={{ textAlign: 'center', fontSize: 12, marginTop: 12, color: 'rgba(245,240,232,0.28)' }}>
+            <p style={{ textAlign: 'center', fontSize: 12, marginTop: 12, color: 'rgba(245,240,232,0.72)' }}>
               {t('hero.footer.canadianServers')} · {t('hero.footer.cancelAnytime')}
             </p>
           </div>
@@ -283,7 +283,7 @@ export function Landing() {
               <em style={{ fontStyle: 'italic', color: '#6aab95', letterSpacing: '-2px' }}>{t('hero.title.line2Italic')}</em>
             </h1>
 
-            <p style={{ fontSize: 17, fontWeight: 300, color: 'rgba(245,240,232,0.5)', lineHeight: 1.7, maxWidth: 460, marginBottom: 44 }}>
+            <p style={{ fontSize: 17, fontWeight: 300, color: 'rgba(245,240,232,0.72)', lineHeight: 1.7, maxWidth: 460, marginBottom: 44 }}>
               {t('hero.subtitle')}
             </p>
 
@@ -295,7 +295,7 @@ export function Landing() {
                 {t('hero.cta')}
                 <svg viewBox="0 0 16 16" style={{ width: 15, height: 15 }} fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
               </Link>
-              <a href="#features" style={{ color: 'rgba(245,240,232,0.42)', fontSize: 15, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'color 0.2s' }}
+              <a href="#features" style={{ color: 'rgba(245,240,232,0.72)', fontSize: 15, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, transition: 'color 0.2s' }}
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.75)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(245,240,232,0.42)')}
               >
@@ -304,7 +304,7 @@ export function Landing() {
               </a>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 22px', fontSize: 12, color: 'rgba(245,240,232,0.28)' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 22px', fontSize: 12, color: 'rgba(245,240,232,0.72)' }}>
               {[t('hero.footer.noCreditCard'), t('hero.footer.canadianServers'), t('hero.footer.cancelAnytime')].map((label, i) => (
                 <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 3, height: 3, background: '#4a7c6f', borderRadius: '50%', display: 'inline-block' }} />
@@ -329,7 +329,7 @@ export function Landing() {
               <div style={{ padding: 22 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, color: '#f5f0e8' }}>{t('hero.dashboardCard.greeting')}</span>
-                  <span style={{ fontSize: 11, color: 'rgba(245,240,232,0.3)' }}>{t('hero.dashboardCard.date')}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(245,240,232,0.72)' }}>{t('hero.dashboardCard.date')}</span>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 18 }}>
@@ -340,12 +340,12 @@ export function Landing() {
                   ].map((s, i) => (
                     <div key={i} style={{ background: 'rgba(74,124,111,0.14)', border: '1px solid rgba(74,124,111,0.18)', borderRadius: 8, padding: '10px 12px' }}>
                       <div style={{ fontFamily: 'var(--font-display)', fontSize: 19, color: '#8abda8', fontWeight: 500, lineHeight: 1 }}>{s.v}</div>
-                      <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.38)', marginTop: 4 }}>{s.l}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.72)', marginTop: 4 }}>{s.l}</div>
                     </div>
                   ))}
                 </div>
 
-                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.28)', marginBottom: 8 }}>{t('dashboard.stats.todaysSessions')}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.72)', marginBottom: 8 }}>{t('dashboard.stats.todaysSessions')}</div>
 
                 {[
                   { init: 'AM', initBg: 'rgba(74,124,111,0.28)', initColor: '#8abda8', name: 'Amara M.', time: t('hero.dashboardCard.session1Time'), badge: t('dashboard.stats.now'), badgeBg: 'rgba(74,124,111,0.22)', badgeColor: '#8abda8' },
@@ -356,7 +356,7 @@ export function Landing() {
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: s.initBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: s.initColor, flexShrink: 0 }}>{s.init}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 12, fontWeight: 500, color: '#f5f0e8' }}>{s.name}</div>
-                      <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.35)' }}>{s.time}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.72)' }}>{s.time}</div>
                     </div>
                     <span style={{ fontSize: 9, padding: '3px 8px', borderRadius: 4, background: s.badgeBg, color: s.badgeColor, fontWeight: 600, letterSpacing: '0.3px' }}>{s.badge}</span>
                   </div>
@@ -374,9 +374,9 @@ export function Landing() {
 
             {/* Floating AI pill */}
             <div className="mp-float2" style={{ position: 'absolute', bottom: -28, right: -20, background: 'rgba(6,13,9,0.92)', border: '1px solid rgba(74,124,111,0.3)', borderRadius: 14, padding: '12px 18px', backdropFilter: 'blur(20px)', boxShadow: '0 20px 60px rgba(0,0,0,0.55)', zIndex: 2 }}>
-              <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.38)', marginBottom: 4 }}>{t('hero.dashboardCard.aiDrafted')}</div>
+              <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.72)', marginBottom: 4 }}>{t('hero.dashboardCard.aiDrafted')}</div>
               <div style={{ fontSize: 13, color: '#8abda8', fontWeight: 600 }}>{t('hero.dashboardCard.aiSession')}</div>
-              <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.28)', marginTop: 3 }}>{t('hero.dashboardCard.aiMeta')}</div>
+              <div style={{ fontSize: 10, color: 'rgba(245,240,232,0.72)', marginTop: 3 }}>{t('hero.dashboardCard.aiMeta')}</div>
             </div>
 
             {/* Floating PHIPA pill */}
@@ -388,7 +388,7 @@ export function Landing() {
         </div>
 
         {/* Scroll indicator */}
-        <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, color: 'rgba(245,240,232,0.18)', fontSize: 10, letterSpacing: '1.5px', textTransform: 'uppercase', zIndex: 1 }}>
+        <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, color: 'rgba(245,240,232,0.72)', fontSize: 10, letterSpacing: '1.5px', textTransform: 'uppercase', zIndex: 1 }}>
           <span>{t('hero.scrollLabel')}</span>
           <div style={{ width: 1, height: 36, background: 'linear-gradient(to bottom, rgba(74,124,111,0.5), transparent)' }} />
         </div>
@@ -398,7 +398,7 @@ export function Landing() {
       <div style={{ background: '#091410', borderTop: '1px solid rgba(74,124,111,0.12)', borderBottom: '1px solid rgba(74,124,111,0.12)', padding: '14px 0', overflow: 'hidden' }}>
         <div className="mp-ticker-track">
           {[...tickerItems, ...tickerItems].map((item, i) => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 20, padding: '0 28px', fontSize: 12, fontWeight: 500, letterSpacing: '0.5px', color: 'rgba(245,240,232,0.35)', whiteSpace: 'nowrap' }}>
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 20, padding: '0 28px', fontSize: 12, fontWeight: 500, letterSpacing: '0.5px', color: 'rgba(245,240,232,0.72)', whiteSpace: 'nowrap' }}>
               <span style={{ width: 4, height: 4, background: '#4a7c6f', borderRadius: '50%', display: 'inline-block', flexShrink: 0 }} />
               {item}
             </span>
@@ -417,7 +417,7 @@ export function Landing() {
             <div key={i} style={{ padding: '44px 40px', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none', textAlign: 'center' }} className="border-b sm:border-b-0">
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(34px,4.5vw,56px)', lineHeight: 1, letterSpacing: '-2px', color: '#f5f0e8', marginBottom: 8 }}>{s.stat}</div>
               <div style={{ fontSize: 13, fontWeight: 500, color: '#6aab95', marginBottom: 5 }}>{s.label}</div>
-              <div style={{ fontSize: 11, color: 'rgba(245,240,232,0.28)' }}>{s.sub}</div>
+              <div style={{ fontSize: 11, color: 'rgba(245,240,232,0.72)' }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -429,13 +429,13 @@ export function Landing() {
       {/* ── PROBLEM ── */}
       <section style={{ background: '#08100d', padding: '88px 5vw 108px' }} id="problem">
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#4a7c6f', marginBottom: 20 }}>{t('problemSection.tag')}</div>
+          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#8abda8', marginBottom: 20 }}>{t('problemSection.tag')}</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
             <div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px,3.8vw,50px)', lineHeight: 1.08, letterSpacing: '-1.5px', color: '#f5f0e8', marginBottom: 24 }}>
                 {t('problemSection.title.line1')}<br />{t('problemSection.title.line2')} <em style={{ fontStyle: 'italic', color: '#8abda8' }}>{t('problemSection.title.line2Italic')}</em>
               </h2>
-              <p style={{ fontSize: 15, fontWeight: 300, color: 'rgba(245,240,232,0.48)', lineHeight: 1.75, marginBottom: 40 }}>
+              <p style={{ fontSize: 15, fontWeight: 300, color: 'rgba(245,240,232,0.72)', lineHeight: 1.75, marginBottom: 40 }}>
                 {t('problemSection.subtitle')}
               </p>
               <Link to="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#4a7c6f', color: 'white', textDecoration: 'none', padding: '12px 24px', borderRadius: 8, fontSize: 14, fontWeight: 500, transition: 'background 0.2s' }}
@@ -448,9 +448,9 @@ export function Landing() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {problemCards.map((card, i) => (
                 <div key={i} style={{ background: 'rgba(245,240,232,0.025)', border: '1px solid rgba(255,255,255,0.055)', borderRadius: 14, padding: 22 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#4a7c6f', background: 'rgba(74,124,111,0.14)', display: 'inline-block', padding: '3px 9px', borderRadius: 4, marginBottom: 10 }}>{card.badge}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#8abda8', background: 'rgba(74,124,111,0.14)', display: 'inline-block', padding: '3px 9px', borderRadius: 4, marginBottom: 10 }}>{card.badge}</div>
                   <div style={{ fontSize: 13, fontWeight: 500, color: '#f5f0e8', marginBottom: 8, lineHeight: 1.4 }}>{card.title}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.38)', lineHeight: 1.65 }}>{card.desc}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.72)', lineHeight: 1.65 }}>{card.desc}</div>
                 </div>
               ))}
             </div>
@@ -461,12 +461,12 @@ export function Landing() {
       {/* ── FEATURES BENTO ── */}
       <section style={{ background: '#f2ede3', padding: '88px 5vw 108px' }} id="features">
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#4a7c6f', marginBottom: 20 }}>{t('bento.tag')}</div>
+          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#2f5e52', marginBottom: 20 }}>{t('bento.tag')}</div>
           <div className="flex justify-between items-end flex-wrap gap-6" style={{ marginBottom: 56 }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px,3.8vw,50px)', lineHeight: 1.08, letterSpacing: '-1.5px', color: '#1a1a18' }}>
-              {t('bento.title.line1')}<br /><em style={{ fontStyle: 'italic', color: '#4a7c6f' }}>{t('bento.title.line2Italic')}</em>
+              {t('bento.title.line1')}<br /><em style={{ fontStyle: 'italic', color: '#2f5e52' }}>{t('bento.title.line2Italic')}</em>
             </h2>
-            <p style={{ fontSize: 15, fontWeight: 300, color: 'rgba(26,26,24,0.52)', maxWidth: 340, lineHeight: 1.7 }}>
+            <p style={{ fontSize: 15, fontWeight: 300, color: 'rgba(26,26,24,0.72)', maxWidth: 340, lineHeight: 1.7 }}>
               {t('bento.subtitle')}
             </p>
           </div>
@@ -478,21 +478,21 @@ export function Landing() {
               <div style={{ position: 'absolute', top: -60, right: -60, width: 260, height: 260, background: 'radial-gradient(ellipse, rgba(74,124,111,0.28), transparent)', pointerEvents: 'none' }} />
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#6aab95', marginBottom: 14 }}>{t('bento.aiNotes.tag')}</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 400, lineHeight: 1.3, color: '#f5f0e8', marginBottom: 12 }}>{t('bento.aiNotes.title')}</h3>
-              <p style={{ fontSize: 13, color: 'rgba(245,240,232,0.45)', lineHeight: 1.65, marginBottom: 22 }}>{t('bento.aiNotes.body')}</p>
+              <p style={{ fontSize: 13, color: 'rgba(245,240,232,0.72)', lineHeight: 1.65, marginBottom: 22 }}>{t('bento.aiNotes.body')}</p>
               <div style={{ background: 'rgba(245,240,232,0.05)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 18 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#6aab95', marginBottom: 10 }}>{t('bento.aiNotes.previewNote')}</div>
-                <div style={{ fontSize: 11, color: 'rgba(245,240,232,0.45)', lineHeight: 1.8, fontFamily: 'monospace' }}>
-                  <span style={{ color: '#4a7c6f', fontWeight: 700 }}>S:</span> Client reports reduced sleep, 5–6hrs/night. Anxiety around job stability...<br />
-                  <span style={{ color: '#4a7c6f', fontWeight: 700 }}>O:</span> Alert, appropriately groomed. Affect: anxious, labile...<br />
-                  <span style={{ color: '#4a7c6f', fontWeight: 700, opacity: 0.4 }}>A: P: </span>
-                  <span style={{ color: 'rgba(106,171,149,0.45)', fontStyle: 'italic' }}>{t('bento.aiNotes.aiLabel')}</span>
+                <div style={{ fontSize: 11, color: 'rgba(245,240,232,0.72)', lineHeight: 1.8, fontFamily: 'monospace' }}>
+                  <span style={{ color: '#8abda8', fontWeight: 700 }}>S:</span> Client reports reduced sleep, 5–6hrs/night. Anxiety around job stability...<br />
+                  <span style={{ color: '#8abda8', fontWeight: 700 }}>O:</span> Alert, appropriately groomed. Affect: anxious, labile...<br />
+                  <span style={{ color: '#8abda8', fontWeight: 700 }}>A: P: </span>
+                  <span style={{ color: '#8abda8', fontStyle: 'italic' }}>{t('bento.aiNotes.aiLabel')}</span>
                 </div>
               </div>
             </div>
 
             {/* Billing */}
             <div style={{ background: '#eee8db', border: '1px solid rgba(74,124,111,0.1)', borderRadius: 18, padding: 30 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#4a7c6f', marginBottom: 14 }}>{t('bento.billing.tag')}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#2f5e52', marginBottom: 14 }}>{t('bento.billing.tag')}</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 400, lineHeight: 1.35, color: '#1a1a18', marginBottom: 14 }}>{t('bento.billing.title')}</h3>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {billingTags.map(tag => (
@@ -508,21 +508,21 @@ export function Landing() {
             <div style={{ background: '#0d1c16', border: '1px solid rgba(74,124,111,0.14)', borderRadius: 18, padding: 30 }}>
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8abda8', marginBottom: 14 }}>{t('bento.scheduling.tag')}</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 400, lineHeight: 1.35, color: '#f5f0e8', marginBottom: 12 }}>{t('bento.scheduling.title')}</h3>
-              <p style={{ fontSize: 12, color: 'rgba(245,240,232,0.35)', lineHeight: 1.65 }}>{t('bento.scheduling.body')}</p>
+              <p style={{ fontSize: 12, color: 'rgba(245,240,232,0.72)', lineHeight: 1.65 }}>{t('bento.scheduling.body')}</p>
             </div>
 
             {/* Client Portal */}
             <div style={{ background: '#4a7c6f', borderRadius: 18, padding: 30 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 14 }}>{t('bento.portal.tag')}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'white', marginBottom: 14 }}>{t('bento.portal.tag')}</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 400, lineHeight: 1.35, color: 'white', marginBottom: 12 }}>{t('bento.portal.title')}</h3>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65 }}>{t('bento.portal.body')}</p>
+              <p style={{ fontSize: 12, color: 'white', lineHeight: 1.65 }}>{t('bento.portal.body')}</p>
             </div>
 
             {/* Group Practice */}
             <div style={{ background: '#f5f0e8', border: '1px solid rgba(74,124,111,0.1)', borderRadius: 18, padding: 30 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#4a7c6f', marginBottom: 14 }}>{t('bento.group.tag')}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#2f5e52', marginBottom: 14 }}>{t('bento.group.tag')}</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 400, lineHeight: 1.35, color: '#1a1a18', marginBottom: 12 }}>{t('bento.group.title')}</h3>
-              <p style={{ fontSize: 12, color: 'rgba(26,26,24,0.5)', lineHeight: 1.65 }}>{t('bento.group.body')}</p>
+              <p style={{ fontSize: 12, color: 'rgba(26,26,24,0.72)', lineHeight: 1.65 }}>{t('bento.group.body')}</p>
             </div>
           </div>
 
@@ -530,12 +530,12 @@ export function Landing() {
           <div style={{ background: 'white', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 18, padding: '32px 36px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 40, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 280px' }}>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#4a7c6f', marginBottom: 14 }}>{t('bento.clientMgmt.tag')}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#2f5e52', marginBottom: 14 }}>{t('bento.clientMgmt.tag')}</div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, lineHeight: 1.3, color: '#1a1a18', marginBottom: 12 }}>{t('bento.clientMgmt.title')}</h3>
-                <p style={{ fontSize: 13, color: 'rgba(26,26,24,0.52)', lineHeight: 1.65 }}>{t('bento.clientMgmt.body')}</p>
+                <p style={{ fontSize: 13, color: 'rgba(26,26,24,0.72)', lineHeight: 1.65 }}>{t('bento.clientMgmt.body')}</p>
               </div>
               <div style={{ flex: '1 1 240px', background: '#f2ede3', borderRadius: 12, padding: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#4a7c6f', marginBottom: 14 }}>{t('bento.clientMgmt.templatesLabel')}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#2f5e52', marginBottom: 14 }}>{t('bento.clientMgmt.templatesLabel')}</div>
                 {clientTemplates.map((tmpl, i, arr) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(74,124,111,0.1)' : 'none' }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4a7c6f', flexShrink: 0 }} />
@@ -552,7 +552,7 @@ export function Landing() {
       <section style={{ background: '#060d09', padding: '88px 5vw 108px' }} id="compliance">
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 80 }}>
-            <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#4a7c6f', marginBottom: 28 }}>{t('complianceSection.tag')}</div>
+            <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#8abda8', marginBottom: 28 }}>{t('complianceSection.tag')}</div>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36 }}>
               <div style={{ width: 76, height: 76, background: 'rgba(74,124,111,0.12)', border: '1px solid rgba(74,124,111,0.22)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg viewBox="0 0 32 32" style={{ width: 42, height: 42 }} fill="none" stroke="#4a7c6f" strokeWidth="1.4" strokeLinecap="round">
@@ -564,7 +564,7 @@ export function Landing() {
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px,5.5vw,68px)', lineHeight: 1.02, letterSpacing: '-2.5px', color: '#f5f0e8', maxWidth: 820, margin: '0 auto 24px' }}>
               {t('complianceSection.title.line1')}<br /><em style={{ fontStyle: 'italic', color: '#6aab95' }}>{t('complianceSection.title.line2Italic')}</em>
             </h2>
-            <p style={{ fontSize: 16, fontWeight: 300, color: 'rgba(245,240,232,0.42)', maxWidth: 520, margin: '0 auto' }}>
+            <p style={{ fontSize: 16, fontWeight: 300, color: 'rgba(245,240,232,0.72)', maxWidth: 520, margin: '0 auto' }}>
               {t('complianceSection.subtitle')}
             </p>
           </div>
@@ -578,9 +578,9 @@ export function Landing() {
                   </svg>
                 </div>
                 <div>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#4a7c6f', background: 'rgba(74,124,111,0.14)', padding: '3px 9px', borderRadius: 4, display: 'inline-block', marginBottom: 10, letterSpacing: '0.3px' }}>{item.badge}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#8abda8', background: 'rgba(74,124,111,0.14)', padding: '3px 9px', borderRadius: 4, display: 'inline-block', marginBottom: 10, letterSpacing: '0.3px' }}>{item.badge}</span>
                   <div style={{ fontSize: 15, fontWeight: 500, color: '#f5f0e8', marginBottom: 8 }}>{item.title}</div>
-                  <div style={{ fontSize: 13, color: 'rgba(245,240,232,0.42)', lineHeight: 1.7 }}>{item.desc}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(245,240,232,0.72)', lineHeight: 1.7 }}>{item.desc}</div>
                 </div>
               </div>
             ))}
@@ -591,12 +591,12 @@ export function Landing() {
       {/* ── PRICING ── */}
       <section style={{ background: '#ffffff', padding: '88px 5vw 108px' }} id="pricing">
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#4a7c6f', marginBottom: 20 }}>{t('pricingSection.tag')}</div>
+          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#2f5e52', marginBottom: 20 }}>{t('pricingSection.tag')}</div>
           <div className="flex justify-between items-end flex-wrap gap-6" style={{ marginBottom: 60 }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px,3.8vw,50px)', lineHeight: 1.08, letterSpacing: '-1.5px', color: '#1a1a18' }}>
-              {t('pricingSection.title.line1')}<br /><em style={{ fontStyle: 'italic', color: '#4a7c6f' }}>{t('pricingSection.title.line2Italic')}</em>
+              {t('pricingSection.title.line1')}<br /><em style={{ fontStyle: 'italic', color: '#2f5e52' }}>{t('pricingSection.title.line2Italic')}</em>
             </h2>
-            <p style={{ fontSize: 15, fontWeight: 300, color: 'rgba(26,26,24,0.52)', maxWidth: 320, lineHeight: 1.7 }}>
+            <p style={{ fontSize: 15, fontWeight: 300, color: 'rgba(26,26,24,0.72)', maxWidth: 320, lineHeight: 1.7 }}>
               {t('pricingSection.subtitle')}
             </p>
           </div>
@@ -607,20 +607,20 @@ export function Landing() {
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'none')}
             >
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#4a7c6f', marginBottom: 16 }}>{t('pricingSection.plans.starter.name')}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#2f5e52', marginBottom: 16 }}>{t('pricingSection.plans.starter.name')}</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 52, color: '#1a1a18', lineHeight: 1, marginBottom: 6 }}>{t('pricingSection.plans.starter.price')}</div>
-              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.45)', marginBottom: 20 }}>{t('pricingSection.plans.starter.period')}</div>
-              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.55)', lineHeight: 1.65, marginBottom: 28 }}>{t('pricingSection.plans.starter.description')}</div>
+              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.72)', marginBottom: 20 }}>{t('pricingSection.plans.starter.period')}</div>
+              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.72)', lineHeight: 1.65, marginBottom: 28 }}>{t('pricingSection.plans.starter.description')}</div>
               <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.07)', marginBottom: 24 }} />
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {starterFeatures.map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(26,26,24,0.7)' }}>
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(26,26,24,0.72)' }}>
                     <svg viewBox="0 0 16 16" style={{ width: 16, height: 16, flexShrink: 0 }}><circle cx="8" cy="8" r="7.5" fill="#e8f5f1" stroke="#4a7c6f" strokeWidth="1"/><path d="M5 8l2 2 4-4" fill="none" stroke="#4a7c6f" strokeWidth="1.5" strokeLinecap="round"/></svg>
                     {f}
                   </li>
                 ))}
               </ul>
-              <Link to="/onboarding" style={{ display: 'block', textAlign: 'center', padding: '13px 0', borderRadius: 10, fontSize: 15, fontWeight: 500, border: '1.5px solid #4a7c6f', color: '#4a7c6f', textDecoration: 'none', transition: 'background 0.2s' }}
+              <Link to="/onboarding" style={{ display: 'block', textAlign: 'center', padding: '13px 0', borderRadius: 10, fontSize: 15, fontWeight: 500, border: '1.5px solid #4a7c6f', color: '#2f5e52', textDecoration: 'none', transition: 'background 0.2s' }}
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(74,124,111,0.06)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
               >
@@ -633,15 +633,15 @@ export function Landing() {
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1.04) translateY(-4px)')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1.04)')}
             >
-              <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#d4891a', color: 'white', fontSize: 11, fontWeight: 700, padding: '5px 16px', borderRadius: 20, whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(212,137,26,0.4)' }}>{t('pricingSection.mostPopular')}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)', marginBottom: 16 }}>{t('pricingSection.plans.solo.name')}</div>
+              <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#9a5b00', color: 'white', fontSize: 11, fontWeight: 700, padding: '5px 16px', borderRadius: 20, whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(212,137,26,0.4)' }}>{t('pricingSection.mostPopular')}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'white', marginBottom: 16 }}>{t('pricingSection.plans.solo.name')}</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 52, color: 'white', lineHeight: 1, marginBottom: 6 }}>{t('pricingSection.plans.solo.price')}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginBottom: 20 }}>{t('pricingSection.plans.solo.period')}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, marginBottom: 28 }}>{t('pricingSection.plans.solo.description')}</div>
+              <div style={{ fontSize: 13, color: 'white', marginBottom: 20 }}>{t('pricingSection.plans.solo.period')}</div>
+              <div style={{ fontSize: 13, color: 'white', lineHeight: 1.65, marginBottom: 28 }}>{t('pricingSection.plans.solo.description')}</div>
               <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.18)', marginBottom: 24 }} />
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {soloFeatures.map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.88)' }}>
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'white' }}>
                     <svg viewBox="0 0 16 16" style={{ width: 16, height: 16, flexShrink: 0 }}><circle cx="8" cy="8" r="7.5" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.35)" strokeWidth="1"/><path d="M5 8l2 2 4-4" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>
                     {f}
                   </li>
@@ -657,14 +657,14 @@ export function Landing() {
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'none')}
             >
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#4a7c6f', marginBottom: 16 }}>{t('pricingSection.plans.group.name')}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: '#2f5e52', marginBottom: 16 }}>{t('pricingSection.plans.group.name')}</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 52, color: '#1a1a18', lineHeight: 1, marginBottom: 6 }}>{t('pricingSection.plans.group.price')}</div>
-              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.45)', marginBottom: 20 }}>{t('pricingSection.plans.group.period')}</div>
-              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.55)', lineHeight: 1.65, marginBottom: 28 }}>{t('pricingSection.plans.group.description')}</div>
+              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.72)', marginBottom: 20 }}>{t('pricingSection.plans.group.period')}</div>
+              <div style={{ fontSize: 13, color: 'rgba(26,26,24,0.72)', lineHeight: 1.65, marginBottom: 28 }}>{t('pricingSection.plans.group.description')}</div>
               <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.07)', marginBottom: 24 }} />
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {groupFeatures.map((f, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(26,26,24,0.7)' }}>
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(26,26,24,0.72)' }}>
                     <svg viewBox="0 0 16 16" style={{ width: 16, height: 16, flexShrink: 0 }}><circle cx="8" cy="8" r="7.5" fill="#e8f5f1" stroke="#4a7c6f" strokeWidth="1"/><path d="M5 8l2 2 4-4" fill="none" stroke="#4a7c6f" strokeWidth="1.5" strokeLinecap="round"/></svg>
                     {f}
                   </li>
@@ -684,9 +684,9 @@ export function Landing() {
       {/* ── TESTIMONIALS ── */}
       <section style={{ background: '#f2ede3', padding: '88px 5vw 108px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#4a7c6f', marginBottom: 20 }}>{t('testimonialsSection.tag')}</div>
+          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#2f5e52', marginBottom: 20 }}>{t('testimonialsSection.tag')}</div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px,3.8vw,50px)', lineHeight: 1.08, letterSpacing: '-1.5px', color: '#1a1a18', marginBottom: 60 }}>
-            {t('testimonialsSection.title.line1')} <em style={{ fontStyle: 'italic', color: '#4a7c6f' }}>{t('testimonialsSection.title.line1Italic')}</em>
+            {t('testimonialsSection.title.line1')} <em style={{ fontStyle: 'italic', color: '#2f5e52' }}>{t('testimonialsSection.title.line1Italic')}</em>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -700,7 +700,7 @@ export function Landing() {
                   <div style={{ width: 40, height: 40, borderRadius: '50%', background: TESTIMONIAL_AVATARS[i].avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, color: TESTIMONIAL_AVATARS[i].avatarColor, flexShrink: 0 }}>{TESTIMONIAL_AVATARS[i].avatar}</div>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 500, color: '#1a1a18' }}>{t2.name}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(26,26,24,0.48)' }}>{t2.role}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(26,26,24,0.72)' }}>{t2.role}</div>
                   </div>
                 </div>
               </div>
@@ -713,11 +713,11 @@ export function Landing() {
       <section style={{ background: '#2a4f42', padding: '88px 5vw 100px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-30%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '160%', background: 'radial-gradient(ellipse at center, rgba(74,124,111,0.35) 0%, transparent 60%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: 'rgba(245,240,232,0.45)', marginBottom: 28 }}>{t('ctaSection.tag')}</div>
+          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: 'rgba(245,240,232,0.72)', marginBottom: 28 }}>{t('ctaSection.tag')}</div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(34px,5vw,60px)', lineHeight: 1.05, letterSpacing: '-2px', color: '#f5f0e8', marginBottom: 20 }}>
             {t('ctaSection.title.line1')}<br /><em style={{ fontStyle: 'italic', color: '#8abda8' }}>{t('ctaSection.title.line2Italic')}</em>
           </h2>
-          <p style={{ fontSize: 16, color: 'rgba(245,240,232,0.52)', maxWidth: 480, margin: '0 auto 48px', fontWeight: 300, lineHeight: 1.7 }}>
+          <p style={{ fontSize: 16, color: 'rgba(245,240,232,0.72)', maxWidth: 480, margin: '0 auto 48px', fontWeight: 300, lineHeight: 1.7 }}>
             {t('ctaSection.subtitle')}
           </p>
           <div style={{ display: 'flex', gap: 10, maxWidth: 480, margin: '0 auto 20px', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -726,7 +726,7 @@ export function Landing() {
               {t('ctaSection.cta')}
             </Link>
           </div>
-          <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.3)' }}>{t('ctaSection.footer')}</div>
+          <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.72)' }}>{t('ctaSection.footer')}</div>
         </div>
       </section>
 
@@ -744,49 +744,49 @@ export function Landing() {
                 </div>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: '#f5f0e8' }}>MentalPath</span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(245,240,232,0.28)', maxWidth: 260, lineHeight: 1.65 }}>
+              <p style={{ fontSize: 13, color: 'rgba(245,240,232,0.72)', maxWidth: 260, lineHeight: 1.65 }}>
                 {t('footer.tagline')}
               </p>
             </div>
             <div style={{ display: 'flex', gap: 60, flexWrap: 'wrap' }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.25)', marginBottom: 16 }}>{t('footer.columns.product')}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.72)', marginBottom: 16 }}>{t('footer.columns.product')}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[
                     { label: t('footer.links.features'), href: '#features', anchor: true },
                     { label: t('footer.links.pricing'), href: '/subscribe', anchor: false },
                     { label: t('footer.links.clientPortal'), href: '/client-portal', anchor: false },
                   ].map(item => item.anchor ? (
-                    <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.42)', textDecoration: 'none' }}>{item.label}</a>
+                    <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</a>
                   ) : (
-                    <Link key={item.href} to={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.42)', textDecoration: 'none' }}>{item.label}</Link>
+                    <Link key={item.href} to={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</Link>
                   ))}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.25)', marginBottom: 16 }}>{t('footer.columns.compliance')}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.72)', marginBottom: 16 }}>{t('footer.columns.compliance')}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[t('footer.links.phipa'), t('footer.links.pipeda'), t('footer.links.collegeStandards')].map(item => (
-                    <a key={item} href="#compliance" style={{ fontSize: 14, color: 'rgba(245,240,232,0.42)', textDecoration: 'none' }}>{item}</a>
+                    <a key={item} href="#compliance" style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item}</a>
                   ))}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.25)', marginBottom: 16 }}>{t('footer.columns.company')}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.72)', marginBottom: 16 }}>{t('footer.columns.company')}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[
                     { label: t('footer.links.privacy'), href: '#' },
                     { label: t('footer.links.terms'), href: '#' },
                     { label: t('footer.links.support'), href: '#' },
                   ].map(item => (
-                    <a key={item.href + item.label} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.42)', textDecoration: 'none' }}>{item.label}</a>
+                    <a key={item.href + item.label} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</a>
                   ))}
                 </div>
               </div>
             </div>
           </div>
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-            <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.22)' }}>{t('footer.copyright')}</div>
+            <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.72)' }}>{t('footer.copyright')}</div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
               {['PHIPA', 'PIPEDA', 'ca-central-1'].map(badge => (
                 <span key={badge} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'rgba(74,124,111,0.12)', color: '#6aab95', fontWeight: 500 }}>{badge}</span>

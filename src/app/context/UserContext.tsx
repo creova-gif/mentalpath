@@ -293,36 +293,39 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
 
-  // Bootstrap: listen to Supabase auth state changes
+  // Bootstrap: listen to Supabase auth state changes.
+  // Supabase holds an auth lock while this callback runs, so awaiting any other
+  // Supabase call inside it deadlocks (the app hung on "Loading…" after a page
+  // reload). Work that needs the client is deferred with setTimeout.
   useEffect(() => {
     purgeLegacyLocalData();
-    // Get the current session immediately
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) await loadProfile(session);
-      setIsLoading(false);
-    });
-
-    // Subscribe to future auth events (login, logout, token refresh)
-    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          await loadProfile(session);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setSubscriptionState(null);
-        }
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setUser(null);
+        setSubscriptionState(null);
         setIsLoading(false);
+        return;
       }
-    );
-
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        setTimeout(() => {
+          loadProfile(session)
+            .catch(err => console.error('Profile load failed:', err))
+            .finally(() => setIsLoading(false));
+        }, 0);
+      }
+    });
     return () => authSub.unsubscribe();
   }, [loadProfile]);
 
   const login = async (email: string, password: string): Promise<'ok' | 'bad_credentials'> => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (!error) return 'ok';
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error && data.session) {
+      // Load the profile before the caller navigates, so protected routes see the user.
+      await loadProfile(data.session);
+      return 'ok';
+    }
 
-    console.error('Login error:', error.message);
+    console.error('Login error:', error?.message ?? 'no session returned');
     return 'bad_credentials';
   };
 

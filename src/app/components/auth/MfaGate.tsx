@@ -28,6 +28,16 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
   const [codeError, setCodeError] = useState('');
 
   const evaluate = useCallback(async () => {
+    try {
+      await evaluateInner();
+    } catch (err) {
+      // Never leave the user on an endless "checking" screen.
+      setState({ kind: 'error', message: err instanceof Error ? err.message : 'Unexpected error' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const evaluateInner = async () => {
     const { data: aal, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (error) return setState({ kind: 'error', message: error.message });
     if (aal.currentLevel === 'aal2') return setState({ kind: 'ok' });
@@ -48,7 +58,7 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
     });
     if (enrolError) return setState({ kind: 'error', message: enrolError.message });
     setState({ kind: 'enrol', factorId: enrol.id, qrCode: enrol.totp.qr_code, secret: enrol.totp.secret });
-  }, []);
+  };
 
   useEffect(() => {
     if (!MFA_OPTIONAL) evaluate();

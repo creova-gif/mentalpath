@@ -96,7 +96,7 @@ export function Settings() {
                 <tab.icon className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
                 {tab.label}
                 {tab.id === 'subscription' && subscription?.isTrial && (
-                  <span className="ml-auto text-[9px] font-semibold bg-amber-400 text-white rounded px-1 py-0.5">TRIAL</span>
+                  <span className="ml-auto text-[9px] font-semibold bg-amber-700 text-white rounded px-1 py-0.5">TRIAL</span>
                 )}
               </button>
             ))}

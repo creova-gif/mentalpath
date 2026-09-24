@@ -325,7 +325,7 @@ export function ProfessionIntake() {
         </div>
         <div className="font-[var(--font-display)] text-[24px] text-white mb-1">{form.practice}</div>
         <div className="text-[13px] text-white/65">{form.creds}</div>
-        <div className="flex items-center gap-1.5 mt-3 text-[11px] text-white/45">
+        <div className="flex items-center gap-1.5 mt-3 text-[11px] text-white/70">
           <Lock className="w-[11px] h-[11px] stroke-white/50" />
           Your information is kept strictly confidential and stored on Canadian servers (PHIPA)
         </div>
@@ -333,7 +333,7 @@ export function ProfessionIntake() {
 
       {/* Profession switcher (demo) */}
       <div className="flex items-center gap-2 px-7 py-2 bg-[var(--ink)] text-[12px]">
-        <span className="text-white/40 flex-shrink-0">Preview as:</span>
+        <span className="text-white/70 flex-shrink-0">Preview as:</span>
         {(['chiro', 'physio', 'rmt'] as ProfKey[]).map(p => (
           <button
             key={p}

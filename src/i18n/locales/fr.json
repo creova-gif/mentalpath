@@ -9,13 +9,13 @@
     "signIn": "Se connecter"
   },
   "hero": {
-    "badge": "Conçu pour les thérapeutes canadiens · Conforme LPRPS",
+    "badge": "Conçu pour les thérapeutes canadiens · Données au Canada",
     "title": {
       "line1": "Moins d'admin.",
       "line2": "Plus de temps avec",
       "line2Italic": "vos clients."
     },
-    "subtitle": "Gestion de pratique conçue pour les professionnels de santé réglementés au Canada — thérapeutes, chiropraticiens, physiothérapeutes, TRM et plus. Conforme LPRPS et abordable pour les praticiens solo.",
+    "subtitle": "Gestion de pratique conçue pour les professionnels de santé réglementés au Canada — thérapeutes, chiropraticiens, physiothérapeutes, TRM et plus. Données hébergées au Canada, conçu autour de la LPRPS et abordable pour les praticiens solo.",
     "cta": "Commencez votre essai gratuit →",
     "seeHow": "Voir comment ça marche",
     "footer": {
@@ -125,7 +125,7 @@
   },
   "clientPortalApp": {
     "header": {
-      "security": "Conforme à la LPRPS · Crypté · Serveurs canadiens",
+      "security": "Chiffré en transit · Serveurs canadiens",
       "backToHome": "Retour à l'accueil"
     },
     "banner": {
@@ -237,9 +237,9 @@
     "tagline": "Une plateforme.",
     "taglineEm": "Toutes les professions",
     "taglineSub": "de santé réglementées.",
-    "subtitle": "Gestion de pratique conforme LPRPS pour les professionnels de santé réglementés au Canada — psychothérapeutes, chiropraticiens, physiothérapeutes, TRM et plus.",
+    "subtitle": "Gestion de pratique conçue autour de la LPRPS pour les professionnels de santé réglementés au Canada — psychothérapeutes, chiropraticiens, physiothérapeutes, TRM et plus.",
     "leftBadges": [
-      "Conforme LPRPS",
+      "Données hébergées au Canada",
       "Serveurs canadiens",
       "Essai gratuit 7 jours"
     ],
@@ -272,7 +272,7 @@
     "badgeGroup": "Groupe",
     "badgeSolo": "Solo",
     "bottomBadges": [
-      "Conforme LPRPS",
+      "Résidence des données au Canada",
       "Serveurs canadiens",
       "Chiffrement au repos"
     ],
@@ -280,7 +280,7 @@
     "resetSent": "Si un compte existe pour ce courriel, nous avons envoyé un lien de réinitialisation."
   },
   "ticker": [
-    "Conforme LPRPS",
+    "Résidence des données au Canada",
     "Serveurs canadiens uniquement",
     "Certifié LPRPDE",
     "Chiffrement AES-256",
@@ -328,7 +328,7 @@
     "cards": [
       {
         "badge": "Risque de confidentialité",
-        "title": "Le cloud américain viole la LPRPS",
+        "title": "Le cloud américain complique la conformité à la LPRPS",
         "desc": "La LPRPS de l'Ontario exige que les données de santé soient stockées au Canada. La plupart des outils américains échouent à ce test — vous laissant exposé."
       },
       {
@@ -417,7 +417,7 @@
       {
         "badge": "Chiffrement",
         "title": "AES-256 au repos · TLS 1.3 en transit",
-        "desc": "Notes de séance chiffrées avec des clés spécifiques au thérapeute — même le personnel de MentalPath ne peut pas lire vos notes cliniques."
+        "desc": "Les notes verrouillées ne peuvent être ni modifiées ni supprimées, chaque accès est consigné dans un journal d’audit inaltérable, et l’authentification à deux facteurs est requise pour les dossiers clients."
       },
       {
         "badge": "Normes des Ordres",
@@ -542,7 +542,7 @@
       "terms": "Conditions",
       "support": "Assistance"
     },
-    "copyright": "© 2026 MentalPath. Fabriqué au Canada. Conforme LPRPS et LPRPDE."
+    "copyright": "© 2026 MentalPath. Fait au Canada."
   },
   "onboarding": {
     "stepNames": {
@@ -559,11 +559,11 @@
         "line3": "professionnel de la santé réglementé."
       },
       "description": "Modèles de notes, formats de reçus, mesures de résultats et normes des Ordres configurés automatiquement pour votre profession. Conforme LPRPS dès la première minute.",
-      "testimonial": "\"J'ai quitté TherapyNotes en un après-midi. Les modèles d'admission adaptés culturellement m'ont fait gagner deux semaines de travail — et je suis enfin conforme à la LPRPS.\"",
+      "testimonial": "",
       "author": "Dre Abena Osei-Mensah, PA",
       "authorRole": "Psychothérapeute autorisée · Toronto, ON",
       "badges": {
-        "phipa": "Conforme LPRPS",
+        "phipa": "Données hébergées au Canada",
         "servers": "Serveurs canadiens",
         "trial": "Essai gratuit 7 jours"
       }
@@ -612,7 +612,7 @@
     },
     "step4": {
       "title": "Choisissez votre forfait",
-      "subtitle": "Les deux forfaits incluent un essai gratuit de 7 jours. Annulez à tout moment.",
+      "subtitle": "Chaque compte commence par un essai Solo de 7 jours — sans carte.",
       "solo": "Praticien solo",
       "soloPrice": "49 $",
       "soloPeriod": "/mois",
@@ -620,8 +620,8 @@
       "group": "Cabinet de groupe",
       "groupPrice": "79 $",
       "groupPeriod": "/clinicien",
-      "groupDesc": "Multi-cliniciens, planification partagée, tableau de bord propriétaire",
-      "trialNotice": "Votre essai gratuit de 7 jours commence aujourd'hui. Vous ne serez pas facturé avant la fin de l'essai. Annulez à tout moment dans vos paramètres.",
+      "groupDesc": "Pratiques à plusieurs cliniciens — bientôt disponible",
+      "trialNotice": "Votre essai Solo de 7 jours commence aujourd’hui. Aucune carte n’est requise. À la fin, vous passez au forfait gratuit Starter (1 client actif) sauf si vous vous abonnez.",
       "startTrial": "Démarrer l'essai gratuit →",
       "back": "← Retour"
     },
@@ -704,7 +704,7 @@
     "unreadCount": "{{count}} non lus",
     "searchPlaceholder": "Rechercher des clients...",
     "activeClient": "Client actif",
-    "phipaNotice": "Chiffrement de bout en bout · Conforme à la LPRPS · Les messages sont supprimés automatiquement après 90 jours",
+    "phipaNotice": "La messagerie sécurisée est en développement — pas encore disponible.",
     "noMessages": "Aucun message pour l'instant. Commencez la conversation.",
     "typeMessage": "Tapez votre message...",
     "send": "Envoyer"

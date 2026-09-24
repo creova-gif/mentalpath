@@ -98,7 +98,7 @@ export function ClientPortal() {
           <span className="font-[var(--font-display)] text-base text-white">MentalPath</span>
         </Link>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-xs text-white/45">
+          <div className="flex items-center gap-1.5 text-xs text-white/70">
             <Shield className="w-[13px] h-[13px] stroke-[var(--sage-light)]" />
             {t('clientPortalApp.header.security')}
           </div>

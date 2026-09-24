@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Search, Bell, Plus, Menu } from 'lucide-react';
+import { Search, Plus, Menu } from 'lucide-react';
+import { Link } from 'react-router';
 import { useLocation } from 'react-router';
 import { NewClientModal } from '../modals/NewClientModal';
 import { TrialStatusBadge } from '../dashboard/TrialStatusBadge';
@@ -75,6 +76,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuClick}
+            aria-label="Open navigation"
             className="md:hidden p-2 -ml-2 text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
           >
             <Menu className="w-5 h-5" />
@@ -89,21 +91,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <TrialStatusBadge />
           
           {/* Search - hidden on mobile */}
-          <div className="hidden lg:flex items-center gap-2 bg-[var(--warm)] border border-[var(--border)] rounded-lg px-3 py-[7px] text-[13px] text-[var(--ink-muted)]">
-            <Search className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
-            <span className="hidden xl:inline">Search clients, notes...</span>
-            <span className="xl:hidden">Search...</span>
-          </div>
-
-          {/* Search button on mobile */}
-          <button className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-[var(--ink-muted)] border border-[var(--border)] hover:bg-[var(--warm)] hover:text-[var(--ink)] transition-colors">
-            <Search className="w-4 h-4" strokeWidth={1.8} />
-          </button>
-
-          {/* Notifications */}
-          <button className="flex items-center justify-center w-9 h-9 rounded-lg text-[var(--ink-muted)] border border-[var(--border)] hover:bg-[var(--warm)] hover:text-[var(--ink)] transition-colors">
-            <Bell className="w-4 h-4" strokeWidth={1.8} />
-          </button>
+          <Link to="/dashboard/clients" className="hidden lg:flex items-center gap-2 bg-[var(--warm)] border border-[var(--border)] rounded-lg px-3 py-[7px] text-[13px] text-[var(--ink-muted)] no-underline hover:text-[var(--ink)]">
+            <Search className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} aria-hidden="true" />
+            Search clients
+          </Link>
 
           {/* New client button */}
           <button

@@ -178,7 +178,7 @@ export function CostSavings() {
       {/* Hero savings card */}
       <div className="bg-[var(--ink)] rounded-2xl p-7 mb-6 flex items-center justify-between flex-wrap gap-5">
         <div>
-          <div className="text-[10px] font-medium tracking-[1.2px] uppercase text-white/40 mb-2.5">Your monthly savings</div>
+          <div className="text-[10px] font-medium tracking-[1.2px] uppercase text-white/70 mb-2.5">Your monthly savings</div>
           <div className="font-[var(--font-display)] text-[52px] text-white leading-none">${saving}</div>
           <div className="text-[16px] text-white/50 mt-1">per month · <span>${annualSaving.toLocaleString()} per year</span></div>
         </div>

@@ -59,7 +59,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <div className="flex-1 overflow-y-auto">
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/30 px-2 mb-1">Practice</div>
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Practice</div>
             <NavItem to="/dashboard" icon={LayoutGrid} label="Overview" onClick={onClose} />
             <NavItem to="/dashboard/clients" icon={Users} label="Clients" onClick={onClose} />
             <NavItem to="/dashboard/notes" icon={FileText} label={notesLabel} onClick={onClose} />
@@ -70,7 +70,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/30 px-2 mb-1">Clinical</div>
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Clinical</div>
             <NavItem to="/dashboard/clinical-tools" icon={Clipboard} label="Clinical Tools" badge="Preview" onClick={onClose} />
             <NavItem to="/dashboard/session-prep" icon={Activity} label="Session Prep" badge="Preview" onClick={onClose} />
             <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label="Outcome Measures" badge="Preview" onClick={onClose} />
@@ -82,19 +82,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/30 px-2 mb-1">Schedule</div>
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Schedule</div>
             <NavItem to="/dashboard/calendar" icon={Calendar} label="Calendar" onClick={onClose} />
             <NavItem to="/dashboard/messages" icon={MessageSquare} label="Secure Messages" badge="Preview" onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/30 px-2 mb-1">Settings</div>
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Settings</div>
             <NavItem to="/dashboard/settings" icon={Settings} label="Practice Settings" onClick={onClose} />
             <NavItem to="/dashboard/compliance" icon={Shield} label="Privacy & Audit" onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/30 px-2 mb-1">Help</div>
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Help</div>
             <NavItem to="/dashboard/cost-savings" icon={DollarSign} label="What you save" onClick={onClose} />
             <NavItem to="/dashboard/faq" icon={HelpCircle} label="FAQ" onClick={onClose} />
             <NavItem to="/dashboard/support" icon={Mail} label="Support" onClick={onClose} />
@@ -109,7 +109,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </svg>
           <span>Canadian data residency</span>
           {subscription && (
-            <span className="ml-auto text-[9px] text-white/40 uppercase font-semibold tracking-wider">
+            <span className="ml-auto text-[9px] text-white/70 uppercase font-semibold tracking-wider">
               {isTrial ? 'Trial' : PLANS[subscription.type].name.split(' ')[0]}
             </span>
           )}
@@ -122,13 +122,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[13px] font-medium text-white/85 truncate">{user ? `${user.firstName} ${user.lastName}` : 'Practitioner'}</div>
-            <div className="text-[10px] text-white/35 truncate">{user?.profession ?? 'Health Professional'}</div>
+            <div className="text-[10px] text-white/70 truncate">{user?.profession ?? 'Health Professional'}</div>
           </div>
           <button
             onClick={handleLogout}
             title="Sign out"
             aria-label="Sign out"
-            className="text-white/30 hover:text-white/70 transition-colors flex-shrink-0 bg-transparent border-none cursor-pointer p-1"
+            className="text-white/70 hover:text-white/70 transition-colors flex-shrink-0 bg-transparent border-none cursor-pointer p-1"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
@@ -145,8 +145,8 @@ function NavItem({ to, icon: Icon, label, badge, onClick }: { to: string; icon: 
       end={to === '/dashboard'}
       onClick={onClick}
       className={({ isActive }) =>
-        `flex items-center gap-2.5 px-2.5 py-[9px] rounded-lg text-sm text-white/55 no-underline cursor-pointer transition-all duration-150 mb-0.5 ${
-          isActive ? 'bg-[var(--sage)] text-white' : 'hover:bg-white/[0.07] hover:text-white/85'
+        `flex items-center gap-2.5 px-2.5 py-[9px] rounded-lg text-sm no-underline cursor-pointer transition-colors duration-150 mb-0.5 ${
+          isActive ? 'bg-[var(--sage)] text-white' : 'text-white/80 hover:bg-white/[0.07] hover:text-white'
         }`
       }
       aria-label={label}
@@ -156,7 +156,7 @@ function NavItem({ to, icon: Icon, label, badge, onClick }: { to: string; icon: 
           <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} aria-hidden="true" />
           <span className="truncate">{label}</span>
           {badge && (
-            <span className="ml-auto bg-[var(--sage-light)] text-white text-[10px] px-1.5 py-0.5 rounded-lg font-medium flex-shrink-0" aria-label={`${badge} items`}>
+            <span className="ml-auto bg-[var(--sage-deep)] text-white text-[10px] px-1.5 py-0.5 rounded-lg font-medium flex-shrink-0">
               {badge}
             </span>
           )}

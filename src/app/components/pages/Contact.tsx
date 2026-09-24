@@ -180,10 +180,10 @@ export function Contact() {
                 <p className="text-xs text-[var(--ink-muted)]">Please don't include client health information in this form.</p>
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-[var(--ink)] mb-1.5">
+                  <label htmlFor="contact-field-1" className="block text-sm font-medium text-[var(--ink)] mb-1.5">
                     Your Name <span className="text-[var(--sage)]">*</span>
                   </label>
-                  <input
+                  <input id="contact-field-1"
                     type="text"
                     required
                     value={formData.name}
@@ -196,10 +196,10 @@ export function Contact() {
                 {/* Email & Phone */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[var(--ink)] mb-1.5">
+                    <label htmlFor="contact-field-2" className="block text-sm font-medium text-[var(--ink)] mb-1.5">
                       Email Address <span className="text-[var(--sage)]">*</span>
                     </label>
-                    <input
+                    <input id="contact-field-2"
                       type="email"
                       required
                       value={formData.email}
@@ -210,10 +210,10 @@ export function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[var(--ink)] mb-1.5">
+                    <label htmlFor="contact-field-3" className="block text-sm font-medium text-[var(--ink)] mb-1.5">
                       Phone Number (optional)
                     </label>
-                    <input
+                    <input id="contact-field-3"
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -225,10 +225,10 @@ export function Contact() {
 
                 {/* Subject */}
                 <div>
-                  <label className="block text-sm font-medium text-[var(--ink)] mb-1.5">
+                  <label htmlFor="contact-field-4" className="block text-sm font-medium text-[var(--ink)] mb-1.5">
                     Subject <span className="text-[var(--sage)]">*</span>
                   </label>
-                  <select
+                  <select id="contact-field-4"
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -245,10 +245,10 @@ export function Contact() {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium text-[var(--ink)] mb-1.5">
+                  <label htmlFor="contact-field-5" className="block text-sm font-medium text-[var(--ink)] mb-1.5">
                     Message <span className="text-[var(--sage)]">*</span>
                   </label>
-                  <textarea
+                  <textarea id="contact-field-5"
                     required
                     rows={6}
                     value={formData.message}
@@ -279,7 +279,7 @@ export function Contact() {
 
                 <p className="text-xs text-[var(--ink-muted)]">
                   By submitting this form, you agree to our{' '}
-                  <Link to="/privacy" className="text-[var(--sage)] hover:underline">
+                  <Link to="/privacy" className="text-[var(--sage)] underline">
                     Privacy Policy
                   </Link>
                   . We'll only use your information to respond to your inquiry.

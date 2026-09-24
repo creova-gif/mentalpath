@@ -15,7 +15,7 @@
       "line2": "More time with",
       "line2Italic": "your clients."
     },
-    "subtitle": "Practice management built for Canadian regulated health practitioners — therapists, chiropractors, physiotherapists, RMTs, and more. PHIPA-compliant and priced for solo practice.",
+    "subtitle": "Practice management built for Canadian regulated health practitioners — therapists, chiropractors, physiotherapists, RMTs, and more. Data stored in Canada, designed around PHIPA, and priced for solo practice.",
     "cta": "Start your free trial →",
     "seeHow": "See how it works",
     "footer": {
@@ -125,7 +125,7 @@
   },
   "clientPortalApp": {
     "header": {
-      "security": "PHIPA-compliant · Encrypted · Canadian servers",
+      "security": "Encrypted in transit · Canadian servers",
       "backToHome": "Back to Home"
     },
     "banner": {
@@ -237,9 +237,9 @@
     "tagline": "One platform.",
     "taglineEm": "Every regulated",
     "taglineSub": "health profession.",
-    "subtitle": "PHIPA-compliant practice management built for Canadian regulated practitioners — from psychotherapists to chiropractors, physiotherapists, RMTs, and more.",
+    "subtitle": "Practice management designed around PHIPA, built for Canadian regulated practitioners — from psychotherapists to chiropractors, physiotherapists, RMTs, and more.",
     "leftBadges": [
-      "PHIPA compliant",
+      "Data stored in Canada",
       "Canadian servers",
       "7-day free trial"
     ],
@@ -272,7 +272,7 @@
     "badgeGroup": "Group",
     "badgeSolo": "Solo",
     "bottomBadges": [
-      "PHIPA compliant",
+      "Canadian data residency",
       "Canadian servers",
       "Encrypted at rest"
     ],
@@ -280,7 +280,7 @@
     "resetSent": "If an account exists for that email, we’ve sent a password reset link."
   },
   "ticker": [
-    "PHIPA Compliant",
+    "Canadian data residency",
     "Canadian Servers Only",
     "PIPEDA Certified",
     "AES-256 Encrypted",
@@ -328,7 +328,7 @@
     "cards": [
       {
         "badge": "Privacy risk",
-        "title": "US cloud violates PHIPA",
+        "title": "US cloud complicates PHIPA compliance",
         "desc": "Ontario's PHIPA requires health data in Canada. Most US tools fail this test — leaving you exposed."
       },
       {
@@ -380,7 +380,7 @@
     "portal": {
       "tag": "Client Portal",
       "title": "Secure portal for booking, intake forms, invoices, and encrypted messaging.",
-      "body": "No app download required. Works on any device. PHIPA-compliant end-to-end."
+      "body": "No app download required. Works on any device."
     },
     "group": {
       "tag": "Group Practice",
@@ -417,7 +417,7 @@
       {
         "badge": "Encryption",
         "title": "AES-256 at rest · TLS 1.3 in transit",
-        "desc": "Session notes encrypted with therapist-specific keys — even MentalPath staff cannot read your clinical notes."
+        "desc": "Locked notes can’t be edited or deleted, every access is written to a tamper-proof audit log, and two-factor authentication is required for client records."
       },
       {
         "badge": "College standards",
@@ -521,10 +521,10 @@
     "subtitle": "Start your free 7-day trial. No credit card required. Cancel anytime.",
     "emailPlaceholder": "your.email@practice.ca",
     "cta": "Start trial →",
-    "footer": "7-day free trial · No credit card required · PHIPA compliant"
+    "footer": "7-day free trial · No credit card required · Data stored in Canada"
   },
   "footer": {
-    "tagline": "Practice management built for Canadian regulated health practitioners. PHIPA & PIPEDA compliant.",
+    "tagline": "Practice management built for Canadian regulated health practitioners.",
     "columns": {
       "product": "Product",
       "compliance": "Compliance",
@@ -542,7 +542,7 @@
       "terms": "Terms",
       "support": "Support"
     },
-    "copyright": "© 2026 MentalPath. Made in Canada. PHIPA & PIPEDA compliant."
+    "copyright": "© 2026 MentalPath. Made in Canada."
   },
   "onboarding": {
     "stepNames": {
@@ -558,12 +558,12 @@
         "line2": "every",
         "line3": "regulated health professional."
       },
-      "description": "Note templates, receipt formats, outcome measures, and College standards configured automatically for your profession. PHIPA-compliant from minute one.",
-      "testimonial": "\"Switched from TherapyNotes in an afternoon. The culturally-adapted intake templates alone saved me two weeks of work — and I'm finally PHIPA-compliant.\"",
+      "description": "Note templates, receipt formats, outcome measures, and College standards configured automatically for your profession. Your data is stored in Canada.",
+      "testimonial": "",
       "author": "Dr. Abena Osei-Mensah, RP",
       "authorRole": "Registered Psychotherapist · Toronto, ON",
       "badges": {
-        "phipa": "PHIPA compliant",
+        "phipa": "Data stored in Canada",
         "servers": "Canadian servers",
         "trial": "7-day free trial"
       }
@@ -612,7 +612,7 @@
     },
     "step4": {
       "title": "Choose your plan",
-      "subtitle": "Both plans include a 7-day free trial. Cancel anytime.",
+      "subtitle": "Every account starts with a 7-day Solo trial — no card needed.",
       "solo": "Solo practitioner",
       "soloPrice": "$49",
       "soloPeriod": "/mo",
@@ -620,8 +620,8 @@
       "group": "Group practice",
       "groupPrice": "$79",
       "groupPeriod": "/clinician",
-      "groupDesc": "Multi-clinician, shared scheduling, owner dashboard",
-      "trialNotice": "Your 7-day free trial starts today. You will not be charged until your trial ends. Cancel anytime from your settings.",
+      "groupDesc": "Multi-clinician practices — coming soon",
+      "trialNotice": "Your 7-day Solo trial starts today. No card is needed. When it ends you move to the free Starter plan (1 active client) unless you subscribe.",
       "startTrial": "Start free trial →",
       "back": "← Back"
     },
@@ -704,7 +704,7 @@
     "unreadCount": "{{count}} unread",
     "searchPlaceholder": "Search clients...",
     "activeClient": "Active client",
-    "phipaNotice": "End-to-end encrypted · PHIPA compliant · Messages auto-delete after 90 days",
+    "phipaNotice": "Secure messaging is in development — not yet available.",
     "noMessages": "No messages yet. Start the conversation.",
     "typeMessage": "Type your message...",
     "send": "Send"
@@ -864,7 +864,7 @@
             "Online booking page",
             "Insurance receipts",
             "Outcome measures",
-            "PHIPA-compliant records",
+            "Tamper-proof audit log",
             "Canadian server hosting",
             "Email & chat support"
           ]

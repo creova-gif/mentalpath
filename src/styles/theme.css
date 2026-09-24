@@ -1,13 +1,13 @@
 @layer base {
   :root {
-    --sage: #4a7c6f;
+    --sage: #447266; /* ≥4.5:1 as text on --warm/--surface and under white text */
     --sage-light: #6b9e8f;
     --sage-pale: #e8f0ed;
     --sage-deep: #2d5049;
     --warm: #f7f4ef;
     --ink: #1a1a18;
     --ink-soft: #3d3d38;
-    --ink-muted: #7a7a72;
+    --ink-muted: #62625b; /* ≥5:1 on --surface and --warm (WCAG 1.4.3) */
     --border: rgba(0, 0, 0, 0.08);
     --bmed: rgba(0, 0, 0, 0.13);
     --surface: #ffffff;

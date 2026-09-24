@@ -211,20 +211,6 @@ export function Onboarding() {
             ))}
           </div>
 
-          <div className="bg-white/5 rounded-xl p-6 border border-white/[0.08]">
-            <p className="text-[15px] text-white/75 leading-relaxed italic mb-3.5">
-              {t('onboarding.leftPanel.testimonial')}
-            </p>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[var(--sage)] flex items-center justify-center text-[11px] font-medium text-white">
-                AO
-              </div>
-              <div>
-                <div className="text-[13px] font-medium text-white/75">{t('onboarding.leftPanel.author')}</div>
-                <div className="text-xs text-white/35">{t('onboarding.leftPanel.authorRole')}</div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="flex gap-2 flex-wrap">
@@ -318,7 +304,8 @@ export function Onboarding() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-muted)]"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--ink-muted)] min-w-7 min-h-7 flex items-center justify-center"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -551,7 +538,9 @@ export function Onboarding() {
                 </button>
 
                 <button
-                  onClick={() => setSelectedPlan('group')}
+                  disabled
+                  aria-disabled="true"
+                  title="Coming soon"
                   className={`border-[1.5px] rounded-[10px] p-3.5 cursor-pointer transition-all text-left ${
                     selectedPlan === 'group'
                       ? 'border-[var(--sage)] bg-[var(--sage-pale)]'
