@@ -1059,5 +1059,124 @@
       "confirm": "Fermer cette pratique? Annulez aussi l'abonnement Groupe dans le portail de facturation.",
       "done": "Pratique fermée"
     }
+  },
+  "outcomes": {
+    "title": "Mesures des résultats",
+    "intro": "Consignez les résultats du PHQ-9 et du GAD-7. Le total, la sévérité et l'alerte liée à l'item 9 du PHQ-9 sont calculés par MentalPath. Faites remplir la version validée du questionnaire à votre client et saisissez ses réponses ici.",
+    "client": "Client",
+    "chooseClient": "Choisir un client…",
+    "openProfile": "Ouvrir le dossier du client",
+    "record": "Consigner une mesure",
+    "instrument": "Instrument",
+    "stem": "Au cours des deux dernières semaines, à quelle fréquence le client a-t-il été dérangé par les problèmes suivants?",
+    "options": [
+      "Jamais",
+      "Plusieurs jours",
+      "Plus de la moitié du temps",
+      "Presque tous les jours"
+    ],
+    "phq9": {
+      "items": [
+        "Peu d'intérêt ou de plaisir à faire les choses",
+        "Se sentir triste, déprimé(e) ou désespéré(e)",
+        "Difficultés à s'endormir ou à rester endormi(e), ou dormir trop",
+        "Se sentir fatigué(e) ou manquer d'énergie",
+        "Peu d'appétit ou manger trop",
+        "Avoir une mauvaise opinion de soi-même, ou avoir le sentiment d'être nul(le), ou d'avoir déçu sa famille ou s'être déçu(e) soi-même",
+        "Difficultés à se concentrer, par exemple pour lire le journal ou regarder la télévision",
+        "Bouger ou parler si lentement que les autres auraient pu le remarquer, ou au contraire être si agité(e) que vous avez eu du mal à tenir en place",
+        "Penser qu'il vaudrait mieux mourir ou envisager de vous faire du mal d'une manière ou d'une autre"
+      ]
+    },
+    "gad7": {
+      "items": [
+        "Se sentir nerveux(se), anxieux(se) ou à bout",
+        "Être incapable d'arrêter de s'inquiéter ou de contrôler ses inquiétudes",
+        "S'inquiéter trop à propos de différentes choses",
+        "Avoir du mal à se détendre",
+        "Être si agité(e) qu'il est difficile de tenir en place",
+        "Devenir facilement contrarié(e) ou irritable",
+        "Avoir peur que quelque chose d'épouvantable puisse arriver"
+      ]
+    },
+    "riskWarning": "L'item 9 a été coché. Suivez votre protocole d'évaluation du risque suicidaire et documentez-le dans la note de séance.",
+    "date": "Date",
+    "preview": "Score {{total}}/{{max}} — {{severity}}",
+    "answered": "{{count}} sur {{total}} répondus",
+    "save": "Enregistrer le résultat",
+    "saved": "Enregistré : {{total}}/{{max}} ({{severity}})",
+    "history": "Historique",
+    "empty": "Aucune mesure consignée pour ce client.",
+    "score": "Score",
+    "severityLabel": "Sévérité",
+    "change": "Variation",
+    "actions": "Actions",
+    "item9": "item 9 coché",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer ce résultat? Faites-le seulement s'il a été saisi par erreur. La suppression est consignée dans le journal d'audit.",
+    "severity": {
+      "minimal": "Minimale",
+      "mild": "Légère",
+      "moderate": "Modérée",
+      "moderately severe": "Modérément sévère",
+      "severe": "Sévère"
+    },
+    "changeLabel": {
+      "improved": "amélioration significative",
+      "worsened": "détérioration significative",
+      "stable": "pas de changement significatif"
+    }
+  },
+  "sessionPrep": {
+    "title": "Préparation des séances",
+    "intro": "Vos séances des 7 prochains jours, avec la dernière séance, les notes non signées, les derniers PHQ-9/GAD-7 et les montants dus.",
+    "loading": "Chargement des prochaines séances…",
+    "empty": "Aucune séance prévue dans les 7 prochains jours.",
+    "openCalendar": "Ouvrir le calendrier",
+    "sessionNumber": "Séance {{n}}",
+    "lastSession": "Dernière séance",
+    "openNote": "ouvrir la note",
+    "firstSession": "Première séance",
+    "unsigned": "Notes non signées",
+    "measures": "Dernières mesures",
+    "recordMeasure": "Consigner un PHQ-9 ou un GAD-7",
+    "outstanding": "Factures impayées",
+    "nothingOwing": "Aucune",
+    "owing": "{{count}} · {{amount}}",
+    "startNote": "Commencer la note de séance"
+  },
+  "receipts": {
+    "title": "Reçus d'assurance",
+    "intro": "Imprimez un reçu pour toute facture payée afin que votre client puisse le soumettre à son assurance complémentaire. Marquez les factures comme payées dans Facturation.",
+    "missingRegistration": "Ajoutez votre numéro de permis de l'Ordre — les assureurs refusent les reçus qui ne l'indiquent pas.",
+    "openSettings": "Ouvrir les paramètres du profil",
+    "year": "Année",
+    "search": "Rechercher un client",
+    "loading": "Chargement des factures payées…",
+    "empty": "Aucune facture payée pour cette année.",
+    "openBilling": "Aller à Facturation",
+    "number": "Reçu no",
+    "client": "Client",
+    "serviceDate": "Date du service",
+    "amount": "Montant",
+    "actions": "Actions",
+    "print": "Imprimer le reçu",
+    "printFor": "Imprimer le reçu {{number}}",
+    "popupBlocked": "Autorisez les fenêtres contextuelles pour MentalPath afin d'imprimer les reçus.",
+    "labels": {
+      "title": "Reçu officiel",
+      "provider": "Professionnel",
+      "registration": "Permis",
+      "client": "Client",
+      "serviceDate": "Date du service",
+      "service": "Service",
+      "sessions": "Séances",
+      "amountPaid": "Montant payé",
+      "paidOn": "Payé le",
+      "receiptNo": "Numéro de reçu",
+      "hstExempt": "Exonéré de la TPS/TVH à titre de service de santé.",
+      "hstIncluded": "Le montant comprend la TPS/TVH applicable.",
+      "signature": "Signature du professionnel"
+    }
   }
 }

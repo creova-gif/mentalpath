@@ -63,18 +63,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavItem to="/dashboard/clients" icon={Users} label="Clients" onClick={onClose} />
             <NavItem to="/dashboard/notes" icon={FileText} label={notesLabel} onClick={onClose} />
             <NavItem to="/dashboard/billing" icon={CreditCard} label="Billing" onClick={onClose} />
-            <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label="Insurance Receipts" badge="Preview" onClick={onClose} />
+            <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label="Insurance Receipts" onClick={onClose} />
             <NavItem to="/dashboard/group-practice" icon={Building2} label="Group Practice" onClick={onClose} />
             <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label="Cultural Templates" onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">
             <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Clinical</div>
-            <NavItem to="/dashboard/clinical-tools" icon={Clipboard} label="Clinical Tools" badge="Preview" onClick={onClose} />
-            <NavItem to="/dashboard/session-prep" icon={Activity} label="Session Prep" badge="Preview" onClick={onClose} />
-            <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label="Outcome Measures" badge="Preview" onClick={onClose} />
-            {isMusculoskeletal && <NavItem to="/dashboard/treatment-courses" icon={GitBranch} label="Treatment Courses" badge="Preview" onClick={onClose} />}
-            {isMusculoskeletal && <NavItem to="/dashboard/hep-builder" icon={Dumbbell} label="HEP Builder" badge="Preview" onClick={onClose} />}
+            {import.meta.env.DEV && <NavItem to="/dashboard/clinical-tools" icon={Clipboard} label="Clinical Tools" badge="Preview" onClick={onClose} />}
+            <NavItem to="/dashboard/session-prep" icon={Activity} label="Session Prep" onClick={onClose} />
+            <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label="Outcome Measures" onClick={onClose} />
+            {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/treatment-courses" icon={GitBranch} label="Treatment Courses" badge="Preview" onClick={onClose} />}
+            {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/hep-builder" icon={Dumbbell} label="HEP Builder" badge="Preview" onClick={onClose} />}
             <NavItem to="/dashboard/waitlist" icon={UserPlus} label="Waitlist" onClick={onClose} />
             <NavItem to="/dashboard/resources" icon={BookOpen} label="Resources" onClick={onClose} />
             <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label="Your Wellbeing" onClick={onClose} />
@@ -83,7 +83,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="py-4 px-3">
             <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Schedule</div>
             <NavItem to="/dashboard/calendar" icon={Calendar} label="Calendar" onClick={onClose} />
-            <NavItem to="/dashboard/messages" icon={MessageSquare} label="Secure Messages" badge="Preview" onClick={onClose} />
+            {import.meta.env.DEV && <NavItem to="/dashboard/messages" icon={MessageSquare} label="Secure Messages" badge="Preview" onClick={onClose} />}
           </div>
 
           <div className="py-4 px-3">

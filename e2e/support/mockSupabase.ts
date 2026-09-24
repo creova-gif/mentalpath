@@ -18,6 +18,8 @@ export interface MockOptions {
   tables?: Record<string, Row[]>;
   rpc?: Record<string, (args: Row) => unknown>;
   functions?: Record<string, (req: Request) => { status?: number; body: unknown }>;
+  /** Simulates BEFORE INSERT triggers (server-computed columns). */
+  onInsert?: Record<string, (row: Row) => Row>;
 }
 
 export interface MockState {
@@ -175,7 +177,9 @@ export async function mockSupabase(page: Page, options: MockOptions = {}): Promi
         return json(route, result, 200, headers);
       }
       if (method === 'POST') {
-        const inserted = (Array.isArray(body) ? body : [body]).map((r, i) => ({ id: `${table}-${rows.length + i + 1}`, created_at: new Date().toISOString(), ...(r as Row) }));
+        const inserted = (Array.isArray(body) ? body : [body])
+          .map((r, i) => ({ id: `${table}-${rows.length + i + 1}`, created_at: new Date().toISOString(), ...(r as Row) }))
+          .map(r => options.onInsert?.[table]?.(r) ?? r);
         rows.push(...inserted);
         return json(route, wantsObject ? inserted[0] : inserted, 201);
       }

@@ -1059,5 +1059,124 @@
       "confirm": "Close this practice? Cancel the Group subscription in the billing portal as well.",
       "done": "Practice closed"
     }
+  },
+  "outcomes": {
+    "title": "Outcome measures",
+    "intro": "Record PHQ-9 and GAD-7 results. Totals, severity and the PHQ-9 item 9 flag are calculated by MentalPath. Administer the validated form with your client; enter their answers here.",
+    "client": "Client",
+    "chooseClient": "Choose a client…",
+    "openProfile": "Open client profile",
+    "record": "Record a measure",
+    "instrument": "Instrument",
+    "stem": "Over the last 2 weeks, how often has the client been bothered by the following problems?",
+    "options": [
+      "Not at all",
+      "Several days",
+      "More than half the days",
+      "Nearly every day"
+    ],
+    "phq9": {
+      "items": [
+        "Little interest or pleasure in doing things",
+        "Feeling down, depressed, or hopeless",
+        "Trouble falling or staying asleep, or sleeping too much",
+        "Feeling tired or having little energy",
+        "Poor appetite or overeating",
+        "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+        "Trouble concentrating on things, such as reading the newspaper or watching television",
+        "Moving or speaking so slowly that other people could have noticed, or the opposite — being so fidgety or restless that you have been moving around a lot more than usual",
+        "Thoughts that you would be better off dead, or of hurting yourself in some way"
+      ]
+    },
+    "gad7": {
+      "items": [
+        "Feeling nervous, anxious, or on edge",
+        "Not being able to stop or control worrying",
+        "Worrying too much about different things",
+        "Trouble relaxing",
+        "Being so restless that it is hard to sit still",
+        "Becoming easily annoyed or irritable",
+        "Feeling afraid, as if something awful might happen"
+      ]
+    },
+    "riskWarning": "Item 9 was endorsed. Follow your suicide risk assessment protocol and document it in the session note.",
+    "date": "Date",
+    "preview": "Score {{total}}/{{max}} — {{severity}}",
+    "answered": "{{count}} of {{total}} answered",
+    "save": "Save result",
+    "saved": "Saved: {{total}}/{{max}} ({{severity}})",
+    "history": "History",
+    "empty": "No measures recorded for this client yet.",
+    "score": "Score",
+    "severityLabel": "Severity",
+    "change": "Change",
+    "actions": "Actions",
+    "item9": "item 9 endorsed",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this result? Only do this if it was entered in error. The deletion is recorded in the audit log.",
+    "severity": {
+      "minimal": "Minimal",
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "moderately severe": "Moderately severe",
+      "severe": "Severe"
+    },
+    "changeLabel": {
+      "improved": "meaningful improvement",
+      "worsened": "meaningful worsening",
+      "stable": "no meaningful change"
+    }
+  },
+  "sessionPrep": {
+    "title": "Session prep",
+    "intro": "Your sessions for the next 7 days, with the last session, unsigned notes, latest PHQ-9/GAD-7 and anything owing.",
+    "loading": "Loading upcoming sessions…",
+    "empty": "No sessions booked in the next 7 days.",
+    "openCalendar": "Open the calendar",
+    "sessionNumber": "Session {{n}}",
+    "lastSession": "Last session",
+    "openNote": "open note",
+    "firstSession": "First session",
+    "unsigned": "Unsigned notes",
+    "measures": "Latest measures",
+    "recordMeasure": "Record a PHQ-9 or GAD-7",
+    "outstanding": "Outstanding invoices",
+    "nothingOwing": "None",
+    "owing": "{{count}} · {{amount}}",
+    "startNote": "Start session note"
+  },
+  "receipts": {
+    "title": "Insurance receipts",
+    "intro": "Print a receipt for any paid invoice to give your client for their extended health claim. Mark invoices as paid in Billing.",
+    "missingRegistration": "Add your College registration number — insurers reject receipts without it.",
+    "openSettings": "Open profile settings",
+    "year": "Year",
+    "search": "Search client",
+    "loading": "Loading paid invoices…",
+    "empty": "No paid invoices for this year.",
+    "openBilling": "Go to Billing",
+    "number": "Receipt #",
+    "client": "Client",
+    "serviceDate": "Date of service",
+    "amount": "Amount",
+    "actions": "Actions",
+    "print": "Print receipt",
+    "printFor": "Print receipt {{number}}",
+    "popupBlocked": "Allow pop-ups for MentalPath to print receipts.",
+    "labels": {
+      "title": "Official receipt",
+      "provider": "Provider",
+      "registration": "Registration",
+      "client": "Client",
+      "serviceDate": "Date of service",
+      "service": "Service",
+      "sessions": "Sessions",
+      "amountPaid": "Amount paid",
+      "paidOn": "Paid on",
+      "receiptNo": "Receipt number",
+      "hstExempt": "Exempt from GST/HST as a health care service.",
+      "hstIncluded": "Amount includes applicable GST/HST.",
+      "signature": "Provider signature"
+    }
   }
 }

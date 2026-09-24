@@ -2,7 +2,6 @@ import { trackPageview } from "./lib/telemetry";
 import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { useUser } from "./context/UserContext";
-const BookingPage = lazy(() => import("./components/pages/BookingPage").then(m => ({ default: m.BookingPage })));
 const ClientProfile = lazy(() => import("./components/pages/ClientProfile").then(m => ({ default: m.ClientProfile })));
 const SessionNoteEditor = lazy(() => import("./components/pages/SessionNoteEditor").then(m => ({ default: m.SessionNoteEditor })));
 const Login = lazy(() => import("./components/pages/Login").then(m => ({ default: m.Login })));
@@ -12,9 +11,22 @@ import { MfaGate } from "./components/auth/MfaGate";
 import { PreviewPage, ClientFacingUnavailable } from "./components/ui/PreviewPage";
 
 const CLIENT_FACING_ENABLED = import.meta.env.DEV;
+// Prototype screens with no backend (messaging, clinical tools, treatment
+// courses, HEP builder) exist only in development builds.
+export const PROTOTYPES_ENABLED = import.meta.env.DEV;
+
+// Client-facing prototypes (portal, booking, intake) have no backend yet; in
+// production builds they resolve to a "not available" page and their code is
+// not bundled (the dead branch and its dynamic import are removed).
+const BookingPage = CLIENT_FACING_ENABLED
+  ? lazy(() => import("./components/pages/BookingPage").then(m => ({ default: m.BookingPage }))) : ClientFacingUnavailable;
+const ClientPortal = CLIENT_FACING_ENABLED
+  ? lazy(() => import("./components/pages/ClientPortal").then(m => ({ default: m.ClientPortal }))) : ClientFacingUnavailable;
+const ClientPortalFull = CLIENT_FACING_ENABLED
+  ? lazy(() => import("./components/pages/ClientPortalFull").then(m => ({ default: m.ClientPortalFull }))) : ClientFacingUnavailable;
+const ProfessionIntake = CLIENT_FACING_ENABLED
+  ? lazy(() => import("./components/pages/ProfessionIntake").then(m => ({ default: m.ProfessionIntake }))) : ClientFacingUnavailable;
 const Landing = lazy(() => import("./components/pages/Landing").then(m => ({ default: m.Landing })));
-const ClientPortal = lazy(() => import("./components/pages/ClientPortal").then(m => ({ default: m.ClientPortal })));
-const ClientPortalFull = lazy(() => import("./components/pages/ClientPortalFull").then(m => ({ default: m.ClientPortalFull })));
 const Onboarding = lazy(() => import("./components/pages/Onboarding").then(m => ({ default: m.Onboarding })));
 const Checkout = lazy(() => import("./components/pages/Checkout").then(m => ({ default: m.Checkout })));
 const CheckoutSuccess = lazy(() => import("./components/pages/CheckoutSuccess").then(m => ({ default: m.CheckoutSuccess })));
@@ -28,11 +40,9 @@ const Clients = lazy(() => import("./components/pages/Clients").then(m => ({ def
 const SessionNotes = lazy(() => import("./components/pages/SessionNotes").then(m => ({ default: m.SessionNotes })));
 const Billing = lazy(() => import("./components/pages/Billing").then(m => ({ default: m.Billing })));
 const CalendarView = lazy(() => import("./components/pages/CalendarView").then(m => ({ default: m.CalendarView })));
-const Messages = lazy(() => import("./components/pages/Messages").then(m => ({ default: m.Messages })));
 const CulturalTemplates = lazy(() => import("./components/pages/CulturalTemplates").then(m => ({ default: m.CulturalTemplates })));
 const Settings = lazy(() => import("./components/pages/Settings").then(m => ({ default: m.Settings })));
 const Compliance = lazy(() => import("./components/pages/Compliance").then(m => ({ default: m.Compliance })));
-const ClinicalTools = lazy(() => import("./components/pages/ClinicalTools").then(m => ({ default: m.ClinicalTools })));
 const SessionPrep = lazy(() => import("./components/pages/SessionPrep").then(m => ({ default: m.SessionPrep })));
 const OutcomeMeasures = lazy(() => import("./components/pages/OutcomeMeasures").then(m => ({ default: m.OutcomeMeasures })));
 const Waitlist = lazy(() => import("./components/pages/Waitlist").then(m => ({ default: m.Waitlist })));
@@ -46,10 +56,23 @@ const ForNaturopaths = lazy(() => import("./components/pages/ForNaturopaths").th
 const GroupPractice = lazy(() => import("./components/pages/GroupPractice").then(m => ({ default: m.GroupPractice })));
 const InsuranceReceipts = lazy(() => import("./components/pages/InsuranceReceipts").then(m => ({ default: m.InsuranceReceipts })));
 const CostSavings = lazy(() => import("./components/pages/CostSavings").then(m => ({ default: m.CostSavings })));
-const HEPBuilder = lazy(() => import("./components/pages/HEPBuilder").then(m => ({ default: m.HEPBuilder })));
-const TreatmentCourses = lazy(() => import("./components/pages/TreatmentCourses").then(m => ({ default: m.TreatmentCourses })));
-const ProfessionIntake = lazy(() => import("./components/pages/ProfessionIntake").then(m => ({ default: m.ProfessionIntake })));
 const Subscribe = lazy(() => import("./components/pages/Subscribe").then(m => ({ default: m.Subscribe })));
+
+// Dev-only prototype routes. The whole function is dropped from production
+// builds (PROTOTYPES_ENABLED is a compile-time constant), so no chunk ships.
+function prototypeRoutes() {
+  if (!PROTOTYPES_ENABLED) return [];
+  const Messages = lazy(() => import("./components/pages/Messages").then(m => ({ default: m.Messages })));
+  const ClinicalTools = lazy(() => import("./components/pages/ClinicalTools").then(m => ({ default: m.ClinicalTools })));
+  const TreatmentCourses = lazy(() => import("./components/pages/TreatmentCourses").then(m => ({ default: m.TreatmentCourses })));
+  const HEPBuilder = lazy(() => import("./components/pages/HEPBuilder").then(m => ({ default: m.HEPBuilder })));
+  return [
+    { path: "messages", element: <PreviewPage><Suspense fallback={<PageFallback />}><Messages /></Suspense></PreviewPage> },
+    { path: "clinical-tools", element: <PreviewPage><Suspense fallback={<PageFallback />}><ClinicalTools /></Suspense></PreviewPage> },
+    { path: "treatment-courses", element: <PreviewPage><Suspense fallback={<PageFallback />}><TreatmentCourses /></Suspense></PreviewPage> },
+    { path: "hep-builder", element: <PreviewPage><Suspense fallback={<PageFallback />}><HEPBuilder /></Suspense></PreviewPage> },
+  ];
+}
 
 // Auth guard — redirects unauthenticated users to /login, then requires an
 // MFA-verified session (the database enforces the same rule via RLS).
@@ -102,12 +125,12 @@ const router = createBrowserRouter([
   { path: "/terms", element: <Navigate to="/contact" replace /> },
   {
     path: "/client-portal",
-    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ClientPortal /></Suspense> : <ClientFacingUnavailable />,
+    element: <Suspense fallback={<PageFallback />}><ClientPortal /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/client-portal-full",
-    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ClientPortalFull /></Suspense> : <ClientFacingUnavailable />,
+    element: <Suspense fallback={<PageFallback />}><ClientPortalFull /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -148,12 +171,12 @@ const router = createBrowserRouter([
   }] : []),
   {
     path: "/book",
-    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><BookingPage /></Suspense> : <ClientFacingUnavailable />,
+    element: <Suspense fallback={<PageFallback />}><BookingPage /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/intake",
-    element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ProfessionIntake /></Suspense> : <ClientFacingUnavailable />,
+    element: <Suspense fallback={<PageFallback />}><ProfessionIntake /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -182,23 +205,20 @@ const router = createBrowserRouter([
       { path: "notes", element: <Suspense fallback={<PageFallback />}><SessionNotes /></Suspense> },
       { path: "billing", element: <Suspense fallback={<PageFallback />}><Billing /></Suspense> },
       { path: "calendar", element: <Suspense fallback={<PageFallback />}><CalendarView /></Suspense> },
-      { path: "messages", element: <PreviewPage><Suspense fallback={<PageFallback />}><Messages /></Suspense></PreviewPage> },
       { path: "settings", element: <Suspense fallback={<PageFallback />}><Settings /></Suspense> },
       { path: "compliance", element: <Suspense fallback={<PageFallback />}><Compliance /></Suspense> },
       { path: "cultural-templates", element: <Suspense fallback={<PageFallback />}><CulturalTemplates /></Suspense> },
-      { path: "clinical-tools", element: <PreviewPage><Suspense fallback={<PageFallback />}><ClinicalTools /></Suspense></PreviewPage> },
-      { path: "session-prep", element: <PreviewPage><Suspense fallback={<PageFallback />}><SessionPrep /></Suspense></PreviewPage> },
-      { path: "outcome-measures", element: <PreviewPage><Suspense fallback={<PageFallback />}><OutcomeMeasures /></Suspense></PreviewPage> },
+      { path: "session-prep", element: <Suspense fallback={<PageFallback />}><SessionPrep /></Suspense> },
+      { path: "outcome-measures", element: <Suspense fallback={<PageFallback />}><OutcomeMeasures /></Suspense> },
       { path: "waitlist", element: <Suspense fallback={<PageFallback />}><Waitlist /></Suspense> },
       { path: "therapist-wellbeing", element: <Suspense fallback={<PageFallback />}><TherapistWellbeing /></Suspense> },
       { path: "group-practice", element: <Suspense fallback={<PageFallback />}><GroupPractice /></Suspense> },
-      { path: "insurance-receipts", element: <PreviewPage><Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense></PreviewPage> },
-      { path: "treatment-courses", element: <PreviewPage><Suspense fallback={<PageFallback />}><TreatmentCourses /></Suspense></PreviewPage> },
-      { path: "hep-builder", element: <PreviewPage><Suspense fallback={<PageFallback />}><HEPBuilder /></Suspense></PreviewPage> },
+      { path: "insurance-receipts", element: <Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense> },
       { path: "cost-savings", element: <Suspense fallback={<PageFallback />}><CostSavings /></Suspense> },
       { path: "resources", element: <Suspense fallback={<PageFallback />}><Resources /></Suspense> },
       { path: "faq", element: <Suspense fallback={<PageFallback />}><FAQ /></Suspense> },
       { path: "support", element: <Suspense fallback={<PageFallback />}><Support /></Suspense> },
+      ...prototypeRoutes(),
     ],
   },
   { path: "/for-therapists", element: <Suspense fallback={<PageFallback />}><ForTherapists /></Suspense>, errorElement: <ErrorBoundary /> },

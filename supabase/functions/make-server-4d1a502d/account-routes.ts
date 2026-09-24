@@ -23,7 +23,7 @@ app.get("/make-server-4d1a502d/account/export", async (c) => {
 
   const id = auth.user.id;
   const db = serviceClient();
-  const [profile, clients, notes, amendments, invoices, appointments, intake, audit] = await Promise.all([
+  const [profile, clients, notes, amendments, invoices, appointments, intake, measures, audit] = await Promise.all([
     db.from("clinicians").select("*").eq("id", id).maybeSingle(),
     db.from("clients").select("*").eq("clinician_id", id),
     db.rpc("export_session_notes", { p_clinician: id }),
@@ -31,9 +31,10 @@ app.get("/make-server-4d1a502d/account/export", async (c) => {
     db.from("invoices").select("*").eq("clinician_id", id),
     db.from("appointments").select("*").eq("clinician_id", id),
     db.from("intake_forms").select("*, clients!inner(clinician_id)").eq("clients.clinician_id", id),
+    db.from("outcome_measures").select("*").eq("clinician_id", id),
     db.from("audit_log").select("*").eq("clinician_id", id).order("id"),
   ]);
-  const failed = [profile, clients, notes, amendments, invoices, appointments, intake, audit].find((r) => r.error);
+  const failed = [profile, clients, notes, amendments, invoices, appointments, intake, measures, audit].find((r) => r.error);
   if (failed) {
     console.error("export query failed:", failed.error?.code);
     return c.json({ error: "Export failed. Please try again." }, 500);
@@ -56,6 +57,7 @@ app.get("/make-server-4d1a502d/account/export", async (c) => {
     invoices: invoices.data,
     appointments: appointments.data,
     intake_forms: intake.data?.map(({ clients: _c, ...row }) => row),
+    outcome_measures: measures.data,
     audit_log: audit.data,
   }, 200, { "Content-Disposition": `attachment; filename="mentalpath-export-${exportedAt.slice(0, 10)}.json"` });
 });

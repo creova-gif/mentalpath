@@ -125,7 +125,7 @@ export function Overview() {
                     className="w-full text-left px-5 py-3 border-t border-[var(--border)] first:border-t-0 bg-transparent cursor-pointer hover:bg-[var(--warm)]">
                     <div className="text-sm">{n.clientName}</div>
                     <div className="text-xs text-[var(--ink-muted)]">
-                      {new Date(n.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {n.noteFormat.toUpperCase()}
+                      {new Date(n.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {(n.noteFormat ?? '').toUpperCase()}
                     </div>
                   </button>
                 </li>
