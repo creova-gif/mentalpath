@@ -391,10 +391,86 @@ None of this is architecturally hard to fix. The Supabase + RLS foundation is ri
 | `/ai-test` public (A02) | Route is registered only in DEV builds | Absent from the production bundle |
 | CORS fallback reflected any origin (A02) | Dev fallback now allows only localhost / Replit. Production uses `ALLOWED_ORIGINS` | **Action required:** set `ALLOWED_ORIGINS` secret |
 | Duplicate edge-function trees (§3) | Kept `supabase/functions/make-server-4d1a502d/` (matches the deployed URL). Removed `supabase/functions/server/`, `index.tsx`, `kv_store.tsx` | — |
-| Unverified compliance claims (P0-6) | README rewritten to state the current privacy posture, AI data flow, and pre-launch status | In-app marketing copy (Landing, Compliance, profession pages) still carries claims. It needs a founder/legal wording pass |
+| Unverified compliance claims (P0-6) | README rewritten to state the current privacy posture, AI data flow, and pre-launch status | In-app copy corrected in Sprint 3b (see below) |
 
 **Deployment steps to make Sprint 0 effective:**
 1. Apply `supabase/migrations/20260923_lock_clinician_billing_columns.sql`.
 2. Run `supabase/scripts/disable_demo_users.sql` in production.
 3. `supabase secrets set ALLOWED_ORIGINS=<prod origins>`, then redeploy `make-server-4d1a502d`.
 4. Deploy the frontend.
+
+### Sprints 1–3 — completed 2026-09-24 (commits `5f2fc05` → `52824a2`)
+
+Verification run on the final commit:
+
+- `tsc` clean, `eslint` 0 errors, `vite build` ✅, `npm audit --omit=dev` **0 vulnerabilities**.
+- **Vitest** 9/9.
+- **SQL security suite** 7/7 files, run on Postgres 16 with a Supabase-style shim. It applies all 11 migrations from zero.
+- **Deno** type-check clean on both functions and 16/16 tests.
+- **Playwright** 16/16: 10 functional against an in-memory Supabase mock, plus 6 axe WCAG 2.2 AA checks.
+
+CI now runs all of these as separate jobs.
+
+| Finding | Resolution | Evidence |
+|---|---|---|
+| P0-7 No signup / reset | `supabase.auth.signUp` with validated metadata. The `handle_new_user` trigger creates the profile and a server-set 7-day trial. Forgot password (no account enumeration) plus a `/reset-password` page | `10_signup_trigger.sql`, `e2e/onboarding.spec.ts`, `e2e/auth.spec.ts` |
+| A07 No MFA | TOTP required. RESTRICTIVE RLS demands an AAL2 session on every clinical table. `MfaGate` handles enrolment and challenge | `13_mfa_required.sql`, `e2e/auth.spec.ts` |
+| P0-3 Reversible encryption | Retired, with ADR 0001. Content is protected by RLS + MFA + column privileges + at-rest encryption. Legacy rows are decrypted read-only and fail closed. KMS envelope encryption is planned | `docs/adr/0001-session-note-storage.md` |
+| P0-4 PHI in localStorage | Autosave is server-only, with a beforeunload guard. Legacy drafts are purged on load and logout | `e2e/notes.spec.ts` checks storage |
+| A01 Mutable locked notes | Trigger rejects update/delete of locked notes. Lock time and session number are server-set. Amendments are append-only | `14_clinical_record_integrity.sql` |
+| A01 Client-authored audit log | Browser writes revoked. Triggers log every change (column names only). `get_session_note()` is the only content read path and logs `NOTE_ACCESSED` | `14_clinical_record_integrity.sql` |
+| A01 Cross-tenant references (**new, found during remediation**) | Foreign keys bypass RLS, so a clinician could attach rows to another clinician's client. A same-owner trigger now blocks this on notes, appointments and invoices | `12_tenant_isolation.sql` |
+| P0-8 Payments | Server-created Stripe Checkout (keeps the remaining trial) and Customer Portal. A dedicated `stripe-webhook` is idempotent, handles ordering, and is the only writer of billing columns. KV trial/subscription stores deleted | `15_billing_entitlements.sql`, `stripe-webhook/logic.test.ts` |
+| Pricing inconsistencies | One pricing model: Starter free (1 active client, enforced by trigger), Solo C$49 with a no-card trial, Group not sold. Defined in `src/config/pricing.ts` | `15_billing_entitlements.sql`, `src/test/subscription.test.ts` |
+| Group tier without a practice model | Marked "coming soon" everywhere and not purchasable | `e2e/onboarding.spec.ts` |
+| P0-5/P0-6 AI | Official SDK, `claude-opus-5`, server-side refusal fallbacks. Explicit per-clinician opt-in with a disclosure dialog, enforced server-side. Postgres metering (atomic consume/refund). `AI_ASSIST_USED` audit rows. Scrubber extended (health card, SIN, postal code, dates, formatted phones). Offline eval harness with deterministic graders | `ai-prompts.test.ts`, `evals/grade.test.ts`, `e2e/notes.spec.ts` |
+| Invoices | The modal used to save nothing. Now: real client, server-assigned numbers, mark paid, `paid_at`, value checks, insurer receipt, tax-year T2125 from Postgres | `16_invoices.sql`, `billing-routes.test.ts` |
+| Mock screens | Overview, Calendar, Client Profile, Waitlist, Clients, Notes, Billing, Contact and Privacy & Audit use real data. Eight remaining prototypes carry a Preview banner. Client-facing portal/booking/intake are disabled in production builds | — |
+| Delete / export no-ops | Audited JSON export (AAL2). Account closure blocks sign-in and keeps clinical records for College retention | `account-routes.ts` |
+| Rate limiting, headers | Per-IP limits on the AI, billing, account and contact routes. Security headers on the API. CSP/HSTS in `public/_headers` and `DEPLOYMENT.md` | — |
+| Telemetry on PHI screens | No replay, no autocapture, route-template URLs, allow-listed events, SDKs lazy-loaded | `src/test/telemetry.test.ts` |
+| Compliance claims (in-app) | "PHIPA/PIPEDA compliant", "therapist-specific keys" and "E2E encrypted messaging" removed (EN/FR). A fabricated testimonial and a fake 5-star JSON-LD rating removed. Compliance page replaced with a real audit-log viewer | — |
+| **Auth deadlock (new, found by E2E)** | A page reload hung on "Loading…" because Supabase calls were awaited inside `onAuthStateChange`. Login also raced the profile load. Both fixed | `e2e/notes.spec.ts` (reload) |
+| Accessibility | Contrast tokens fixed, named controls, target sizes, labelled fields, dead buttons removed. 0 serious/critical axe violations on the tested screens | `e2e/a11y.spec.ts` |
+| Code quality / hygiene | MUI/Emotion removed (main chunk 958 → 644 kB). Duplicates, artifacts and prototypes removed. Status docs archived. ESLint and Vitest added. Dependencies upgraded (react-router RCE/XSS advisories) | CI |
+
+### Re-assessment (code-evident; live environment still *Not Verified*)
+
+| Category | Before | After | Basis |
+|---|---|---|---|
+| Product Strategy | 7 | 7 | Unchanged, but pricing is now coherent |
+| User Experience | 6 | 7 | Real flows, honest previews, loading and empty states |
+| Feature Completeness | 2 | 6 | Core loop (signup → MFA → clients → notes → invoices → subscription) works. Messaging, portal and outcomes are still previews |
+| Architecture | 3 | 7 | Single sources of truth (Stripe, Postgres), service layer, ADRs, reproducible migrations |
+| Security | 1 | 7 | P0 access-control, auth and crypto findings closed with tests. Envelope encryption and a pen test are pending |
+| Accessibility | 4 | 6 | Automated AA checks on key screens. Manual screen-reader pass pending |
+| Performance | 5 | 6 | 644 kB main chunk. Real-user vitals unmeasured |
+| Reliability | 3 | 6 | No silent fallbacks, idempotent webhook, deadlock fixed |
+| Analytics | 2 | 6 | Core events and aha-moment signals instrumented, PHI-safe |
+| QA / Test Coverage | 1 | 7 | Five test layers in CI |
+| Scalability | 4 | 5 | Indexes, atomic counters. No load test, no org model |
+| **Production-readiness** | **3.1** | **~6.5** | Launchable for a **controlled pilot** once the deployment actions and open items below are done |
+
+**Aha-moment hypothesis (SaaS §5):** first client created **and** first note locked within 48 hours of signup. Measure it with `signup_completed` → `client_created{is_first_client}` → `note_locked`.
+
+### Required actions outside the code (in order)
+
+1. Apply the migrations (`supabase db push`) and `supabase config push`.
+2. Run `supabase/scripts/disable_demo_users.sql` in production.
+3. Set the function secrets (`APP_URL`, `ALLOWED_ORIGINS`, Anthropic, Stripe). Deploy both functions, with `stripe-webhook` using `--no-verify-jwt`.
+4. Create the Stripe price and Customer Portal settings, and register the webhook (DEPLOYMENT.md §4).
+5. Before real client data, close the PIA open items: vendor agreements and zero data retention (Anthropic, Supabase, telemetry), legal review of `/privacy` and terms, an incident runbook, and a staffed privacy contact.
+
+### Still open (tracked, not done)
+
+| Item | Why it is open |
+|---|---|
+| Application-level envelope encryption (ADR 0001, option B) | Needs a KMS decision and key-management design |
+| Retention purge job | Retention periods vary by College and client age. Needs a policy decision before code |
+| Practice / membership model (Group plan) | Product decision. The plan is not sold until this exists |
+| Messaging, client portal, booking, outcome measures, session prep, receipts, HEP, treatment courses | Still UI prototypes (labelled Preview or disabled) |
+| i18n | New and rewritten screens are English-only. French coverage is partial (Quebec / Bill 96) |
+| Generated Supabase types (`npm run supabase:types`) | Needs project access. Queries are hand-typed in the service layer |
+| Live verification | RLS, MFA and billing were verified on a local Postgres shim and a mocked API, not the live project. Needs a staging smoke test and an authorized penetration test |
+| Running the AI eval | Harness ready. Running it costs API credits and should be a deliberate decision |
+| Remaining ESLint warnings (38) | Legacy prototype screens (`any`, unused imports) |

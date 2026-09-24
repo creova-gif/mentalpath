@@ -432,6 +432,9 @@ function printReceipt(invoice: Invoice, user: ReturnType<typeof useUser>['user']
     td{padding:8px 0;border-bottom:1px solid #ddd}td:first-child{color:#666;width:40%}</style></head><body>
     <h1>Official receipt</h1><table>${rows.map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</table>
     <p style="margin-top:32px;color:#666;font-size:12px">Issued ${escapeHtml(new Date().toLocaleDateString('en-CA'))} via MentalPath.</p>
-    <script>window.print()</script></body></html>`);
+    </body></html>`);
   w.document.close();
+  // Called from the opener: an inline <script> would be blocked by our CSP.
+  w.focus();
+  w.print();
 }
