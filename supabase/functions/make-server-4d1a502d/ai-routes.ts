@@ -5,7 +5,8 @@
 import { Hono } from "npm:hono";
 import Anthropic from "npm:@anthropic-ai/sdk";
 import { requireUser, serviceClient } from "./auth.ts";
-import { buildUserPrompt, SYSTEM_PROMPT, type NoteAssistInput } from "./ai-prompts.ts";
+import { buildUserPrompt, type NoteAssistInput } from "./ai-prompts.ts";
+import { DEFAULT_MODEL, draftNote } from "./ai-client.ts";
 
 const app = new Hono();
 
@@ -16,7 +17,7 @@ export const AI_ASSIST_LIMITS: Record<string, number> = {
   group: 500,
 };
 
-const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-opus-5";
+const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? DEFAULT_MODEL;
 
 // deno-lint-ignore no-explicit-any
 type Db = any;
@@ -87,28 +88,13 @@ app.post("/make-server-4d1a502d/ai-note-assist", async (c) => {
   const { format, prompt } = buildUserPrompt(body);
 
   try {
-    const client = new Anthropic({ apiKey });
-    // Server-side fallbacks re-run a classifier-declined request on the model
-    // Anthropic recommends for that refusal category, in the same call.
-    // `fallbacks: "default"` is newer than the SDK's published types, hence the cast.
-    const response = await client.beta.messages.create({
-      model: MODEL,
-      max_tokens: 16000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-    } as unknown as Anthropic.Beta.MessageCreateParamsNonStreaming);
+    const result = await draftNote(new Anthropic({ apiKey }), prompt, MODEL);
 
-    if (response.stop_reason === "refusal") {
+    if (result.stopReason === "refusal") {
       await db.rpc("refund_ai_assist", { p_clinician: userId });
       return c.json({ error: "AI Assist couldn't draft this note. Please write it manually.", code: "REFUSED" }, 422);
     }
-
-    const draft = response.content
-      .map((block) => (block.type === "text" ? block.text : ""))
-      .join("")
-      .trim();
+    const draft = result.text;
     if (!draft) {
       await db.rpc("refund_ai_assist", { p_clinician: userId });
       return c.json({ error: "AI Assist returned an empty draft. Please try again." }, 502);
@@ -120,10 +106,10 @@ app.post("/make-server-4d1a502d/ai-note-assist", async (c) => {
       table_name: "session_notes",
       details: {
         note_format: format,
-        model: response.model,
-        input_tokens: response.usage?.input_tokens,
-        output_tokens: response.usage?.output_tokens,
-        stop_reason: response.stop_reason,
+        model: result.model,
+        input_tokens: result.inputTokens,
+        output_tokens: result.outputTokens,
+        stop_reason: result.stopReason,
         request_id: requestId,
       },
     });
@@ -131,7 +117,7 @@ app.post("/make-server-4d1a502d/ai-note-assist", async (c) => {
     return c.json({
       draft,
       format,
-      model: response.model,
+      model: result.model,
       disclaimer: "AI draft — review and edit before saving. Not a substitute for clinical judgment.",
       usage: { remaining, limit, used: limit - remaining },
     });

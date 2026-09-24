@@ -109,13 +109,6 @@ export const mentalPathSchema = {
       }
     ]
   },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '5',
-    ratingCount: '3',
-    bestRating: '5',
-    worstRating: '1'
-  },
   author: {
     '@type': 'Organization',
     name: 'MentalPath',

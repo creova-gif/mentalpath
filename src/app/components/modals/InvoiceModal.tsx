@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useUser } from '../../context/UserContext';
@@ -56,6 +57,7 @@ export function InvoiceModal({ onClose, onSaved }: { onClose: () => void; onSave
       id: data.id, invoiceNumber: data.invoice_number, clientName: data.client_name,
       date: data.date, amount: Number(data.amount), status: 'pending', sessions: data.sessions,
     });
+    track('invoice_created');
     toast.success(`Invoice ${data.invoice_number} created`);
     onClose();
   };

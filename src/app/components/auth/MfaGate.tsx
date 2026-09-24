@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/utils/supabase/client';
@@ -78,6 +79,7 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
       setCodeError(t('mfa.invalidCode'));
       return;
     }
+    if (state.kind === 'enrol') track('mfa_enrolled');
     setCode('');
     await evaluate();
   };

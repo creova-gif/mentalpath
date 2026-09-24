@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { projectId } from '/utils/supabase/info';
 import { authHeaders } from '@/utils/supabase/client';
 
@@ -16,6 +17,7 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
 
 /** Redirects to Stripe Checkout for the Solo plan. */
 export async function startCheckout(): Promise<void> {
+  track('checkout_started', { plan: 'solo' });
   const { url } = await post<{ url: string }>('/billing/checkout-session');
   window.location.assign(url);
 }
@@ -40,8 +42,10 @@ export async function downloadAccountExport(): Promise<void> {
   a.download = `mentalpath-export-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
+  track('data_exported');
 }
 
 export async function closeAccount(): Promise<void> {
   await post('/account/delete', { confirm: 'DELETE' });
+  track('account_closed');
 }

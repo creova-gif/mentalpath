@@ -54,7 +54,7 @@ function parseNoteSections(draft: string, format: string): { [key: string]: stri
   const labels = sectionLabels[format] || ['Section 1', 'Section 2', 'Section 3'];
   
   // Split by section headers
-  let remainingText = draft;
+  const remainingText = draft;
   
   labels.forEach((label, index) => {
     const regex = new RegExp(`${label}:\\s*\\n([\\s\\S]*?)(?=\\n\\n[A-Z][a-z]+:\\s*\\n|$)`, 'i');

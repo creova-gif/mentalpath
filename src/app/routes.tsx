@@ -1,3 +1,4 @@
+import { trackPageview } from "./lib/telemetry";
 import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { useUser } from "./context/UserContext";
@@ -5,12 +6,13 @@ const BookingPage = lazy(() => import("./components/pages/BookingPage").then(m =
 const ClientProfile = lazy(() => import("./components/pages/ClientProfile").then(m => ({ default: m.ClientProfile })));
 const SessionNoteEditor = lazy(() => import("./components/pages/SessionNoteEditor").then(m => ({ default: m.SessionNoteEditor })));
 const Login = lazy(() => import("./components/pages/Login").then(m => ({ default: m.Login })));
+const Privacy = lazy(() => import("./components/pages/Privacy").then(m => ({ default: m.Privacy })));
 const ResetPassword = lazy(() => import("./components/pages/ResetPassword").then(m => ({ default: m.ResetPassword })));
 import { MfaGate } from "./components/auth/MfaGate";
 import { PreviewPage, ClientFacingUnavailable } from "./components/ui/PreviewPage";
 
 const CLIENT_FACING_ENABLED = import.meta.env.DEV;
-import { Landing } from "./components/pages/Landing";
+const Landing = lazy(() => import("./components/pages/Landing").then(m => ({ default: m.Landing })));
 const ClientPortal = lazy(() => import("./components/pages/ClientPortal").then(m => ({ default: m.ClientPortal })));
 const ClientPortalFull = lazy(() => import("./components/pages/ClientPortalFull").then(m => ({ default: m.ClientPortalFull })));
 const Onboarding = lazy(() => import("./components/pages/Onboarding").then(m => ({ default: m.Onboarding })));
@@ -20,7 +22,7 @@ const FAQ = lazy(() => import("./components/pages/FAQ").then(m => ({ default: m.
 const Contact = lazy(() => import("./components/pages/Contact").then(m => ({ default: m.Contact })));
 const Support = lazy(() => import("./components/pages/Support").then(m => ({ default: m.Support })));
 const AITest = lazy(() => import("./components/pages/AITest").then(m => ({ default: m.AITest })));
-import { DashboardLayout } from "./components/layout/DashboardLayout";
+const DashboardLayout = lazy(() => import("./components/layout/DashboardLayout").then(m => ({ default: m.DashboardLayout })));
 const Overview = lazy(() => import("./components/pages/Overview").then(m => ({ default: m.Overview })));
 const Clients = lazy(() => import("./components/pages/Clients").then(m => ({ default: m.Clients })));
 const SessionNotes = lazy(() => import("./components/pages/SessionNotes").then(m => ({ default: m.SessionNotes })));
@@ -82,7 +84,7 @@ function ErrorBoundary() {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Landing />,
+    element: <Suspense fallback={<PageFallback />}><Landing /></Suspense>,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -96,6 +98,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
   },
   { path: "/signup", element: <Navigate to="/onboarding" replace /> },
+  { path: "/privacy", element: <Suspense fallback={<PageFallback />}><Privacy /></Suspense>, errorElement: <ErrorBoundary /> },
+  { path: "/terms", element: <Navigate to="/contact" replace /> },
   {
     path: "/client-portal",
     element: CLIENT_FACING_ENABLED ? <Suspense fallback={<PageFallback />}><ClientPortal /></Suspense> : <ClientFacingUnavailable />,
@@ -170,7 +174,7 @@ const router = createBrowserRouter([
   // Dashboard with all nested routes
   {
     path: "/dashboard",
-    element: <RequireAuth><DashboardLayout /></RequireAuth>,
+    element: <RequireAuth><Suspense fallback={<PageFallback />}><DashboardLayout /></Suspense></RequireAuth>,
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <Suspense fallback={<PageFallback />}><Overview /></Suspense> },
@@ -209,5 +213,9 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
   },
 ]);
+
+// Route-template pageviews only (IDs and query strings are scrubbed).
+trackPageview();
+router.subscribe(() => trackPageview());
 
 export { router };

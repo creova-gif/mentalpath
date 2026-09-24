@@ -1,3 +1,4 @@
+import { identify, track } from '@/app/lib/telemetry';
 import {
   createContext,
   useContext,
@@ -290,6 +291,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     });
 
     setSubscriptionState(buildSubscriptionFromClinicianRow(row));
+    identify(session.user.id);
   }, []);
 
 
@@ -301,6 +303,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     purgeLegacyLocalData();
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
+        identify(null);
         setUser(null);
         setSubscriptionState(null);
         setIsLoading(false);
@@ -343,6 +346,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (!user) return false;
     const { error } = await supabase.from('clinicians').update({ ai_assist_enabled: enabled }).eq('id', user.id);
     if (error) return false;
+    if (enabled) track('ai_assist_enabled');
     setUser({ ...user, aiAssistEnabled: enabled });
     return true;
   };

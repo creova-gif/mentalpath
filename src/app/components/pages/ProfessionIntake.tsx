@@ -213,7 +213,7 @@ function PainScale({ label }: { label: string }) {
 
 function MultiCheck({ label, req, options }: { label: string; req?: boolean; options: string[] }) {
   const [on, setOn] = useState<Set<string>>(new Set());
-  function toggle(opt: string) { setOn(prev => { const n = new Set(prev); n.has(opt) ? n.delete(opt) : n.add(opt); return n; }); }
+  function toggle(opt: string) { setOn(prev => { const n = new Set(prev); if (n.has(opt)) n.delete(opt); else n.add(opt); return n; }); }
   return (
     <div className="mb-4">
       <label className="block text-[12px] font-medium text-[var(--ink-soft)] mb-1.5">{label}{req && <span className="text-[var(--sage)]"> *</span>}</label>

@@ -32,3 +32,14 @@ Thumbs.db
 # Generated
 dist/
 screenshots/
+
+# Test and build output
+playwright-report/
+test-results/
+blob-report/
+*.tsbuildinfo
+coverage/
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/

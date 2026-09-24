@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
@@ -220,6 +221,7 @@ export function SessionNoteEditor() {
         s.section1 ?? prev[0], s.section2 ?? prev[1], s.section3 ?? prev[2], s.section4 ?? prev[3],
       ]);
       setAiUsed(true);
+      track('ai_assist_used', { note_format: format });
       toast.success('AI draft added — review and edit before locking', { description: response.disclaimer });
     } catch (err) {
       toast.error('AI Assist is unavailable', { description: err instanceof Error ? err.message : undefined });
@@ -243,6 +245,7 @@ export function SessionNoteEditor() {
     try {
       await flush();
       await lockNote(noteId);
+      track('note_locked', { note_format: format, ai_used: aiUsed });
       setLocked(true);
       setLockedAt(new Date().toISOString());
       toast.success('Note locked');

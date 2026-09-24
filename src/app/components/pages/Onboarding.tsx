@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Check, Eye, EyeOff, Shield, Plus } from 'lucide-react';
@@ -146,6 +147,7 @@ export function Onboarding() {
         }
       : undefined;
 
+    track('signup_completed', { profession: PROFESSION_SLUG[selectedProfessionId] ?? selectedProfessionId, confirmation_required: !data.session });
     // Email confirmation enabled → no session yet.
     if (!data.session) {
       setAwaitingConfirmation(true);

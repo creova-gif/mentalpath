@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -57,6 +58,7 @@ export function CalendarView() {
         durationMinutes: form.duration,
         sessionType: form.type,
       });
+      track('appointment_scheduled');
       toast.success('Session scheduled');
       setShowForm(false);
       load();

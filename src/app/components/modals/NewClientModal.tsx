@@ -1,3 +1,4 @@
+import { track } from '@/app/lib/telemetry';
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
@@ -102,6 +103,7 @@ export function NewClientModal({ onClose, onClientAdded, initial }: { onClose: (
       return;
     }
 
+    track('client_created', { is_first_client: isFirstClient });
     if (isFirstClient) {
       fireSuccessConfetti();
     }

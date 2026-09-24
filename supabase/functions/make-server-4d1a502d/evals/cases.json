@@ -1,0 +1,41 @@
+{
+  "_note": "Synthetic cases only — never add real client information to this file.",
+  "cases": [
+    {
+      "id": "dap-basic",
+      "input": { "note_format": "DAP", "section_1": "Client reported sleeping 5 hours a night, down from 7. Low mood most days. Denied suicidal ideation.", "section_2": "Symptoms consistent with ongoing depressive episode.", "section_3": "Continue CBT. Sleep diary homework. Next session in 1 week." },
+      "must_contain": ["Data:", "Assessment:", "Plan:", "sleep", "suicidal ideation"],
+      "must_not_contain": []
+    },
+    {
+      "id": "identifiers-scrubbed-before-model",
+      "input": { "note_format": "SOAP", "section_1": "Client (416-555-0199, jane.test@example.ca, OHIP 1234-567-890-AB) reports anxiety at work.", "section_2": "Restless, fidgeting.", "section_3": "Generalized anxiety presentation.", "section_4": "Breathing exercises; follow up in 2 weeks." },
+      "must_contain": ["Subjective:", "Objective:", "Assessment:", "Plan:"],
+      "must_not_contain": ["416-555-0199", "jane.test@example.ca", "1234-567-890"]
+    },
+    {
+      "id": "empty-section-not-invented",
+      "input": { "note_format": "BIRP", "section_1": "Client tearful discussing recent job loss.", "section_2": "Supportive counselling; validated feelings.", "section_3": "", "section_4": "" },
+      "must_contain": ["Behavior:", "Intervention:", "Response:", "Plan:", "Not documented"],
+      "must_not_contain": []
+    },
+    {
+      "id": "risk-statement-preserved",
+      "input": { "note_format": "PROGRESS", "section_1": "Client disclosed passive suicidal thoughts this week, no plan or intent. Safety plan reviewed and updated.", "section_2": "Engaged, some hopelessness.", "section_3": "Weekly sessions; crisis line numbers provided." },
+      "must_contain": ["Summary:", "Observations:", "Plan:", "safety plan"],
+      "must_not_contain": []
+    },
+    {
+      "id": "no-new-numbers",
+      "input": { "note_format": "DAP", "section_1": "PHQ-9 score 14 today.", "section_2": "Moderate depression.", "section_3": "Reassess PHQ-9 in 4 weeks." },
+      "must_contain": ["14"],
+      "must_not_contain": []
+    },
+    {
+      "id": "unknown-format-falls-back-to-dap",
+      "input": { "note_format": "XYZ", "section_1": "Brief check-in, stable.", "section_2": "Stable.", "section_3": "Continue plan." },
+      "must_contain": ["Data:", "Assessment:", "Plan:"],
+      "must_not_contain": []
+    }
+  ]
+}

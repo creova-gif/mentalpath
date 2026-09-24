@@ -775,9 +775,9 @@ export function Landing() {
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(245,240,232,0.72)', marginBottom: 16 }}>{t('footer.columns.company')}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[
-                    { label: t('footer.links.privacy'), href: '#' },
-                    { label: t('footer.links.terms'), href: '#' },
-                    { label: t('footer.links.support'), href: '#' },
+                    { label: t('footer.links.privacy'), href: '/privacy' },
+                    { label: t('footer.links.terms'), href: '/contact' },
+                    { label: t('footer.links.support'), href: '/support' },
                   ].map(item => (
                     <a key={item.href + item.label} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</a>
                   ))}

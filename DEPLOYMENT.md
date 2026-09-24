@@ -1,370 +1,109 @@
 # MentalPath — Deployment Guide
 
-This guide covers deploying MentalPath with all features including AI note assist, Stripe billing, and the client portal.
+## Architecture
 
-## Architecture Overview
+| Layer | What runs there |
+|---|---|
+| Frontend | React 18 + Vite static build (any static host / CDN) |
+| Database & auth | Supabase project `hkhwgbkijepsxtixdmrs` (Postgres 17, ca-central-1). RLS on every table, MFA (TOTP) required for clinical data |
+| API | Edge Function `make-server-4d1a502d` (Hono): AI Note Assist, Stripe Checkout/Portal sessions, T2125 export, data export, account closure, contact form |
+| Webhooks | Edge Function `stripe-webhook` (no Supabase JWT; Stripe signature verified) |
+| Payments | Stripe Checkout + Customer Portal (CAD) |
+| AI | Anthropic Messages API (`claude-opus-5` by default), opt-in per clinician |
 
-MentalPath uses a three-tier architecture:
+Stripe is the single source of truth for paid status: only `stripe-webhook` writes billing columns.
 
-```
-Frontend (React + React Router)
-    ↓
-Supabase Edge Functions (Hono server + AI/Stripe handlers)
-    ↓
-Supabase Postgres Database (Canadian servers)
-```
+## 1. Before the first real client record
 
-## 1. Environment Setup
+Work through the **Open items** in [`docs/privacy/privacy-impact-assessment.md`](docs/privacy/privacy-impact-assessment.md) (vendor agreements, privacy policy review, retention job, incident runbook).
 
-### Required Services
-
-1. **Supabase** (ca-central-1 region — PHIPA compliant)
-2. **Stripe** (Canadian dollar billing)
-3. **Anthropic** (Claude API for AI note assist)
-4. **Resend** (Optional: Email notifications)
-5. **Twilio** (Optional: SMS reminders)
-
-### Environment Variables
-
-Copy `.env.example` to `.env.local` and fill in:
+## 2. Database
 
 ```bash
-# Supabase (get from dashboard → Settings → API)
-NEXT_PUBLIC_SUPABASE_URL=https://hkhwgbkijepsxtixdmrs.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Stripe (dashboard.stripe.com)
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_SOLO_PRICE_ID=price_...  # $49 CAD/month
-STRIPE_GROUP_PRICE_ID=price_... # $79 CAD/month
-
-# Anthropic (console.anthropic.com)
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Optional: Email & SMS
-RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=noreply@mentalpath.ca
-TWILIO_ACCOUNT_SID=AC...
-TWILIO_AUTH_TOKEN=...
-TWILIO_PHONE_NUMBER=+1...
+npx supabase link --project-ref hkhwgbkijepsxtixdmrs
+npx supabase db push            # applies supabase/migrations/* in order
+npx supabase config push        # auth settings from supabase/config.toml (MFA, password policy, confirmations)
 ```
 
-## 2. Supabase Setup
-
-### Database Tables
-
-The app uses the pre-configured `kv_store_4d1a502d` table. No migrations needed for prototyping.
-
-For production, you may want to create dedicated tables:
+One-off, production only — lock out the demo accounts that were seeded with a public password:
 
 ```sql
--- Therapists table
-CREATE TABLE therapists (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT UNIQUE NOT NULL,
-  name TEXT NOT NULL,
-  stripe_customer_id TEXT,
-  stripe_subscription_id TEXT,
-  subscription_tier TEXT DEFAULT 'free',
-  subscription_status TEXT,
-  trial_ends_at TIMESTAMPTZ,
-  cancel_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Clients table
-CREATE TABLE clients (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  therapist_id UUID REFERENCES therapists(id) ON DELETE CASCADE,
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  status TEXT DEFAULT 'active',
-  cultural_context TEXT[],
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Sessions table
-CREATE TABLE sessions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
-  therapist_id UUID REFERENCES therapists(id) ON DELETE CASCADE,
-  session_date DATE NOT NULL,
-  duration_minutes INTEGER DEFAULT 50,
-  session_type TEXT DEFAULT 'individual',
-  note_format TEXT,
-  note_data JSONB,
-  note_locked BOOLEAN DEFAULT FALSE,
-  note_locked_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Invoices table
-CREATE TABLE invoices (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  therapist_id UUID REFERENCES therapists(id) ON DELETE CASCADE,
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
-  amount_cad DECIMAL(10,2) NOT NULL,
-  status TEXT DEFAULT 'draft',
-  paid_at TIMESTAMPTZ,
-  stripe_payment_intent_id TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+-- run supabase/scripts/disable_demo_users.sql in the SQL editor
 ```
 
-### Edge Functions Deployment
+Never run `supabase/seed_demo_users_fixed.sql` against production. For a local/dev project you may relax MFA:
 
-Deploy the two edge functions to Supabase:
-
-```bash
-# Install Supabase CLI
-npm install -g supabase
-
-# Login to Supabase
-npx supabase login
-
-# Deploy AI Note Assist function
-npx supabase functions deploy ai-note-assist \
-  --project-ref hkhwgbkijepsxtixdmrs \
-  --no-verify-jwt=false
-
-# Deploy Stripe Webhook function
-npx supabase functions deploy stripe-webhook \
-  --project-ref hkhwgbkijepsxtixdmrs \
-  --no-verify-jwt=false
+```sql
+INSERT INTO private.app_settings VALUES ('mfa_optional', 'true')
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 ```
 
-### Set Edge Function Secrets
+(and set `VITE_MFA_OPTIONAL=true` in the dev frontend).
+
+In the Supabase dashboard also set: **Auth → URL configuration** (Site URL = your app URL; redirect URLs for `/login` and `/reset-password`), and **Auth → SMTP** to a production mail sender.
+
+## 3. Edge Functions
 
 ```bash
 npx supabase secrets set --project-ref hkhwgbkijepsxtixdmrs \
+  APP_URL=https://app.example.ca \
+  ALLOWED_ORIGINS=https://app.example.ca \
   ANTHROPIC_API_KEY=sk-ant-... \
+  STRIPE_SECRET_KEY=sk_live_... \
   STRIPE_WEBHOOK_SECRET=whsec_... \
-  STRIPE_SOLO_PRICE_ID=price_... \
-  STRIPE_GROUP_PRICE_ID=price_...
+  STRIPE_SOLO_PRICE_ID=price_...
+# optional:
+#   ANTHROPIC_MODEL=claude-opus-5
+#   STRIPE_AUTOMATIC_TAX=true            (requires Stripe Tax set up for GST/HST)
+#   STRIPE_GROUP_PRICE_ID=price_...      (only when the Group plan ships)
+
+npx supabase functions deploy make-server-4d1a502d --project-ref hkhwgbkijepsxtixdmrs
+npx supabase functions deploy stripe-webhook --no-verify-jwt --project-ref hkhwgbkijepsxtixdmrs
 ```
 
-## 3. Stripe Setup
+`SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are provided to functions automatically.
 
-### Create Products
+## 4. Stripe
 
-1. Go to https://dashboard.stripe.com/test/products
-2. Click "Add product"
+1. Create product **MentalPath Solo** with a recurring price of **C$49/month** → `STRIPE_SOLO_PRICE_ID`.
+2. Configure the **Customer Portal** (Settings → Billing → Customer portal): allow payment-method updates, invoice history and cancellation.
+3. Add a webhook endpoint `https://hkhwgbkijepsxtixdmrs.supabase.co/functions/v1/stripe-webhook` for:
+   `checkout.session.completed`, `customer.subscription.created|updated|deleted|paused|resumed`, `invoice.paid`, `invoice.payment_failed`.
+4. Local testing: `stripe listen --forward-to http://localhost:54321/functions/v1/stripe-webhook`.
 
-**Solo Practitioner Plan:**
-- Name: MentalPath Solo
-- Price: $49.00 CAD
-- Billing: Recurring monthly
-- Copy the price ID → `STRIPE_SOLO_PRICE_ID`
-
-**Group Practice Plan:**
-- Name: MentalPath Group
-- Price: $79.00 CAD per seat
-- Billing: Recurring monthly
-- Copy the price ID → `STRIPE_GROUP_PRICE_ID`
-
-### Set Up Webhook (Local Development)
+## 5. Frontend
 
 ```bash
-# Install Stripe CLI
-brew install stripe/stripe-cli/stripe
-
-# Login
-stripe login
-
-# Forward webhooks to local server
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
-
-# Copy the webhook signing secret (whsec_...) to STRIPE_WEBHOOK_SECRET
+npm ci
+npm run build   # outputs dist/
 ```
 
-### Set Up Webhook (Production)
+Build-time variables (see `.env.example`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, optional `VITE_SENTRY_DSN`, `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST`. Only enable Sentry/PostHog after a data-processing agreement is in place; they are configured to exclude PHI (`src/app/lib/telemetry.ts`).
 
-1. Go to https://dashboard.stripe.com/webhooks
-2. Click "Add endpoint"
-3. URL: `https://hkhwgbkijepsxtixdmrs.supabase.co/functions/v1/stripe-webhook`
-4. Select events:
-   - `customer.subscription.created`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.payment_succeeded`
-   - `invoice.payment_failed`
-   - `checkout.session.completed`
-5. Copy the signing secret to your Supabase secrets
+Serve with security headers at the host/CDN, at minimum:
 
-## 4. Anthropic API Setup
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; connect-src 'self' https://hkhwgbkijepsxtixdmrs.supabase.co wss://hkhwgbkijepsxtixdmrs.supabase.co https://*.sentry.io https://eu.i.posthog.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
 
-1. Go to https://console.anthropic.com/settings/keys
-2. Create a new API key
-3. Copy to `ANTHROPIC_API_KEY` environment variable
-4. Add to Supabase secrets (see above)
-
-## 5. Testing
-
-### Test AI Note Assist
+## 6. Verification
 
 ```bash
-curl -X POST https://hkhwgbkijepsxtixdmrs.supabase.co/functions/v1/ai-note-assist \
-  -H "Authorization: Bearer YOUR_USER_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "session_id": "00000000-0000-0000-0000-000000000020",
-    "note_format": "DAP",
-    "section_1": "Client reported increased anxiety this week",
-    "section_2": "Client appears engaged and motivated",
-    "section_3": "Continue with CBT techniques, focus on breathing exercises"
-  }'
+npx tsc --noEmit && npx vitest run      # typecheck + unit tests
+npx playwright test                     # E2E + WCAG 2.2 AA (axe) against a mocked backend
+PGHOST=... PGUSER=... supabase/tests/run.sh   # RLS / MFA / tenant-isolation suite on a scratch Postgres
+cd supabase/functions && deno test --allow-env
 ```
 
-### Test Stripe Webhook
+AI quality check before changing the model, prompts or scrubber (costs a few cents per run):
 
 ```bash
-stripe trigger customer.subscription.created
+cd supabase/functions/make-server-4d1a502d
+ANTHROPIC_API_KEY=... deno run --allow-env --allow-net --allow-read evals/run.ts
 ```
 
-## 6. Application Routes
-
-The application has three main sections:
-
-### Public Routes
-- `/` — Marketing landing page
-- `/portal` — Client intake portal (PHIPA-compliant booking form)
-
-### Dashboard Routes (requires auth)
-- `/dashboard` — Overview with today's sessions, revenue charts
-- `/dashboard/clients` — Client management with cultural context tags
-- `/dashboard/notes` — Session notes with AI assist
-- `/dashboard/billing` — Invoice management and T2125 export
-- `/dashboard/calendar` — Appointment scheduling
-- `/dashboard/messages` — Secure client messaging
-- `/dashboard/settings` — Practice settings
-- `/dashboard/compliance` — PHIPA compliance dashboard
-
-## 7. PHIPA Compliance Checklist
-
-✅ Data stored in Canadian region (ca-central-1)
-✅ Encryption at rest (Supabase default)
-✅ Encryption in transit (HTTPS)
-✅ No client PII sent to third-party AI services
-✅ Session notes auto-lock after 24 hours
-✅ Audit logging for AI assist usage
-✅ Client consent forms built into intake
-✅ Access controls via Supabase RLS (to be configured)
-
-### Recommended RLS Policies
-
-```sql
--- Therapists can only see their own data
-CREATE POLICY therapist_isolation ON clients
-  FOR ALL USING (therapist_id = auth.uid());
-
-CREATE POLICY therapist_isolation ON sessions
-  FOR ALL USING (therapist_id = auth.uid());
-
-CREATE POLICY therapist_isolation ON invoices
-  FOR ALL USING (therapist_id = auth.uid());
-```
-
-## 8. Production Deployment
-
-### Option A: Vercel
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Set environment variables in Vercel dashboard
-# → Settings → Environment Variables
-```
-
-### Option B: Netlify
-
-```bash
-# Install Netlify CLI
-npm i -g netlify-cli
-
-# Deploy
-netlify deploy --prod
-
-# Set environment variables in Netlify dashboard
-# → Site settings → Environment variables
-```
-
-## 9. Monitoring & Logs
-
-### Supabase Edge Function Logs
-
-```bash
-npx supabase functions logs ai-note-assist --project-ref hkhwgbkijepsxtixdmrs
-npx supabase functions logs stripe-webhook --project-ref hkhwgbkijepsxtixdmrs
-```
-
-### Stripe Event Logs
-
-View in Stripe Dashboard → Developers → Events
-
-### Anthropic Usage
-
-View in Anthropic Console → Usage
-
-## 10. Troubleshooting
-
-### AI Assist Not Working
-
-1. Check Anthropic API key is set in Supabase secrets
-2. Verify edge function is deployed: `npx supabase functions list`
-3. Check logs: `npx supabase functions logs ai-note-assist`
-4. Ensure CORS headers are allowing your domain
-
-### Stripe Webhooks Failing
-
-1. Verify webhook secret matches in Supabase secrets
-2. Check stripe event logs for errors
-3. Ensure webhook URL is correct: `/functions/v1/stripe-webhook`
-4. Test with `stripe trigger` command
-
-### Client Portal Not Loading
-
-1. Check route is defined in `/src/app/routes.tsx`
-2. Verify component is imported correctly
-3. Clear browser cache
-4. Check browser console for errors
-
-## 11. Next Steps
-
-### Features to Add
-
-- [ ] Email notifications via Resend
-- [ ] SMS reminders via Twilio
-- [ ] PDF export for invoices and T2125
-- [ ] Video session integration (Whereby or Daily.co)
-- [ ] Client self-booking calendar
-- [ ] Outcome tracking dashboards
-- [ ] Multi-language support (French for Quebec)
-
-### Security Hardening
-
-- [ ] Configure Supabase RLS policies
-- [ ] Add rate limiting to edge functions
-- [ ] Implement session timeout
-- [ ] Add 2FA for therapist accounts
-- [ ] Regular security audits
-
-## Support
-
-For issues or questions:
-- Email: support@mentalpath.ca
-- Documentation: https://docs.mentalpath.ca
-- Community: https://community.mentalpath.ca
-
----
-
-**Built with ❤️ for Canadian mental health practitioners**
+After deploying, smoke-test: sign up → confirm email → enrol TOTP → add client → write and lock a note → subscribe in Stripe test mode → confirm the plan updates in Settings.

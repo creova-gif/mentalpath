@@ -26,9 +26,8 @@ Built with React, Supabase, and Stripe. Designed for PHIPA-aligned, culturally-i
 
 ### 💳 Billing Integration
 - **Stripe** for Canadian dollar subscriptions
-- Three tiers: Free Starter, $49 Solo Practitioner, $79 Group Practice
-- Automated invoice generation
-- Payment tracking and reminders
+- Starter (free, 1 active client), Solo C$49/month with a 7-day no-card trial; Group Practice coming soon
+- Client invoices with server-assigned numbers, paid tracking and insurer receipts
 
 ### 👥 Client Portal *(in development — UI prototype, no backend yet)*
 - Intake form templates, self-serve booking, culturally-informed intake questions
@@ -72,7 +71,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Visit `http://localhost:3000` to see the landing page.
+Visit `http://localhost:8765` to see the landing page.
 
 ---
 
@@ -83,39 +82,35 @@ mentalpath/
 ├── src/
 │   ├── app/
 │   │   ├── components/
-│   │   │   ├── pages/          # Main application pages
-│   │   │   │   ├── Landing.tsx        # Marketing landing page
-│   │   │   │   ├── ClientPortal.tsx   # Client intake portal
-│   │   │   │   ├── Overview.tsx       # Dashboard overview
-│   │   │   │   ├── Clients.tsx        # Client management
-│   │   │   │   ├── SessionNotes.tsx   # Session notes with AI
-│   │   │   │   ├── Billing.tsx        # Invoice management
-│   │   │   │   └── ...
-│   │   │   ├── layout/         # Layout components
-│   │   │   │   ├── DashboardLayout.tsx
-│   │   │   │   ├── Sidebar.tsx
-│   │   │   │   └── Topbar.tsx
-│   │   │   └── modals/         # Modal dialogs
-│   │   │       ├── NoteModal.tsx      # AI-powered note editor
-│   │   │       ├── ClientModal.tsx
-│   │   │       └── InvoiceModal.tsx
-│   │   ├── routes.tsx          # React Router configuration
-│   │   └── App.tsx             # Main app component
-│   ├── styles/
-│   │   ├── theme.css           # Design tokens (sage green palette)
-│   │   └── fonts.css           # DM Serif Display + DM Sans
-│   └── imports/                # Static assets
+│   │   │   ├── pages/          # Screens (Overview, Clients, SessionNoteEditor, Billing, Settings…)
+│   │   │   ├── auth/           # MfaGate (TOTP enrolment/challenge)
+│   │   │   ├── settings/       # Profile, Security, Subscription, Danger zone
+│   │   │   ├── layout/         # DashboardLayout, Sidebar, Topbar
+│   │   │   ├── modals/         # NewClient, Invoice, AI consent
+│   │   │   └── ui/             # Radix-based primitives, PreviewPage
+│   │   ├── services/           # Data access: sessionNotes, practice, billing, aiNoteService
+│   │   ├── context/            # UserContext (auth session, profile, plan)
+│   │   ├── lib/telemetry.ts    # PHI-safe Sentry/PostHog wrapper
+│   │   └── routes.tsx
+│   ├── config/pricing.ts       # Plans and prices (single source of truth)
+│   ├── i18n/                   # EN / FR strings
+│   └── test/                   # Vitest unit tests
 ├── supabase/
+│   ├── migrations/             # Schema, RLS, MFA, audit, billing (apply in order)
+│   ├── tests/                  # SQL security suite + runner (RLS, MFA, tenant isolation)
+│   ├── scripts/                # One-off operational SQL (e.g. disable demo users)
+│   ├── config.toml             # Auth (MFA, password policy) + function settings
 │   └── functions/
-│       └── make-server-4d1a502d/  # Single Hono edge function (deployed under this name)
-│           ├── index.ts               # Entry: CORS + route mounting
-│           ├── ai-routes.ts           # Claude AI note assist
-│           ├── billing-routes.ts      # Invoices + T2125 export
-│           ├── trial-manager.ts       # Trial status
-│           └── stripe-webhook.ts      # Stripe handler (not yet mounted/deployed — Sprint 2)
-├── .env.example                # Environment variables template
-├── DEPLOYMENT.md               # Deployment guide
-└── README.md                   # This file
+│       ├── make-server-4d1a502d/  # API: AI assist, checkout/portal, T2125, export, contact
+│       └── stripe-webhook/        # Stripe → billing columns (idempotent)
+├── e2e/                        # Playwright E2E + axe accessibility tests
+├── docs/
+│   ├── audits/                 # Production-readiness audit + remediation log
+│   ├── adr/                    # Architecture decision records
+│   ├── privacy/                # PIA, subprocessors
+│   └── archive/                # Superseded status docs (historical only)
+├── DEPLOYMENT.md
+└── README.md
 ```
 
 ---
@@ -196,8 +191,6 @@ npm run build
 # Preview production build
 npm run preview
 
-# Lint code
-npm run lint
 ```
 
 ### Edge Functions (Supabase)
@@ -215,38 +208,17 @@ npx supabase secrets set ALLOWED_ORIGINS=https://app.example.ca \
 ### Testing
 
 ```bash
-# Run unit tests (coming soon)
-npm test
-
-# E2E tests with Playwright (coming soon)
-npm run test:e2e
+npm run test:unit        # Vitest — plan/entitlement logic, telemetry scrubbing
+npm run test:e2e         # Playwright — auth, MFA, notes, signup + axe WCAG 2.2 AA
+npm run test:db          # SQL security suite (needs PGHOST/PGUSER for a scratch Postgres)
+npm run test:functions   # Deno — Stripe webhook, identifier scrubber, CSV export, eval graders
 ```
 
 ---
 
 ## 📦 Environment Variables
 
-See `.env.example` for a complete list. Key variables:
-
-```bash
-# Supabase (required)
-NEXT_PUBLIC_SUPABASE_URL=https://hkhwgbkijepsxtixdmrs.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Stripe (required for billing)
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SOLO_PRICE_ID=price_... # $49 CAD/month
-STRIPE_GROUP_PRICE_ID=price_... # $79 CAD/month
-
-# Anthropic (required for AI note assist)
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Optional: Email & SMS
-RESEND_API_KEY=re_...
-TWILIO_ACCOUNT_SID=AC...
-```
+See [`.env.example`](./.env.example) for frontend variables and [`DEPLOYMENT.md`](./DEPLOYMENT.md) for Edge Function secrets. Server secrets (Stripe, Anthropic, service role) are never placed in the frontend.
 
 ---
 
