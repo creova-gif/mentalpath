@@ -14,7 +14,8 @@
     "test:db": "supabase/tests/run.sh",
     "test:functions": "cd supabase/functions && deno test --allow-env",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:integration": "supabase/integration/stack.sh"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.3",

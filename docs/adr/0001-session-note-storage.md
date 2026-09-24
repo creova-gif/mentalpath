@@ -1,6 +1,6 @@
 # ADR 0001 — How session-note content is stored and protected
 
-- **Status:** Accepted (2026-09-24)
+- **Status:** Accepted (2026-09-24); amended 2026-09-25 — option B implemented
 - **Context source:** `docs/audits/2026-09-23-goal-audit.md` finding P0-3 / A04
 
 ## Context
@@ -38,8 +38,40 @@ more than pilot volumes:
    rewrites it as `enc_version = 0`. Decryption failure is shown as an error,
    never as note text.
 
+## Amendment (2026-09-25): option B implemented in the database
+
+Migration `20260925000100_note_envelope_encryption.sql`:
+
+1. Each clinician gets a random 256-bit data key (DEK) in
+   `private.clinician_keys`, stored only wrapped (pgcrypto, AES-256) by a master
+   key held in Supabase Vault (`mentalpath_note_master_key`).
+2. Note sections are encrypted with the clinician's DEK (`enc_version = 2`).
+   A dump, backup, replica or SQL read of `session_notes` yields PGP ciphertext.
+3. Browser roles have no INSERT/UPDATE on `session_notes`. Writes go through
+   `save_session_note()` / `lock_session_note()`; reads through the audited
+   `get_session_note()`. All require AAL2 and ownership.
+4. Interim plaintext rows (`enc_version = 0`) are encrypted by the migration.
+   Legacy browser rows (`enc_version = 1`) are migrated by
+   `scripts/reencrypt-legacy-notes.mjs` via the service-role-only
+   `reencrypt_legacy_note()`.
+5. The locked-note trigger can be bypassed only by trusted definer functions
+   holding a per-database maintenance token (re-encryption, retention purge).
+6. Master-key rotation: `private.rewrap_all_deks(old, new)`; note ciphertext
+   does not change.
+
+Decryption happens inside Postgres rather than an Edge Function: the master
+key never leaves the database, and the threat addressed (dumps, backups, SQL
+read access to tables) is covered. It does not protect against an attacker with
+superuser access to the live database — documented as residual risk in the PIA.
+
+Verified by `supabase/tests/14_clinical_record_integrity.sql` (ciphertext at
+rest, export role, maintenance bypass not reachable) and the integration suite
+(`supabase/integration/app.test.mjs`, real PostgREST).
+
 ## Consequences
 
-- Marketing and README must not claim "therapist-specific encryption keys".
-- Option B is tracked as a follow-up; it will change `get_session_note()` into
-  an Edge Function and add a `note_keys` table.
+- Marketing may say "notes are encrypted at rest with a per-clinician key";
+  it must not claim end-to-end encryption.
+- Losing the Vault master key makes notes unrecoverable: it is backed up per
+  DEPLOYMENT.md.
+- Full-text search over note content is not possible in SQL.

@@ -98,41 +98,32 @@ export async function getNote(noteId: string, userId: string): Promise<SessionNo
   };
 }
 
-function toRow(input: NoteDraftInput, clinicianId: string) {
-  return {
-    clinician_id: clinicianId,
-    client_id: input.clientId,
-    session_date: input.sessionDate,
-    session_type: input.sessionType,
-    duration_minutes: input.durationMinutes,
-    note_format: input.noteFormat,
-    section_1: input.sections[0] || null,
-    section_2: input.sections[1] || null,
-    section_3: input.sections[2] || null,
-    section_4: input.sections[3] || null,
-    ai_used: input.aiUsed,
-    enc_version: 0,
-    is_draft: true,
-    is_locked: false,
-  };
-}
-
-/** Creates or updates a draft. Returns the note id. */
-export async function saveDraft(noteId: string | null, input: NoteDraftInput, clinicianId: string): Promise<string> {
-  const row = toRow(input, clinicianId);
-  if (noteId) {
-    const { error } = await supabase.from('session_notes').update(row).eq('id', noteId);
-    if (error) throw error;
-    return noteId;
-  }
-  const { data, error } = await supabase.from('session_notes').insert(row).select('id').single();
+/**
+ * Creates or updates a draft. Returns the note id. Content is encrypted in the
+ * database with the clinician's data key (ADR 0001); the browser never writes
+ * the table directly.
+ */
+export async function saveDraft(noteId: string | null, input: NoteDraftInput): Promise<string> {
+  const { data, error } = await supabase.rpc('save_session_note', {
+    p_note_id: noteId,
+    p_client_id: input.clientId,
+    p_session_date: input.sessionDate,
+    p_session_type: input.sessionType,
+    p_duration_minutes: input.durationMinutes,
+    p_note_format: input.noteFormat,
+    p_ai_used: input.aiUsed,
+    p_section_1: input.sections[0] || null,
+    p_section_2: input.sections[1] || null,
+    p_section_3: input.sections[2] || null,
+    p_section_4: input.sections[3] || null,
+  });
   if (error) throw error;
-  return data.id as string;
+  return data as string;
 }
 
 /** Locks a note. The database sets locked_at and rejects any later edit. */
 export async function lockNote(noteId: string): Promise<void> {
-  const { error } = await supabase.from('session_notes').update({ is_locked: true }).eq('id', noteId);
+  const { error } = await supabase.rpc('lock_session_note', { p_note_id: noteId });
   if (error) throw error;
 }
 

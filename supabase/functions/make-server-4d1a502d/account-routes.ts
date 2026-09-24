@@ -26,7 +26,7 @@ app.get("/make-server-4d1a502d/account/export", async (c) => {
   const [profile, clients, notes, amendments, invoices, appointments, intake, audit] = await Promise.all([
     db.from("clinicians").select("*").eq("id", id).maybeSingle(),
     db.from("clients").select("*").eq("clinician_id", id),
-    db.from("session_notes").select("*").eq("clinician_id", id),
+    db.rpc("export_session_notes", { p_clinician: id }),
     db.from("session_note_amendments").select("*").eq("clinician_id", id),
     db.from("invoices").select("*").eq("clinician_id", id),
     db.from("appointments").select("*").eq("clinician_id", id),

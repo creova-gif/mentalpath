@@ -31,6 +31,15 @@ One-off, production only — lock out the demo accounts that were seeded with a 
 -- run supabase/scripts/disable_demo_users.sql in the SQL editor
 ```
 
+**Note encryption (ADR 0001).** The envelope-encryption migration creates the note master key in Supabase Vault (`mentalpath_note_master_key`). Back it up in your secrets manager; without it, note content cannot be decrypted. If any notes were written by the retired browser scheme, migrate them once:
+
+```bash
+SUPABASE_URL=https://hkhwgbkijepsxtixdmrs.supabase.co SUPABASE_SERVICE_ROLE_KEY=... \
+  node scripts/reencrypt-legacy-notes.mjs --dry-run   # then without --dry-run
+```
+
+To rotate the master key: `SELECT private.rewrap_all_deks('<old>', '<new>')` in the SQL editor, then update the Vault secret.
+
 Never run `supabase/seed_demo_users_fixed.sql` against production. For a local/dev project you may relax MFA:
 
 ```sql
@@ -97,6 +106,7 @@ npx tsc --noEmit && npx vitest run      # typecheck + unit tests
 npx playwright test                     # E2E + WCAG 2.2 AA (axe) against a mocked backend
 PGHOST=... PGUSER=... supabase/tests/run.sh   # RLS / MFA / tenant-isolation suite on a scratch Postgres
 cd supabase/functions && deno test --allow-env
+PGHOST=127.0.0.1 PGUSER=postgres npm run test:integration   # real GoTrue + PostgREST + all migrations (downloads binaries once)
 ```
 
 AI quality check before changing the model, prompts or scrubber (costs a few cents per run):

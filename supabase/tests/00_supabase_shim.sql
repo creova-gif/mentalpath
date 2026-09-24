@@ -1,7 +1,9 @@
 -- Minimal stand-in for the Supabase platform objects that our migrations and
 -- RLS policies depend on, so the suite runs against plain Postgres in CI.
 -- NOT a migration. Never run this against a Supabase project.
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- Supabase installs extensions in the `extensions` schema.
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
 DO $$ BEGIN
   CREATE ROLE anon NOLOGIN;
   CREATE ROLE authenticated NOLOGIN;

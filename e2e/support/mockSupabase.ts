@@ -77,6 +77,31 @@ export async function mockSupabase(page: Page, options: MockOptions = {}): Promi
     expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600, user: user(),
   });
 
+  // Server-side note functions (the real ones encrypt; here we just store).
+  const notes = () => (state.tables.session_notes ??= []);
+  const builtinRpc: Record<string, (args: Row) => unknown> = {
+    save_session_note: (a) => {
+      const fields = {
+        client_id: a.p_client_id, session_date: a.p_session_date, session_type: a.p_session_type,
+        duration_minutes: a.p_duration_minutes, note_format: a.p_note_format, ai_used: a.p_ai_used,
+        section_1: a.p_section_1, section_2: a.p_section_2, section_3: a.p_section_3, section_4: a.p_section_4,
+        enc_version: 2,
+      };
+      const existing = notes().find(n => n.id === a.p_note_id);
+      if (existing) { Object.assign(existing, fields); return existing.id; }
+      const row = { id: `note-${notes().length + 1}`, clinician_id: USER_ID, is_locked: false, locked_at: null,
+        session_number: notes().length + 1, created_at: new Date().toISOString(), ...fields };
+      notes().push(row);
+      return row.id;
+    },
+    lock_session_note: (a) => {
+      const n = notes().find(r => r.id === a.p_note_id);
+      if (n) Object.assign(n, { is_locked: true, is_draft: false, locked_at: new Date().toISOString() });
+      return null;
+    },
+    get_session_note: (a) => notes().filter(r => r.id === a.p_note_id),
+  };
+
   const json = (route: Route, body: unknown, status = 200, headers: Record<string, string> = {}) =>
     route.fulfill({ status, contentType: 'application/json', headers: { 'access-control-allow-origin': '*', ...headers }, body: JSON.stringify(body) });
 
@@ -127,7 +152,7 @@ export async function mockSupabase(page: Page, options: MockOptions = {}): Promi
     // ── RPC ───────────────────────────────────────────────────────────────
     const rpc = path.match(/^\/rest\/v1\/rpc\/(\w+)$/);
     if (rpc) {
-      const handler = options.rpc?.[rpc[1]];
+      const handler = options.rpc?.[rpc[1]] ?? builtinRpc[rpc[1]];
       if (!handler) return json(route, { message: `unmocked rpc ${rpc[1]}` }, 500);
       return json(route, handler((body ?? {}) as Row));
     }

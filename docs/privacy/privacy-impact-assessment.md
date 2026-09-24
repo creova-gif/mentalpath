@@ -72,5 +72,5 @@ Clients exercise access/correction rights through their clinician (the custodian
 2. Privacy policy and terms of service reviewed by counsel (current `/privacy` page is a factual summary).
 3. Retention purge job and contact-message retention automation.
 4. Incident response runbook and contact (privacy@mentalpath.ca) staffed.
-5. Application-level encryption with managed keys (ADR 0001, option B) before group practices / scale.
+5. ~~Application-level encryption with managed keys (ADR 0001, option B)~~ — done 2026-09-25: note content is encrypted at rest with per-clinician keys wrapped by a Vault master key. Residual risk: an attacker with superuser access to the live database can still decrypt. Back up the master key (DEPLOYMENT.md).
 6. Quebec Law 25: privacy officer designation, PIA for transfers outside Quebec, French-language notices across the app.

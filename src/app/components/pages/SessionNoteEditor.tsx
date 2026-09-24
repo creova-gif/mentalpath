@@ -174,7 +174,7 @@ export function SessionNoteEditor() {
       noteFormat: d.format,
       sections: d.sections,
       aiUsed: d.aiUsed,
-    }, user.id);
+    });
     if (id !== noteId) {
       setNoteId(id);
       setSearchParams(prev => { prev.set('noteId', id); prev.delete('clientId'); return prev; }, { replace: true });

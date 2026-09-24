@@ -62,6 +62,37 @@ jobs:
       - name: Apply migrations and run SQL tests
         run: supabase/tests/run.sh
 
+  integration:
+    name: Integration (real GoTrue + PostgREST + migrations)
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: .cache/integration
+          key: integration-bin-${{ hashFiles('supabase/integration/stack.sh') }}
+      - name: Signup → MFA → encrypted notes → billing against the real stack
+        run: npm run test:integration
+
   functions:
     name: Edge Functions (typecheck + unit tests)
     timeout-minutes: 10
