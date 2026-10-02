@@ -38,13 +38,16 @@ export function SessionNotes() {
       
       if (data) {
         const decryptedNotes = await Promise.all(data.map(async (n: any) => {
-           let decryptedPreview = 'No content';
-           try {
-             if (n.section_1) decryptedPreview = await decryptText(n.section_1, user.id);
-           } catch (e) {
-             console.error('Decryption failed for note', n.id);
+           if (!n.section_1) {
+             return { ...n, decryptedPreview: 'No content', decryptFailed: false };
            }
-           return { ...n, decryptedPreview };
+           try {
+             const decryptedPreview = await decryptText(n.section_1);
+             return { ...n, decryptedPreview, decryptFailed: false };
+           } catch {
+             console.error('Decryption failed for note', n.id);
+             return { ...n, decryptedPreview: '', decryptFailed: true };
+           }
         }));
         setDbNotes(decryptedNotes);
       }
@@ -89,7 +92,11 @@ export function SessionNotes() {
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-[var(--ink)]">Client Session — Session {note.session_number || 1}</div>
                     <div className="text-xs text-[var(--ink-muted)]">{new Date(note.session_date).toLocaleDateString()} · {note.note_format?.toUpperCase()} format</div>
-                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
+                    {note.decryptFailed ? (
+                      <div className="text-xs text-red-700 mt-1">This note could not be decrypted.</div>
+                    ) : (
+                      <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
+                    )}
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); navigate(`/session-note-editor?noteId=${note.id}`); }}
@@ -124,7 +131,11 @@ export function SessionNotes() {
                         <Lock className="w-3 h-3" /> {t('sessionNotes.locked')}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
+                    {note.decryptFailed ? (
+                      <div className="text-xs text-red-700 mt-1">This note could not be decrypted.</div>
+                    ) : (
+                      <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{note.decryptedPreview}</div>
+                    )}
                   </div>
                   <button
                     onClick={() => navigate(`/session-note-editor?noteId=${note.id}`)}

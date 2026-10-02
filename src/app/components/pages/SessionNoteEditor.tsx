@@ -5,7 +5,7 @@ import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { toast } from 'sonner';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '../../../utils/supabase/client';
-import { encryptText } from '../../../utils/encryption';
+import { encryptSections } from '../../../utils/encryption';
 import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
 
 type Format = 'dap' | 'soap' | 'birp' | 'progress';
@@ -188,9 +188,7 @@ export function SessionNoteEditor() {
         sectionKeys[3] ? (data.values[sectionKeys[3]] || '') : ''
       ];
 
-      const [sec1, sec2, sec3, sec4] = await Promise.all(
-        sectionsToEncrypt.map(text => encryptText(text, user.id))
-      );
+      const [sec1, sec2, sec3, sec4] = await encryptSections(sectionsToEncrypt);
 
       const payload: any = {
         clinician_id: user.id,

@@ -6,7 +6,7 @@ import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { toast } from 'sonner';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '../../../utils/supabase/client';
-import { encryptText } from '../../../utils/encryption';
+import { encryptSections } from '../../../utils/encryption';
 
 const noteFormats = [
   { id: 'dap', name: 'DAP', description: 'Data · Assessment · Plan' },
@@ -46,9 +46,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
         data.sectionValues.section4 || '',
       ];
 
-      const [sec1, sec2, sec3, sec4] = await Promise.all(
-        sectionsToEncrypt.map(text => encryptText(text, user.id))
-      );
+      const [sec1, sec2, sec3, sec4] = await encryptSections(sectionsToEncrypt);
 
       const payload = {
         clinician_id: user.id,
@@ -105,9 +103,7 @@ export function NoteModal({ clientName, onClose }: { clientName: string; onClose
         sectionValues.section4 || '',
       ];
 
-      const [sec1, sec2, sec3, sec4] = await Promise.all(
-        sectionsToEncrypt.map(text => encryptText(text, user.id))
-      );
+      const [sec1, sec2, sec3, sec4] = await encryptSections(sectionsToEncrypt);
 
       const payload = {
         clinician_id: user.id,

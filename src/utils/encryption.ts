@@ -1,79 +1,61 @@
-// src/utils/encryption.ts
-// PHIPA-compliant field-level encryption for session notes.
-// In a production environment, the master key should be securely retrieved 
-// from a KMS or derived from the user's login password.
+// Session notes are encrypted on the server. The browser must not derive a key.
+// Decrypt failures throw. They do not become note text.
 
-export async function deriveKey(userId: string, salt: string = 'mentalpath-salt'): Promise<CryptoKey> {
-  const enc = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    enc.encode(userId),
-    { name: 'PBKDF2' },
-    false,
-    ['deriveBits', 'deriveKey']
-  );
+import { projectId } from '/utils/supabase/info';
+import { supabase } from './supabase/client';
 
-  return crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt: enc.encode(salt),
-      iterations: 100000,
-      hash: 'SHA-256'
-    },
-    keyMaterial,
-    { name: 'AES-GCM', length: 256 },
-    true,
-    ['encrypt', 'decrypt']
-  );
+const FUNCTION_BASE = '/functions/v1/make-server-4d1a502d/notes';
+
+export class DecryptionError extends Error {
+  constructor() {
+    super('Decryption failed');
+    this.name = 'DecryptionError';
+  }
 }
 
-export async function encryptText(text: string, userId: string): Promise<string> {
-  if (!text) return text;
-  try {
-    const key = await deriveKey(userId);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encoded = new TextEncoder().encode(text);
-    const cipherBuffer = await crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      encoded
-    );
+async function accessToken(): Promise<string> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error('Not authenticated');
+  return token;
+}
 
-    // Combine IV and cipher text into one base64 string
-    const cipherBytes = new Uint8Array(cipherBuffer);
-    const combined = new Uint8Array(iv.length + cipherBytes.length);
-    combined.set(iv, 0);
-    combined.set(cipherBytes, iv.length);
-    
-    return btoa(String.fromCharCode(...combined));
-  } catch (error) {
-    console.error('Encryption failed:', error);
+async function postSections(op: 'encrypt' | 'decrypt', sections: string[]): Promise<string[]> {
+  const token = await accessToken();
+  const base = import.meta.env.VITE_SUPABASE_URL || `https://${projectId}.supabase.co`;
+  const response = await fetch(`${base}${FUNCTION_BASE}/${op}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ sections }),
+  });
+
+  if (!response.ok) {
+    if (op === 'decrypt') throw new DecryptionError();
     throw new Error('Encryption failed for sensitive data');
   }
+
+  const payload = await response.json().catch(() => null) as { sections?: unknown } | null;
+  if (!payload || !Array.isArray(payload.sections) || payload.sections.length !== sections.length) {
+    if (op === 'decrypt') throw new DecryptionError();
+    throw new Error('Encryption failed for sensitive data');
+  }
+  if (payload.sections.some((section) => typeof section !== 'string')) {
+    if (op === 'decrypt') throw new DecryptionError();
+    throw new Error('Encryption failed for sensitive data');
+  }
+  return payload.sections as string[];
 }
 
-export async function decryptText(encryptedBase64: string, userId: string): Promise<string> {
-  if (!encryptedBase64) return encryptedBase64;
-  try {
-    const combinedStr = atob(encryptedBase64);
-    const combined = new Uint8Array(combinedStr.length);
-    for (let i = 0; i < combinedStr.length; i++) {
-      combined[i] = combinedStr.charCodeAt(i);
-    }
+export async function encryptSections(sections: string[]): Promise<string[]> {
+  if (sections.length === 0) return [];
+  return postSections('encrypt', sections);
+}
 
-    const iv = combined.slice(0, 12);
-    const cipherBytes = combined.slice(12);
-    const key = await deriveKey(userId);
-
-    const decryptedBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      cipherBytes
-    );
-
-    return new TextDecoder().decode(decryptedBuffer);
-  } catch (error) {
-    console.error('Decryption failed:', error);
-    return '*** Decryption failed or data is corrupted ***';
-  }
+export async function decryptText(encrypted: string): Promise<string> {
+  if (!encrypted) return encrypted;
+  const [plain] = await postSections('decrypt', [encrypted]);
+  return plain;
 }
