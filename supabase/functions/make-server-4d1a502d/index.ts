@@ -4,6 +4,7 @@ import { logger } from "npm:hono/logger";
 import * as kv from "./kv_store.ts";
 import trialManager from "./trial-manager.ts";
 import aiRoutes from "./ai-routes.ts";
+import noteRoutes from "../_shared/note-routes.ts";
 import billingRoutes from "./billing-routes.ts";
 
 const app = new Hono();
@@ -55,6 +56,9 @@ app.route("/", trialManager);
 
 // Mount AI note assist routes
 app.route("/", aiRoutes);
+
+// Mount session-note envelope encryption
+app.route("/", noteRoutes);
 
 // Mount billing routes
 app.route("/", billingRoutes);

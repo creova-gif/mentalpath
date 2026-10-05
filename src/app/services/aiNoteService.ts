@@ -1,4 +1,5 @@
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { projectId } from '/utils/supabase/info';
+import { supabase } from '../../utils/supabase/client';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
 
@@ -78,11 +79,17 @@ function parseNoteSections(draft: string, format: string): { [key: string]: stri
  */
 export async function generateNoteAssist(request: AINoteRequest): Promise<AINoteResponse> {
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+    if (!accessToken) {
+      throw new Error('Sign in required');
+    }
+
     const response = await fetch(`${SUPABASE_URL}/functions/v1/make-server-4d1a502d/ai-note-assist`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         session_id: request.sessionId,

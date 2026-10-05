@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "playwright test",
+    "test:unit": "node --experimental-strip-types --test tests/note-envelope.test.ts",
     "test:ui": "playwright test --ui",
     "supabase:types": "supabase gen types typescript --project-id jbmsddrddtyhllfowtxe > src/integrations/supabase/types.ts"
   },

@@ -4,6 +4,7 @@
 
 import { Hono } from "npm:hono";
 import { createClient } from "npm:@supabase/supabase-js";
+import { decideAiAuth, readJwtClaims } from "../_shared/ai-access.ts";
 import * as kv from "./kv_store.ts";
 
 const app = new Hono();
@@ -125,49 +126,28 @@ app.post("/make-server-4d1a502d/ai-note-assist", async (c) => {
     }
 
     const accessToken = authHeader.split(" ")[1];
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
-    // ── Auth resolution ───────────────────────────────────────────────────────
-    // Two modes:
-    //   1. Demo/prototype: client sends the public anon key (role=anon JWT)
-    //      → allow with a synthetic user ID so usage tracking still works.
-    //   2. Production (real Supabase Auth): client sends a user JWT → verify it.
-    let userId: string;
-    let userStatus: { status: string; subscriptionStatus: string } | null = null;
-
-    // Detect anon key by decoding the JWT payload (no crypto needed — just base64)
-    let isAnonKey = false;
-    try {
-      const payloadB64 = accessToken.split(".")[1];
-      if (payloadB64) {
-        const decoded = JSON.parse(atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/")));
-        isAnonKey = decoded?.role === "anon";
-      }
-    } catch {
-      isAnonKey = false;
+    // Anon and demo tokens are rejected before any model call.
+    // supabase.auth.getUser checks the signature. There is no synthetic user.
+    if (!accessToken || decideAiAuth(readJwtClaims(accessToken)).action !== "verify-user") {
+      return c.json({ error: "Unauthorized" }, 401);
     }
 
-    if (isAnonKey) {
-      // Demo mode — grant access without a real user record
-      userId = "demo-user";
-      userStatus = { status: "trial", subscriptionStatus: "trial" };
-    } else {
-      // Production mode — verify JWT against Supabase Auth
-      const supabase = createClient(
-        Deno.env.get("SUPABASE_URL") ?? "",
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-      );
-      const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
-      if (authError || !user) {
-        return c.json({ error: "Unauthorized - invalid token" }, 401);
-      }
-      userId = user.id;
-      const userStatusData = await kv.get(`user:${userId}:status`);
-      userStatus = userStatusData ? JSON.parse(userStatusData as string) : null;
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
+    if (authError || !user) {
+      return c.json({ error: "Unauthorized - invalid token" }, 401);
     }
+    const userId = user.id;
+    const userStatusData = await kv.get(`user:${userId}:status`);
+    const userStatus: { status: string; subscriptionStatus: string } | null = userStatusData
+      ? JSON.parse(userStatusData as string)
+      : null;
 
-    // Check user trial/subscription status (skip for demo anon key)
-    if (!isAnonKey && (!userStatus || (userStatus.status === 'trial_expired' && userStatus.subscriptionStatus !== 'active'))) {
+    if (!userStatus || (userStatus.status === 'trial_expired' && userStatus.subscriptionStatus !== 'active')) {
       return c.json({ 
         error: "AI Assist requires an active subscription or trial period.",
         code: "SUBSCRIPTION_REQUIRED"

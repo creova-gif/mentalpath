@@ -32,3 +32,10 @@ Thumbs.db
 # Generated
 dist/
 screenshots/
+
+# Supabase CLI local link state (project ref, organization id, pooler URL).
+supabase/.temp/
+
+# Demo auth seeds contain account identifiers and password inputs.
+supabase/seed_production.sql
+supabase/seed_demo_users_fixed.sql
