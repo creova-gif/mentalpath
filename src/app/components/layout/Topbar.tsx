@@ -26,7 +26,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
     '/dashboard/cultural-templates': 'culturalTemplates', '/dashboard/clinical-tools': 'clinicalTools',
     '/dashboard/session-prep': 'sessionPrep', '/dashboard/outcome-measures': 'outcomeMeasures', '/dashboard/waitlist': 'waitlist',
     '/dashboard/resources': 'resources', '/dashboard/therapist-wellbeing': 'wellbeing', '/dashboard/treatment-courses': 'treatmentCourses',
-    '/dashboard/hep-builder': 'hepBuilder', '/dashboard/cost-savings': 'costSavings', '/dashboard/faq': 'faq', '/dashboard/support': 'support',
+    '/dashboard/hep-builder': 'hepBuilder', '/dashboard/faq': 'faq', '/dashboard/support': 'support',
   };
   const getPageTitle = () => {
     if (location.pathname === '/dashboard/notes') return notesLabel;

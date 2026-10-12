@@ -55,8 +55,6 @@ const ForMassageTherapists = lazy(() => import("./components/pages/ForMassageThe
 const ForNaturopaths = lazy(() => import("./components/pages/ForNaturopaths").then(m => ({ default: m.ForNaturopaths })));
 const GroupPractice = lazy(() => import("./components/pages/GroupPractice").then(m => ({ default: m.GroupPractice })));
 const InsuranceReceipts = lazy(() => import("./components/pages/InsuranceReceipts").then(m => ({ default: m.InsuranceReceipts })));
-const CostSavings = lazy(() => import("./components/pages/CostSavings").then(m => ({ default: m.CostSavings })));
-const Subscribe = lazy(() => import("./components/pages/Subscribe").then(m => ({ default: m.Subscribe })));
 
 // Dev-only prototype routes. The whole function is dropped from production
 // builds (PROTOTYPES_ENABLED is a compile-time constant), so no chunk ships.
@@ -181,7 +179,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/subscribe",
-    element: <Suspense fallback={<PageFallback />}><Subscribe /></Suspense>,
+    // Pricing lives on the landing page (one source of truth, translated).
+    element: <Navigate to="/#pricing" replace />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -214,7 +213,7 @@ const router = createBrowserRouter([
       { path: "therapist-wellbeing", element: <Suspense fallback={<PageFallback />}><TherapistWellbeing /></Suspense> },
       { path: "group-practice", element: <Suspense fallback={<PageFallback />}><GroupPractice /></Suspense> },
       { path: "insurance-receipts", element: <Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense> },
-      { path: "cost-savings", element: <Suspense fallback={<PageFallback />}><CostSavings /></Suspense> },
+      { path: "cost-savings", element: <Navigate to="/dashboard" replace /> },
       { path: "resources", element: <Suspense fallback={<PageFallback />}><Resources /></Suspense> },
       { path: "faq", element: <Suspense fallback={<PageFallback />}><FAQ /></Suspense> },
       { path: "support", element: <Suspense fallback={<PageFallback />}><Support /></Suspense> },

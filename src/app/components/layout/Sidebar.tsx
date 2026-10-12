@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from 'react-router';
-import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart, LogOut, Dumbbell, GitBranch, DollarSign } from 'lucide-react';
+import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart, LogOut, Dumbbell, GitBranch} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../context/UserContext';
 
@@ -95,7 +95,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           <div className="py-4 px-3">
             <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">{t('sidebar.sections.help')}</div>
-            <NavItem to="/dashboard/cost-savings" icon={DollarSign} label={t('sidebar.items.costSavings')} onClick={onClose} />
             <NavItem to="/dashboard/faq" icon={HelpCircle} label={t('sidebar.items.faq')} onClick={onClose} />
             <NavItem to="/dashboard/support" icon={Mail} label={t('sidebar.items.support')} onClick={onClose} />
           </div>

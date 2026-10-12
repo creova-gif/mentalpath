@@ -1431,7 +1431,6 @@
       "messages": "Messagerie sécurisée",
       "settings": "Paramètres de la pratique",
       "compliance": "Confidentialité et audit",
-      "costSavings": "Vos économies",
       "faq": "FAQ",
       "support": "Soutien"
     },
@@ -1798,5 +1797,265 @@
     "cancel": "Annuler",
     "adding": "Ajout…",
     "add": "Ajouter le client"
+  },
+  "professionPages": {
+    "common": {
+      "navLabel": "MentalPath",
+      "nav": {
+        "features": "Fonctionnalités",
+        "privacy": "Confidentialité",
+        "pricing": "Tarifs"
+      },
+      "startTrial": "Essai gratuit",
+      "startTrialArrow": "Commencer l'essai gratuit →",
+      "seeHow": "Voir comment ça marche",
+      "noCard": "Aucune carte de crédit requise",
+      "canadianServers": "Serveurs canadiens",
+      "cancelAnytime": "Annulez en tout temps",
+      "strip": {
+        "residency": "Données hébergées au Canada",
+        "mfa": "Connexion à deux facteurs obligatoire",
+        "encryption": "Notes chiffrées avec votre propre clé",
+        "retention": "Dossiers conservés selon les règles de l'Ordre"
+      },
+      "problemsEyebrow": "Le problème de l'administratif",
+      "problemsTitle": "La paperasse ne devrait pas prendre vos soirées",
+      "featuresTitle": "Ce qui est inclus aujourd'hui",
+      "features": {
+        "aiNotes": {
+          "title": "Rédaction de notes par IA (sur consentement)",
+          "desc": "Transformez vos notes rapides en une ébauche structurée que vous relisez et modifiez. Désactivée tant que vous n'y consentez pas; les identifiants sont retirés avant que le texte quitte le Canada, et chaque utilisation est consignée."
+        },
+        "templates": {
+          "title": "Notes structurées et verrouillables",
+          "desc": "Formats DAP, SOAP, BIRP et note d'évolution. Les notes verrouillées ne peuvent être ni modifiées ni supprimées; les corrections sont des addenda datés, comme l'exigent les normes de tenue de dossiers ({{college}})."
+        },
+        "outcomes": {
+          "title": "PHQ-9 et GAD-7",
+          "desc": "Saisissez les réponses, obtenez le score et le niveau de sévérité, suivez l'évolution. L'item 9 du PHQ-9 est signalé pour votre protocole de gestion du risque."
+        },
+        "receipts": {
+          "title": "Reçus d'assurance",
+          "desc": "Reçus imprimables pour l'assurance complémentaire, avec votre nom, votre titre et votre numéro de permis ({{college}}) sur chacun."
+        },
+        "billing": {
+          "title": "Facturation en CAD et T2125",
+          "desc": "Factures numérotées en dollars canadiens, gestion de la TVH et sommaire des revenus T2125 pour les impôts."
+        },
+        "prep": {
+          "title": "Préparation des séances",
+          "desc": "Avant chaque séance prévue : dernière note, notes non signées, dernières mesures et montants dus — sur un seul écran."
+        },
+        "security": {
+          "title": "Sécurité intégrée à la base de données",
+          "desc": "Connexion à deux facteurs, isolement au niveau des lignes et journal d'audit non modifiable."
+        },
+        "group": {
+          "title": "Pratiques de groupe",
+          "desc": "Une seule facture pour l'équipe, par place. La clientèle de chaque praticien reste privée; le propriétaire ne voit que des totaux."
+        }
+      },
+      "protectionTitle": "Comment les dossiers de vos clients sont protégés",
+      "ctaTitle": "Consacrez moins de temps à l'administratif.",
+      "viewPricing": "Voir les tarifs",
+      "otherProfessions": "Autres professions",
+      "privacy": "Confidentialité"
+    },
+    "therapists": {
+      "short": "Thérapeutes",
+      "college": "votre Ordre",
+      "badge": "Pour psychothérapeutes, psychologues et travailleurs sociaux",
+      "heroTitle": "Moins d'administratif.",
+      "heroTitleItalic": "Plus de présence avec vos clients.",
+      "heroSubtitle": "Gestion de pratique pour les thérapeutes canadiens en pratique solo ou en petit groupe : notes structurées, PHQ-9/GAD-7, facturation et reçus d'assurance, avec des dossiers hébergés au Canada.",
+      "featuresEyebrow": "Pour les thérapeutes",
+      "problems": [
+        {
+          "tag": "Hébergement des données",
+          "title": "Où sont stockés vos dossiers?",
+          "desc": "De nombreux outils hébergent les dossiers cliniques hors du Canada. MentalPath les stocke à Montréal (AWS ca-central-1)."
+        },
+        {
+          "tag": "Temps",
+          "title": "Les notes grugent vos soirées",
+          "desc": "Rédiger des notes DAP ou SOAP à partir de zéro après chaque séance, ça s'accumule. La rédaction IA facultative vous donne un point de départ que vous contrôlez."
+        },
+        {
+          "tag": "Coût",
+          "title": "Payer pour une clinique que vous n'avez pas",
+          "desc": "Les outils conçus pour les grandes cliniques facturent des fonctions inutiles en pratique solo. MentalPath offre un forfait Débutant gratuit et un prix Solo fixe."
+        }
+      ]
+    },
+    "chiropractors": {
+      "short": "Chiropraticiens",
+      "college": "OCO",
+      "badge": "Pour les chiropraticiens canadiens",
+      "heroTitle": "Notes et reçus,",
+      "heroTitleItalic": "terminés avant le prochain patient.",
+      "heroSubtitle": "Notes SOAP verrouillables, reçus d'assurance avec votre numéro de permis et facturation en CAD — avec des dossiers hébergés au Canada.",
+      "featuresEyebrow": "Pour les chiropraticiens",
+      "problems": [
+        {
+          "tag": "Reçus",
+          "title": "Réclamations refusées faute de détails",
+          "desc": "Les assureurs refusent les reçus sans numéro de permis ni date de service. MentalPath les inscrit sur chaque reçu."
+        },
+        {
+          "tag": "Dossiers",
+          "title": "Modifications après coup",
+          "desc": "Les notes verrouillées et les addenda datés rendent votre dossier défendable en cas d'examen."
+        },
+        {
+          "tag": "Hébergement des données",
+          "title": "Dossiers stockés à l'étranger",
+          "desc": "MentalPath conserve les dossiers des patients au Canada."
+        }
+      ]
+    },
+    "physiotherapists": {
+      "short": "Physiothérapeutes",
+      "college": "votre Ordre",
+      "badge": "Pour les physiothérapeutes canadiens",
+      "heroTitle": "Notes cliniques et facturation,",
+      "heroTitleItalic": "sans la corvée.",
+      "heroSubtitle": "Notes SOAP structurées, préparation des séances, reçus d'assurance et facturation en CAD — avec des dossiers hébergés au Canada.",
+      "featuresEyebrow": "Pour les physiothérapeutes",
+      "problems": [
+        {
+          "tag": "Temps",
+          "title": "Se préparer avant chaque visite",
+          "desc": "La préparation des séances affiche la dernière note et tout ce qui est en suspens pour chaque patient prévu."
+        },
+        {
+          "tag": "Reçus",
+          "title": "La paperasse de l'assurance complémentaire",
+          "desc": "Imprimez en quelques secondes des reçus prêts pour l'assureur à partir des factures payées."
+        },
+        {
+          "tag": "Hébergement des données",
+          "title": "Dossiers stockés à l'étranger",
+          "desc": "MentalPath conserve les dossiers des patients au Canada."
+        }
+      ]
+    },
+    "massage": {
+      "short": "Massothérapeutes",
+      "college": "CMTO",
+      "badge": "Pour les massothérapeutes autorisés",
+      "heroTitle": "Des reçus que vos clients",
+      "heroTitleItalic": "peuvent vraiment soumettre.",
+      "heroSubtitle": "Reçus d'assurance avec votre numéro de permis, notes de traitement verrouillables et facturation en CAD — avec des dossiers hébergés au Canada.",
+      "featuresEyebrow": "Pour les massothérapeutes",
+      "problems": [
+        {
+          "tag": "Reçus",
+          "title": "Réclamations refusées",
+          "desc": "Un reçu sans numéro de permis, c'est un client mécontent. MentalPath l'inscrit sur chaque reçu."
+        },
+        {
+          "tag": "Temps",
+          "title": "Des notes après une longue journée",
+          "desc": "La rédaction IA facultative transforme vos notes rapides en une note de traitement structurée que vous relisez."
+        },
+        {
+          "tag": "Hébergement des données",
+          "title": "Dossiers stockés à l'étranger",
+          "desc": "MentalPath conserve les dossiers des clients au Canada."
+        }
+      ]
+    },
+    "naturopaths": {
+      "short": "Naturopathes",
+      "college": "CONO",
+      "badge": "Pour les naturopathes",
+      "heroTitle": "Des dossiers cliniques",
+      "heroTitleItalic": "conçus pour la pratique au Canada.",
+      "heroSubtitle": "Notes structurées verrouillables, préparation des séances, facturation en CAD et facturation de groupe — avec des dossiers hébergés au Canada.",
+      "featuresEyebrow": "Pour les naturopathes",
+      "problems": [
+        {
+          "tag": "Dossiers",
+          "title": "Une documentation défendable",
+          "desc": "Les notes verrouillées et les addenda datés répondent aux attentes de votre Ordre en matière de tenue de dossiers."
+        },
+        {
+          "tag": "Facturation",
+          "title": "La période des impôts",
+          "desc": "Des factures numérotées en CAD et un sommaire T2125 gardent vos livres à jour."
+        },
+        {
+          "tag": "Équipe",
+          "title": "Partager une clinique",
+          "desc": "Les pratiques de groupe partagent une facture, et les dossiers de chaque praticien restent privés."
+        }
+      ]
+    }
+  },
+  "contact": {
+    "title": "Nous joindre",
+    "subtitle": "Questions sur MentalPath, votre compte ou la confidentialité — nous répondons par courriel.",
+    "support": "Soutien",
+    "privacy": "Confidentialité",
+    "replyBy": "Nous répondons par courriel les jours ouvrables. MentalPath n'a pas encore de ligne téléphonique ni de clavardage.",
+    "quickAnswers": "Vous cherchez une réponse rapide?",
+    "browseFaq": "Consulter la FAQ",
+    "formTitle": "Envoyez-nous un message",
+    "noPhi": "N'incluez aucun renseignement de santé sur vos clients dans ce formulaire.",
+    "name": "Votre nom",
+    "email": "Courriel",
+    "subject": "Objet",
+    "message": "Message",
+    "messagePlaceholder": "Dites-nous comment nous pouvons vous aider…",
+    "subjects": {
+      "general": "Question générale",
+      "sales": "Tarifs",
+      "technical": "Soutien technique",
+      "billing": "Facturation",
+      "feature": "Suggestion de fonctionnalité",
+      "privacy": "Demande relative à la vie privée"
+    },
+    "send": "Envoyer le message",
+    "sending": "Envoi…",
+    "sent": "Message envoyé. Nous vous répondrons par courriel.",
+    "failed": "Impossible d'envoyer votre message. Écrivez-nous à support@mentalpath.ca.",
+    "consent": "En envoyant ce formulaire, vous acceptez notre <privacyLink>résumé de confidentialité</privacyLink>. Nous utilisons vos coordonnées uniquement pour vous répondre.",
+    "home": "Retour à l'accueil"
+  },
+  "privacyPage": {
+    "home": "Accueil de MentalPath",
+    "title": "Comment MentalPath traite vos données",
+    "updated": "Dernière mise à jour : 25 septembre 2026 · Résumé en attente de révision juridique",
+    "responsible": {
+      "title": "Qui est responsable",
+      "body": "Les cliniciens qui utilisent MentalPath sont les dépositaires des renseignements sur la santé de leurs clients. MentalPath conserve et traite ces renseignements en leur nom, uniquement pour fournir le service."
+    },
+    "stored": {
+      "title": "Où les données sont stockées",
+      "body": "Les dossiers clients, notes de séance, mesures des résultats, rendez-vous et factures sont stockés au Canada (Supabase sur AWS, région de Montréal). Les paiements par carte sont traités par Stripe; MentalPath ne voit jamais les numéros de carte complets."
+    },
+    "leaves": {
+      "title": "Données pouvant quitter le Canada",
+      "ai": "L'<strong>aide à la rédaction IA</strong> est désactivée par défaut. Si un clinicien l'active, le texte de note qu'il choisit est envoyé à Anthropic, aux États-Unis. Les numéros de téléphone, courriels, numéros d'assurance maladie, NAS, codes postaux et dates de naissance sont retirés au préalable.",
+      "telemetry": "La <strong>surveillance des erreurs et l'analytique produit</strong>, lorsqu'elles sont activées, ne reçoivent que des événements techniques — jamais de renseignements sur les clients, de texte de notes ni de contenu de page."
+    },
+    "protected": {
+      "title": "Comment les dossiers sont protégés",
+      "items": [
+        "Chaque clinicien n'a accès qu'à ses propres dossiers, ce que la base de données impose — y compris au sein d'une pratique de groupe.",
+        "L'authentification à deux facteurs est obligatoire pour accéder aux dossiers clients.",
+        "Le contenu des notes de séance est chiffré dans la base de données avec une clé propre à chaque clinicien; les données sont aussi chiffrées en transit et au repos par notre hébergeur.",
+        "Les notes verrouillées ne peuvent être ni modifiées ni supprimées; les corrections sont ajoutées sous forme d'addenda datés.",
+        "Chaque modification et chaque consultation de note est consignée dans un journal d'audit que le clinicien peut consulter."
+      ]
+    },
+    "retention": {
+      "title": "Conservation et suppression des dossiers",
+      "body": "Les cliniciens peuvent télécharger toutes leurs données en tout temps. À la fermeture d'un compte, la connexion est bloquée immédiatement et les dossiers cliniques sont conservés pendant la période exigée par les Ordres professionnels de l'Ontario (10 ans après le dernier contact, ou 10 ans après les 18 ans du client, selon la date la plus tardive), puis détruits automatiquement."
+    },
+    "rights": {
+      "title": "Vos droits",
+      "body": "Si vous êtes un client, adressez-vous à votre clinicien pour consulter ou corriger votre dossier. Les cliniciens et toute autre personne peuvent joindre notre responsable de la protection de la vie privée à <mail>privacy@mentalpath.ca</mail>. Vous pouvez aussi communiquer avec le Commissaire à l'information et à la protection de la vie privée de l'Ontario ou le Commissariat à la protection de la vie privée du Canada."
+    }
   }
 }

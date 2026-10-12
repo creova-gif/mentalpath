@@ -1431,7 +1431,6 @@
       "messages": "Secure Messages",
       "settings": "Practice Settings",
       "compliance": "Privacy & Audit",
-      "costSavings": "What you save",
       "faq": "FAQ",
       "support": "Support"
     },
@@ -1798,5 +1797,265 @@
     "cancel": "Cancel",
     "adding": "Adding…",
     "add": "Add client"
+  },
+  "professionPages": {
+    "common": {
+      "navLabel": "MentalPath",
+      "nav": {
+        "features": "Features",
+        "privacy": "Privacy",
+        "pricing": "Pricing"
+      },
+      "startTrial": "Start free trial",
+      "startTrialArrow": "Start your free trial →",
+      "seeHow": "See how it works",
+      "noCard": "No credit card required",
+      "canadianServers": "Canadian servers",
+      "cancelAnytime": "Cancel anytime",
+      "strip": {
+        "residency": "Canadian data residency",
+        "mfa": "Two-factor sign-in required",
+        "encryption": "Notes encrypted with your own key",
+        "retention": "Records kept to College rules"
+      },
+      "problemsEyebrow": "The admin problem",
+      "problemsTitle": "Paperwork shouldn't take your evenings",
+      "featuresTitle": "What's included today",
+      "features": {
+        "aiNotes": {
+          "title": "AI note drafting (opt-in)",
+          "desc": "Turn your session jottings into a structured draft you review and edit. Off until you consent; identifiers are scrubbed before text leaves Canada, and every use is logged."
+        },
+        "templates": {
+          "title": "Structured notes that lock",
+          "desc": "DAP, SOAP, BIRP and progress formats. Locked notes can't be edited or deleted; corrections are dated amendments, as {{college}} record-keeping expects."
+        },
+        "outcomes": {
+          "title": "PHQ-9 and GAD-7",
+          "desc": "Enter responses, get the score and severity band, see change over time. PHQ-9 item 9 is flagged for your risk protocol."
+        },
+        "receipts": {
+          "title": "Insurance receipts",
+          "desc": "Printable receipts for extended-health claims with your name, designation and {{college}} registration number on every one."
+        },
+        "billing": {
+          "title": "CAD invoicing and T2125",
+          "desc": "Sequential invoices in Canadian dollars, HST handling, and a T2125 income summary at tax time."
+        },
+        "prep": {
+          "title": "Session prep",
+          "desc": "Before each booked session: last note, unsigned notes, latest measures and anything owing — on one screen."
+        },
+        "security": {
+          "title": "Security built into the database",
+          "desc": "Two-factor sign-in, row-level isolation and an audit log your clinic can't edit."
+        },
+        "group": {
+          "title": "Group practices",
+          "desc": "One bill for your team, by seat. Each clinician's caseload stays private; owners see counts only."
+        }
+      },
+      "protectionTitle": "How your clients' records are protected",
+      "ctaTitle": "Spend less time on admin.",
+      "viewPricing": "View pricing",
+      "otherProfessions": "Other professions",
+      "privacy": "Privacy"
+    },
+    "therapists": {
+      "short": "Therapists",
+      "college": "your College",
+      "badge": "For psychotherapists, psychologists and social workers",
+      "heroTitle": "Less admin.",
+      "heroTitleItalic": "More presence with your clients.",
+      "heroSubtitle": "Practice management for Canadian therapists in solo or small-group practice: structured notes, PHQ-9/GAD-7, invoicing and insurance receipts, with records stored in Canada.",
+      "featuresEyebrow": "For therapists",
+      "problems": [
+        {
+          "tag": "Data residency",
+          "title": "Where are your records stored?",
+          "desc": "Many practice tools host clinical records outside Canada. MentalPath stores them in Montréal (AWS ca-central-1)."
+        },
+        {
+          "tag": "Time",
+          "title": "Notes eat your evenings",
+          "desc": "Writing DAP or SOAP notes from scratch after every session adds up. Optional AI drafting gives you a starting point you control."
+        },
+        {
+          "tag": "Cost",
+          "title": "Paying for a clinic you don't run",
+          "desc": "Tools built for large clinics charge for features solo practitioners never use. MentalPath has a free Starter plan and a flat Solo price."
+        }
+      ]
+    },
+    "chiropractors": {
+      "short": "Chiropractors",
+      "college": "CCO",
+      "badge": "For Canadian chiropractors",
+      "heroTitle": "Notes and receipts,",
+      "heroTitleItalic": "done before the next patient.",
+      "heroSubtitle": "SOAP notes that lock, insurance receipts with your CCO registration number, and CAD invoicing — with records stored in Canada.",
+      "featuresEyebrow": "For chiropractors",
+      "problems": [
+        {
+          "tag": "Receipts",
+          "title": "Claims bounce for missing details",
+          "desc": "Insurers reject receipts without your registration number or service date. MentalPath prints them on every receipt."
+        },
+        {
+          "tag": "Records",
+          "title": "Edits after the fact",
+          "desc": "Locked notes with dated amendments keep your record defensible if it is ever reviewed."
+        },
+        {
+          "tag": "Data residency",
+          "title": "Records stored abroad",
+          "desc": "MentalPath keeps patient records in Canada."
+        }
+      ]
+    },
+    "physiotherapists": {
+      "short": "Physiotherapists",
+      "college": "your College",
+      "badge": "For Canadian physiotherapists",
+      "heroTitle": "Clinical notes and billing,",
+      "heroTitleItalic": "without the busywork.",
+      "heroSubtitle": "Structured SOAP notes, session prep, insurance receipts and CAD invoicing — with records stored in Canada.",
+      "featuresEyebrow": "For physiotherapists",
+      "problems": [
+        {
+          "tag": "Time",
+          "title": "Prep before every visit",
+          "desc": "Session prep shows the last note and anything outstanding for each booked patient."
+        },
+        {
+          "tag": "Receipts",
+          "title": "Extended-health paperwork",
+          "desc": "Print insurer-ready receipts from paid invoices in seconds."
+        },
+        {
+          "tag": "Data residency",
+          "title": "Records stored abroad",
+          "desc": "MentalPath keeps patient records in Canada."
+        }
+      ]
+    },
+    "massage": {
+      "short": "RMTs",
+      "college": "CMTO",
+      "badge": "For Registered Massage Therapists",
+      "heroTitle": "Receipts your clients",
+      "heroTitleItalic": "can actually submit.",
+      "heroSubtitle": "Insurance receipts with your CMTO registration number, treatment notes that lock, and CAD invoicing — with records stored in Canada.",
+      "featuresEyebrow": "For RMTs",
+      "problems": [
+        {
+          "tag": "Receipts",
+          "title": "Rejected claims",
+          "desc": "A receipt missing your registration number means a frustrated client. MentalPath includes it on every receipt."
+        },
+        {
+          "tag": "Time",
+          "title": "Notes after a full day",
+          "desc": "Optional AI drafting turns quick jottings into a structured treatment note you review."
+        },
+        {
+          "tag": "Data residency",
+          "title": "Records stored abroad",
+          "desc": "MentalPath keeps client records in Canada."
+        }
+      ]
+    },
+    "naturopaths": {
+      "short": "Naturopaths",
+      "college": "CONO",
+      "badge": "For Naturopathic Doctors",
+      "heroTitle": "Clinical records",
+      "heroTitleItalic": "built for Canadian practice.",
+      "heroSubtitle": "Structured notes that lock, session prep, CAD invoicing and group-practice billing — with records stored in Canada.",
+      "featuresEyebrow": "For naturopaths",
+      "problems": [
+        {
+          "tag": "Records",
+          "title": "Defensible documentation",
+          "desc": "Locked notes and dated amendments meet the record-keeping expectations of your College."
+        },
+        {
+          "tag": "Billing",
+          "title": "Tax time",
+          "desc": "Sequential CAD invoices and a T2125 summary keep your books ready."
+        },
+        {
+          "tag": "Team",
+          "title": "Sharing a clinic",
+          "desc": "Group practices share one bill while each practitioner's records stay private."
+        }
+      ]
+    }
+  },
+  "contact": {
+    "title": "Get in touch",
+    "subtitle": "Questions about MentalPath, your account or privacy — we reply by email.",
+    "support": "Support",
+    "privacy": "Privacy",
+    "replyBy": "We reply by email on business days. MentalPath has no phone line or live chat yet.",
+    "quickAnswers": "Looking for quick answers?",
+    "browseFaq": "Browse the FAQ",
+    "formTitle": "Send us a message",
+    "noPhi": "Please don't include client health information in this form.",
+    "name": "Your name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "messagePlaceholder": "Tell us how we can help…",
+    "subjects": {
+      "general": "General question",
+      "sales": "Pricing",
+      "technical": "Technical support",
+      "billing": "Billing",
+      "feature": "Feature request",
+      "privacy": "Privacy request"
+    },
+    "send": "Send message",
+    "sending": "Sending…",
+    "sent": "Message sent. We'll reply by email.",
+    "failed": "Couldn't send your message. Please email support@mentalpath.ca.",
+    "consent": "By sending this form you agree to our <privacyLink>privacy summary</privacyLink>. We only use your details to reply.",
+    "home": "Back to homepage"
+  },
+  "privacyPage": {
+    "home": "MentalPath home",
+    "title": "How MentalPath handles your data",
+    "updated": "Last updated September 25, 2026 · Summary pending legal review",
+    "responsible": {
+      "title": "Who is responsible",
+      "body": "Clinicians who use MentalPath are the custodians of their clients' health information. MentalPath stores and processes that information on their behalf, only to provide the service."
+    },
+    "stored": {
+      "title": "Where data is stored",
+      "body": "Client records, session notes, outcome measures, appointments and invoices are stored in Canada (Supabase on AWS, Montréal region). Card payments are handled by Stripe; MentalPath never sees full card numbers."
+    },
+    "leaves": {
+      "title": "Data that can leave Canada",
+      "ai": "<strong>AI Note Assist</strong> is off by default. If a clinician turns it on, the note text they choose to draft from is sent to Anthropic in the United States. Phone numbers, emails, health card numbers, SINs, postal codes and dated birthdates are removed first.",
+      "telemetry": "<strong>Error monitoring and product analytics</strong>, when enabled, receive technical events only — never client information, note text or page contents."
+    },
+    "protected": {
+      "title": "How records are protected",
+      "items": [
+        "Each clinician can only access their own records, enforced by the database — including within a group practice.",
+        "Two-factor authentication is required to access client records.",
+        "Session-note content is encrypted in the database with a key unique to each clinician; data is also encrypted in transit and at rest by our hosting provider.",
+        "Locked notes can't be edited or deleted; corrections are added as dated amendments.",
+        "Every change and every note view is recorded in an audit log the clinician can review."
+      ]
+    },
+    "retention": {
+      "title": "Keeping and deleting records",
+      "body": "Clinicians can download all of their data at any time. When an account is closed, sign-in is blocked immediately, and clinical records are kept for the retention period required by Ontario's regulatory Colleges (10 years after the last contact, or 10 years after the client turns 18, whichever is later) and are then destroyed automatically."
+    },
+    "rights": {
+      "title": "Your rights",
+      "body": "If you are a client, contact your clinician to access or correct your records. Clinicians and anyone else can reach our privacy contact at <mail>privacy@mentalpath.ca</mail>. You can also contact the Information and Privacy Commissioner of Ontario or the Office of the Privacy Commissioner of Canada."
+    }
   }
 }

@@ -167,7 +167,7 @@ export function Landing() {
           {[
             { label: t('nav.features'), href: '#features', anchor: true },
             { label: t('nav.compliance'), href: '#compliance', anchor: true },
-            { label: t('nav.pricing'), href: '/subscribe', anchor: false },
+            { label: t('nav.pricing'), href: '#pricing', anchor: true },
             { label: t('nav.clientPortal'), href: '/client-portal', anchor: false },
           ].map(item => item.anchor ? (
             <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none', transition: 'color 0.2s' }}
@@ -231,7 +231,7 @@ export function Landing() {
             {[
               { label: t('nav.features'), href: '#features', anchor: true },
               { label: t('nav.compliance'), href: '#compliance', anchor: true },
-              { label: t('nav.pricing'), href: '/subscribe', anchor: false },
+              { label: t('nav.pricing'), href: '#pricing', anchor: true },
               { label: t('nav.clientPortal'), href: '/client-portal', anchor: false },
               { label: t('nav.dashboard'), href: user ? '/dashboard' : '/login', anchor: false },
             ].map((item, i) => item.anchor ? (
@@ -754,7 +754,7 @@ export function Landing() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[
                     { label: t('footer.links.features'), href: '#features', anchor: true },
-                    { label: t('footer.links.pricing'), href: '/subscribe', anchor: false },
+                    { label: t('footer.links.pricing'), href: '#pricing', anchor: true },
                     { label: t('footer.links.clientPortal'), href: '/client-portal', anchor: false },
                   ].map(item => item.anchor ? (
                     <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</a>
