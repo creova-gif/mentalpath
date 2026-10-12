@@ -178,7 +178,7 @@ export function NewClientModal({ onClose, onClientAdded, initial }: { onClose: (
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="client@example.com"
+                placeholder={t('onboarding.clientEmailPlaceholder')}
                 className="px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] text-sm outline-none transition-all duration-150 focus:border-[var(--sage)]"
               />
             </div>

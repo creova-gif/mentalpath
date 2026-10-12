@@ -18,7 +18,6 @@ export function LanguageSwitcher() {
 
   const toggleLanguage = async () => {
     const newLang = currentLang === 'en' ? 'fr' : 'en';
-    localStorage.setItem('mentalpath_language', newLang);
     await i18n.changeLanguage(newLang);
     setCurrentLang(newLang);
   };

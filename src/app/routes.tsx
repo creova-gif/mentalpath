@@ -12,7 +12,8 @@ import { PreviewPage, ClientFacingUnavailable } from "./components/ui/PreviewPag
 
 const CLIENT_FACING_ENABLED = import.meta.env.DEV;
 // Prototype screens with no backend (messaging, clinical tools, treatment
-// courses, HEP builder) exist only in development builds.
+// courses, HEP builder, wellbeing check-in, cultural treatment plans) exist
+// only in development builds.
 export const PROTOTYPES_ENABLED = import.meta.env.DEV;
 
 // Client-facing prototypes (portal, booking, intake) have no backend yet; in
@@ -40,13 +41,11 @@ const Clients = lazy(() => import("./components/pages/Clients").then(m => ({ def
 const SessionNotes = lazy(() => import("./components/pages/SessionNotes").then(m => ({ default: m.SessionNotes })));
 const Billing = lazy(() => import("./components/pages/Billing").then(m => ({ default: m.Billing })));
 const CalendarView = lazy(() => import("./components/pages/CalendarView").then(m => ({ default: m.CalendarView })));
-const CulturalTemplates = lazy(() => import("./components/pages/CulturalTemplates").then(m => ({ default: m.CulturalTemplates })));
 const Settings = lazy(() => import("./components/pages/Settings").then(m => ({ default: m.Settings })));
 const Compliance = lazy(() => import("./components/pages/Compliance").then(m => ({ default: m.Compliance })));
 const SessionPrep = lazy(() => import("./components/pages/SessionPrep").then(m => ({ default: m.SessionPrep })));
 const OutcomeMeasures = lazy(() => import("./components/pages/OutcomeMeasures").then(m => ({ default: m.OutcomeMeasures })));
 const Waitlist = lazy(() => import("./components/pages/Waitlist").then(m => ({ default: m.Waitlist })));
-const TherapistWellbeing = lazy(() => import("./components/pages/TherapistWellbeing").then(m => ({ default: m.TherapistWellbeing })));
 const Resources = lazy(() => import("./components/pages/Resources").then(m => ({ default: m.Resources })));
 const ForTherapists = lazy(() => import("./components/pages/ForTherapists").then(m => ({ default: m.ForTherapists })));
 const ForChiropractors = lazy(() => import("./components/pages/ForChiropractors").then(m => ({ default: m.ForChiropractors })));
@@ -64,11 +63,15 @@ function prototypeRoutes() {
   const ClinicalTools = lazy(() => import("./components/pages/ClinicalTools").then(m => ({ default: m.ClinicalTools })));
   const TreatmentCourses = lazy(() => import("./components/pages/TreatmentCourses").then(m => ({ default: m.TreatmentCourses })));
   const HEPBuilder = lazy(() => import("./components/pages/HEPBuilder").then(m => ({ default: m.HEPBuilder })));
+  const TherapistWellbeing = lazy(() => import("./components/pages/TherapistWellbeing").then(m => ({ default: m.TherapistWellbeing })));
+  const CulturalTemplates = lazy(() => import("./components/pages/CulturalTemplates").then(m => ({ default: m.CulturalTemplates })));
   return [
     { path: "messages", element: <PreviewPage><Suspense fallback={<PageFallback />}><Messages /></Suspense></PreviewPage> },
     { path: "clinical-tools", element: <PreviewPage><Suspense fallback={<PageFallback />}><ClinicalTools /></Suspense></PreviewPage> },
     { path: "treatment-courses", element: <PreviewPage><Suspense fallback={<PageFallback />}><TreatmentCourses /></Suspense></PreviewPage> },
     { path: "hep-builder", element: <PreviewPage><Suspense fallback={<PageFallback />}><HEPBuilder /></Suspense></PreviewPage> },
+    { path: "therapist-wellbeing", element: <PreviewPage><Suspense fallback={<PageFallback />}><TherapistWellbeing /></Suspense></PreviewPage> },
+    { path: "cultural-templates", element: <PreviewPage><Suspense fallback={<PageFallback />}><CulturalTemplates /></Suspense></PreviewPage> },
   ];
 }
 
@@ -206,11 +209,9 @@ const router = createBrowserRouter([
       { path: "calendar", element: <Suspense fallback={<PageFallback />}><CalendarView /></Suspense> },
       { path: "settings", element: <Suspense fallback={<PageFallback />}><Settings /></Suspense> },
       { path: "compliance", element: <Suspense fallback={<PageFallback />}><Compliance /></Suspense> },
-      { path: "cultural-templates", element: <Suspense fallback={<PageFallback />}><CulturalTemplates /></Suspense> },
       { path: "session-prep", element: <Suspense fallback={<PageFallback />}><SessionPrep /></Suspense> },
       { path: "outcome-measures", element: <Suspense fallback={<PageFallback />}><OutcomeMeasures /></Suspense> },
       { path: "waitlist", element: <Suspense fallback={<PageFallback />}><Waitlist /></Suspense> },
-      { path: "therapist-wellbeing", element: <Suspense fallback={<PageFallback />}><TherapistWellbeing /></Suspense> },
       { path: "group-practice", element: <Suspense fallback={<PageFallback />}><GroupPractice /></Suspense> },
       { path: "insurance-receipts", element: <Suspense fallback={<PageFallback />}><InsuranceReceipts /></Suspense> },
       { path: "cost-savings", element: <Navigate to="/dashboard" replace /> },

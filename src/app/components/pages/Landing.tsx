@@ -108,7 +108,6 @@ export function Landing() {
   const tickerItems = t('ticker', { returnObjects: true }) as string[];
   const problemCards = t('problemSection.cards', { returnObjects: true }) as Array<{ badge: string; title: string; desc: string }>;
   const compliancePoints = t('complianceSection.points', { returnObjects: true }) as Array<{ badge: string; title: string; desc: string }>;
-  const testimonials = t('testimonialsSection.testimonials', { returnObjects: true }) as Array<{ quote: string; name: string; role: string }>;
   const starterFeatures = t('pricingSection.plans.starter.features', { returnObjects: true }) as string[];
   const soloFeatures = t('pricingSection.plans.solo.features', { returnObjects: true }) as string[];
   const groupFeatures = t('pricingSection.plans.group.features', { returnObjects: true }) as string[];
@@ -120,12 +119,6 @@ export function Landing() {
     <><rect key="r" x="3" y="11" width="18" height="11" rx="2"/><path key="p" d="M7 11V7a5 5 0 0110 0v4"/></>,
     <><path key="0" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path key="1" d="M14 2v6h6M16 13H8M16 17H8"/></>,
     <><path key="0" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle key="c" cx="9" cy="7" r="4"/><path key="1" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></>,
-  ];
-
-  const TESTIMONIAL_AVATARS = [
-    { avatar: 'AO', avatarBg: '#d4e8e4', avatarColor: '#2a5448' },
-    { avatar: 'MR', avatarBg: '#e4d8d4', avatarColor: '#543028' },
-    { avatar: 'KN', avatarBg: '#d4d8e8', avatarColor: '#283054' },
   ];
 
   return (
@@ -168,7 +161,6 @@ export function Landing() {
             { label: t('nav.features'), href: '#features', anchor: true },
             { label: t('nav.compliance'), href: '#compliance', anchor: true },
             { label: t('nav.pricing'), href: '#pricing', anchor: true },
-            { label: t('nav.clientPortal'), href: '/client-portal', anchor: false },
           ].map(item => item.anchor ? (
             <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none', transition: 'color 0.2s' }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#f5f0e8')}
@@ -203,7 +195,7 @@ export function Landing() {
           )}
         </div>
 
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2" style={{ color: '#f5f0e8', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle menu">
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2" style={{ color: '#f5f0e8', background: 'none', border: 'none', cursor: 'pointer' }} aria-label={t('nav.toggleMenu')} aria-expanded={mobileMenuOpen}>
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </nav>
@@ -232,8 +224,7 @@ export function Landing() {
               { label: t('nav.features'), href: '#features', anchor: true },
               { label: t('nav.compliance'), href: '#compliance', anchor: true },
               { label: t('nav.pricing'), href: '#pricing', anchor: true },
-              { label: t('nav.clientPortal'), href: '/client-portal', anchor: false },
-              { label: t('nav.dashboard'), href: user ? '/dashboard' : '/login', anchor: false },
+                { label: t('nav.dashboard'), href: user ? '/dashboard' : '/login', anchor: false },
             ].map((item, i) => item.anchor ? (
               <a key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '18px 0', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ fontSize: 11, fontWeight: 600, width: 20, color: '#8abda8' }}>0{i + 1}</span>
@@ -482,8 +473,8 @@ export function Landing() {
               <div style={{ background: 'rgba(245,240,232,0.05)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 18 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: '#6aab95', marginBottom: 10 }}>{t('bento.aiNotes.previewNote')}</div>
                 <div style={{ fontSize: 11, color: 'rgba(245,240,232,0.72)', lineHeight: 1.8, fontFamily: 'monospace' }}>
-                  <span style={{ color: '#8abda8', fontWeight: 700 }}>S:</span> Client reports reduced sleep, 5–6hrs/night. Anxiety around job stability...<br />
-                  <span style={{ color: '#8abda8', fontWeight: 700 }}>O:</span> Alert, appropriately groomed. Affect: anxious, labile...<br />
+                  <span style={{ color: '#8abda8', fontWeight: 700 }}>S:</span> {t('bento.aiNotes.sampleS')}<br />
+                  <span style={{ color: '#8abda8', fontWeight: 700 }}>O:</span> {t('bento.aiNotes.sampleO')}<br />
                   <span style={{ color: '#8abda8', fontWeight: 700 }}>A: P: </span>
                   <span style={{ color: '#8abda8', fontStyle: 'italic' }}>{t('bento.aiNotes.aiLabel')}</span>
                 </div>
@@ -681,34 +672,6 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section style={{ background: '#f2ede3', padding: '88px 5vw 108px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600, color: '#2f5e52', marginBottom: 20 }}>{t('testimonialsSection.tag')}</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px,3.8vw,50px)', lineHeight: 1.08, letterSpacing: '-1.5px', color: '#1a1a18', marginBottom: 60 }}>
-            {t('testimonialsSection.title.line1')} <em style={{ fontStyle: 'italic', color: '#2f5e52' }}>{t('testimonialsSection.title.line1Italic')}</em>
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {testimonials.map((t2, i) => (
-              <div key={i} style={{ background: 'white', borderRadius: 18, padding: 32, boxShadow: '0 2px 20px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.04)' }}>
-                <div style={{ color: '#d4891a', fontSize: 14, letterSpacing: '3px', marginBottom: 18 }}>★★★★★</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, color: '#1a1a18', lineHeight: 1.55, fontStyle: 'italic', marginBottom: 24 }}>
-                  &ldquo;{t2.quote}&rdquo;
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: TESTIMONIAL_AVATARS[i].avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, color: TESTIMONIAL_AVATARS[i].avatarColor, flexShrink: 0 }}>{TESTIMONIAL_AVATARS[i].avatar}</div>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: '#1a1a18' }}>{t2.name}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(26,26,24,0.72)' }}>{t2.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── FINAL CTA ── */}
       <section style={{ background: '#2a4f42', padding: '88px 5vw 100px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-30%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '160%', background: 'radial-gradient(ellipse at center, rgba(74,124,111,0.35) 0%, transparent 60%)', pointerEvents: 'none' }} />
@@ -755,7 +718,6 @@ export function Landing() {
                   {[
                     { label: t('footer.links.features'), href: '#features', anchor: true },
                     { label: t('footer.links.pricing'), href: '#pricing', anchor: true },
-                    { label: t('footer.links.clientPortal'), href: '/client-portal', anchor: false },
                   ].map(item => item.anchor ? (
                     <a key={item.href} href={item.href} style={{ fontSize: 14, color: 'rgba(245,240,232,0.72)', textDecoration: 'none' }}>{item.label}</a>
                   ) : (

@@ -5,14 +5,14 @@ import { toast } from 'sonner';
 import { supabase } from '@/utils/supabase/client';
 import { useUser } from '../../context/UserContext';
 import { formatCad } from '../../services/practice';
-import { renderReceiptHtml, type ReceiptLabels } from '@/app/lib/receipt';
+import { printReceipt } from '@/app/lib/printReceipt';
 
 interface PaidInvoice {
   id: string; number: string; clientName: string; date: string; sessions: number; amount: number; paidAt: string | null; notes: string | null;
 }
 
 export function InsuranceReceipts() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useUser();
   const [invoices, setInvoices] = useState<PaidInvoice[] | null>(null);
   const [year, setYear] = useState(String(new Date().getFullYear()));
@@ -41,22 +41,7 @@ export function InsuranceReceipts() {
   const missingRegistration = user && !user.registrationNumber;
 
   const openReceipt = (inv: PaidInvoice) => {
-    if (!user) return;
-    const labels = t('receipts.labels', { returnObjects: true }) as ReceiptLabels;
-    const html = renderReceiptHtml({
-      invoiceNumber: inv.number, clientName: inv.clientName, serviceDate: inv.date, sessions: inv.sessions,
-      amount: inv.amount, paidAt: inv.paidAt, description: null,
-      provider: {
-        name: user.name, profession: user.profession, college: user.collegeAbbr || user.college,
-        registrationNumber: user.registrationNumber, city: user.city, hstExempt: user.hstExempt,
-      },
-    }, labels, i18n.language === 'fr' ? 'fr-CA' : 'en-CA');
-    const w = window.open('', '_blank');
-    if (!w) { toast.error(t('receipts.popupBlocked')); return; }
-    w.document.write(html);
-    w.document.close();
-    w.focus();
-    w.print();
+    if (user) printReceipt({ ...inv, invoiceNumber: inv.number }, user, t);
   };
 
   return (

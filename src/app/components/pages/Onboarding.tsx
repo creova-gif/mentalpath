@@ -158,7 +158,8 @@ export function Onboarding() {
     if (prefillClient) fireSuccessConfetti();
     // First client is created from the Clients page once MFA is set up
     // (clinical data requires an MFA-verified session).
-    navigate(prefillClient ? '/dashboard/clients' : '/dashboard', {
+    // Group practices are set up (and seats bought) from the practice page.
+    navigate(selectedPlan === 'group' ? '/dashboard/group-practice' : prefillClient ? '/dashboard/clients' : '/dashboard', {
       state: prefillClient ? { prefillClient } : undefined,
     });
   };
@@ -524,6 +525,7 @@ export function Onboarding() {
               <div className="grid grid-cols-2 gap-2.5 mb-4">
                 <button
                   onClick={() => setSelectedPlan('solo')}
+                  aria-pressed={selectedPlan === 'solo'}
                   className={`border-[1.5px] rounded-[10px] p-3.5 cursor-pointer transition-all text-left ${
                     selectedPlan === 'solo'
                       ? 'border-[var(--sage)] bg-[var(--sage-pale)]'
@@ -540,9 +542,8 @@ export function Onboarding() {
                 </button>
 
                 <button
-                  disabled
-                  aria-disabled="true"
-                  title="Coming soon"
+                  onClick={() => setSelectedPlan('group')}
+                  aria-pressed={selectedPlan === 'group'}
                   className={`border-[1.5px] rounded-[10px] p-3.5 cursor-pointer transition-all text-left ${
                     selectedPlan === 'group'
                       ? 'border-[var(--sage)] bg-[var(--sage-pale)]'
@@ -623,7 +624,7 @@ export function Onboarding() {
                   type="email"
                   value={formData.clientEmail}
                   onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
-                  placeholder="client@email.com"
+                  placeholder={t('onboarding.clientEmailPlaceholder')}
                   className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-sm outline-none transition-all focus:border-[var(--sage)] focus:shadow-[0_0_0_3px_rgba(74,124,111,0.09)]"
                 />
               </div>

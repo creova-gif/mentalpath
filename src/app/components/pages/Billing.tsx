@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Download, FileText, Archive } from 'lucide-react';
 import { InvoiceModal } from '../modals/InvoiceModal';
 import { useTranslation } from 'react-i18next';
+import { printReceipt } from '@/app/lib/printReceipt';
 import { ProgressBar } from '../ui/ProgressBar';
 import { supabase, authHeaders } from '@/utils/supabase/client';
 import { toast } from 'sonner';
@@ -55,7 +56,7 @@ export function Billing() {
       .select('*')
       .order('date', { ascending: false });
     if (error) {
-      toast.error('Could not load invoices');
+      toast.error(t('billing.loadFailed'));
     } else {
       setInvoices(
         (data as InvoiceRow[]).map(row => ({
@@ -75,7 +76,7 @@ export function Billing() {
   const setInvoiceStatus = async (invoice: Invoice, status: Invoice['status']) => {
     const { error } = await supabase.from('invoices').update({ status }).eq('id', invoice.id);
     if (error) {
-      toast.error('Could not update the invoice');
+      toast.error(t('billing.updateFailed'));
       return;
     }
     setInvoices(prev => prev.map(i => (i.id === invoice.id ? { ...i, status } : i)));
@@ -282,16 +283,16 @@ export function Billing() {
                   <div className="flex gap-1.5">
                     {invoice.status === 'paid' ? (
                       <>
-                        <button onClick={() => printReceipt(invoice, user)} className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] hover:bg-[var(--sage-pale)]">
+                        <button onClick={() => user && printReceipt(invoice, user, t)} className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] hover:bg-[var(--sage-pale)]">
                           {t('billing.invoices.actionReceipt')}
                         </button>
                         <button onClick={() => setInvoiceStatus(invoice, 'pending')} className="px-2.5 py-[5px] rounded-md text-xs border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-muted)]">
-                          Undo paid
+                          {t('billing.invoices.undoPaid')}
                         </button>
                       </>
                     ) : (
                       <button onClick={() => setInvoiceStatus(invoice, 'paid')} className="px-2.5 py-[5px] rounded-md text-xs font-medium border border-[var(--border)] bg-transparent cursor-pointer text-[var(--ink-soft)] hover:bg-[var(--sage-pale)]">
-                        Mark paid
+                        {t('billing.invoices.markPaid')}
                       </button>
                     )}
                   </div>
@@ -309,7 +310,7 @@ export function Billing() {
           {t('billing.taxPrep.description')}
         </div>
         <div className="flex gap-2.5 items-center flex-wrap">
-          <label className="text-xs text-[var(--ink-muted)] flex items-center gap-1.5">Tax year
+          <label className="text-xs text-[var(--ink-muted)] flex items-center gap-1.5">{t('billing.taxPrep.year')}
             <select value={taxYear} onChange={e => setTaxYear(Number(e.target.value))} className="px-2 py-1.5 rounded-md border border-[var(--border)] text-xs bg-white">
               {[0, 1, 2].map(n => { const y = new Date().getFullYear() - n; return <option key={y} value={y}>{y}</option>; })}
             </select>
@@ -409,32 +410,3 @@ function InvoiceStatus({ status }: { status: 'paid' | 'pending' | 'overdue' }) {
   );
 }
 
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
-}
-
-// Printable receipt for the client's insurer. Generated locally; nothing is sent anywhere.
-function printReceipt(invoice: Invoice, user: ReturnType<typeof useUser>['user']) {
-  const w = window.open('', '_blank', 'noopener=no,width=720,height=900');
-  if (!w) return;
-  const rows: [string, string][] = [
-    ['Receipt for', invoice.invoiceNumber],
-    ['Client', invoice.clientName],
-    ['Date of service', invoice.date],
-    ['Sessions', String(invoice.sessions)],
-    ['Amount paid', new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(invoice.amount)],
-    ['Provider', `${user?.name ?? ''}${user?.collegeAbbr ? `, ${user.collegeAbbr}` : ''}`],
-    ['Registration #', user?.registrationNumber ?? ''],
-    ['Profession', user?.profession ?? ''],
-  ];
-  w.document.write(`<!doctype html><html><head><title>${escapeHtml(invoice.invoiceNumber)}</title>
-    <style>body{font-family:system-ui,sans-serif;padding:40px;color:#1a1a18}h1{font-size:20px}table{border-collapse:collapse;width:100%}
-    td{padding:8px 0;border-bottom:1px solid #ddd}td:first-child{color:#666;width:40%}</style></head><body>
-    <h1>Official receipt</h1><table>${rows.map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</table>
-    <p style="margin-top:32px;color:#666;font-size:12px">Issued ${escapeHtml(new Date().toLocaleDateString('en-CA'))} via MentalPath.</p>
-    </body></html>`);
-  w.document.close();
-  // Called from the opener: an inline <script> would be blocked by our CSP.
-  w.focus();
-  w.print();
-}

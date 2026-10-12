@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Plus, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/app/lib/locale';
 import { listNotes, type NoteSummary } from '../../services/sessionNotes';
 
 function initials(name: string) {
@@ -20,7 +21,7 @@ function NoteRow({ note, action, onOpen }: { note: NoteSummary; action: string; 
           {note.clientName}{note.sessionNumber ? ` — ${t('sessionNotes.sessionLabel', { number: note.sessionNumber })}` : ''}
         </div>
         <div className="text-xs text-[var(--ink-muted)] flex items-center gap-1">
-          {new Date(note.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {note.noteFormat.toUpperCase()}
+          {formatDate(note.sessionDate)} · {(note.noteFormat ?? '').toUpperCase()}
           {note.isLocked && (
             <span className="text-[var(--sage)] text-[11px] inline-flex items-center gap-1">
               · <Lock className="w-3 h-3" aria-hidden="true" /> {t('sessionNotes.locked')}

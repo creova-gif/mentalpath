@@ -33,7 +33,7 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
       await evaluateInner();
     } catch (err) {
       // Never leave the user on an endless "checking" screen.
-      setState({ kind: 'error', message: err instanceof Error ? err.message : 'Unexpected error' });
+      setState({ kind: 'error', message: err instanceof Error ? err.message : t('planBanner.genericError') });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

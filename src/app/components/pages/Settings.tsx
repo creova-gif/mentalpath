@@ -10,10 +10,11 @@ import { DangerZone } from '../settings/DangerZone';
 
 type SettingsTab = 'profile' | 'practice' | 'scheduling' | 'billing' | 'subscription' | 'regions' | 'notifications' | 'security' | 'danger';
 
-// Tabs whose controls are not persisted yet (no backing columns). Shown with a
-// clear "preview" label instead of a Save button that silently does nothing.
-const SETTINGS_TABS: SettingsTab[] = ['profile', 'scheduling', 'billing', 'subscription', 'regions', 'notifications', 'security', 'danger'];
+// Tabs whose controls are not persisted yet (no backing columns) exist only in
+// development builds, labelled as previews; production shows working settings only.
 const PREVIEW_TABS: SettingsTab[] = ['scheduling', 'billing', 'notifications'];
+const SETTINGS_TABS: SettingsTab[] = (['profile', 'scheduling', 'billing', 'subscription', 'regions', 'notifications', 'security', 'danger'] as SettingsTab[])
+  .filter(tab => import.meta.env.DEV || !PREVIEW_TABS.includes(tab));
 
 export function Settings() {
   const { t } = useTranslation();
@@ -29,7 +30,6 @@ export function Settings() {
   const [workingDays, setWorkingDays] = useState(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
   const [sessionRate, setSessionRate] = useState(String(user?.sessionRate ?? 140));
   const [currency, setCurrency] = useState('CAD');
-  const [timezone, setTimezone] = useState('America/Toronto');
 
   const handleSave = () => {
     setSaved(true);
@@ -39,7 +39,7 @@ export function Settings() {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
+    i18n.changeLanguage(lang); // persisted and applied to <html lang> in i18n/config
   };
 
   const toggleDay = (day: string) => {
@@ -57,7 +57,7 @@ export function Settings() {
     { id: 'notifications', label: t('settings.tabs.notifications'), icon: Bell },
     { id: 'security', label: t('settings.tabs.security'), icon: Lock },
     { id: 'danger', label: t('settings.tabs.danger'), icon: Trash2 },
-  ];
+  ].filter(tab => SETTINGS_TABS.includes(tab.id as SettingsTab));
 
   return (
     <div className="flex flex-col">
@@ -73,7 +73,7 @@ export function Settings() {
           )}
           {PREVIEW_TABS.includes(activeTab) && (
             <span className="text-xs text-[var(--ink-muted)] bg-[var(--warm)] border border-[var(--border)] rounded-md px-2.5 py-1">
-              Preview — these settings are not saved yet
+              {t('settings.previewNotSaved')}
             </span>
           )}
         </div>
@@ -96,7 +96,7 @@ export function Settings() {
                 <tab.icon className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
                 {tab.label}
                 {tab.id === 'subscription' && subscription?.isTrial && (
-                  <span className="ml-auto text-[9px] font-semibold bg-amber-700 text-white rounded px-1 py-0.5">TRIAL</span>
+                  <span className="ml-auto text-[9px] font-semibold bg-amber-700 text-white rounded px-1 py-0.5">{t('sidebar.trial')}</span>
                 )}
               </button>
             ))}
@@ -244,30 +244,6 @@ export function Settings() {
                 </div>
               </div>
               <div className="p-6 space-y-3.5">
-                <div>
-                  <label className="block text-xs font-medium text-[var(--ink-soft)] mb-1.5">{t('settings.regions.timezone')}</label>
-                  <select value={timezone} onChange={e => setTimezone(e.target.value)} className="w-full px-3 py-2.5 rounded-lg border border-[var(--border)] text-[13px] outline-none focus:border-[var(--sage)]">
-                    <optgroup label={t('settings.regions.canadianTimezones')}>
-                      <option value="America/Toronto">Eastern Time (Toronto)</option>
-                      <option value="America/Winnipeg">Central Time (Winnipeg)</option>
-                      <option value="America/Edmonton">Mountain Time (Edmonton)</option>
-                      <option value="America/Vancouver">Pacific Time (Vancouver)</option>
-                    </optgroup>
-                    <optgroup label={t('settings.regions.usTimezones')}>
-                      <option value="America/New_York">Eastern Time (New York)</option>
-                      <option value="America/Chicago">Central Time (Chicago)</option>
-                      <option value="America/Los_Angeles">Pacific Time (Los Angeles)</option>
-                    </optgroup>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[var(--ink-soft)] mb-1.5">{t('settings.regions.dateFormat')}</label>
-                  <select className="w-full px-3 py-2.5 rounded-lg border border-[var(--border)] text-[13px] outline-none focus:border-[var(--sage)]">
-                    <option>YYYY-MM-DD (2026-03-16)</option>
-                    <option>MM/DD/YYYY (03/16/2026)</option>
-                    <option>DD/MM/YYYY (16/03/2026)</option>
-                  </select>
-                </div>
                 <div>
                   <label className="block text-xs font-medium text-[var(--ink-soft)] mb-1.5">{t('settings.regions.language')}</label>
                   <select 

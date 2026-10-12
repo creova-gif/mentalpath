@@ -3,24 +3,24 @@
     "features": "Fonctionnalités",
     "compliance": "Conformité",
     "pricing": "Tarification",
-    "clientPortal": "Portail client",
     "dashboard": "Tableau de bord",
     "signUpFree": "Inscription gratuite",
-    "signIn": "Se connecter"
+    "signIn": "Se connecter",
+    "toggleMenu": "Ouvrir ou fermer le menu"
   },
   "hero": {
-    "badge": "Conçu pour les thérapeutes canadiens · Données au Canada",
+    "badge": "Conçu pour les professionnels canadiens · Données hébergées au Canada",
     "title": {
       "line1": "Moins d'admin.",
       "line2": "Plus de temps avec",
       "line2Italic": "vos clients."
     },
-    "subtitle": "Gestion de pratique conçue pour les professionnels de santé réglementés au Canada — thérapeutes, chiropraticiens, physiothérapeutes, TRM et plus. Données hébergées au Canada, conçu autour de la LPRPS et abordable pour les praticiens solo.",
+    "subtitle": "Gestion de pratique pour les professionnels de la santé réglementés au Canada — thérapeutes, chiropraticiens, physiothérapeutes, massothérapeutes et plus. Dossiers hébergés au Canada, connexion à deux facteurs et tarifs pensés pour la pratique solo.",
     "cta": "Commencez votre essai gratuit →",
     "seeHow": "Voir comment ça marche",
     "footer": {
       "noCreditCard": "Aucune carte de crédit requise",
-      "canadianServers": "Serveurs canadiens (LPRPS)",
+      "canadianServers": "Serveurs canadiens",
       "cancelAnytime": "Annulez à tout moment"
     },
     "scrollLabel": "Défiler",
@@ -30,8 +30,8 @@
       "upcoming": "À venir",
       "aiDrafted": "Note rédigée par IA",
       "aiSession": "Séance avec Amara M. →",
-      "aiMeta": "SOAP · Verrouillage dans 22h · LPRPS",
-      "phipaBadge": "LPRPS · AWS ca-central-1",
+      "aiMeta": "SOAP · Brouillon · À relire avant de verrouiller",
+      "phipaBadge": "Hébergé au Canada · AWS ca-central-1",
       "session1Time": "10h00 · 50 min · Individuel",
       "session2Time": "11h30 · 50 min · Individuel",
       "session3Time": "14h00 · 50 min · Couple"
@@ -280,32 +280,32 @@
     "resetSent": "Si un compte existe pour ce courriel, nous avons envoyé un lien de réinitialisation."
   },
   "ticker": [
-    "Résidence des données au Canada",
-    "Serveurs canadiens uniquement",
-    "Certifié LPRPDE",
-    "Chiffrement AES-256",
-    "Dossiers conformes aux Ordres",
-    "Aucun routage É.-U.",
-    "AWS ca-central-1",
-    "Journaux d'audit",
-    "Chiffrement par clé thérapeute",
-    "OTSTCFQ · CPO · CPSBC"
+    "Données hébergées au Canada",
+    "Connexion à deux facteurs",
+    "Notes chiffrées avec votre propre clé",
+    "Notes verrouillées et addenda datés",
+    "Journal d'audit en base de données",
+    "Conservation de 10 ans gérée",
+    "AWS ca-central-1 (Montréal)",
+    "PHQ-9 et GAD-7",
+    "Reçus d'assurance",
+    "Exportation T2125"
   ],
   "statsBar": {
     "practitioners": {
-      "stat": "25 000+",
-      "label": "Professionnels réglementés au Canada",
-      "sub": "Thérapeutes · DC · PT · TRM · ND"
+      "stat": "10 ans",
+      "label": "Dossiers conservés selon les règles des Ordres",
+      "sub": "Puis détruits automatiquement"
     },
     "price": {
       "stat": "49 $/mois",
-      "label": "Plan praticien solo",
-      "sub": "Moins cher que Jane App · Plus pour le Canada"
+      "label": "Forfait praticien solo",
+      "sub": "Clients illimités · Aide IA incluse"
     },
     "trial": {
       "stat": "7 jours",
-      "label": "Essai gratuit, sans carte de crédit",
-      "sub": "Accès complet aux fonctionnalités dès le premier jour"
+      "label": "Essai gratuit, sans carte",
+      "sub": "Puis le forfait gratuit Débutant si vous ne vous abonnez pas"
     }
   },
   "professionSection": {
@@ -319,32 +319,32 @@
   "problemSection": {
     "tag": "Le vrai problème",
     "title": {
-      "line1": "Votre logiciel américain",
-      "line2": "vous",
-      "line2Italic": "met en danger."
+      "line1": "L'administratif",
+      "line2": "ne devrait pas",
+      "line2Italic": "gruger vos soirées."
     },
-    "subtitle": "TherapyNotes, TheraNest, SimplePractice — conçus pour les praticiens américains, stockant les données les plus sensibles de vos clients sur des serveurs américains. Votre Ordre n'accepte pas cela.",
-    "cta": "Migrez en un après-midi →",
+    "subtitle": "Notes cliniques, factures, reçus et règles de tenue de dossiers : tout s'accumule. MentalPath les regroupe, avec des dossiers hébergés au Canada.",
+    "cta": "Commencer l'essai gratuit →",
     "cards": [
       {
-        "badge": "Risque de confidentialité",
-        "title": "Le cloud américain complique la conformité à la LPRPS",
-        "desc": "La LPRPS de l'Ontario exige que les données de santé soient stockées au Canada. La plupart des outils américains échouent à ce test — vous laissant exposé."
+        "badge": "Hébergement des données",
+        "title": "Où sont stockés vos dossiers?",
+        "desc": "De nombreux outils hébergent les dossiers de santé hors du Canada. MentalPath stocke les vôtres à Montréal (AWS ca-central-1)."
       },
       {
-        "badge": "400–1 200 $/an",
-        "title": "Prix d'entreprise pour un travail solo",
-        "desc": "Jane App commence à 54 $/mois. Owl Practice à 89 $/mois. Conçu pour des groupes de 10 cliniciens, pas pour les praticiens solo."
+        "badge": "Coût",
+        "title": "Payer pour une clinique que vous n'avez pas",
+        "desc": "Les outils conçus pour les grandes cliniques facturent des fonctions inutiles en pratique solo. Débutant est gratuit; Solo coûte 49 $ par mois."
       },
       {
-        "badge": "Contexte manquant",
-        "title": "Formulaires d'admission génériques",
-        "desc": "Traumatisme des nouveaux arrivants, stress racialisé, cadres d'identité culturelle — absents des bibliothèques d'admission américaines."
+        "badge": "Dossiers",
+        "title": "Une documentation défendable",
+        "desc": "Notes verrouillées, addenda datés et journal d'audit non modifiable — l'essentiel de ce qu'attendent les Ordres."
       },
       {
-        "badge": "2–3 h/semaine",
-        "title": "Outils fragmentés",
-        "desc": "Notes, facturation, planification, portail — assemblés de 4 fournisseurs différents. MentalPath remplace les quatre."
+        "badge": "Temps",
+        "title": "Des notes après chaque séance",
+        "desc": "La rédaction IA facultative transforme vos notes rapides en une note structurée que vous relisez et signez."
       }
     ]
   },
@@ -357,47 +357,49 @@
     "subtitle": "Conçu pour les praticiens canadiens solo ou en petit groupe — pas un portage d'un produit américain.",
     "aiNotes": {
       "tag": "Rédaction de notes par IA",
-      "title": "Notes SOAP, DAP, BIRP rédigées à partir de vos notes de séance — entièrement sur des serveurs canadiens.",
-      "body": "Rédigez, révisez, signez. Notes verrouillées après 24h et consultables pour tous les clients.",
-      "previewNote": "Note de séance — Amara M. · 16 mars",
-      "aiLabel": "IA en cours de rédaction..."
+      "title": "Ébauches SOAP, DAP et BIRP à partir de vos propres notes — avec votre consentement.",
+      "body": "Rédigez, relisez, verrouillez. Désactivée tant que vous n'y consentez pas; les identifiants sont retirés avant l'envoi du texte à Anthropic (É.-U.), et chaque utilisation est consignée.",
+      "previewNote": "Note de séance — exemple",
+      "aiLabel": "Rédaction IA à partir de vos notes...",
+      "sampleS": "Le client rapporte un sommeil réduit, 5 à 6 h par nuit. Anxiété liée à la stabilité de son emploi...",
+      "sampleO": "Alerte, tenue soignée. Affect anxieux..."
     },
     "billing": {
       "tag": "Facturation et reçus",
-      "title": "Reçus d'assurance officiels, tarif modulé, Stripe, export T2125.",
+      "title": "Factures en CAD, reçus d'assurance, abonnements Stripe et exportation T2125.",
       "tags": [
         "Facturation en CAD",
-        "Tarif modulé",
-        "Stripe",
-        "Export fiscal"
+        "Reçus d'assurance",
+        "Tarifs par client",
+        "Exportation fiscale"
       ]
     },
     "scheduling": {
-      "tag": "Planification en ligne",
-      "title": "Lien de réservation public. Rappels SMS + courriel. Synchronisation Google Agenda.",
-      "body": "Réduisez les absences jusqu'à 40 % avec des rappels automatisés envoyés 24h et 1h avant chaque séance."
+      "tag": "Calendrier et préparation",
+      "title": "Calendrier hebdomadaire, statut des séances et préparation avant chaque séance.",
+      "body": "Voyez la dernière note, les notes non signées, les dernières mesures et les montants dus pour chaque client prévu."
     },
     "portal": {
-      "tag": "Portail client",
-      "title": "Portail sécurisé pour la réservation, formulaires d'admission, factures et messagerie chiffrée.",
-      "body": "Aucun téléchargement requis. Fonctionne sur n'importe quel appareil. Conforme LPRPS de bout en bout."
+      "tag": "Mesures des résultats",
+      "title": "PHQ-9 et GAD-7 avec calcul automatique et suivi de l'évolution.",
+      "body": "L'item 9 du PHQ-9 est signalé pour votre protocole de gestion du risque."
     },
     "group": {
-      "tag": "Cabinet de groupe",
-      "title": "Calendriers multi-cliniciens, tableau de bord propriétaire, accès basé sur les rôles, rapports de paiement.",
-      "body": "Conçu pour les cabinets de 2 à 20 cliniciens nécessitant une planification partagée et une facturation séparée."
+      "tag": "Pratique de groupe",
+      "title": "Une seule facture pour l'équipe, par place. Tableau de bord du propriétaire avec totaux seulement.",
+      "body": "Les clients et notes de chaque clinicien restent privés — le propriétaire ne voit jamais de données cliniques."
     },
     "clientMgmt": {
-      "tag": "Gestion des clients",
-      "title": "Formulaires d'admission culturellement adaptés. Dossiers complets. Gestion du consentement intégrée.",
-      "body": "Modèles pré-construits pour le traumatisme des nouveaux arrivants, la santé mentale des PANDC et les cadres intersectionnels — prêts à l'emploi, entièrement personnalisables.",
-      "templatesLabel": "Modèles d'admission",
+      "tag": "Dossiers clients",
+      "title": "Dossiers clients, liste d'attente et conservation gérée pour vous.",
+      "body": "Chaque dossier indique combien de temps il doit être conservé. Exportez tout, en tout temps.",
+      "templatesLabel": "Inclus",
       "templates": [
-        "Admission adulte générale",
-        "Dépistage traumatisme nouveaux arrivants",
-        "Santé mentale PANDC",
-        "PHQ-9 culturellement adapté",
-        "Échelle de stress intersectionnel"
+        "Profils clients",
+        "Liste d'attente",
+        "Dates de conservation",
+        "Exportation complète",
+        "Journal d'audit"
       ]
     }
   },
@@ -407,35 +409,35 @@
       "line1": "La conformité n'est pas une fonctionnalité.",
       "line2Italic": "C'est la fondation."
     },
-    "subtitle": "Chaque décision architecturale a été prise en tenant compte des exigences de la LPRPS, de la LPRPDE et des Ordres — pas rétroactivement, intégré dès le premier jour.",
+    "subtitle": "Les mesures de sécurité et de tenue de dossiers sont imposées par la base de données elle-même, pas seulement par l'application.",
     "points": [
       {
-        "badge": "LPRPS",
-        "title": "Toutes les données au Canada (AWS ca-central-1)",
-        "desc": "Dossiers clients, notes de séance, facturation — hébergés exclusivement à Montréal et Toronto. Jamais acheminés sous le CLOUD Act américain."
+        "badge": "Hébergement",
+        "title": "Dossiers hébergés au Canada (AWS ca-central-1, Montréal)",
+        "desc": "Les dossiers clients, notes de séance et données de facturation sont hébergés au Canada. Si vous l'activez, l'aide IA envoie le texte des notes à Anthropic, aux États-Unis."
       },
       {
         "badge": "Chiffrement",
-        "title": "AES-256 au repos · TLS 1.3 en transit",
-        "desc": "Les notes verrouillées ne peuvent être ni modifiées ni supprimées, chaque accès est consigné dans un journal d’audit inaltérable, et l’authentification à deux facteurs est requise pour les dossiers clients."
+        "title": "Chiffrement en transit et au repos — notes avec votre propre clé",
+        "desc": "Le contenu des notes de séance est chiffré dans la base de données avec une clé propre à votre compte. L'authentification à deux facteurs est obligatoire pour les dossiers clients."
       },
       {
-        "badge": "Normes des Ordres",
-        "title": "Dossiers et documentation conformes aux Ordres",
-        "desc": "Formats de notes, formulaires de consentement et périodes de conservation alignés sur les exigences de l'OTSTCFQ, du CPO et du CPSBC. Journaux d'audit pour chaque accès."
+        "badge": "Dossiers",
+        "title": "Notes verrouillées, addenda et journal d'audit",
+        "desc": "Les notes verrouillées ne peuvent être ni modifiées ni supprimées; les corrections sont des addenda datés. Chaque modification et consultation est consignée dans un journal inaltérable."
       },
       {
-        "badge": "Consentement",
-        "title": "Gestion du consentement client intégrée",
-        "desc": "Formulaires numériques avec signatures horodatées. Versionnement du consentement — les clients re-consentent lors de mises à jour. Retrait enregistré et respecté automatiquement."
+        "badge": "Conservation",
+        "title": "Conservation de 10 ans, puis destruction automatique",
+        "desc": "Les dossiers sont conservés 10 ans après le dernier contact (ou 10 ans après les 18 ans du client, selon la date la plus tardive), puis détruits automatiquement. Vous demeurez le dépositaire."
       }
     ]
   },
   "pricingSection": {
     "tag": "Tarification simple",
     "title": {
-      "line1": "Payez moins que Jane App.",
-      "line2Italic": "Obtenez plus pour le Canada."
+      "line1": "Des tarifs simples, en CAD.",
+      "line2Italic": "Commencez gratuitement."
     },
     "subtitle": "Pas de minimums d'unités. Pas de frais cachés. Annulez à tout moment.",
     "mostPopular": "Le plus populaire",
@@ -444,12 +446,12 @@
         "name": "Débutant",
         "price": "Gratuit",
         "period": "pour toujours · 1 client actif",
-        "description": "Essayez MentalPath avec un vrai client avant de vous engager. Accès complet, limite d'un seul client.",
+        "description": "Essayez MentalPath avec un vrai client avant de vous engager. Un client actif, sans aide IA.",
         "features": [
           "1 client actif",
           "Tous les modèles de notes",
-          "Stockage serveur canadien",
-          "Planification de base"
+          "Hébergement au Canada",
+          "Factures et reçus"
         ],
         "cta": "Commencer gratuitement"
       },
@@ -462,12 +464,11 @@
         "features": [
           "Clients illimités",
           "Notes SOAP / DAP / BIRP",
-          "Assistance IA pour notes de séance",
-          "Réservation en ligne + rappels",
-          "Portail client + messagerie",
+          "Aide IA (sur consentement)",
+          "PHQ-9 et GAD-7",
+          "Préparation des séances et calendrier",
           "Facturation + reçus d'assurance",
-          "Formulaires culturellement adaptés",
-          "Export fiscal T2125"
+          "Exportation fiscale T2125"
         ],
         "cta": "Essai gratuit de 7 jours"
       },
@@ -486,30 +487,6 @@
         "cta": "Créer une pratique de groupe"
       }
     }
-  },
-  "testimonialsSection": {
-    "tag": "De la part des praticiens",
-    "title": {
-      "line1": "Thérapeutes qui ont",
-      "line1Italic": "changé."
-    },
-    "testimonials": [
-      {
-        "quote": "J'étais sur TherapyNotes pendant 3 ans jusqu'à ce que mon superviseur de l'Ordre signale le problème de stockage aux É.-U. J'ai basculé vers MentalPath en un après-midi. Les modèles d'admission culturellement adaptés m'ont fait gagner deux semaines de travail.",
-        "name": "Dre Abena Osei-Mensah",
-        "role": "Psychothérapeute autorisée · Toronto, ON"
-      },
-      {
-        "quote": "La facturation à tarif modulé est exactement ce dont j'avais besoin. La plupart de mes clients sont des nouveaux arrivants — pouvoir définir des tarifs par client sans contournements maladroits a changé ma façon de gérer ma pratique.",
-        "name": "Maya Rodriguez, MSW, TSI",
-        "role": "Travailleuse sociale · Vancouver, C.-B."
-      },
-      {
-        "quote": "J'ai quitté Jane App. 65 $/mois moins cher et les modèles de notes DAP sont meilleurs. Mes notes sont conformes aux exigences de mon Ordre dès le départ — je n'ai rien eu à configurer.",
-        "name": "Dr Kenji Nakamura",
-        "role": "Psychologue clinicien · Calgary, AB"
-      }
-    ]
   },
   "ctaSection": {
     "tag": "Prêt à commencer",
@@ -533,12 +510,11 @@
       "features": "Fonctionnalités",
       "compliance": "Conformité",
       "pricing": "Tarification",
-      "clientPortal": "Portail client",
       "phipa": "LPRPS",
       "pipeda": "LPRPDE",
       "collegeStandards": "Normes des Ordres",
       "privacy": "Confidentialité",
-      "terms": "Conditions",
+      "terms": "Nous joindre",
       "support": "Assistance"
     },
     "copyright": "© 2026 MentalPath. Fait au Canada."
@@ -557,10 +533,7 @@
         "line2": "chaque",
         "line3": "professionnel de la santé réglementé."
       },
-      "description": "Modèles de notes, formats de reçus, mesures de résultats et normes des Ordres configurés automatiquement pour votre profession. Conforme LPRPS dès la première minute.",
-      "testimonial": "",
-      "author": "Dre Abena Osei-Mensah, PA",
-      "authorRole": "Psychothérapeute autorisée · Toronto, ON",
+      "description": "Formats de notes, reçus d'assurance, mesures des résultats et tenue de dossiers conçus pour les professionnels canadiens. Vos données sont hébergées au Canada.",
       "badges": {
         "phipa": "Données hébergées au Canada",
         "servers": "Serveurs canadiens",
@@ -619,7 +592,7 @@
       "group": "Cabinet de groupe",
       "groupPrice": "79 $",
       "groupPeriod": "/clinicien",
-      "groupDesc": "Pratiques à plusieurs cliniciens — bientôt disponible",
+      "groupDesc": "Facturation par place pour votre équipe — créez votre pratique après l'inscription",
       "trialNotice": "Votre essai Solo de 7 jours commence aujourd’hui. Aucune carte n’est requise. À la fin, vous passez au forfait gratuit Starter (1 client actif) sauf si vous vous abonnez.",
       "startTrial": "Démarrer l'essai gratuit →",
       "back": "← Retour"
@@ -640,7 +613,8 @@
       "checkEmailTitle": "Vérifiez vos courriels",
       "checkEmailBody": "Nous avons envoyé un lien de confirmation à {{email}}. Ouvrez-le pour activer votre compte, puis connectez-vous et configurez l’authentification à deux facteurs.",
       "goToLogin": "Aller à la connexion"
-    }
+    },
+    "clientEmailPlaceholder": "client@exemple.com"
   },
   "sessionNotes": {
     "summary": "{{draftCount}} brouillons · {{lockedCount}} notes verrouillées",
@@ -688,15 +662,20 @@
       },
       "sessionsCount": "{{count}} session(s)",
       "actionReceipt": "Reçu",
-      "actionReminder": "Rappel"
+      "actionReminder": "Rappel",
+      "undoPaid": "Annuler le paiement",
+      "markPaid": "Marquer comme payée"
     },
     "taxPrep": {
       "title": "Préparation des impôts — Résumé T2125 (travailleur autonome)",
       "description": "MentalPath génère un résumé de fin d'année formaté pour l'annexe T2125 (État des résultats des activités d'une entreprise). Téléchargez-le pendant la période des impôts — aucun comptable n'est nécessaire pour la base.",
       "exportT2125": "Exporter le résumé T2125 pour {{year}}",
       "exporting": "Exportation…",
-      "downloadReceipts": "Télécharger tous les reçus (CSV)"
-    }
+      "downloadReceipts": "Télécharger tous les reçus (CSV)",
+      "year": "Année d'imposition"
+    },
+    "loadFailed": "Impossible de charger les factures",
+    "updateFailed": "Impossible de mettre à jour la facture"
   },
   "messages": {
     "title": "Messages",
@@ -1004,7 +983,8 @@
       "deleteWarning": "Ceci supprimera définitivement vos dossiers clients, vos notes de séance et toutes les données associées. Vos données sont conservées 90 jours avant d'être supprimées définitivement. Cette action ne peut pas être annulée.",
       "deleteBtn": "Supprimer mon compte",
       "exportBtn": "Exporter mes données d'abord"
-    }
+    },
+    "previewNotSaved": "Aperçu — ces paramètres ne sont pas encore enregistrés"
   },
   "resetPassword": {
     "title": "Choisissez un nouveau mot de passe",
@@ -2057,5 +2037,247 @@
       "title": "Vos droits",
       "body": "Si vous êtes un client, adressez-vous à votre clinicien pour consulter ou corriger votre dossier. Les cliniciens et toute autre personne peuvent joindre notre responsable de la protection de la vie privée à <mail>privacy@mentalpath.ca</mail>. Vous pouvez aussi communiquer avec le Commissaire à l'information et à la protection de la vie privée de l'Ontario ou le Commissariat à la protection de la vie privée du Canada."
     }
+  },
+  "faq": {
+    "title": "Foire aux questions",
+    "subtitle": "Le fonctionnement actuel de MentalPath — pour les professionnels de la santé au Canada.",
+    "search": "Rechercher une question…",
+    "noResults": "Aucun résultat",
+    "tryAgain": "Essayez un autre terme de recherche.",
+    "stillNeed": "Vous n'avez pas trouvé votre réponse?",
+    "contactSupport": "Écrivez-nous",
+    "categories": {
+      "privacy": {
+        "title": "Confidentialité et sécurité des données",
+        "items": [
+          {
+            "q": "Où sont stockées les données de mes clients?",
+            "a": "Au Canada : Supabase sur AWS, région de Montréal (ca-central-1). Les paiements par carte sont traités par Stripe, et MentalPath ne voit jamais les numéros de carte complets."
+          },
+          {
+            "q": "Comment les dossiers sont-ils protégés?",
+            "a": "Chaque dossier est limité à votre compte par la base de données (sécurité au niveau des lignes), et les dossiers clients ne peuvent être ouverts qu'à partir d'une session ayant réussi l'authentification à deux facteurs. Le contenu des notes de séance est en plus chiffré dans la base de données avec une clé propre à votre compte. Les données sont chiffrées en transit (TLS) et au repos."
+          },
+          {
+            "q": "Des données quittent-elles le Canada?",
+            "a": "Seulement si vous activez l'aide à la rédaction IA. Elle est désactivée par défaut; lorsque vous l'utilisez, le texte de la note est envoyé à Anthropic, aux États-Unis. Les numéros de téléphone, courriels, numéros d'assurance maladie, NAS, codes postaux et dates de naissance sont retirés au préalable, et chaque utilisation est consignée dans votre journal d'audit."
+          },
+          {
+            "q": "MentalPath est-il « certifié LPRPS »?",
+            "a": "Il n'existe pas de certification officielle LPRPS pour les logiciels. Vous demeurez le dépositaire des renseignements sur la santé; MentalPath agit comme votre fournisseur de services et vous offre les mesures décrites ici. Notre évaluation des facteurs relatifs à la vie privée est résumée à la page Confidentialité."
+          },
+          {
+            "q": "Puis-je exporter mes données?",
+            "a": "Oui, en tout temps : Paramètres → Zone de danger → Télécharger mes données vous donne un fichier JSON avec votre profil, vos clients, vos notes (déchiffrées), les addenda, les mesures des résultats, les factures, les rendez-vous et le journal d'audit. L'exportation est elle-même consignée."
+          }
+        ]
+      },
+      "billing": {
+        "title": "Forfaits et facturation",
+        "items": [
+          {
+            "q": "Comment fonctionne l'essai gratuit?",
+            "a": "Les nouveaux comptes profitent de 7 jours du forfait Solo sans carte de crédit, avec 20 utilisations de l'aide IA. Si vous vous abonnez pendant l'essai, vous conservez les jours restants et êtes facturé à la fin de l'essai."
+          },
+          {
+            "q": "Que se passe-t-il à la fin de l'essai?",
+            "a": "Si vous ne vous abonnez pas, vous passez au forfait gratuit Débutant : 1 client actif et pas d'aide IA. Rien n'est supprimé et tous vos dossiers restent accessibles."
+          },
+          {
+            "q": "Combien coûte MentalPath?",
+            "a": "Débutant est gratuit (1 client actif). Solo coûte 49 $ CA par mois, avec clients illimités et jusqu'à 500 utilisations de l'aide IA par mois. Pratique de groupe coûte 79 $ CA par clinicien par mois, facturé au propriétaire de la pratique par place. Les taxes applicables sont affichées au paiement."
+          },
+          {
+            "q": "Puis-je annuler en tout temps?",
+            "a": "Oui, dans le portail de facturation (Paramètres → Abonnement). Votre forfait reste actif jusqu'à la fin de la période payée, puis vous passez au forfait Débutant, dossiers intacts."
+          },
+          {
+            "q": "Comment fonctionne la pratique de groupe?",
+            "a": "Le propriétaire crée une pratique, choisit le nombre de places et invite les cliniciens par courriel. Chaque membre bénéficie du forfait Groupe tant que sa place est payée. Les clients et notes des membres restent privés; le propriétaire ne voit que des totaux."
+          }
+        ]
+      },
+      "features": {
+        "title": "Fonctionnalités",
+        "items": [
+          {
+            "q": "Quels formats de notes sont offerts?",
+            "a": "DAP, SOAP, BIRP et notes d'évolution. Les notes sont enregistrées automatiquement comme brouillons; une fois verrouillées, elles ne peuvent être ni modifiées ni supprimées, et les corrections sont ajoutées sous forme d'addenda datés."
+          },
+          {
+            "q": "Comment fonctionne l'aide à la rédaction IA?",
+            "a": "Rédigez de brèves notes dans chaque section et cliquez sur Aide IA. Votre consentement est demandé la première fois. L'ébauche n'est qu'une suggestion — relisez-la et modifiez-la avant de verrouiller. Elle ne remplace pas votre jugement clinique."
+          },
+          {
+            "q": "Quelles mesures des résultats sont incluses?",
+            "a": "Le PHQ-9 et le GAD-7. MentalPath calcule le total et le niveau de sévérité, affiche l'évolution et signale l'item 9 du PHQ-9 pour votre protocole de gestion du risque."
+          },
+          {
+            "q": "Puis-je remettre des reçus d'assurance aux clients?",
+            "a": "Oui. Marquez une facture comme payée et imprimez un reçu à partir de Reçus d'assurance. Il comprend votre nom, votre profession et votre numéro de permis, le client, la date du service, le montant et le statut fiscal."
+          },
+          {
+            "q": "Qu'est-ce que l'exportation T2125?",
+            "a": "Un sommaire CSV annuel de vos revenus encaissés par mois, pour vous aider avec le formulaire T2125 de l'ARC. Faites-le vérifier par votre comptable."
+          },
+          {
+            "q": "Y a-t-il la prise de rendez-vous en ligne, un portail client ou une messagerie sécurisée?",
+            "a": "Pas encore. Ces fonctions sont prévues, mais ne sont pas offertes dans la version actuelle."
+          }
+        ]
+      },
+      "technical": {
+        "title": "Aspects techniques et configuration",
+        "items": [
+          {
+            "q": "Quels appareils puis-je utiliser?",
+            "a": "Tout navigateur récent sur ordinateur ou tablette. Rien à installer. Il vous faut une application d'authentification (comme Google Authenticator, 1Password ou Authy) pour la connexion à deux facteurs."
+          },
+          {
+            "q": "Et si je perds mon appareil d'authentification?",
+            "a": "Écrivez à support@mentalpath.ca à partir du courriel de votre compte. Par sécurité, nous vérifions votre identité avant de réinitialiser l'authentification à deux facteurs."
+          },
+          {
+            "q": "Comment passer d'un autre système?",
+            "a": "Ajoutez vos clients à partir de la page Clients. L'importation en lot n'est pas encore offerte — écrivez au soutien si vous avez besoin d'aide pour migrer une grande clientèle."
+          }
+        ]
+      },
+      "regulatory": {
+        "title": "Aspects réglementaires et professionnels",
+        "items": [
+          {
+            "q": "MentalPath est-il approuvé par mon Ordre?",
+            "a": "Les Ordres n'approuvent pas de logiciels. MentalPath est conçu selon les attentes courantes en matière de tenue de dossiers — dossiers verrouillés, addenda datés, piste d'audit et règle de conservation de 10 ans — mais il vous revient de respecter les normes de votre Ordre."
+          },
+          {
+            "q": "Combien de temps les dossiers sont-ils conservés?",
+            "a": "10 ans après le dernier contact avec le client, ou 10 ans après ses 18 ans, selon la date la plus tardive. Les dossiers sont ensuite détruits automatiquement. La date figure au dossier de chaque client."
+          },
+          {
+            "q": "Dois-je informer mes clients que j'utilise une documentation assistée par IA?",
+            "a": "Consultez les lignes directrices de votre Ordre et vos formulaires de consentement. L'aide IA est facultative et désactivée tant que vous ne l'activez pas."
+          }
+        ]
+      }
+    }
+  },
+  "supportPage": {
+    "title": "Soutien"
+  },
+  "resourcesPage": {
+    "title": "Ressources communautaires",
+    "subtitle": "Soutiens canadiens en santé mentale et communautaires pour orienter vos clients.",
+    "print": "Imprimer la liste",
+    "noticeTitle": "Vérifiez avant d'orienter",
+    "noticeBody": "Les organismes répertoriés sont canadiens. Les numéros et services changent — confirmez les renseignements sur le site de l'organisme avant d'y orienter un client. Les orientations ne sont pas consignées, à moins que vous ne les notiez au dossier. En cas d'urgence, composez le 9-1-1; en cas de crise suicidaire, appelez ou textez le 9-8-8.",
+    "search": "Rechercher par nom, type ou mot-clé…",
+    "province": "Province/territoire",
+    "type": "Type de ressource",
+    "community": "Communauté",
+    "showing_one": "{{count}} ressource",
+    "showing_other": "{{count}} ressources",
+    "none": "Aucune ressource ne correspond à vos filtres.",
+    "website": "Visiter le site",
+    "languages": "Langues : {{list}}",
+    "provinces": {
+      "all": "Toutes les provinces",
+      "National": "National",
+      "ON": "Ontario",
+      "BC": "Colombie-Britannique",
+      "AB": "Alberta",
+      "QC": "Québec",
+      "NS": "Nouvelle-Écosse",
+      "MB": "Manitoba",
+      "SK": "Saskatchewan",
+      "NB": "Nouveau-Brunswick",
+      "PE": "Île-du-Prince-Édouard",
+      "NL": "Terre-Neuve-et-Labrador",
+      "YT": "Yukon",
+      "NT": "Territoires du Nord-Ouest",
+      "NU": "Nunavut"
+    },
+    "types": {
+      "all": "Tous les types",
+      "crisis": "Soutien en situation de crise",
+      "newcomer": "Soutien aux nouveaux arrivants",
+      "lgbtq": "Soutien LGBTQ+",
+      "indigenous": "Services autochtones",
+      "youth": "Soutien aux jeunes",
+      "cultural": "Organismes culturels",
+      "mental-health": "Services de santé mentale"
+    },
+    "communities": {
+      "all": "Toutes les communautés",
+      "Newcomer": "Nouveaux arrivants",
+      "Refugee": "Réfugiés",
+      "LGBTQ+": "LGBTQ+",
+      "Indigenous": "Autochtones",
+      "Youth": "Jeunes",
+      "Racialized Communities": "Communautés racisées"
+    },
+    "items": {
+      "1": "Ligne de crise 24 h sur 24, 7 jours sur 7, et soutien pour toute personne vivant de la détresse émotionnelle, de la solitude ou des idées suicidaires.",
+      "2": "Services d'établissement, aide à l'emploi, cours de langue et liens communautaires pour les nouveaux arrivants.",
+      "3": "Programmes et services pour les peuples autochtones, notamment du counseling, des activités culturelles et du soutien communautaire.",
+      "4": "Ligne de soutien par les pairs et ressources communautaires pour les personnes LGBTQ+ et leurs alliés.",
+      "5": "Services d'établissement, programmes culturels et soutien pour les communautés racisées et nouvellement arrivées.",
+      "6": "Services ethnoraciaux en santé mentale et en dépendances, avec des soins adaptés à la culture.",
+      "7": "Centre communautaire offrant programmes, counseling et soutien aux communautés LGBTQ+.",
+      "8": "Établissement, emploi, formation linguistique et soutien en santé mentale pour les immigrants et les réfugiés.",
+      "9": "Services de santé holistiques pour les communautés autochtones, dont la guérison traditionnelle et le counseling.",
+      "10": "Soutien en santé mentale et en situation de crise pour les jeunes de 12 à 29 ans, y compris du counseling sans rendez-vous.",
+      "11": "Ligne de crise et de prévention du suicide 24/7 pour Ottawa et les environs.",
+      "12": "Services d'établissement, programmes d'emploi et soutien communautaire pour les nouveaux arrivants.",
+      "13": "Ligne de crise 24/7 offrant du soutien émotionnel et des services d'intervention en prévention du suicide.",
+      "14": "Services d'établissement, d'emploi et d'intégration pour les immigrants et réfugiés du Grand Vancouver.",
+      "15": "Centre de ressources LGBTQ+ de la C.-B. offrant counseling, groupes de soutien et programmes communautaires.",
+      "16": "Soutien en situation de crise 24/7, prévention du suicide et orientation vers des ressources communautaires.",
+      "17": "Services d'établissement, d'emploi et d'intégration pour les immigrants et réfugiés de Calgary.",
+      "18": "Ligne d'écoute 24/7 et prévention du suicide pour le nord de l'Alberta.",
+      "19": "Service d'écoute et de soutien pour toute personne en détresse (en français et en anglais).",
+      "20": "Soutien aux personnes immigrantes et réfugiées LGBTQ+ au Québec.",
+      "21": "Services d'établissement et d'intégration pour les immigrants à Montréal.",
+      "22": "Soutien en situation de crise de santé mentale 24/7 en Nouvelle-Écosse.",
+      "23": "Services d'établissement, d'emploi et d'intégration communautaire pour les nouveaux arrivants.",
+      "24": "Soutien en situation de crise et prévention du suicide 24/7 au Manitoba.",
+      "25": "Programmes et soutien pour les communautés LGBTQ+ au Manitoba.",
+      "26": "Ligne nationale d'aide en cas de crise suicidaire, 24/7 — appelez ou textez le 9-8-8.",
+      "27": "Ligne d'écoute nationale pour les peuples autochtones offrant du counseling immédiat en santé mentale et de l'intervention en situation de crise.",
+      "28": "Ligne de soutien par les pairs animée par des personnes trans, pour les personnes trans et en questionnement.",
+      "29": "Soutien 24/7 pour les jeunes par téléphone, texto ou clavardage.",
+      "30": "Counseling professionnel et orientation pour les jeunes Noirs partout au Canada."
+    }
+  },
+  "trialBadge": {
+    "trial_one": "Essai · {{count}} jour restant",
+    "trial_other": "Essai · {{count}} jours restants"
+  },
+  "preview": {
+    "label": "Aperçu",
+    "body": "Cette fonctionnalité est en développement. Elle affiche des <strong>données fictives</strong>, n'est pas reliée à vos dossiers et <strong>rien de ce que vous saisissez n'est enregistré</strong>. N'inscrivez aucun renseignement sur vos clients dans cet écran.",
+    "unavailableTitle": "Pas encore offert",
+    "unavailableBody": "La prise de rendez-vous en ligne et le portail client ne sont pas encore offerts. Communiquez directement avec votre professionnel pour prendre rendez-vous ou transmettre des renseignements."
+  },
+  "overview": {
+    "loadFailed": "Impossible de charger votre tableau de bord. Actualisez la page pour réessayer.",
+    "sessionsToday": "Séances aujourd'hui",
+    "activeClients": "Clients actifs",
+    "onWaitlist_one": "{{count}} en liste d'attente",
+    "onWaitlist_other": "{{count}} en liste d'attente",
+    "collected": "Encaissé ce mois-ci",
+    "outstanding_one": "{{amount}} à recevoir ({{count}} facture)",
+    "outstanding_other": "{{amount}} à recevoir ({{count}} factures)",
+    "draftNotes": "Notes en brouillon",
+    "lockHint": "À verrouiller dans les 24 h suivant la séance",
+    "todaysSessions": "Séances d'aujourd'hui",
+    "openCalendar": "Ouvrir le calendrier",
+    "noSessions": "Aucune séance prévue aujourd'hui.",
+    "openNote": "Ouvrir la note",
+    "writeNote": "Rédiger la note",
+    "notesToFinish": "Notes à terminer",
+    "allLocked": "Toutes les notes sont verrouillées. Beau travail.",
+    "newNote": "Nouvelle note de séance",
+    "schedule": "Planifier une séance"
   }
 }

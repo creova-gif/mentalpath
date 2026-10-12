@@ -21,7 +21,10 @@ test('signup creates a real account with profile metadata and no billing fields'
   await page.getByRole('button', { name: 'CRPO (ON)' }).click();
   await page.getByRole('button', { name: 'Continue →' }).click();
 
-  await expect(page.getByRole('button', { name: /group practice/i })).toBeDisabled();
+  // Group is selectable (practice and seats are set up after sign-up); Solo is the default
+  await expect(page.getByRole('button', { name: /solo practitioner/i })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: /group practice/i }).click();
+  await expect(page.getByRole('button', { name: /group practice/i })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: /start free trial/i }).click();
   await page.getByRole('button', { name: /skip and go to dashboard/i }).click();
 

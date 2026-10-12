@@ -3,24 +3,24 @@
     "features": "Features",
     "compliance": "Compliance",
     "pricing": "Pricing",
-    "clientPortal": "Client Portal",
     "dashboard": "Dashboard",
     "signUpFree": "Sign Up Free",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "toggleMenu": "Toggle menu"
   },
   "hero": {
-    "badge": "Made for Canadian practitioners · PHIPA-first",
+    "badge": "Made for Canadian practitioners · Data stored in Canada",
     "title": {
       "line1": "Less admin.",
       "line2": "More time with",
       "line2Italic": "your clients."
     },
-    "subtitle": "Practice management built for Canadian regulated health practitioners — therapists, chiropractors, physiotherapists, RMTs, and more. Data stored in Canada, designed around PHIPA, and priced for solo practice.",
+    "subtitle": "Practice management for Canadian regulated health practitioners — therapists, chiropractors, physiotherapists, RMTs and more. Records stored in Canada, two-factor sign-in, and pricing built for solo practice.",
     "cta": "Start your free trial →",
     "seeHow": "See how it works",
     "footer": {
       "noCreditCard": "No credit card required",
-      "canadianServers": "Canadian servers (PHIPA)",
+      "canadianServers": "Canadian servers",
       "cancelAnytime": "Cancel anytime"
     },
     "scrollLabel": "Scroll",
@@ -30,8 +30,8 @@
       "upcoming": "Upcoming",
       "aiDrafted": "AI note drafted",
       "aiSession": "Session with Amara M. →",
-      "aiMeta": "SOAP · Locks in 22h · PHIPA",
-      "phipaBadge": "PHIPA · AWS ca-central-1",
+      "aiMeta": "SOAP · Draft · Review before locking",
+      "phipaBadge": "Stored in Canada · AWS ca-central-1",
       "session1Time": "10:00 AM · 50 min · Individual",
       "session2Time": "11:30 AM · 50 min · Individual",
       "session3Time": "2:00 PM · 50 min · Couples"
@@ -281,31 +281,31 @@
   },
   "ticker": [
     "Canadian data residency",
-    "Canadian Servers Only",
-    "PIPEDA Certified",
-    "AES-256 Encrypted",
-    "College-Ready Records",
-    "No US Routing",
-    "AWS ca-central-1",
-    "Audit Logs",
-    "Therapist-Key Encryption",
-    "CRPO · CPO · CPSBC"
+    "Two-factor sign-in",
+    "Notes encrypted with your own key",
+    "Locked notes & dated amendments",
+    "Database audit log",
+    "10-year retention handled",
+    "AWS ca-central-1 (Montréal)",
+    "PHQ-9 & GAD-7",
+    "Insurance receipts",
+    "T2125 export"
   ],
   "statsBar": {
     "practitioners": {
-      "stat": "25,000+",
-      "label": "Regulated Canadian practitioners",
-      "sub": "Therapists · DCs · PTs · RMTs · NDs"
+      "stat": "10 years",
+      "label": "Records kept to College rules",
+      "sub": "Then destroyed automatically"
     },
     "price": {
       "stat": "$49/mo",
       "label": "Solo practitioner plan",
-      "sub": "Less than Jane App · More for Canada"
+      "sub": "Unlimited clients · AI Assist included"
     },
     "trial": {
       "stat": "7 days",
       "label": "Free trial, no card required",
-      "sub": "Full feature access from day one"
+      "sub": "Then a free Starter plan if you don't subscribe"
     }
   },
   "professionSection": {
@@ -319,32 +319,32 @@
   "problemSection": {
     "tag": "The real problem",
     "title": {
-      "line1": "Your US practice software",
-      "line2": "is",
-      "line2Italic": "putting you at risk."
+      "line1": "Practice admin",
+      "line2": "shouldn't",
+      "line2Italic": "eat your evenings."
     },
-    "subtitle": "TherapyNotes, TheraNest, SimplePractice — built for American practitioners, storing your clients' most sensitive data on US servers. Your College doesn't accept that.",
-    "cta": "Switch in one afternoon →",
+    "subtitle": "Clinical notes, invoices, receipts and record-keeping rules add up. MentalPath keeps them in one place, with records stored in Canada.",
+    "cta": "Start your free trial →",
     "cards": [
       {
-        "badge": "Privacy risk",
-        "title": "US cloud complicates PHIPA compliance",
-        "desc": "Ontario's PHIPA requires health data in Canada. Most US tools fail this test — leaving you exposed."
+        "badge": "Data residency",
+        "title": "Where are your records stored?",
+        "desc": "Many practice tools host health records outside Canada. MentalPath stores yours in Montréal (AWS ca-central-1)."
       },
       {
-        "badge": "$400–1,200/yr",
-        "title": "Enterprise pricing for solo work",
-        "desc": "Jane App starts at $54/mo. Owl Practice at $89/mo. Built for 10-clinician groups, not solo practitioners."
+        "badge": "Cost",
+        "title": "Paying for a clinic you don't run",
+        "desc": "Tools built for large clinics charge for features solo practitioners never use. Starter is free; Solo is a flat $49/month."
       },
       {
-        "badge": "Missing context",
-        "title": "Generic intake forms",
-        "desc": "Newcomer trauma, racialized stress, cultural identity frameworks — not in any US intake library."
+        "badge": "Records",
+        "title": "Defensible documentation",
+        "desc": "Locked notes, dated amendments and an audit log your clinic can't edit — the basics Colleges expect."
       },
       {
-        "badge": "2–3 hrs/week",
-        "title": "Fragmented tools",
-        "desc": "Notes, billing, scheduling, portal — cobbled from 4 different vendors. MentalPath replaces all four."
+        "badge": "Time",
+        "title": "Notes after every session",
+        "desc": "Optional AI drafting turns your session jottings into a structured note you review and sign."
       }
     ]
   },
@@ -357,47 +357,49 @@
     "subtitle": "Built for solo and small-group Canadian practitioners — not a port of a US product.",
     "aiNotes": {
       "tag": "AI Note Drafting",
-      "title": "SOAP, DAP, BIRP notes drafted from your session notes — entirely on Canadian servers.",
-      "body": "Draft, review, sign. Notes locked after 24hrs and searchable across all clients.",
-      "previewNote": "Session Note — Amara M. · March 16",
-      "aiLabel": "AI drafting from your notes..."
+      "title": "SOAP, DAP and BIRP drafts from your own session notes — with your consent.",
+      "body": "Draft, review, lock. Off until you opt in; identifiers are scrubbed before text is sent to Anthropic (US), and every use is logged.",
+      "previewNote": "Session note — sample",
+      "aiLabel": "AI drafting from your notes...",
+      "sampleS": "Client reports reduced sleep, 5–6 hrs/night. Anxiety around job stability...",
+      "sampleO": "Alert, appropriately groomed. Affect anxious..."
     },
     "billing": {
       "tag": "Billing & Receipts",
-      "title": "Official insurance receipts, sliding scale, Stripe, T2125 export.",
+      "title": "CAD invoices, insurance receipts, Stripe subscriptions and T2125 export.",
       "tags": [
         "CAD billing",
-        "Sliding scale",
-        "Stripe",
+        "Insurance receipts",
+        "Per-client rates",
         "Tax export"
       ]
     },
     "scheduling": {
-      "tag": "Online Scheduling",
-      "title": "Public booking link. SMS + email reminders. Google Calendar sync.",
-      "body": "Reduce no-shows by up to 40% with automated reminders sent 24hrs and 1hr before each session."
+      "tag": "Calendar & Session Prep",
+      "title": "Weekly calendar, session status and a prep view before each session.",
+      "body": "See the last note, unsigned notes, latest measures and anything owing for every booked client."
     },
     "portal": {
-      "tag": "Client Portal",
-      "title": "Secure portal for booking, intake forms, invoices, and encrypted messaging.",
-      "body": "No app download required. Works on any device."
+      "tag": "Outcome Measures",
+      "title": "PHQ-9 and GAD-7 with automatic scoring and change over time.",
+      "body": "Item 9 of the PHQ-9 is flagged for your risk protocol."
     },
     "group": {
       "tag": "Group Practice",
-      "title": "Multi-clinician calendars, owner dashboard, role-based access, payout reporting.",
-      "body": "Built for practices with 2–20 clinicians who need shared scheduling and separate billing."
+      "title": "One bill for your team, by seat. Owner dashboard with counts only.",
+      "body": "Each clinician's clients and notes stay private — owners never see client data."
     },
     "clientMgmt": {
-      "tag": "Client Management",
-      "title": "Culturally-adapted intake forms. Full records. Consent management built-in.",
-      "body": "Pre-built templates for newcomer trauma, BIPOC mental health, and intersectional frameworks — ready to use, fully customizable.",
-      "templatesLabel": "Intake Templates",
+      "tag": "Client Records",
+      "title": "Client records, waitlist and retention handled for you.",
+      "body": "Every record shows how long it must be kept. Export everything at any time.",
+      "templatesLabel": "Included",
       "templates": [
-        "General Adult Intake",
-        "Newcomer Trauma Screen",
-        "BIPOC Mental Health",
-        "Culturally-adapted PHQ-9",
-        "Intersectional Stress Scale"
+        "Client profiles",
+        "Waitlist",
+        "Retention dates",
+        "Full data export",
+        "Audit log"
       ]
     }
   },
@@ -407,35 +409,35 @@
       "line1": "Compliance isn't a feature.",
       "line2Italic": "It's the foundation."
     },
-    "subtitle": "Every architectural decision was made with PHIPA, PIPEDA, and College requirements in mind — not retrofitted, built-in from day one.",
+    "subtitle": "Security and record-keeping controls are enforced by the database itself, not just the app.",
     "points": [
       {
-        "badge": "PHIPA",
-        "title": "All data stored in Canada (AWS ca-central-1)",
-        "desc": "Client records, session notes, billing — hosted exclusively in Montreal and Toronto data centres. Never routed through or accessible under US CLOUD Act."
+        "badge": "Residency",
+        "title": "Records stored in Canada (AWS ca-central-1, Montréal)",
+        "desc": "Client records, session notes and billing are hosted in Canada. AI Assist, if you turn it on, sends note text to Anthropic in the US."
       },
       {
         "badge": "Encryption",
-        "title": "AES-256 at rest · TLS 1.3 in transit",
-        "desc": "Locked notes can’t be edited or deleted, every access is written to a tamper-proof audit log, and two-factor authentication is required for client records."
+        "title": "Encrypted in transit and at rest — notes with your own key",
+        "desc": "Session-note content is encrypted in the database with a key unique to your account. Two-factor authentication is required for client records."
       },
       {
-        "badge": "College standards",
-        "title": "College-ready records and documentation",
-        "desc": "Note formats, consent forms, and retention periods aligned with CRPO, OCSWSSW, CPO, and CPSBC requirements. Audit logs for every record access."
+        "badge": "Records",
+        "title": "Locked notes, amendments and a database audit log",
+        "desc": "Locked notes can't be edited or deleted; corrections are dated amendments. Every change and note view is logged, and the log can't be altered."
       },
       {
-        "badge": "Consent",
-        "title": "Client consent management built-in",
-        "desc": "Digital consent with timestamped e-signatures. Consent versioning — clients re-consent when your policy changes. Withdrawal recorded and respected automatically."
+        "badge": "Retention",
+        "title": "10-year retention, then automatic destruction",
+        "desc": "Records are kept 10 years after last contact (or 10 years after a client turns 18, whichever is later), then destroyed automatically. You remain the custodian."
       }
     ]
   },
   "pricingSection": {
     "tag": "Simple pricing",
     "title": {
-      "line1": "Pay less than Jane App.",
-      "line2Italic": "Get more for Canada."
+      "line1": "Simple pricing in CAD.",
+      "line2Italic": "Start free."
     },
     "subtitle": "No unit minimums. No surprise fees. Cancel any month.",
     "mostPopular": "Most popular",
@@ -444,12 +446,12 @@
         "name": "Starter",
         "price": "Free",
         "period": "forever · 1 active client",
-        "description": "Try MentalPath with a real client before committing. Full feature access, single client limit.",
+        "description": "Try MentalPath with a real client before committing. One active client, no AI Assist.",
         "features": [
           "1 active client",
           "All note templates",
           "Canadian server storage",
-          "Basic scheduling"
+          "Invoices & receipts"
         ],
         "cta": "Get started free"
       },
@@ -462,11 +464,10 @@
         "features": [
           "Unlimited clients",
           "SOAP / DAP / BIRP notes",
-          "AI session note assist",
-          "Online booking + reminders",
-          "Client portal + messaging",
+          "AI note assist (opt-in)",
+          "PHQ-9 & GAD-7",
+          "Session prep & calendar",
           "Billing + insurance receipts",
-          "Culturally-adapted intakes",
           "T2125 tax export"
         ],
         "cta": "Start 7-day free trial"
@@ -486,30 +487,6 @@
         "cta": "Start a group practice"
       }
     }
-  },
-  "testimonialsSection": {
-    "tag": "From practitioners",
-    "title": {
-      "line1": "Therapists who",
-      "line1Italic": "switched."
-    },
-    "testimonials": [
-      {
-        "quote": "I was on TherapyNotes for 3 years until my College supervisor flagged the US storage issue. Switched to MentalPath in an afternoon. The culturally-adapted intake templates alone saved me two weeks of work.",
-        "name": "Dr. Abena Osei-Mensah",
-        "role": "Registered Psychotherapist · Toronto, ON"
-      },
-      {
-        "quote": "The sliding scale billing feature is exactly what I needed. Most of my clients are newcomers navigating their first year in Canada — being able to set rates per client without awkward workarounds changed how I run my practice.",
-        "name": "Maya Rodriguez, MSW, RSW",
-        "role": "Social Worker · Vancouver, BC"
-      },
-      {
-        "quote": "Switched from Jane App. $65/mo cheaper and the DAP note templates are actually better. My notes are compliant with my College's requirements right out of the box — I didn't configure a thing.",
-        "name": "Dr. Kenji Nakamura",
-        "role": "Clinical Psychologist · Calgary, AB"
-      }
-    ]
   },
   "ctaSection": {
     "tag": "Ready to start",
@@ -533,12 +510,11 @@
       "features": "Features",
       "compliance": "Compliance",
       "pricing": "Pricing",
-      "clientPortal": "Client Portal",
       "phipa": "PHIPA",
       "pipeda": "PIPEDA",
       "collegeStandards": "College standards",
       "privacy": "Privacy",
-      "terms": "Terms",
+      "terms": "Contact",
       "support": "Support"
     },
     "copyright": "© 2026 MentalPath. Made in Canada."
@@ -557,10 +533,7 @@
         "line2": "every",
         "line3": "regulated health professional."
       },
-      "description": "Note templates, receipt formats, outcome measures, and College standards configured automatically for your profession. Your data is stored in Canada.",
-      "testimonial": "",
-      "author": "Dr. Abena Osei-Mensah, RP",
-      "authorRole": "Registered Psychotherapist · Toronto, ON",
+      "description": "Note formats, insurance receipts, outcome measures and record-keeping built for Canadian practitioners. Your data is stored in Canada.",
       "badges": {
         "phipa": "Data stored in Canada",
         "servers": "Canadian servers",
@@ -619,7 +592,7 @@
       "group": "Group practice",
       "groupPrice": "$79",
       "groupPeriod": "/clinician",
-      "groupDesc": "Multi-clinician practices — coming soon",
+      "groupDesc": "Seat-based billing for your team — set up your practice after sign-up",
       "trialNotice": "Your 7-day Solo trial starts today. No card is needed. When it ends you move to the free Starter plan (1 active client) unless you subscribe.",
       "startTrial": "Start free trial →",
       "back": "← Back"
@@ -640,7 +613,8 @@
       "checkEmailTitle": "Check your email",
       "checkEmailBody": "We sent a confirmation link to {{email}}. Open it to activate your account, then sign in and set up two-factor authentication.",
       "goToLogin": "Go to sign in"
-    }
+    },
+    "clientEmailPlaceholder": "client@example.com"
   },
   "sessionNotes": {
     "summary": "{{draftCount}} drafts · {{lockedCount}} locked notes",
@@ -688,15 +662,20 @@
       },
       "sessionsCount": "{{count}} session(s)",
       "actionReceipt": "Receipt",
-      "actionReminder": "Send reminder"
+      "actionReminder": "Send reminder",
+      "undoPaid": "Undo paid",
+      "markPaid": "Mark paid"
     },
     "taxPrep": {
       "title": "Tax prep — T2125 self-employment summary",
       "description": "MentalPath generates a year-end income summary formatted for Schedule T2125 (Statement of Business Activities). Download at tax time — no accountant needed for the basics.",
       "exportT2125": "Export {{year}} T2125 summary",
       "exporting": "Exporting…",
-      "downloadReceipts": "Download all receipts (CSV)"
-    }
+      "downloadReceipts": "Download all receipts (CSV)",
+      "year": "Tax year"
+    },
+    "loadFailed": "Could not load invoices",
+    "updateFailed": "Could not update the invoice"
   },
   "messages": {
     "title": "Messages",
@@ -1004,7 +983,8 @@
       "deleteWarning": "This will permanently delete your client records, session notes, and all associated data. Your data is retained for 90 days before permanent deletion. This action cannot be undone.",
       "deleteBtn": "Delete my account",
       "exportBtn": "Export my data first"
-    }
+    },
+    "previewNotSaved": "Preview — these settings are not saved yet"
   },
   "resetPassword": {
     "title": "Choose a new password",
@@ -2057,5 +2037,247 @@
       "title": "Your rights",
       "body": "If you are a client, contact your clinician to access or correct your records. Clinicians and anyone else can reach our privacy contact at <mail>privacy@mentalpath.ca</mail>. You can also contact the Information and Privacy Commissioner of Ontario or the Office of the Privacy Commissioner of Canada."
     }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "How MentalPath works today — for Canadian health practitioners.",
+    "search": "Search questions…",
+    "noResults": "No results found",
+    "tryAgain": "Try a different search term.",
+    "stillNeed": "Didn't find your answer?",
+    "contactSupport": "Contact us",
+    "categories": {
+      "privacy": {
+        "title": "Privacy and data security",
+        "items": [
+          {
+            "q": "Where is my client data stored?",
+            "a": "In Canada: Supabase on AWS, Montréal region (ca-central-1). Card payments are handled by Stripe, and MentalPath never sees full card numbers."
+          },
+          {
+            "q": "How are records protected?",
+            "a": "Every record is scoped to your account by the database (row-level security), and client records can only be opened from a session that has passed two-factor authentication. Session-note content is additionally encrypted in the database with a key unique to your account. Data is encrypted in transit (TLS) and at rest."
+          },
+          {
+            "q": "Does any data leave Canada?",
+            "a": "Only if you turn on AI Note Assist. It is off by default; when you use it, the note text you're drafting from is sent to Anthropic in the United States. Phone numbers, emails, health card numbers, SINs, postal codes and dated birthdates are removed first, and each use is recorded in your audit log."
+          },
+          {
+            "q": "Is MentalPath \"PHIPA certified\"?",
+            "a": "There is no official PHIPA certification for software. You remain the health information custodian; MentalPath acts as your service provider and gives you the controls described here. Our privacy impact assessment is summarised on the Privacy page."
+          },
+          {
+            "q": "Can I export my data?",
+            "a": "Yes, at any time: Settings → Danger zone → Download my data gives you a JSON file with your profile, clients, notes (decrypted), amendments, outcome measures, invoices, appointments and audit log. The export itself is logged."
+          }
+        ]
+      },
+      "billing": {
+        "title": "Plans and billing",
+        "items": [
+          {
+            "q": "How does the free trial work?",
+            "a": "New accounts get 7 days of the Solo plan with no card required, including 20 AI Assist uses. If you subscribe during the trial you keep the remaining days and are charged when the trial ends."
+          },
+          {
+            "q": "What happens when the trial ends?",
+            "a": "If you don't subscribe, you move to the free Starter plan: 1 active client and no AI Assist. Nothing is deleted and all your existing records stay available."
+          },
+          {
+            "q": "How much does MentalPath cost?",
+            "a": "Starter is free (1 active client). Solo is C$49 per month with unlimited clients and up to 500 AI Assist uses a month. Group Practice is C$79 per clinician per month, billed to the practice owner by seat. Applicable taxes are shown at checkout."
+          },
+          {
+            "q": "Can I cancel anytime?",
+            "a": "Yes, from the billing portal (Settings → Subscription). Your plan stays active until the end of the period you've paid for, then you move to Starter with your records intact."
+          },
+          {
+            "q": "How does Group Practice work?",
+            "a": "The owner creates a practice, chooses the number of seats and invites clinicians by email. Each member gets the Group plan while their seat is paid. Members' clients and notes stay private; the owner sees counts only."
+          }
+        ]
+      },
+      "features": {
+        "title": "Features",
+        "items": [
+          {
+            "q": "Which note formats are supported?",
+            "a": "DAP, SOAP, BIRP and progress notes. Notes autosave as drafts; once locked they can't be edited or deleted, and corrections are added as dated amendments."
+          },
+          {
+            "q": "How does AI Note Assist work?",
+            "a": "Write brief notes in each section and click AI assist. You'll be asked for consent the first time. The draft is a suggestion — review and edit it before locking. It is not a substitute for clinical judgment."
+          },
+          {
+            "q": "Which outcome measures are included?",
+            "a": "PHQ-9 and GAD-7. MentalPath calculates the total and severity band, shows change over time, and flags PHQ-9 item 9 for your risk protocol."
+          },
+          {
+            "q": "Can I give clients insurance receipts?",
+            "a": "Yes. Mark an invoice as paid and print a receipt from Insurance Receipts. It includes your name, profession and College registration number, the client, service date, amount and tax status."
+          },
+          {
+            "q": "What is the T2125 export?",
+            "a": "A year-end CSV summary of your paid income by month, to help with CRA form T2125. Check it with your accountant."
+          },
+          {
+            "q": "Is there online booking, a client portal or secure messaging?",
+            "a": "Not yet. These are on the roadmap and are not available in the current version."
+          }
+        ]
+      },
+      "technical": {
+        "title": "Technical and setup",
+        "items": [
+          {
+            "q": "What devices can I use?",
+            "a": "Any modern browser on a computer or tablet. There's nothing to install. You'll need an authenticator app (such as Google Authenticator, 1Password or Authy) for two-factor sign-in."
+          },
+          {
+            "q": "What if I lose my authenticator device?",
+            "a": "Contact support@mentalpath.ca from your account email. For security we verify your identity before resetting two-factor authentication."
+          },
+          {
+            "q": "How do I move from another system?",
+            "a": "Add clients from the Clients page. Bulk import isn't available yet — email support if you need help migrating a larger caseload."
+          }
+        ]
+      },
+      "regulatory": {
+        "title": "Regulatory and professional",
+        "items": [
+          {
+            "q": "Is MentalPath approved by my College?",
+            "a": "Colleges don't approve software. MentalPath is designed around common record-keeping expectations — locked records, dated amendments, audit trail and a 10-year retention rule — but you remain responsible for meeting your College's standards."
+          },
+          {
+            "q": "How long are records kept?",
+            "a": "10 years after the last contact with the client, or 10 years after they turn 18, whichever is later. Records are then destroyed automatically. The date is shown on each client's profile."
+          },
+          {
+            "q": "Should I tell clients I use AI-assisted documentation?",
+            "a": "Check your College's guidance and your consent forms. AI Assist is optional and off unless you turn it on."
+          }
+        ]
+      }
+    }
+  },
+  "supportPage": {
+    "title": "Support"
+  },
+  "resourcesPage": {
+    "title": "Community resources",
+    "subtitle": "Canadian mental health and community supports for client referrals.",
+    "print": "Print list",
+    "noticeTitle": "Check details before referring",
+    "noticeBody": "Listed organizations are Canadian. Phone numbers and services change — confirm details on the organization's website before referring a client. Referrals aren't recorded unless you note them in the client's file. For an emergency, call 9-1-1; for a suicide crisis, call or text 9-8-8.",
+    "search": "Search by name, type or keyword…",
+    "province": "Province/territory",
+    "type": "Resource type",
+    "community": "Community",
+    "showing_one": "Showing {{count}} resource",
+    "showing_other": "Showing {{count}} resources",
+    "none": "No resources match your filters.",
+    "website": "Visit website",
+    "languages": "Languages: {{list}}",
+    "provinces": {
+      "all": "All provinces",
+      "National": "National",
+      "ON": "Ontario",
+      "BC": "British Columbia",
+      "AB": "Alberta",
+      "QC": "Quebec",
+      "NS": "Nova Scotia",
+      "MB": "Manitoba",
+      "SK": "Saskatchewan",
+      "NB": "New Brunswick",
+      "PE": "Prince Edward Island",
+      "NL": "Newfoundland and Labrador",
+      "YT": "Yukon",
+      "NT": "Northwest Territories",
+      "NU": "Nunavut"
+    },
+    "types": {
+      "all": "All types",
+      "crisis": "Crisis support",
+      "newcomer": "Newcomer support",
+      "lgbtq": "LGBTQ+ support",
+      "indigenous": "Indigenous services",
+      "youth": "Youth support",
+      "cultural": "Cultural organizations",
+      "mental-health": "Mental health services"
+    },
+    "communities": {
+      "all": "All communities",
+      "Newcomer": "Newcomer",
+      "Refugee": "Refugee",
+      "LGBTQ+": "LGBTQ+",
+      "Indigenous": "Indigenous",
+      "Youth": "Youth",
+      "Racialized Communities": "Racialized communities"
+    },
+    "items": {
+      "1": "24/7 crisis line and support for anyone experiencing emotional distress, loneliness, or thoughts of suicide.",
+      "2": "Settlement services, employment support, language classes, and community connections for newcomers.",
+      "3": "Programs and services for Indigenous peoples including counseling, cultural activities, and community support.",
+      "4": "Peer support line and community resources for LGBTQ+ individuals and their allies.",
+      "5": "Settlement services, cultural programs, and support for racialized and newcomer communities.",
+      "6": "Ethno-racial mental health and addictions services with culturally-responsive care.",
+      "7": "Community centre providing programs, counseling, and support for LGBTQ+ communities.",
+      "8": "Settlement, employment, language training, and mental health support for immigrants and refugees.",
+      "9": "Holistic health services for Indigenous communities including traditional healing and counseling.",
+      "10": "Mental health and crisis support for youth ages 12-29, including walk-in counseling.",
+      "11": "24/7 crisis and suicide prevention line serving Ottawa and surrounding areas.",
+      "12": "Settlement services, employment programs, and community support for newcomers.",
+      "13": "24/7 crisis line providing emotional support and suicide intervention services.",
+      "14": "Settlement, employment, and integration services for immigrants and refugees in Metro Vancouver.",
+      "15": "BC's LGBTQ+ resource centre providing counseling, support groups, and community programs.",
+      "16": "24/7 crisis support, suicide prevention, and community referrals.",
+      "17": "Settlement, employment, and integration services for immigrants and refugees in Calgary.",
+      "18": "24/7 distress line and suicide prevention for Northern Alberta.",
+      "19": "Listening and support service for anyone in distress (French and English).",
+      "20": "Support for LGBTQ+ immigrants and refugees in Quebec.",
+      "21": "Settlement and integration services for immigrants in Montreal.",
+      "22": "24/7 mental health crisis support for Nova Scotia.",
+      "23": "Settlement, employment, and community integration services for newcomers.",
+      "24": "24/7 crisis support and suicide prevention for Manitoba.",
+      "25": "Programs and support for LGBTQ+ communities in Manitoba.",
+      "26": "National 24/7 suicide crisis line — call or text 9-8-8.",
+      "27": "National helpline for Indigenous peoples offering immediate mental health counseling and crisis intervention.",
+      "28": "Peer support hotline staffed by trans people for trans and questioning individuals.",
+      "29": "24/7 support for youth by phone, text, or live chat.",
+      "30": "Professional counseling and referrals for Black youth across Canada."
+    }
+  },
+  "trialBadge": {
+    "trial_one": "Trial · {{count}} day left",
+    "trial_other": "Trial · {{count}} days left"
+  },
+  "preview": {
+    "label": "Preview",
+    "body": "This feature is in development. It shows <strong>sample data</strong>, isn't connected to your records, and <strong>nothing you enter here is saved</strong>. Don't enter client information on this screen.",
+    "unavailableTitle": "Not available yet",
+    "unavailableBody": "Online booking and the client portal aren't available yet. Please contact your practitioner directly to book or share information."
+  },
+  "overview": {
+    "loadFailed": "Couldn't load your dashboard. Refresh to try again.",
+    "sessionsToday": "Sessions today",
+    "activeClients": "Active clients",
+    "onWaitlist_one": "{{count}} on waitlist",
+    "onWaitlist_other": "{{count}} on waitlist",
+    "collected": "Collected this month",
+    "outstanding_one": "{{amount}} outstanding ({{count}} invoice)",
+    "outstanding_other": "{{amount}} outstanding ({{count}} invoices)",
+    "draftNotes": "Draft notes",
+    "lockHint": "Lock within 24h of the session",
+    "todaysSessions": "Today's sessions",
+    "openCalendar": "Open calendar",
+    "noSessions": "No sessions scheduled today.",
+    "openNote": "Open note",
+    "writeNote": "Write note",
+    "notesToFinish": "Notes to finish",
+    "allLocked": "All notes are locked. Nice work.",
+    "newNote": "New session note",
+    "schedule": "Schedule a session"
   }
 }

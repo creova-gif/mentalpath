@@ -66,7 +66,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavItem to="/dashboard/billing" icon={CreditCard} label={t('sidebar.items.billing')} onClick={onClose} />
             <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label={t('sidebar.items.insuranceReceipts')} onClick={onClose} />
             <NavItem to="/dashboard/group-practice" icon={Building2} label={t('sidebar.items.groupPractice')} onClick={onClose} />
-            <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label={t('sidebar.items.culturalTemplates')} onClick={onClose} />
+            {import.meta.env.DEV && <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label={t('sidebar.items.culturalTemplates')} badge={t('sidebar.preview')} onClick={onClose} />}
           </div>
 
           <div className="py-4 px-3">
@@ -78,7 +78,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/hep-builder" icon={Dumbbell} label={t('sidebar.items.hepBuilder')} badge={t('sidebar.preview')} onClick={onClose} />}
             <NavItem to="/dashboard/waitlist" icon={UserPlus} label={t('sidebar.items.waitlist')} onClick={onClose} />
             <NavItem to="/dashboard/resources" icon={BookOpen} label={t('sidebar.items.resources')} onClick={onClose} />
-            <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label={t('sidebar.items.wellbeing')} onClick={onClose} />
+            {import.meta.env.DEV && <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label={t('sidebar.items.wellbeing')} badge={t('sidebar.preview')} onClick={onClose} />}
           </div>
 
           <div className="py-4 px-3">

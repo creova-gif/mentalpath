@@ -33,4 +33,13 @@ i18n
     console.error('Failed to initialize i18n:', error);
   });
 
+// Persist the choice and keep <html lang> in sync (screen readers and
+// browser translation depend on it — WCAG 3.1.1).
+function syncLanguage(lng: string) {
+  if (typeof document !== 'undefined') document.documentElement.lang = lng.startsWith('fr') ? 'fr-CA' : 'en-CA';
+  try { localStorage.setItem('mentalpath_language', lng.startsWith('fr') ? 'fr' : 'en'); } catch { /* storage unavailable */ }
+}
+syncLanguage(i18n.language ?? getSavedLanguage());
+i18n.on('languageChanged', syncLanguage);
+
 export default i18n;
