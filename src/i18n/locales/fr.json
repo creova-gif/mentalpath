@@ -710,7 +710,45 @@
   },
   "calendar": {
     "title": "Vue calendrier",
-    "comingSoon": "Calendrier complet avec gestion des liens de réservation à venir lors de la phase 2."
+    "comingSoon": "Calendrier complet avec gestion des liens de réservation à venir lors de la phase 2.",
+    "loadFailed": "Impossible de charger les rendez-vous",
+    "scheduled": "Séance planifiée",
+    "scheduleFailed": "Impossible de planifier la séance",
+    "cancelReason": "Motif de l'annulation (facultatif)",
+    "updateFailed": "Impossible de mettre à jour la séance",
+    "prevWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "today": "Aujourd'hui",
+    "schedule": "Planifier une séance",
+    "client": "Client",
+    "select": "Choisir…",
+    "date": "Date",
+    "time": "Heure",
+    "length": "Durée",
+    "type": "Type",
+    "types": {
+      "individual": "Individuelle",
+      "couples": "Couple",
+      "family": "Famille",
+      "group": "Groupe",
+      "intake": "Accueil",
+      "video": "Vidéo",
+      "in-person": "En personne",
+      "phone": "Téléphone"
+    },
+    "saving": "Enregistrement…",
+    "save": "Enregistrer",
+    "addClientFirst": "Ajoutez d'abord un client actif.",
+    "status": {
+      "scheduled": "planifiée",
+      "completed": "terminée",
+      "cancelled": "annulée",
+      "no_show": "absence"
+    },
+    "note": "Note",
+    "done": "Terminée",
+    "noShow": "Absence",
+    "cancel": "Annuler"
   },
   "settings": {
     "title": "Paramètres de pratique",
@@ -1595,5 +1633,170 @@
       "status": "Statut"
     },
     "noInvoices": "Aucune facture pour l'instant."
+  },
+  "waitlist": {
+    "added": "Ajouté à la liste d'attente",
+    "addFailed": "Impossible d'ajouter à la liste d'attente",
+    "activated": "{{name}} est maintenant un client actif",
+    "activateFailed": "Impossible d'activer le client",
+    "removeConfirm": "Retirer {{name}} de la liste d'attente? Son dossier est conservé comme inactif.",
+    "updateFailed": "Mise à jour impossible",
+    "loading": "Chargement…",
+    "summary_one": "{{count}} personne en attente · attente moyenne de {{avg}} jours",
+    "summary_other": "{{count}} personnes en attente · attente moyenne de {{avg}} jours",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Courriel",
+    "add": "Ajouter à la liste d'attente",
+    "reason": "Motif de la référence (facultatif)",
+    "empty": "Personne n'est en attente.",
+    "noEmail": "Aucun courriel",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours",
+    "offer": "Offrir une place",
+    "remove": "Retirer"
+  },
+  "compliance": {
+    "tabs": {
+      "audit": "Journal d'audit",
+      "controls": "Comment vos données sont protégées",
+      "breach": "En cas d'atteinte à la vie privée"
+    },
+    "tablist": "Confidentialité et conformité",
+    "auditIntro": "Les 500 événements les plus récents. Le contenu des dossiers n'est jamais conservé dans le journal — seulement ce qui s'est passé, quand, et quels champs ont changé.",
+    "show": "Afficher",
+    "allEvents": "Tous les événements",
+    "loadFailed": "Impossible de charger le journal d'audit.",
+    "caption": "Événements du journal d'audit",
+    "cols": {
+      "when": "Date",
+      "event": "Événement",
+      "record": "Dossier",
+      "details": "Détails",
+      "ip": "IP"
+    },
+    "loading": "Chargement…",
+    "noEvents": "Aucun événement.",
+    "fields": "Champs : {{fields}}",
+    "actions": {
+      "INSERT": "Créé",
+      "UPDATE": "Modifié",
+      "DELETE": "Supprimé",
+      "NOTE_ACCESSED": "Note consultée",
+      "NOTE_LOCKED": "Note verrouillée",
+      "AI_ASSIST_USED": "Aide IA utilisée",
+      "DATA_EXPORTED": "Données exportées",
+      "ACCOUNT_CLOSED": "Compte fermé",
+      "BILLING_UPDATED": "Facturation mise à jour",
+      "BILLING_PAYMENT_SUCCEEDED": "Paiement réussi",
+      "BILLING_PAYMENT_FAILED": "Paiement refusé",
+      "PRACTICE_CREATED": "Pratique créée",
+      "PRACTICE_INVITE_SENT": "Invitation à la pratique créée",
+      "PRACTICE_JOINED": "Pratique rejointe",
+      "PRACTICE_MEMBER_REMOVED": "Membre retiré de la pratique",
+      "PRACTICE_CLOSED": "Pratique fermée"
+    },
+    "tables": {
+      "clients": "Dossier client",
+      "session_notes": "Note de séance",
+      "session_note_amendments": "Addendum",
+      "invoices": "Facture",
+      "appointments": "Rendez-vous",
+      "intake_forms": "Formulaire d'accueil",
+      "clinicians": "Compte",
+      "outcome_measures": "Mesure des résultats",
+      "practices": "Pratique",
+      "practice_members": "Adhésion à la pratique",
+      "practice_invites": "Invitation à la pratique"
+    },
+    "controls": {
+      "residency": {
+        "title": "Données hébergées au Canada",
+        "body": "Vos dossiers sont stockés chez Supabase (AWS ca-central-1, Montréal). Lorsque vous l'activez, l'aide IA envoie le texte des notes à Anthropic, aux États-Unis."
+      },
+      "mfa": {
+        "title": "Authentification à deux facteurs obligatoire",
+        "body": "Les dossiers clients ne peuvent être consultés ou modifiés qu'à partir d'une session ayant réussi une vérification TOTP. C'est la base de données qui l'impose, pas seulement l'application."
+      },
+      "isolation": {
+        "title": "Vous seul(e) voyez vos dossiers",
+        "body": "La sécurité au niveau des lignes limite chaque client, note, facture et rendez-vous à votre compte — y compris au sein d'une pratique de groupe. L'accès du personnel de MentalPath exige des identifiants de service et ne fait pas partie des opérations normales."
+      },
+      "locked": {
+        "title": "Les notes verrouillées sont permanentes",
+        "body": "Une fois verrouillée, une note ne peut être ni modifiée ni supprimée — les corrections sont ajoutées sous forme d'addenda datés, conformément aux normes de tenue de dossiers des Ordres."
+      },
+      "audit": {
+        "title": "Chaque modification et consultation est consignée",
+        "body": "Le journal d'audit ci-dessous est rédigé par la base de données elle-même. Ni vous ni l'application ne pouvez le modifier ou le supprimer."
+      },
+      "signout": {
+        "title": "Déconnexion automatique",
+        "body": "Vous êtes déconnecté(e) après 15 minutes d'inactivité. Les brouillons de notes ne sont jamais stockés dans votre navigateur."
+      },
+      "encryption": {
+        "title": "Notes chiffrées avec votre propre clé",
+        "body": "Les données sont chiffrées en transit (TLS) et au repos. Le contenu des notes de séance est en plus chiffré dans la base de données avec une clé propre à votre compte : les sauvegardes et copies de la base ne contiennent que du texte chiffré."
+      },
+      "retention": {
+        "title": "Conservation gérée pour vous",
+        "body": "Les dossiers sont conservés 10 ans après le dernier contact (ou 10 ans après les 18 ans du client, selon la date la plus tardive), puis détruits automatiquement."
+      }
+    },
+    "custodian": "Vous demeurez le dépositaire des renseignements sur la santé de vos clients. MentalPath agit comme votre mandataire/fournisseur de services et ne certifie pas votre conformité à la LPRPS, à la LPRPDE ou aux normes de votre Ordre.",
+    "breach": {
+      "title": "Si vous soupçonnez une atteinte à la vie privée",
+      "contain": "<strong>Contenez-la.</strong> Changez votre mot de passe, déconnectez les autres sessions (Paramètres → Sécurité) et retirez tout accès partagé.",
+      "tell": "<strong>Avisez-nous</strong> à privacy@mentalpath.ca si les systèmes de MentalPath pourraient être en cause. Nous vous aviserons sans délai si nous détectons une atteinte touchant vos dossiers.",
+      "assess": "<strong>Évaluez et avisez.</strong> En tant que dépositaire, la LPRPS de l'Ontario (art. 12) vous oblige à aviser les personnes touchées dès que raisonnablement possible et, dans les cas prescrits, le Commissaire à l'information et à la protection de la vie privée de l'Ontario. Les autres provinces et la LPRPDE ont leurs propres règles.",
+      "record": "<strong>Consignez-la.</strong> Gardez une trace de ce qui s'est passé, des personnes touchées et des mesures prises. Votre Ordre devra peut-être aussi être informé.",
+      "disclaimer": "Il s'agit d'information générale, et non d'un avis juridique. Vérifiez les exigences actuelles auprès de votre Ordre ou du CIPVP."
+    }
+  },
+  "newClient": {
+    "namesRequired": "Le prénom et le nom sont obligatoires.",
+    "upgrade": "Passer à Solo",
+    "failed": "Impossible d'ajouter le client. Veuillez réessayer.",
+    "title": "Ajouter un client",
+    "subtitle": "Dossier client hébergé sur des serveurs canadiens",
+    "close": "Fermer",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Courriel",
+    "phone": "Téléphone",
+    "dob": "Date de naissance",
+    "pronouns": "Pronoms",
+    "pronounOptions": {
+      "They/Them": "Iel",
+      "She/Her": "Elle",
+      "He/Him": "Il",
+      "Other": "Autre"
+    },
+    "sessionType": "Type de séance",
+    "rate": "Tarif par séance",
+    "rateHelp": "Laissez vide pour utiliser votre tarif par défaut ({{rate}} $/séance)",
+    "sliding": "Échelle mobile?",
+    "slidingHelp": "Le client bénéficie d'un tarif selon l'échelle mobile",
+    "template": "Modèle d'accueil",
+    "templates": {
+      "Standard intake": "Accueil standard",
+      "Newcomer trauma-informed": "Nouveaux arrivants — approche tenant compte des traumatismes",
+      "Racialized stress & identity": "Stress racial et identité",
+      "LGBTQ2S+ affirming": "Approche affirmative LGBTQ2S+",
+      "Couples therapy": "Thérapie de couple",
+      "Family systems": "Systèmes familiaux",
+      "Grief & loss": "Deuil et perte"
+    },
+    "templateHelp": "Formulaires d'accueil adaptés culturellement à des contextes précis",
+    "tags": "Étiquettes de contexte culturel (facultatif)",
+    "tagsPlaceholder": "p. ex. Nouvel arrivant, Stress racial, LGBTQ2S+",
+    "tagsHelp": "Séparez les étiquettes par des virgules",
+    "referral": "Source de référence",
+    "referralPlaceholder": "Comment vous a-t-il trouvé?",
+    "notes": "Notes d'accueil",
+    "notesPlaceholder": "Observations initiales, motifs de consultation, objectifs…",
+    "cancel": "Annuler",
+    "adding": "Ajout…",
+    "add": "Ajouter le client"
   }
 }

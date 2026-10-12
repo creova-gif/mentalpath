@@ -710,7 +710,45 @@
   },
   "calendar": {
     "title": "Calendar view",
-    "comingSoon": "Full calendar with booking link management coming in Phase 2."
+    "comingSoon": "Full calendar with booking link management coming in Phase 2.",
+    "loadFailed": "Could not load appointments",
+    "scheduled": "Session scheduled",
+    "scheduleFailed": "Could not schedule the session",
+    "cancelReason": "Reason for cancellation (optional)",
+    "updateFailed": "Could not update the session",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "today": "Today",
+    "schedule": "Schedule session",
+    "client": "Client",
+    "select": "Select…",
+    "date": "Date",
+    "time": "Time",
+    "length": "Length",
+    "type": "Type",
+    "types": {
+      "individual": "Individual",
+      "couples": "Couples",
+      "family": "Family",
+      "group": "Group",
+      "intake": "Intake",
+      "video": "Video",
+      "in-person": "In person",
+      "phone": "Phone"
+    },
+    "saving": "Saving…",
+    "save": "Save",
+    "addClientFirst": "Add an active client first.",
+    "status": {
+      "scheduled": "scheduled",
+      "completed": "completed",
+      "cancelled": "cancelled",
+      "no_show": "no-show"
+    },
+    "note": "Note",
+    "done": "Done",
+    "noShow": "No-show",
+    "cancel": "Cancel"
   },
   "settings": {
     "title": "Practice Settings",
@@ -1595,5 +1633,170 @@
       "status": "Status"
     },
     "noInvoices": "No invoices yet."
+  },
+  "waitlist": {
+    "added": "Added to waitlist",
+    "addFailed": "Could not add to waitlist",
+    "activated": "{{name}} is now an active client",
+    "activateFailed": "Could not activate client",
+    "removeConfirm": "Remove {{name}} from the waitlist? Their record is kept as inactive.",
+    "updateFailed": "Could not update",
+    "loading": "Loading…",
+    "summary_one": "{{count}} waiting · average wait {{avg}} days",
+    "summary_other": "{{count}} waiting · average wait {{avg}} days",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "add": "Add to waitlist",
+    "reason": "Reason for referral (optional)",
+    "empty": "Nobody is waiting.",
+    "noEmail": "No email",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "offer": "Offer a spot",
+    "remove": "Remove"
+  },
+  "compliance": {
+    "tabs": {
+      "audit": "Audit log",
+      "controls": "How your data is protected",
+      "breach": "If a privacy breach happens"
+    },
+    "tablist": "Privacy and compliance",
+    "auditIntro": "Most recent 500 events. Record contents are never stored in the log — only what happened, when, and which fields changed.",
+    "show": "Show",
+    "allEvents": "All events",
+    "loadFailed": "Couldn't load the audit log.",
+    "caption": "Audit log events",
+    "cols": {
+      "when": "When",
+      "event": "Event",
+      "record": "Record",
+      "details": "Details",
+      "ip": "IP"
+    },
+    "loading": "Loading…",
+    "noEvents": "No events.",
+    "fields": "Fields: {{fields}}",
+    "actions": {
+      "INSERT": "Created",
+      "UPDATE": "Edited",
+      "DELETE": "Deleted",
+      "NOTE_ACCESSED": "Note opened",
+      "NOTE_LOCKED": "Note locked",
+      "AI_ASSIST_USED": "AI Assist used",
+      "DATA_EXPORTED": "Data exported",
+      "ACCOUNT_CLOSED": "Account closed",
+      "BILLING_UPDATED": "Billing updated",
+      "BILLING_PAYMENT_SUCCEEDED": "Payment succeeded",
+      "BILLING_PAYMENT_FAILED": "Payment failed",
+      "PRACTICE_CREATED": "Practice created",
+      "PRACTICE_INVITE_SENT": "Practice invite created",
+      "PRACTICE_JOINED": "Joined practice",
+      "PRACTICE_MEMBER_REMOVED": "Practice member removed",
+      "PRACTICE_CLOSED": "Practice closed"
+    },
+    "tables": {
+      "clients": "Client record",
+      "session_notes": "Session note",
+      "session_note_amendments": "Note amendment",
+      "invoices": "Invoice",
+      "appointments": "Appointment",
+      "intake_forms": "Intake form",
+      "clinicians": "Account",
+      "outcome_measures": "Outcome measure",
+      "practices": "Practice",
+      "practice_members": "Practice membership",
+      "practice_invites": "Practice invite"
+    },
+    "controls": {
+      "residency": {
+        "title": "Canadian data residency",
+        "body": "Your records are stored in Supabase (AWS ca-central-1, Montréal). AI Assist, when you turn it on, sends note text to Anthropic in the United States."
+      },
+      "mfa": {
+        "title": "Two-factor authentication required",
+        "body": "Client records can only be read or changed from a session that has passed a TOTP challenge. This is enforced by the database, not just the app."
+      },
+      "isolation": {
+        "title": "Only you can see your records",
+        "body": "Row-level security scopes every client, note, invoice and appointment to your account — including inside a group practice. MentalPath staff access requires service credentials and is not part of normal operation."
+      },
+      "locked": {
+        "title": "Locked notes are permanent",
+        "body": "Once locked, a note cannot be edited or deleted — corrections are added as dated amendments, as College record-keeping standards expect."
+      },
+      "audit": {
+        "title": "Every change and note view is logged",
+        "body": "The audit log below is written by the database itself. You cannot edit or delete it, and neither can the app."
+      },
+      "signout": {
+        "title": "Automatic sign-out",
+        "body": "You are signed out after 15 minutes of inactivity. Note drafts are never stored in your browser."
+      },
+      "encryption": {
+        "title": "Notes encrypted with your own key",
+        "body": "Data is encrypted in transit (TLS) and at rest. Session-note content is additionally encrypted in the database with a key unique to your account, so backups and database copies contain only ciphertext."
+      },
+      "retention": {
+        "title": "Retention handled for you",
+        "body": "Records are kept 10 years after the last contact (or 10 years after a client turns 18, whichever is later), then destroyed automatically."
+      }
+    },
+    "custodian": "You remain the health information custodian for your clients' records. MentalPath acts as your agent/service provider and does not certify your compliance with PHIPA, PIPEDA or your College's standards.",
+    "breach": {
+      "title": "If you suspect a privacy breach",
+      "contain": "<strong>Contain it.</strong> Change your password, sign out other sessions (Settings → Security), and remove any shared access.",
+      "tell": "<strong>Tell us</strong> at privacy@mentalpath.ca if it may involve MentalPath systems. We will notify you without delay if we detect a breach affecting your records.",
+      "assess": "<strong>Assess and notify.</strong> As custodian, Ontario's PHIPA (s. 12) requires you to notify affected individuals at the first reasonable opportunity and, in prescribed cases, the Information and Privacy Commissioner of Ontario. Other provinces and PIPEDA have their own rules.",
+      "record": "<strong>Record it.</strong> Keep a record of what happened, who was affected and the steps you took. Your College may also need to be informed.",
+      "disclaimer": "This is general information, not legal advice. Check the current requirements with your College or the IPC."
+    }
+  },
+  "newClient": {
+    "namesRequired": "First name and last name are required.",
+    "upgrade": "Upgrade to Solo",
+    "failed": "Failed to add client. Please try again.",
+    "title": "Add new client",
+    "subtitle": "Client record stored on Canadian servers",
+    "close": "Close",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "dob": "Date of birth",
+    "pronouns": "Pronouns",
+    "pronounOptions": {
+      "They/Them": "They/Them",
+      "She/Her": "She/Her",
+      "He/Him": "He/Him",
+      "Other": "Other"
+    },
+    "sessionType": "Session type",
+    "rate": "Rate per session",
+    "rateHelp": "Leave blank to use your default (${{rate}}/session)",
+    "sliding": "Sliding scale?",
+    "slidingHelp": "Client is on sliding scale rate",
+    "template": "Intake template",
+    "templates": {
+      "Standard intake": "Standard intake",
+      "Newcomer trauma-informed": "Newcomer trauma-informed",
+      "Racialized stress & identity": "Racialized stress & identity",
+      "LGBTQ2S+ affirming": "LGBTQ2S+ affirming",
+      "Couples therapy": "Couples therapy",
+      "Family systems": "Family systems",
+      "Grief & loss": "Grief & loss"
+    },
+    "templateHelp": "Culturally-adapted intake forms for specific contexts",
+    "tags": "Cultural context tags (optional)",
+    "tagsPlaceholder": "e.g., Newcomer, Racialized stress, LGBTQ2S+",
+    "tagsHelp": "Separate tags with commas",
+    "referral": "Referral source",
+    "referralPlaceholder": "How did they find you?",
+    "notes": "Intake notes",
+    "notesPlaceholder": "Initial observations, presenting concerns, goals...",
+    "cancel": "Cancel",
+    "adding": "Adding…",
+    "add": "Add client"
   }
 }

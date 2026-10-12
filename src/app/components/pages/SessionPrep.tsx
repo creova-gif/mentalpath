@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { loadSessionPrep, type PrepCard } from '../../services/sessionPrep';
 import { formatCad } from '../../services/practice';
 import { INSTRUMENTS } from '@/app/lib/instruments';
+import { uiLocale } from '@/app/lib/locale';
 
 const link = 'text-xs text-[var(--sage-deep)] underline';
 
 export function SessionPrep() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [cards, setCards] = useState<PrepCard[] | null>(null);
   const [error, setError] = useState('');
 
@@ -16,7 +17,7 @@ export function SessionPrep() {
     loadSessionPrep().then(setCards).catch(err => { setError(err instanceof Error ? err.message : String(err)); setCards([]); });
   }, []);
 
-  const locale = i18n.language === 'fr' ? 'fr-CA' : 'en-CA';
+  const locale = uiLocale();
   const when = (iso: string) => new Date(iso).toLocaleString(locale, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
   return (
@@ -38,7 +39,7 @@ export function SessionPrep() {
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
               <h2 className="text-sm font-medium">
                 <Link to={`/dashboard/clients/${c.appointment.clientId}`} className="text-[var(--ink)] no-underline hover:underline">{c.appointment.clientName}</Link>
-                <span className="ml-2 text-xs font-normal text-[var(--ink-muted)]">{when(c.appointment.scheduledAt)} · {c.appointment.sessionType}</span>
+                <span className="ml-2 text-xs font-normal text-[var(--ink-muted)]">{when(c.appointment.scheduledAt)} · {t(`calendar.types.${c.appointment.sessionType}`, { defaultValue: c.appointment.sessionType })}</span>
               </h2>
               <span className="text-xs text-[var(--ink-muted)]">{t('sessionPrep.sessionNumber', { n: c.sessionNumber })}</span>
             </div>
