@@ -1,6 +1,7 @@
 import { track } from '@/app/lib/telemetry';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '@/utils/supabase/client';
 import { formatCad, listClients, type ClientRecord } from '../../services/practice';
@@ -12,6 +13,7 @@ export interface SavedInvoice {
 }
 
 export function InvoiceModal({ onClose, onSaved }: { onClose: () => void; onSaved: (invoice: SavedInvoice) => void }) {
+  const { t } = useTranslation();
   const { user } = useUser();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [clients, setClients] = useState<ClientRecord[]>([]);
@@ -46,11 +48,11 @@ export function InvoiceModal({ onClose, onSaved }: { onClose: () => void; onSave
       sessions,
       amount: total,
       status: 'pending',
-      notes: hst ? `Includes HST ${formatCad(tax)}` : null,
+      notes: hst ? t('invoiceModal.includesHst', { amount: formatCad(tax) }) : null,
     }).select('id, invoice_number, client_name, date, amount, sessions').single();
     setSaving(false);
     if (error || !data) {
-      toast.error('Could not create the invoice', { description: error?.message });
+      toast.error(t('invoiceModal.createFailed'), { description: error?.message });
       return;
     }
     onSaved({
@@ -58,7 +60,7 @@ export function InvoiceModal({ onClose, onSaved }: { onClose: () => void; onSave
       date: data.date, amount: Number(data.amount), status: 'pending', sessions: data.sessions,
     });
     track('invoice_created');
-    toast.success(`Invoice ${data.invoice_number} created`);
+    toast.success(t('invoiceModal.created', { number: data.invoice_number }));
     onClose();
   };
 
@@ -69,40 +71,40 @@ export function InvoiceModal({ onClose, onSaved }: { onClose: () => void; onSave
       className="rounded-2xl border border-[var(--border)] p-0 w-[calc(100%-32px)] max-w-[560px] backdrop:bg-black/40">
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <div className="flex justify-between items-start">
-          <h2 id="invoice-title" className="text-xl" style={{ fontFamily: 'var(--font-display)' }}>Create invoice</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="bg-transparent border-none cursor-pointer text-lg">×</button>
+          <h2 id="invoice-title" className="text-xl" style={{ fontFamily: 'var(--font-display)' }}>{t('invoiceModal.title')}</h2>
+          <button type="button" onClick={onClose} aria-label={t('invoiceModal.close')} className="bg-transparent border-none cursor-pointer text-lg">×</button>
         </div>
-        <label className="block text-[13px] font-medium">Client
+        <label className="block text-[13px] font-medium">{t('invoiceModal.client')}
           <select required value={clientId} onChange={e => setClientId(e.target.value)} className={`${input} mt-1.5`}>
-            <option value="">Select a client…</option>
+            <option value="">{t('invoiceModal.selectClient')}</option>
             {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          <label className="block text-[13px] font-medium">Date
+          <label className="block text-[13px] font-medium">{t('invoiceModal.date')}
             <input type="date" required value={date} onChange={e => setDate(e.target.value)} className={`${input} mt-1.5`} />
           </label>
-          <label className="block text-[13px] font-medium">Sessions
+          <label className="block text-[13px] font-medium">{t('invoiceModal.sessions')}
             <input type="number" min={1} max={100} required value={sessions} onChange={e => setSessions(Number(e.target.value))} className={`${input} mt-1.5`} />
           </label>
-          <label className="block text-[13px] font-medium">Rate (CAD)
+          <label className="block text-[13px] font-medium">{t('invoiceModal.rate')}
             <input type="number" min={0} step="0.01" required value={rate} onChange={e => setRate(Number(e.target.value))} className={`${input} mt-1.5`} />
           </label>
         </div>
         <label className="flex items-center gap-2 text-[13px]">
           <input type="checkbox" checked={hst} onChange={e => setHst(e.target.checked)} className="w-4 h-4 accent-[var(--sage)]" />
-          Charge HST (13%)
+          {t('invoiceModal.chargeHst')}
         </label>
         <dl className="bg-[var(--warm)] rounded-lg p-3 text-[13px] space-y-1">
-          <div className="flex justify-between"><dt>Subtotal</dt><dd>{formatCad(subtotal)}</dd></div>
-          {hst && <div className="flex justify-between"><dt>HST</dt><dd>{formatCad(tax)}</dd></div>}
-          <div className="flex justify-between font-medium"><dt>Total</dt><dd>{formatCad(total)}</dd></div>
+          <div className="flex justify-between"><dt>{t('invoiceModal.subtotal')}</dt><dd>{formatCad(subtotal)}</dd></div>
+          {hst && <div className="flex justify-between"><dt>{t('invoiceModal.hst')}</dt><dd>{formatCad(tax)}</dd></div>}
+          <div className="flex justify-between font-medium"><dt>{t('invoiceModal.total')}</dt><dd>{formatCad(total)}</dd></div>
         </dl>
         <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-[var(--border)] bg-white text-[13px] cursor-pointer">Cancel</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-[var(--border)] bg-white text-[13px] cursor-pointer">{t('invoiceModal.cancel')}</button>
           <button type="submit" disabled={saving || !clientId || total > 99999}
             className="px-4 py-2 rounded-lg bg-[var(--sage)] text-white text-[13px] font-medium border-none cursor-pointer disabled:opacity-60">
-            {saving ? 'Saving…' : 'Create invoice'}
+            {saving ? t('invoiceModal.saving') : t('invoiceModal.title')}
           </button>
         </div>
       </form>

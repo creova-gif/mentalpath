@@ -1178,5 +1178,422 @@
       "hstIncluded": "Le montant comprend la TPS/TVH applicable.",
       "signature": "Signature du professionnel"
     }
+  },
+  "noteEditor": {
+    "notFound": "Cette note n'existe pas ou vous n'y avez pas accès.",
+    "loadFailed": "Impossible de charger cette note.",
+    "aiAdded": "Ébauche IA ajoutée — relisez-la et modifiez-la avant de verrouiller",
+    "aiUnavailable": "L'aide IA n'est pas disponible",
+    "aiPrefFailed": "Impossible d'enregistrer votre préférence d'aide IA.",
+    "writeBeforeLock": "Rédigez la note avant de la verrouiller.",
+    "lockConfirm": "Verrouiller et finaliser cette note? Une note verrouillée ne peut être ni modifiée ni supprimée — les corrections sont ajoutées sous forme d'addenda datés.",
+    "locked": "Note verrouillée",
+    "lockFailed": "Impossible de verrouiller la note",
+    "amendmentAdded": "Addendum ajouté",
+    "amendmentFailed": "Impossible d'ajouter l'addendum",
+    "status": {
+      "locked": "Verrouillée",
+      "notSaved": "Pas encore enregistrée",
+      "saved": "Enregistrée",
+      "unsaved": "Modifications non enregistrées",
+      "saving": "Enregistrement…",
+      "error": "Échec de l'enregistrement — nouvel essai à la prochaine modification"
+    },
+    "loading": "Chargement de la note…",
+    "backToNotes": "Retour aux notes",
+    "offlineTitle": "Vous êtes hors ligne.",
+    "offlineBody": "Les modifications restent dans cet onglet et seront enregistrées à la reconnexion — ne fermez pas cet onglet.",
+    "back": "Retour",
+    "session": "Séance {{n}}",
+    "client": "Client",
+    "selectClient": "Choisir un client…",
+    "saveDraft": "Enregistrer le brouillon",
+    "lockFinalise": "Verrouiller et finaliser",
+    "noteFormat": "Format de note",
+    "sessionDetails": "Détails de la séance",
+    "date": "Date",
+    "duration": "Durée",
+    "minutes": "{{n}} min",
+    "type": "Type",
+    "sessionTypes": {
+      "video": "Vidéo",
+      "in-person": "En personne",
+      "phone": "Téléphone"
+    },
+    "sessionNumber": "Séance no",
+    "assignedOnSave": "Attribué à l'enregistrement",
+    "aiUsed": "L'aide IA a été utilisée pour cette note",
+    "formats": {
+      "dap": {
+        "short": "DAP",
+        "label": "DAP — Données · Analyse · Plan"
+      },
+      "soap": {
+        "short": "SOAP",
+        "label": "SOAP — Subjectif · Objectif · Analyse · Plan"
+      },
+      "birp": {
+        "short": "BIRP",
+        "label": "BIRP — Comportement · Intervention · Réponse · Plan"
+      },
+      "progress": {
+        "short": "Évolution",
+        "label": "Note d'évolution"
+      }
+    },
+    "drafting": "Rédaction…",
+    "aiAssist": "Aide IA",
+    "chooseClient": "Choisissez un client ci-dessus pour commencer cette note. Les notes sont enregistrées au dossier de ce client.",
+    "words_one": "{{count}} mot",
+    "words_other": "{{count}} mots",
+    "amendments": "Addenda",
+    "noAmendments": "Aucun addendum.",
+    "addAmendmentLabel": "Ajouter un addendum",
+    "reason": "Motif (facultatif)",
+    "addAmendment": "Ajouter l'addendum",
+    "noClient": "Aucun client sélectionné",
+    "previousNotes": "Notes précédentes",
+    "noPrevious": "Aucune note précédente pour ce client.",
+    "draft": "Brouillon",
+    "lockedHelp": "Les notes verrouillées ne peuvent être ni modifiées ni supprimées. Conservez les dossiers pendant la période exigée par votre Ordre; les corrections sont ajoutées sous forme d'addenda datés.",
+    "sections": {
+      "dap": [
+        {
+          "hint": "Présentation du client, sujets abordés, observations directes",
+          "placeholder": "Le client s'est présenté avec… A rapporté que… Nous avons discuté de… L'affect était…"
+        },
+        {
+          "hint": "Interprétation clinique, formulation, évaluation du risque",
+          "placeholder": "Présentation compatible avec… Progrès vers… Évaluation du risque…"
+        },
+        {
+          "hint": "Prochaines étapes, interventions, exercices, plan de suivi",
+          "placeholder": "Poursuivre… La prochaine séance portera sur… Le client va…"
+        }
+      ],
+      "soap": [
+        {
+          "hint": "Subjectif — ce que rapporte le client",
+          "placeholder": "Le client rapporte…"
+        },
+        {
+          "hint": "Objectif — observations du clinicien",
+          "placeholder": "Le client semblait… L'affect était…"
+        },
+        {
+          "hint": "Analyse — interprétation clinique",
+          "placeholder": "Présentation compatible avec…"
+        },
+        {
+          "hint": "Plan — prochaines étapes et interventions",
+          "placeholder": "Poursuivre… Prochaine séance…"
+        }
+      ],
+      "birp": [
+        {
+          "hint": "Comportement — comportements observables et présentation",
+          "placeholder": "Le client a démontré…"
+        },
+        {
+          "hint": "Intervention — ce qu'a fait le clinicien",
+          "placeholder": "Le clinicien a offert…"
+        },
+        {
+          "hint": "Réponse — la réaction du client",
+          "placeholder": "Le client a réagi en…"
+        },
+        {
+          "hint": "Plan — prochaines étapes",
+          "placeholder": "Plan pour la prochaine séance…"
+        }
+      ],
+      "progress": [
+        {
+          "tag": "Résumé",
+          "hint": "Contenu de la séance et présentation du client",
+          "placeholder": "La séance a porté sur…"
+        },
+        {
+          "tag": "Observations",
+          "hint": "Progrès, forces, obstacles, considérations de risque ou de sécurité",
+          "placeholder": "Observé…"
+        },
+        {
+          "tag": "Plan",
+          "hint": "Orientation du traitement et prochaines étapes",
+          "placeholder": "La prochaine séance…"
+        }
+      ]
+    }
+  },
+  "common": {
+    "professions": {
+      "Registered Psychotherapist": "Psychothérapeute autorisé(e)",
+      "Psychologist": "Psychologue",
+      "Social Worker": "Travailleur(se) social(e)",
+      "Chiropractor": "Chiropraticien(ne)",
+      "Physiotherapist": "Physiothérapeute",
+      "Registered Massage Therapist": "Massothérapeute autorisé(e)",
+      "Occupational Therapist": "Ergothérapeute",
+      "Naturopathic Doctor": "Naturopathe",
+      "Acupuncturist": "Acupuncteur(rice)",
+      "Dietitian": "Diététiste",
+      "Speech-Language Pathologist": "Orthophoniste"
+    },
+    "notesLabels": {
+      "Session Notes": "Notes de séance",
+      "SOAP Notes": "Notes SOAP",
+      "Treatment Notes": "Notes de traitement",
+      "Clinical Notes": "Notes cliniques"
+    },
+    "clientStatus": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "waitlist": "Liste d'attente"
+    },
+    "invoiceStatus": {
+      "pending": "En attente",
+      "paid": "Payée",
+      "overdue": "En retard",
+      "void": "Annulée"
+    },
+    "locked": "Verrouillée",
+    "draft": "Brouillon",
+    "session": "Séance {{n}}"
+  },
+  "sidebar": {
+    "mainNav": "Navigation principale",
+    "closeNav": "Fermer la navigation",
+    "trialDays_one": "{{count}} jour d'essai restant",
+    "trialDays_other": "{{count}} jours d'essai restants",
+    "upgrade": "Passer à un forfait",
+    "sections": {
+      "practice": "Pratique",
+      "clinical": "Clinique",
+      "schedule": "Horaire",
+      "settings": "Paramètres",
+      "help": "Aide"
+    },
+    "items": {
+      "overview": "Aperçu",
+      "clients": "Clients",
+      "billing": "Facturation",
+      "insuranceReceipts": "Reçus d'assurance",
+      "groupPractice": "Pratique de groupe",
+      "culturalTemplates": "Modèles culturels",
+      "clinicalTools": "Outils cliniques",
+      "sessionPrep": "Préparation des séances",
+      "outcomeMeasures": "Mesures des résultats",
+      "treatmentCourses": "Plans de traitement",
+      "hepBuilder": "Programme d'exercices",
+      "waitlist": "Liste d'attente",
+      "resources": "Ressources",
+      "wellbeing": "Votre bien-être",
+      "calendar": "Calendrier",
+      "messages": "Messagerie sécurisée",
+      "settings": "Paramètres de la pratique",
+      "compliance": "Confidentialité et audit",
+      "costSavings": "Vos économies",
+      "faq": "FAQ",
+      "support": "Soutien"
+    },
+    "preview": "Aperçu",
+    "residency": "Données hébergées au Canada",
+    "trial": "Essai",
+    "plans": {
+      "starter": "Débutant",
+      "solo": "Solo",
+      "group": "Groupe"
+    },
+    "practitioner": "Professionnel(le)",
+    "healthProfessional": "Professionnel(le) de la santé",
+    "signOut": "Se déconnecter",
+    "pageTitles": {
+      "compliance": "Conformité"
+    },
+    "searchClients": "Rechercher des clients",
+    "newClient": "Nouveau client",
+    "openNav": "Ouvrir la navigation"
+  },
+  "planBanner": {
+    "genericError": "Une erreur est survenue",
+    "pastDueTitle": "Votre dernier paiement n'a pas été accepté.",
+    "pastDueBody": "Stripe réessaiera automatiquement. Mettez à jour votre carte pour éviter de passer au forfait gratuit Débutant. Vos dossiers restent accessibles dans tous les cas.",
+    "updateCard": "Mettre à jour le mode de paiement",
+    "trialLeft_one": "Il reste {{count}} jour à votre essai Solo.",
+    "trialLeft_other": "Il reste {{count}} jours à votre essai Solo.",
+    "trialBody": "Ensuite, vous passerez au forfait gratuit Débutant (1 client actif, sans aide IA), sauf si vous vous abonnez pour {{price}}/mois.",
+    "subscribeSolo": "S'abonner à Solo",
+    "starter": "Vous êtes sur le forfait gratuit <strong>Débutant</strong> : 1 client actif, sans aide IA. Tous vos dossiers existants restent accessibles.",
+    "upgradeSolo": "Passer à Solo — {{price}}/mois"
+  },
+  "checkout": {
+    "startFailed": "Impossible de lancer le paiement.",
+    "unavailable": "Paiement indisponible",
+    "backToPlan": "Retour à votre forfait",
+    "redirecting": "Redirection vers le paiement sécurisé…",
+    "subscribed": {
+      "solo": "Vous êtes abonné(e) à Solo",
+      "group": "Votre pratique de groupe est abonnée"
+    },
+    "trialCharge": "Votre carte sera débitée à la fin de votre essai, le {{date}}.",
+    "nextRenewal": "Prochain renouvellement : {{date}}. Stripe vous envoie les reçus par courriel.",
+    "goDashboard": "Aller au tableau de bord",
+    "finishingTitle": "Paiement reçu — finalisation en cours",
+    "finishingBody": "La mise à jour de votre forfait prend plus de temps que d'habitude. Il apparaîtra bientôt dans les Paramètres; vous ne serez pas facturé(e) deux fois. Communiquez avec le soutien s'il n'est pas à jour d'ici une heure.",
+    "viewPlan": "Voir votre forfait",
+    "confirming": "Confirmation de votre abonnement…"
+  },
+  "aiConsent": {
+    "title": "Avant d'activer l'aide à la rédaction IA",
+    "intro": "Lorsque vous utilisez l'aide IA, <strong>le texte que vous avez rédigé dans cette note est envoyé à Anthropic</strong> (Claude), un service hébergé aux États-Unis, pour générer une ébauche.",
+    "identifiers": "Les noms, coordonnées, dates de naissance et numéros d'assurance maladie des clients ne sont <strong>pas</strong> envoyés par MentalPath — mais tout ce que vous tapez dans le texte de la note l'est. N'inscrivez pas d'identifiants dans les sections de la note avant d'utiliser l'aide IA.",
+    "scrubbed": "Les numéros de téléphone, adresses courriel et numéros à 9 chiffres sont automatiquement retirés avant l'envoi.",
+    "review": "L'ébauche n'est qu'une suggestion. Vous devez la relire et la modifier avant de verrouiller la note.",
+    "audit": "Chaque utilisation est consignée dans votre journal d'audit. Vous pouvez désactiver l'aide IA à tout moment dans les Paramètres.",
+    "college": "Vérifiez si votre Ordre ou le consentement de vos clients exige que vous les informiez de l'utilisation d'une documentation assistée par IA.",
+    "notNow": "Pas maintenant",
+    "turnOn": "Activer l'aide IA"
+  },
+  "invoiceModal": {
+    "includesHst": "Comprend la TVH de {{amount}}",
+    "createFailed": "Impossible de créer la facture",
+    "created": "Facture {{number}} créée",
+    "title": "Créer une facture",
+    "close": "Fermer",
+    "client": "Client",
+    "selectClient": "Choisir un client…",
+    "date": "Date",
+    "sessions": "Séances",
+    "rate": "Tarif (CAD)",
+    "chargeHst": "Facturer la TVH (13 %)",
+    "subtotal": "Sous-total",
+    "hst": "TVH",
+    "total": "Total",
+    "cancel": "Annuler",
+    "saving": "Enregistrement…"
+  },
+  "dangerZone": {
+    "exported": "Exportation téléchargée",
+    "exportFailed": "Échec de l'exportation",
+    "closed": "Votre compte a été fermé.",
+    "closeFailed": "Impossible de fermer le compte",
+    "exportTitle": "Exporter vos données",
+    "exportBody": "Téléchargez tout ce qui est enregistré dans votre compte — profil, clients, notes de séance et addenda, mesures des résultats, factures, rendez-vous et journal d'audit — dans un fichier JSON. L'exportation est consignée dans votre journal d'audit.",
+    "preparing": "Préparation de l'exportation…",
+    "download": "Télécharger mes données",
+    "closeTitle": "Fermer le compte",
+    "closeBody": "La fermeture du compte vous déconnecte partout et bloque la connexion. Annulez d'abord tout abonnement dans le portail de facturation.",
+    "retention": "Les dossiers cliniques ne sont <strong>pas supprimés immédiatement</strong> : votre Ordre exige qu'ils soient conservés 10 ans après votre dernier contact avec chaque client (ou 10 ans après ses 18 ans, selon la date la plus tardive). Ils sont détruits automatiquement à la fin de cette période. Téléchargez vos données d'abord si vous transférez votre pratique.",
+    "typeDelete": "Tapez DELETE pour confirmer",
+    "closing": "Fermeture…",
+    "closeButton": "Fermer mon compte"
+  },
+  "profileSettings": {
+    "firstNameRequired": "Le prénom est obligatoire.",
+    "invalidRate": "Entrez un tarif de séance valide.",
+    "saved": "Profil enregistré",
+    "title": "Profil et pratique",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Courriel",
+    "regNumber": "Numéro de permis de l'Ordre",
+    "city": "Ville / province",
+    "rate": "Tarif de séance par défaut (CAD)",
+    "profession": "Profession",
+    "hstExempt": "Mes services sont exonérés de la TPS/TVH",
+    "saving": "Enregistrement…",
+    "save": "Enregistrer le profil"
+  },
+  "subscription": {
+    "current": "Forfait actuel : {{plan}}",
+    "trialStatus_one": "Essai — {{count}} jour restant ({{assists}} utilisations de l'aide IA incluses)",
+    "trialStatus_other": "Essai — {{count}} jours restants ({{assists}} utilisations de l'aide IA incluses)",
+    "status": {
+      "none": "Aucun abonnement",
+      "trialing": "Essai",
+      "active": "Actif",
+      "past_due": "Paiement refusé — nouvel essai en cours",
+      "unpaid": "Impayé",
+      "canceled": "Annulé",
+      "incomplete": "Incomplet",
+      "incomplete_expired": "Expiré",
+      "paused": "En pause"
+    },
+    "free": "Gratuit",
+    "perMonth": "/mois",
+    "perSeat": "/clinicien/mois",
+    "trialEnds": "Fin de l'essai",
+    "renews": "Renouvellement",
+    "nextCharge": "Prochain prélèvement",
+    "cancels": "Annulation le {{date}}. Vous passerez au forfait Débutant; vos dossiers restent accessibles.",
+    "viaPractice": "Votre place est payée par votre pratique de groupe. La facturation est gérée par le propriétaire de la pratique.",
+    "subscribeSolo": "S'abonner à Solo — {{price}}/mois",
+    "manage": "Gérer la facturation, les factures et l'annulation",
+    "keepTrial": "En vous abonnant maintenant, vous conservez les jours d'essai restants — votre carte est débitée à la fin de l'essai. Prix en CAD; les taxes applicables sont affichées au paiement.",
+    "plansHeading": "Forfaits",
+    "currentPlan": "Forfait actuel",
+    "setUpGroup": "Créer une pratique de groupe",
+    "plans": {
+      "starter": {
+        "name": "Débutant",
+        "features": [
+          "1 client actif",
+          "Tous les modèles de notes",
+          "Données hébergées au Canada",
+          "Factures et exportation T2125"
+        ]
+      },
+      "solo": {
+        "name": "Praticien solo",
+        "features": [
+          "Clients illimités",
+          "Aide à la rédaction IA (500/mois)",
+          "Tout le forfait Débutant"
+        ]
+      },
+      "group": {
+        "name": "Pratique de groupe",
+        "features": [
+          "Une seule facture pour l'équipe, par place",
+          "Tableau de bord du propriétaire (totaux seulement — aucune donnée client)",
+          "Tout le forfait Solo pour chaque membre"
+        ]
+      }
+    }
+  },
+  "clientProfile": {
+    "marked": "Client marqué {{status}}",
+    "statusFailed": "Impossible de mettre à jour le statut",
+    "loading": "Chargement du client…",
+    "notFound": "Ce client n'existe pas ou vous n'avez pas accès à son dossier.",
+    "backToClients": "Retour aux clients",
+    "newNote": "Nouvelle note de séance",
+    "details": "Détails",
+    "fields": {
+      "email": "Courriel",
+      "phone": "Téléphone",
+      "dob": "Date de naissance",
+      "pronouns": "Pronoms",
+      "sessionType": "Type de séance",
+      "rate": "Tarif",
+      "referral": "Source de référence",
+      "cultural": "Contexte culturel",
+      "since": "Client depuis",
+      "retainUntil": "Dossier conservé jusqu'au"
+    },
+    "retentionHelp": "10 ans après le dernier contact, ou 10 ans après les 18 ans du client, selon la date la plus tardive. Détruit automatiquement après cette date.",
+    "markActive": "Marquer comme actif",
+    "discharge": "Fin de suivi / inactif",
+    "notes": "Notes de séance ({{count}})",
+    "noNotes": "Aucune note pour l'instant.",
+    "invoices": "Factures ({{count}})",
+    "cols": {
+      "invoice": "Facture",
+      "date": "Date",
+      "amount": "Montant",
+      "status": "Statut"
+    },
+    "noInvoices": "Aucune facture pour l'instant."
   }
 }

@@ -1,6 +1,6 @@
 import { NavLink, Link, useNavigate } from 'react-router';
 import { LayoutGrid, Users, FileText, CreditCard, Calendar, MessageSquare, Settings, Shield, Sparkles, Clipboard, Activity, TrendingUp, UserPlus, BookOpen, X, HelpCircle, Mail, Building2, Receipt, Heart, LogOut, Dumbbell, GitBranch, DollarSign } from 'lucide-react';
-import { PLANS } from '@/config/pricing';
+import { useTranslation } from 'react-i18next';
 import { useUser } from '../../context/UserContext';
 
 interface SidebarProps {
@@ -9,6 +9,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const { t } = useTranslation();
   const { user, subscription, logout } = useUser();
   const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     navigate('/login');
   };
 
-  const notesLabel = user?.notesLabel ?? 'Session Notes';
+  const notesLabel = t(`common.notesLabels.${user?.notesLabel ?? 'Session Notes'}`, { defaultValue: user?.notesLabel ?? 'Session Notes' });
   const isTrial = subscription?.isTrial;
   const trialDays = subscription?.trialDaysRemaining ?? 0;
   const isMusculoskeletal = user?.profession === 'Physiotherapist' || user?.profession === 'Chiropractor' || user?.profession === 'Registered Massage Therapist';
@@ -29,12 +30,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
 
       <aside
-        aria-label="Main navigation"
+        aria-label={t('sidebar.mainNav')}
         className={`
         w-[230px] bg-[var(--ink)] fixed top-0 left-0 bottom-0 z-50 flex flex-col transition-transform duration-300
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <button onClick={onClose} aria-label="Close navigation" className="md:hidden absolute top-4 right-4 text-white/70 hover:text-white">
+        <button onClick={onClose} aria-label={t('sidebar.closeNav')} className="md:hidden absolute top-4 right-4 text-white/70 hover:text-white">
           <X className="w-5 h-5" />
         </button>
 
@@ -51,52 +52,52 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Trial banner */}
         {isTrial && trialDays !== null && (
           <div className="mx-3 mt-2 px-2.5 py-2 bg-amber-500/20 rounded-lg border border-amber-400/20">
-            <div className="text-[11px] font-medium text-amber-300">{trialDays} days left in trial</div>
-            <Link to="/dashboard/settings?tab=subscription" className="text-[10px] text-amber-400 no-underline hover:text-amber-200">Upgrade now →</Link>
+            <div className="text-[11px] font-medium text-amber-300">{t('sidebar.trialDays', { count: trialDays })}</div>
+            <Link to="/dashboard/settings?tab=subscription" className="text-[10px] text-amber-400 no-underline hover:text-amber-200">{t('sidebar.upgrade')} →</Link>
           </div>
         )}
 
         <div className="flex-1 overflow-y-auto">
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Practice</div>
-            <NavItem to="/dashboard" icon={LayoutGrid} label="Overview" onClick={onClose} />
-            <NavItem to="/dashboard/clients" icon={Users} label="Clients" onClick={onClose} />
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">{t('sidebar.sections.practice')}</div>
+            <NavItem to="/dashboard" icon={LayoutGrid} label={t('sidebar.items.overview')} onClick={onClose} />
+            <NavItem to="/dashboard/clients" icon={Users} label={t('sidebar.items.clients')} onClick={onClose} />
             <NavItem to="/dashboard/notes" icon={FileText} label={notesLabel} onClick={onClose} />
-            <NavItem to="/dashboard/billing" icon={CreditCard} label="Billing" onClick={onClose} />
-            <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label="Insurance Receipts" onClick={onClose} />
-            <NavItem to="/dashboard/group-practice" icon={Building2} label="Group Practice" onClick={onClose} />
-            <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label="Cultural Templates" onClick={onClose} />
+            <NavItem to="/dashboard/billing" icon={CreditCard} label={t('sidebar.items.billing')} onClick={onClose} />
+            <NavItem to="/dashboard/insurance-receipts" icon={Receipt} label={t('sidebar.items.insuranceReceipts')} onClick={onClose} />
+            <NavItem to="/dashboard/group-practice" icon={Building2} label={t('sidebar.items.groupPractice')} onClick={onClose} />
+            <NavItem to="/dashboard/cultural-templates" icon={Sparkles} label={t('sidebar.items.culturalTemplates')} onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Clinical</div>
-            {import.meta.env.DEV && <NavItem to="/dashboard/clinical-tools" icon={Clipboard} label="Clinical Tools" badge="Preview" onClick={onClose} />}
-            <NavItem to="/dashboard/session-prep" icon={Activity} label="Session Prep" onClick={onClose} />
-            <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label="Outcome Measures" onClick={onClose} />
-            {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/treatment-courses" icon={GitBranch} label="Treatment Courses" badge="Preview" onClick={onClose} />}
-            {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/hep-builder" icon={Dumbbell} label="HEP Builder" badge="Preview" onClick={onClose} />}
-            <NavItem to="/dashboard/waitlist" icon={UserPlus} label="Waitlist" onClick={onClose} />
-            <NavItem to="/dashboard/resources" icon={BookOpen} label="Resources" onClick={onClose} />
-            <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label="Your Wellbeing" onClick={onClose} />
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">{t('sidebar.sections.clinical')}</div>
+            {import.meta.env.DEV && <NavItem to="/dashboard/clinical-tools" icon={Clipboard} label={t('sidebar.items.clinicalTools')} badge={t('sidebar.preview')} onClick={onClose} />}
+            <NavItem to="/dashboard/session-prep" icon={Activity} label={t('sidebar.items.sessionPrep')} onClick={onClose} />
+            <NavItem to="/dashboard/outcome-measures" icon={TrendingUp} label={t('sidebar.items.outcomeMeasures')} onClick={onClose} />
+            {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/treatment-courses" icon={GitBranch} label={t('sidebar.items.treatmentCourses')} badge={t('sidebar.preview')} onClick={onClose} />}
+            {import.meta.env.DEV && isMusculoskeletal && <NavItem to="/dashboard/hep-builder" icon={Dumbbell} label={t('sidebar.items.hepBuilder')} badge={t('sidebar.preview')} onClick={onClose} />}
+            <NavItem to="/dashboard/waitlist" icon={UserPlus} label={t('sidebar.items.waitlist')} onClick={onClose} />
+            <NavItem to="/dashboard/resources" icon={BookOpen} label={t('sidebar.items.resources')} onClick={onClose} />
+            <NavItem to="/dashboard/therapist-wellbeing" icon={Heart} label={t('sidebar.items.wellbeing')} onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Schedule</div>
-            <NavItem to="/dashboard/calendar" icon={Calendar} label="Calendar" onClick={onClose} />
-            {import.meta.env.DEV && <NavItem to="/dashboard/messages" icon={MessageSquare} label="Secure Messages" badge="Preview" onClick={onClose} />}
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">{t('sidebar.sections.schedule')}</div>
+            <NavItem to="/dashboard/calendar" icon={Calendar} label={t('sidebar.items.calendar')} onClick={onClose} />
+            {import.meta.env.DEV && <NavItem to="/dashboard/messages" icon={MessageSquare} label={t('sidebar.items.messages')} badge={t('sidebar.preview')} onClick={onClose} />}
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Settings</div>
-            <NavItem to="/dashboard/settings" icon={Settings} label="Practice Settings" onClick={onClose} />
-            <NavItem to="/dashboard/compliance" icon={Shield} label="Privacy & Audit" onClick={onClose} />
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">{t('sidebar.sections.settings')}</div>
+            <NavItem to="/dashboard/settings" icon={Settings} label={t('sidebar.items.settings')} onClick={onClose} />
+            <NavItem to="/dashboard/compliance" icon={Shield} label={t('sidebar.items.compliance')} onClick={onClose} />
           </div>
 
           <div className="py-4 px-3">
-            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">Help</div>
-            <NavItem to="/dashboard/cost-savings" icon={DollarSign} label="What you save" onClick={onClose} />
-            <NavItem to="/dashboard/faq" icon={HelpCircle} label="FAQ" onClick={onClose} />
-            <NavItem to="/dashboard/support" icon={Mail} label="Support" onClick={onClose} />
+            <div className="text-[10px] font-medium tracking-[0.8px] uppercase text-white/70 px-2 mb-1">{t('sidebar.sections.help')}</div>
+            <NavItem to="/dashboard/cost-savings" icon={DollarSign} label={t('sidebar.items.costSavings')} onClick={onClose} />
+            <NavItem to="/dashboard/faq" icon={HelpCircle} label={t('sidebar.items.faq')} onClick={onClose} />
+            <NavItem to="/dashboard/support" icon={Mail} label={t('sidebar.items.support')} onClick={onClose} />
           </div>
         </div>
 
@@ -106,10 +107,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <path d="M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z"/>
             <path d="M5.5 8l1.5 1.5 3-3"/>
           </svg>
-          <span>Canadian data residency</span>
+          <span>{t('sidebar.residency')}</span>
           {subscription && (
             <span className="ml-auto text-[9px] text-white/70 uppercase font-semibold tracking-wider">
-              {isTrial ? 'Trial' : PLANS[subscription.type].name.split(' ')[0]}
+              {isTrial ? t('sidebar.trial') : t(`sidebar.plans.${subscription.type}`)}
             </span>
           )}
         </div>
@@ -120,13 +121,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             {user?.initials ?? 'MP'}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-medium text-white/85 truncate">{user ? `${user.firstName} ${user.lastName}` : 'Practitioner'}</div>
-            <div className="text-[10px] text-white/70 truncate">{user?.profession ?? 'Health Professional'}</div>
+            <div className="text-[13px] font-medium text-white/85 truncate">{user ? `${user.firstName} ${user.lastName}` : t('sidebar.practitioner')}</div>
+            <div className="text-[10px] text-white/70 truncate">{user ? t(`common.professions.${user.profession}`, { defaultValue: user.profession }) : t('sidebar.healthProfessional')}</div>
           </div>
           <button
             onClick={handleLogout}
-            title="Sign out"
-            aria-label="Sign out"
+            title={t('sidebar.signOut')}
+            aria-label={t('sidebar.signOut')}
             className="text-white/70 hover:text-white/70 transition-colors flex-shrink-0 bg-transparent border-none cursor-pointer p-1"
           >
             <LogOut className="w-3.5 h-3.5" />

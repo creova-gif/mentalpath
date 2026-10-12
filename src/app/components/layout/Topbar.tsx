@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useLocation } from 'react-router';
 import { NewClientModal } from '../modals/NewClientModal';
 import { TrialStatusBadge } from '../dashboard/TrialStatusBadge';
+import { useTranslation } from 'react-i18next';
 import { useUser } from '../../context/UserContext';
 
 interface TopbarProps {
@@ -11,62 +12,27 @@ interface TopbarProps {
 }
 
 export function Topbar({ onMenuClick }: TopbarProps) {
+  const { t } = useTranslation();
   const location = useLocation();
   const { user } = useUser();
   const [showNewClientModal, setShowNewClientModal] = useState(false);
 
-  const notesLabel = user?.notesLabel ?? 'Session Notes';
+  const notesLabel = t(`common.notesLabels.${user?.notesLabel ?? 'Session Notes'}`, { defaultValue: user?.notesLabel ?? 'Session Notes' });
 
+  const TITLES: Record<string, string> = {
+    '/dashboard': 'overview', '/dashboard/clients': 'clients', '/dashboard/billing': 'billing',
+    '/dashboard/insurance-receipts': 'insuranceReceipts', '/dashboard/group-practice': 'groupPractice',
+    '/dashboard/calendar': 'calendar', '/dashboard/messages': 'messages', '/dashboard/settings': 'settings',
+    '/dashboard/cultural-templates': 'culturalTemplates', '/dashboard/clinical-tools': 'clinicalTools',
+    '/dashboard/session-prep': 'sessionPrep', '/dashboard/outcome-measures': 'outcomeMeasures', '/dashboard/waitlist': 'waitlist',
+    '/dashboard/resources': 'resources', '/dashboard/therapist-wellbeing': 'wellbeing', '/dashboard/treatment-courses': 'treatmentCourses',
+    '/dashboard/hep-builder': 'hepBuilder', '/dashboard/cost-savings': 'costSavings', '/dashboard/faq': 'faq', '/dashboard/support': 'support',
+  };
   const getPageTitle = () => {
-    switch (location.pathname) {
-      case '/':
-      case '/dashboard':
-        return 'Overview';
-      case '/dashboard/clients':
-        return 'Clients';
-      case '/dashboard/notes':
-        return notesLabel;
-      case '/dashboard/billing':
-        return 'Billing';
-      case '/dashboard/insurance-receipts':
-        return 'Insurance Receipts';
-      case '/dashboard/group-practice':
-        return 'Group Practice';
-      case '/dashboard/calendar':
-        return 'Calendar';
-      case '/dashboard/messages':
-        return 'Secure Messages';
-      case '/dashboard/settings':
-        return 'Practice Settings';
-      case '/dashboard/compliance':
-        return 'Compliance';
-      case '/dashboard/cultural-templates':
-        return 'Cultural Templates';
-      case '/dashboard/clinical-tools':
-        return 'Clinical Tools';
-      case '/dashboard/session-prep':
-        return 'Session Prep';
-      case '/dashboard/outcome-measures':
-        return 'Outcome Measures';
-      case '/dashboard/waitlist':
-        return 'Waitlist';
-      case '/dashboard/resources':
-        return 'Resources';
-      case '/dashboard/therapist-wellbeing':
-        return 'Your Wellbeing';
-      case '/dashboard/treatment-courses':
-        return 'Treatment Courses';
-      case '/dashboard/hep-builder':
-        return 'HEP Builder';
-      case '/dashboard/cost-savings':
-        return 'What You Save';
-      case '/dashboard/faq':
-        return 'FAQ';
-      case '/dashboard/support':
-        return 'Support';
-      default:
-        return 'MentalPath';
-    }
+    if (location.pathname === '/dashboard/notes') return notesLabel;
+    if (location.pathname === '/dashboard/compliance') return t('sidebar.pageTitles.compliance');
+    const key = TITLES[location.pathname];
+    return key ? t(`sidebar.items.${key}`) : 'MentalPath';
   };
 
   return (
@@ -76,7 +42,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuClick}
-            aria-label="Open navigation"
+            aria-label={t('sidebar.openNav')}
             className="md:hidden p-2 -ml-2 text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
           >
             <Menu className="w-5 h-5" />
@@ -93,7 +59,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           {/* Search - hidden on mobile */}
           <Link to="/dashboard/clients" className="hidden lg:flex items-center gap-2 bg-[var(--warm)] border border-[var(--border)] rounded-lg px-3 py-[7px] text-[13px] text-[var(--ink-muted)] no-underline hover:text-[var(--ink)]">
             <Search className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} aria-hidden="true" />
-            Search clients
+            {t('sidebar.searchClients')}
           </Link>
 
           {/* New client button */}
@@ -102,7 +68,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             className="flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 border-none bg-[var(--sage)] text-white hover:bg-[var(--sage-deep)]"
           >
             <Plus className="w-4 h-4" strokeWidth={1.8} />
-            <span className="hidden sm:inline">New client</span>
+            <span className="hidden sm:inline">{t('sidebar.newClient')}</span>
           </button>
         </div>
       </div>

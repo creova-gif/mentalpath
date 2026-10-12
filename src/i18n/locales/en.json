@@ -1178,5 +1178,422 @@
       "hstIncluded": "Amount includes applicable GST/HST.",
       "signature": "Provider signature"
     }
+  },
+  "noteEditor": {
+    "notFound": "This note does not exist or you do not have access to it.",
+    "loadFailed": "Could not load this note.",
+    "aiAdded": "AI draft added — review and edit before locking",
+    "aiUnavailable": "AI Assist is unavailable",
+    "aiPrefFailed": "Could not save your AI Assist preference.",
+    "writeBeforeLock": "Write the note before locking it.",
+    "lockConfirm": "Lock and finalise this note? Locked notes cannot be edited or deleted — corrections are added as dated amendments.",
+    "locked": "Note locked",
+    "lockFailed": "Could not lock the note",
+    "amendmentAdded": "Amendment added",
+    "amendmentFailed": "Could not add amendment",
+    "status": {
+      "locked": "Locked",
+      "notSaved": "Not saved yet",
+      "saved": "Saved",
+      "unsaved": "Unsaved changes",
+      "saving": "Saving…",
+      "error": "Save failed — retrying on next change"
+    },
+    "loading": "Loading note…",
+    "backToNotes": "Back to notes",
+    "offlineTitle": "You're offline.",
+    "offlineBody": "Changes are kept in this tab only and will save when you reconnect — don't close this tab.",
+    "back": "Back",
+    "session": "Session {{n}}",
+    "client": "Client",
+    "selectClient": "Select a client…",
+    "saveDraft": "Save draft",
+    "lockFinalise": "Lock & finalise",
+    "noteFormat": "Note format",
+    "sessionDetails": "Session details",
+    "date": "Date",
+    "duration": "Duration",
+    "minutes": "{{n}} min",
+    "type": "Type",
+    "sessionTypes": {
+      "video": "Video",
+      "in-person": "In person",
+      "phone": "Phone"
+    },
+    "sessionNumber": "Session #",
+    "assignedOnSave": "Assigned on save",
+    "aiUsed": "AI Assist was used for this note",
+    "formats": {
+      "dap": {
+        "short": "DAP",
+        "label": "DAP — Data · Assessment · Plan"
+      },
+      "soap": {
+        "short": "SOAP",
+        "label": "SOAP — Subjective · Objective · Assessment · Plan"
+      },
+      "birp": {
+        "short": "BIRP",
+        "label": "BIRP — Behaviour · Intervention · Response · Plan"
+      },
+      "progress": {
+        "short": "Progress",
+        "label": "Progress note"
+      }
+    },
+    "drafting": "Drafting…",
+    "aiAssist": "AI assist",
+    "chooseClient": "Choose a client above to start this note. Notes are saved to that client's record.",
+    "words_one": "{{count}} word",
+    "words_other": "{{count}} words",
+    "amendments": "Amendments",
+    "noAmendments": "No amendments.",
+    "addAmendmentLabel": "Add an amendment",
+    "reason": "Reason (optional)",
+    "addAmendment": "Add amendment",
+    "noClient": "No client selected",
+    "previousNotes": "Previous notes",
+    "noPrevious": "No previous notes for this client.",
+    "draft": "Draft",
+    "lockedHelp": "Locked notes can't be edited or deleted. Keep records for the period your College requires; corrections are added as dated amendments.",
+    "sections": {
+      "dap": [
+        {
+          "hint": "Client presentation, what was discussed, direct observations",
+          "placeholder": "Client presented with… Reported that… Discussed… Affect was…"
+        },
+        {
+          "hint": "Clinical interpretation, formulation, risk assessment",
+          "placeholder": "Presentation consistent with… Progress toward… Risk assessment…"
+        },
+        {
+          "hint": "Next steps, interventions, homework, follow-up plan",
+          "placeholder": "Continue… Next session will focus on… Client to…"
+        }
+      ],
+      "soap": [
+        {
+          "hint": "Subjective — what the client reports",
+          "placeholder": "Client reports…"
+        },
+        {
+          "hint": "Objective — clinician observations",
+          "placeholder": "Client appeared… Affect was…"
+        },
+        {
+          "hint": "Assessment — clinical interpretation",
+          "placeholder": "Presentation consistent with…"
+        },
+        {
+          "hint": "Plan — next steps and interventions",
+          "placeholder": "Continue… Next session…"
+        }
+      ],
+      "birp": [
+        {
+          "hint": "Behaviour — observable behaviours and presentation",
+          "placeholder": "Client demonstrated…"
+        },
+        {
+          "hint": "Intervention — what the clinician did",
+          "placeholder": "Clinician provided…"
+        },
+        {
+          "hint": "Response — how the client responded",
+          "placeholder": "Client responded by…"
+        },
+        {
+          "hint": "Plan — next steps",
+          "placeholder": "Plan for next session…"
+        }
+      ],
+      "progress": [
+        {
+          "tag": "Summary",
+          "hint": "Session content and client presentation",
+          "placeholder": "Session focused on…"
+        },
+        {
+          "tag": "Observations",
+          "hint": "Progress, strengths, barriers, risk or safety considerations",
+          "placeholder": "Observed…"
+        },
+        {
+          "tag": "Plan",
+          "hint": "Treatment direction and next steps",
+          "placeholder": "Next session will…"
+        }
+      ]
+    }
+  },
+  "common": {
+    "professions": {
+      "Registered Psychotherapist": "Registered Psychotherapist",
+      "Psychologist": "Psychologist",
+      "Social Worker": "Social Worker",
+      "Chiropractor": "Chiropractor",
+      "Physiotherapist": "Physiotherapist",
+      "Registered Massage Therapist": "Registered Massage Therapist",
+      "Occupational Therapist": "Occupational Therapist",
+      "Naturopathic Doctor": "Naturopathic Doctor",
+      "Acupuncturist": "Acupuncturist",
+      "Dietitian": "Dietitian",
+      "Speech-Language Pathologist": "Speech-Language Pathologist"
+    },
+    "notesLabels": {
+      "Session Notes": "Session Notes",
+      "SOAP Notes": "SOAP Notes",
+      "Treatment Notes": "Treatment Notes",
+      "Clinical Notes": "Clinical Notes"
+    },
+    "clientStatus": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "waitlist": "Waitlist"
+    },
+    "invoiceStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void"
+    },
+    "locked": "Locked",
+    "draft": "Draft",
+    "session": "Session {{n}}"
+  },
+  "sidebar": {
+    "mainNav": "Main navigation",
+    "closeNav": "Close navigation",
+    "trialDays_one": "{{count}} day left in trial",
+    "trialDays_other": "{{count}} days left in trial",
+    "upgrade": "Upgrade now",
+    "sections": {
+      "practice": "Practice",
+      "clinical": "Clinical",
+      "schedule": "Schedule",
+      "settings": "Settings",
+      "help": "Help"
+    },
+    "items": {
+      "overview": "Overview",
+      "clients": "Clients",
+      "billing": "Billing",
+      "insuranceReceipts": "Insurance Receipts",
+      "groupPractice": "Group Practice",
+      "culturalTemplates": "Cultural Templates",
+      "clinicalTools": "Clinical Tools",
+      "sessionPrep": "Session Prep",
+      "outcomeMeasures": "Outcome Measures",
+      "treatmentCourses": "Treatment Courses",
+      "hepBuilder": "HEP Builder",
+      "waitlist": "Waitlist",
+      "resources": "Resources",
+      "wellbeing": "Your Wellbeing",
+      "calendar": "Calendar",
+      "messages": "Secure Messages",
+      "settings": "Practice Settings",
+      "compliance": "Privacy & Audit",
+      "costSavings": "What you save",
+      "faq": "FAQ",
+      "support": "Support"
+    },
+    "preview": "Preview",
+    "residency": "Canadian data residency",
+    "trial": "Trial",
+    "plans": {
+      "starter": "Starter",
+      "solo": "Solo",
+      "group": "Group"
+    },
+    "practitioner": "Practitioner",
+    "healthProfessional": "Health Professional",
+    "signOut": "Sign out",
+    "pageTitles": {
+      "compliance": "Compliance"
+    },
+    "searchClients": "Search clients",
+    "newClient": "New client",
+    "openNav": "Open navigation"
+  },
+  "planBanner": {
+    "genericError": "Something went wrong",
+    "pastDueTitle": "Your last payment didn't go through.",
+    "pastDueBody": "Stripe will retry automatically. Update your card to avoid moving to the free Starter plan. Your records stay available either way.",
+    "updateCard": "Update payment method",
+    "trialLeft_one": "{{count}} day left in your Solo trial.",
+    "trialLeft_other": "{{count}} days left in your Solo trial.",
+    "trialBody": "Afterwards you'll move to the free Starter plan (1 active client, no AI Assist) unless you subscribe for {{price}}/month.",
+    "subscribeSolo": "Subscribe to Solo",
+    "starter": "You're on the free <strong>Starter</strong> plan: 1 active client, no AI Assist. All your existing records remain available.",
+    "upgradeSolo": "Upgrade to Solo — {{price}}/mo"
+  },
+  "checkout": {
+    "startFailed": "Could not start checkout.",
+    "unavailable": "Checkout unavailable",
+    "backToPlan": "Back to your plan",
+    "redirecting": "Taking you to secure checkout…",
+    "subscribed": {
+      "solo": "You're subscribed to Solo",
+      "group": "Your Group practice is subscribed"
+    },
+    "trialCharge": "Your card will be charged when your trial ends on {{date}}.",
+    "nextRenewal": "Next renewal: {{date}}. Receipts are emailed by Stripe.",
+    "goDashboard": "Go to dashboard",
+    "finishingTitle": "Payment received — finishing up",
+    "finishingBody": "Your plan is taking longer than usual to update. It will appear in Settings shortly; you won't be charged twice. Contact support if it hasn't updated within an hour.",
+    "viewPlan": "View your plan",
+    "confirming": "Confirming your subscription…"
+  },
+  "aiConsent": {
+    "title": "Before you turn on AI Note Assist",
+    "intro": "When you use AI Assist, <strong>the text you've written in this note is sent to Anthropic</strong> (Claude), a service hosted in the United States, to generate a draft.",
+    "identifiers": "Client names, contact details, dates of birth and health numbers are <strong>not</strong> sent by MentalPath — but anything you type into the note text is. Don't type identifiers into note sections before using AI Assist.",
+    "scrubbed": "Phone numbers, email addresses and 9-digit numbers are automatically removed before sending.",
+    "review": "The draft is a suggestion. You're responsible for reviewing and editing it before locking the note.",
+    "audit": "Each use is recorded in your audit log. You can turn AI Assist off at any time in Settings.",
+    "college": "Check whether your College or your clients' consent requires you to tell clients that you use AI-assisted documentation.",
+    "notNow": "Not now",
+    "turnOn": "Turn on AI Assist"
+  },
+  "invoiceModal": {
+    "includesHst": "Includes HST {{amount}}",
+    "createFailed": "Could not create the invoice",
+    "created": "Invoice {{number}} created",
+    "title": "Create invoice",
+    "close": "Close",
+    "client": "Client",
+    "selectClient": "Select a client…",
+    "date": "Date",
+    "sessions": "Sessions",
+    "rate": "Rate (CAD)",
+    "chargeHst": "Charge HST (13%)",
+    "subtotal": "Subtotal",
+    "hst": "HST",
+    "total": "Total",
+    "cancel": "Cancel",
+    "saving": "Saving…"
+  },
+  "dangerZone": {
+    "exported": "Export downloaded",
+    "exportFailed": "Export failed",
+    "closed": "Your account has been closed.",
+    "closeFailed": "Could not close the account",
+    "exportTitle": "Export your data",
+    "exportBody": "Download everything stored in your account — profile, clients, session notes and amendments, outcome measures, invoices, appointments and your audit log — as a JSON file. The export is recorded in your audit log.",
+    "preparing": "Preparing export…",
+    "download": "Download my data",
+    "closeTitle": "Close account",
+    "closeBody": "Closing your account signs you out everywhere and blocks sign-in. Cancel any subscription in the billing portal first.",
+    "retention": "Clinical records are <strong>not deleted immediately</strong>: your College requires them to be kept for 10 years after your last contact with each client (or 10 years after they turn 18, whichever is later). They are destroyed automatically when that period ends. Download your data first if you are transferring your practice.",
+    "typeDelete": "Type DELETE to confirm",
+    "closing": "Closing…",
+    "closeButton": "Close my account"
+  },
+  "profileSettings": {
+    "firstNameRequired": "First name is required.",
+    "invalidRate": "Enter a valid session rate.",
+    "saved": "Profile saved",
+    "title": "Profile & practice",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "regNumber": "College registration number",
+    "city": "City / province",
+    "rate": "Default session rate (CAD)",
+    "profession": "Profession",
+    "hstExempt": "My services are HST/GST-exempt",
+    "saving": "Saving…",
+    "save": "Save profile"
+  },
+  "subscription": {
+    "current": "Current plan: {{plan}}",
+    "trialStatus_one": "Trial — {{count}} day left ({{assists}} AI assists included)",
+    "trialStatus_other": "Trial — {{count}} days left ({{assists}} AI assists included)",
+    "status": {
+      "none": "No subscription",
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Payment failed — retrying",
+      "unpaid": "Unpaid",
+      "canceled": "Cancelled",
+      "incomplete": "Incomplete",
+      "incomplete_expired": "Expired",
+      "paused": "Paused"
+    },
+    "free": "Free",
+    "perMonth": "/month",
+    "perSeat": "/clinician/month",
+    "trialEnds": "Trial ends",
+    "renews": "Renews",
+    "nextCharge": "Next charge",
+    "cancels": "Cancels on {{date}}. You'll move to Starter; your records stay available.",
+    "viaPractice": "Your seat is paid by your group practice. Billing is managed by the practice owner.",
+    "subscribeSolo": "Subscribe to Solo — {{price}}/month",
+    "manage": "Manage billing, invoices & cancellation",
+    "keepTrial": "Subscribing now keeps your remaining trial days — your card is charged when the trial ends. Prices in CAD; applicable taxes are shown at checkout.",
+    "plansHeading": "Plans",
+    "currentPlan": "Current plan",
+    "setUpGroup": "Set up a group practice",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "features": [
+          "1 active client",
+          "All note templates",
+          "Canadian data residency",
+          "Invoices & T2125 export"
+        ]
+      },
+      "solo": {
+        "name": "Solo Practitioner",
+        "features": [
+          "Unlimited clients",
+          "AI Note Assist (500/month)",
+          "Everything in Starter"
+        ]
+      },
+      "group": {
+        "name": "Group Practice",
+        "features": [
+          "One bill for your team, per seat",
+          "Owner dashboard (counts only — no client data)",
+          "Everything in Solo for every member"
+        ]
+      }
+    }
+  },
+  "clientProfile": {
+    "marked": "Client marked {{status}}",
+    "statusFailed": "Could not update status",
+    "loading": "Loading client…",
+    "notFound": "This client doesn't exist or you don't have access to their record.",
+    "backToClients": "Back to clients",
+    "newNote": "New session note",
+    "details": "Details",
+    "fields": {
+      "email": "Email",
+      "phone": "Phone",
+      "dob": "Date of birth",
+      "pronouns": "Pronouns",
+      "sessionType": "Session type",
+      "rate": "Rate",
+      "referral": "Referral source",
+      "cultural": "Cultural context",
+      "since": "Client since",
+      "retainUntil": "Record kept until"
+    },
+    "retentionHelp": "10 years after the last contact, or 10 years after the client turns 18, whichever is later. Destroyed automatically after this date.",
+    "markActive": "Mark active",
+    "discharge": "Discharge / inactive",
+    "notes": "Session notes ({{count}})",
+    "noNotes": "No notes yet.",
+    "invoices": "Invoices ({{count}})",
+    "cols": {
+      "invoice": "Invoice",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "noInvoices": "No invoices yet."
   }
 }

@@ -2,6 +2,9 @@ import { track } from '@/app/lib/telemetry';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import { formatDate, formatDateTime } from '@/app/lib/locale';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { useUser } from '../../context/UserContext';
@@ -12,40 +15,47 @@ import {
 } from '../../services/sessionNotes';
 import { AiConsentDialog } from '../modals/AiConsentDialog';
 
-const FORMAT_LABELS: Record<NoteFormat, string> = {
-  dap: 'DAP — Data · Assessment · Plan',
-  soap: 'SOAP — Subjective · Objective · Assessment · Plan',
-  birp: 'BIRP — Behaviour · Intervention · Response · Plan',
-  progress: 'Progress note',
-};
+const FORMATS: NoteFormat[] = ['dap', 'soap', 'birp', 'progress'];
 
-type Section = { tagLabel: string; tagBg: string; tagColor: string; hint: string; placeholder: string };
+type SectionStyle = { tagLabel: string; tagBg: string; tagColor: string };
+type Section = SectionStyle & { hint: string; placeholder: string };
 
 // Each format maps onto the four stored columns section_1..section_4.
-const SECTIONS: Record<NoteFormat, Section[]> = {
+// Hints, placeholders and word labels come from noteEditor.sections.* in the locale files.
+const SECTION_STYLES: Record<NoteFormat, SectionStyle[]> = {
   dap: [
-    { tagLabel: 'D', tagBg: '#e8f0ed', tagColor: '#2d5049', hint: 'Client presentation, what was discussed, direct observations', placeholder: 'Client presented with… Reported that… Discussed… Affect was…' },
-    { tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806', hint: 'Clinical interpretation, formulation, risk assessment', placeholder: 'Presentation consistent with… Progress toward… Risk assessment…' },
-    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Next steps, interventions, homework, follow-up plan', placeholder: 'Continue… Next session will focus on… Client to…' },
+    { tagLabel: 'D', tagBg: '#e8f0ed', tagColor: '#2d5049' },
+    { tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806' },
+    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C' },
   ],
   soap: [
-    { tagLabel: 'S', tagBg: '#fde8e8', tagColor: '#791F1F', hint: 'Subjective — what the client reports', placeholder: 'Client reports…' },
-    { tagLabel: 'O', tagBg: '#faeeda', tagColor: '#633806', hint: 'Objective — clinician observations', placeholder: 'Client appeared… Affect was…' },
-    { tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806', hint: 'Assessment — clinical interpretation', placeholder: 'Presentation consistent with…' },
-    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan — next steps and interventions', placeholder: 'Continue… Next session…' },
+    { tagLabel: 'S', tagBg: '#fde8e8', tagColor: '#791F1F' },
+    { tagLabel: 'O', tagBg: '#faeeda', tagColor: '#633806' },
+    { tagLabel: 'A', tagBg: '#faeeda', tagColor: '#633806' },
+    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C' },
   ],
   birp: [
-    { tagLabel: 'B', tagBg: '#EEEDFE', tagColor: '#3C3489', hint: 'Behaviour — observable behaviours and presentation', placeholder: 'Client demonstrated…' },
-    { tagLabel: 'I', tagBg: '#fde8e8', tagColor: '#791F1F', hint: 'Intervention — what the clinician did', placeholder: 'Clinician provided…' },
-    { tagLabel: 'R', tagBg: '#e8f4f0', tagColor: '#2d5049', hint: 'Response — how the client responded', placeholder: 'Client responded by…' },
-    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Plan — next steps', placeholder: 'Plan for next session…' },
+    { tagLabel: 'B', tagBg: '#EEEDFE', tagColor: '#3C3489' },
+    { tagLabel: 'I', tagBg: '#fde8e8', tagColor: '#791F1F' },
+    { tagLabel: 'R', tagBg: '#e8f4f0', tagColor: '#2d5049' },
+    { tagLabel: 'P', tagBg: '#E6F1FB', tagColor: '#0C447C' },
   ],
   progress: [
-    { tagLabel: 'Summary', tagBg: '#faeeda', tagColor: '#633806', hint: 'Session content and client presentation', placeholder: 'Session focused on…' },
-    { tagLabel: 'Observations', tagBg: '#e8f0ed', tagColor: '#2d5049', hint: 'Progress, strengths, barriers, risk or safety considerations', placeholder: 'Observed…' },
-    { tagLabel: 'Plan', tagBg: '#E6F1FB', tagColor: '#0C447C', hint: 'Treatment direction and next steps', placeholder: 'Next session will…' },
+    { tagLabel: '', tagBg: '#faeeda', tagColor: '#633806' },
+    { tagLabel: '', tagBg: '#e8f0ed', tagColor: '#2d5049' },
+    { tagLabel: '', tagBg: '#E6F1FB', tagColor: '#0C447C' },
   ],
 };
+
+function sectionsFor(format: NoteFormat, t: TFunction): Section[] {
+  const text = t(`noteEditor.sections.${format}`, { returnObjects: true }) as { tag?: string; hint: string; placeholder: string }[];
+  return SECTION_STYLES[format].map((style, i) => ({
+    ...style,
+    tagLabel: style.tagLabel || text[i].tag || '',
+    hint: text[i].hint,
+    placeholder: text[i].placeholder,
+  }));
+}
 
 const DURATIONS = [25, 50, 60, 80, 90];
 const SESSION_TYPES = ['video', 'in-person', 'phone'];
@@ -82,6 +92,7 @@ function AutoTextarea({ id, label, value, onChange, placeholder, readOnly }: {
 }
 
 export function SessionNoteEditor() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isOnline = useOnlineStatus();
@@ -126,7 +137,7 @@ export function SessionNoteEditor() {
           const note = await getNote(id, user.id);
           if (cancelled) return;
           if (!note) {
-            setLoadError('This note does not exist or you do not have access to it.');
+            setLoadError(t('noteEditor.notFound'));
           } else {
             setClientId(note.clientId);
             setFormat(note.noteFormat);
@@ -142,7 +153,7 @@ export function SessionNoteEditor() {
           }
         }
       } catch (err) {
-        if (!cancelled) setLoadError(err instanceof Error ? err.message : 'Could not load this note.');
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : t('noteEditor.loadFailed'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -213,7 +224,7 @@ export function SessionNoteEditor() {
         section1: sections[0],
         section2: sections[1],
         section3: sections[2],
-        section4: SECTIONS[format].length > 3 ? sections[3] : undefined,
+        section4: SECTION_STYLES[format].length > 3 ? sections[3] : undefined,
         sessionContext: `${sessionType} session, ${duration} minutes`,
       });
       const s = response.sections ?? {};
@@ -222,9 +233,9 @@ export function SessionNoteEditor() {
       ]);
       setAiUsed(true);
       track('ai_assist_used', { note_format: format });
-      toast.success('AI draft added — review and edit before locking', { description: response.disclaimer });
+      toast.success(t('noteEditor.aiAdded'), { description: response.disclaimer });
     } catch (err) {
-      toast.error('AI Assist is unavailable', { description: err instanceof Error ? err.message : undefined });
+      toast.error(t('noteEditor.aiUnavailable'), { description: err instanceof Error ? err.message : undefined });
     } finally {
       setAiLoading(false);
     }
@@ -238,19 +249,19 @@ export function SessionNoteEditor() {
   // ── Lock & amend ───────────────────────────────────────────────────────────
   const handleLock = async () => {
     if (!noteId) {
-      toast.error('Write the note before locking it.');
+      toast.error(t('noteEditor.writeBeforeLock'));
       return;
     }
-    if (!window.confirm('Lock and finalise this note? Locked notes cannot be edited or deleted — corrections are added as dated amendments.')) return;
+    if (!window.confirm(t('noteEditor.lockConfirm'))) return;
     try {
       await flush();
       await lockNote(noteId);
       track('note_locked', { note_format: format, ai_used: aiUsed });
       setLocked(true);
       setLockedAt(new Date().toISOString());
-      toast.success('Note locked');
+      toast.success(t('noteEditor.locked'));
     } catch (err) {
-      toast.error('Could not lock the note', { description: err instanceof Error ? err.message : undefined });
+      toast.error(t('noteEditor.lockFailed'), { description: err instanceof Error ? err.message : undefined });
     }
   };
 
@@ -262,37 +273,37 @@ export function SessionNoteEditor() {
       setAmendments(await listAmendments(noteId));
       setAmendBody('');
       setAmendReason('');
-      toast.success('Amendment added');
+      toast.success(t('noteEditor.amendmentAdded'));
     } catch (err) {
-      toast.error('Could not add amendment', { description: err instanceof Error ? err.message : undefined });
+      toast.error(t('noteEditor.amendmentFailed'), { description: err instanceof Error ? err.message : undefined });
     }
   };
 
   const statusLabel = locked
-    ? `Locked${lockedAt ? ' · ' + new Date(lockedAt).toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short' }) : ''}`
-    : { idle: noteId ? 'Saved' : 'Not saved yet', unsaved: 'Unsaved changes', saving: 'Saving…', saved: 'Saved', error: 'Save failed — retrying on next change' }[status];
+    ? `${t('noteEditor.status.locked')}${lockedAt ? ' · ' + formatDateTime(lockedAt) : ''}`
+    : t(`noteEditor.status.${status === 'idle' && !noteId ? 'notSaved' : status === 'idle' ? 'saved' : status}`);
   const dotColor = locked ? 'var(--ink-muted)' : status === 'error' ? 'var(--red)' : dirty ? '#BA7517' : 'var(--sage)';
 
   if (loading) {
-    return <div role="status" className="min-h-screen flex items-center justify-center text-sm text-[var(--ink-muted)]">Loading note…</div>;
+    return <div role="status" className="min-h-screen flex items-center justify-center text-sm text-[var(--ink-muted)]">{t('noteEditor.loading')}</div>;
   }
   if (loadError) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
         <p role="alert" className="text-sm text-[var(--ink-soft)] max-w-md">{loadError}</p>
-        <Link to="/dashboard/notes" className="text-sm text-[var(--sage)] underline">Back to notes</Link>
+        <Link to="/dashboard/notes" className="text-sm text-[var(--sage)] underline">{t('noteEditor.backToNotes')}</Link>
       </main>
     );
   }
 
-  const sectionDefs = SECTIONS[format];
+  const sectionDefs = sectionsFor(format, t);
   const backTo = clientId ? `/dashboard/clients/${clientId}` : '/dashboard/notes';
 
   return (
     <div className="flex flex-col h-screen bg-[var(--warm)] text-[var(--ink)]" style={{ fontFamily: 'var(--font-body)' }}>
       {!isOnline && !locked && (
         <div role="alert" className="bg-[#FFF9E6] border-b border-[#FFE0B2] px-5 py-2.5 text-[13px] text-[#8a6100]">
-          <strong>You're offline.</strong> Changes are kept in this tab only and will save when you reconnect — don't close this tab.
+          <strong>{t('noteEditor.offlineTitle')}</strong> {t('noteEditor.offlineBody')}
         </div>
       )}
 
@@ -302,25 +313,25 @@ export function SessionNoteEditor() {
           onClick={async () => { if (dirty) await flush(); navigate(backTo); }}
           className="flex items-center gap-1.5 text-[13px] text-[var(--ink-muted)] px-2.5 py-1.5 rounded-md border-none bg-transparent cursor-pointer hover:bg-[var(--warm)]"
         >
-          ← Back
+          ← {t('noteEditor.back')}
         </button>
         <div className="w-px h-5 bg-[var(--border)]" />
         {client ? (
           <div className="text-[13px]">
             <span className="font-medium">{client.name}</span>
             <span className="text-[var(--ink-muted)]">
-              {sessionNumber ? ` · Session ${sessionNumber}` : ''} · {new Date(sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })}
+              {sessionNumber ? ` · ${t('noteEditor.session', { n: sessionNumber })}` : ''} · {formatDate(sessionDate)}
             </span>
           </div>
         ) : (
           <label className="text-[13px] flex items-center gap-2">
-            <span className="text-[var(--ink-muted)]">Client</span>
+            <span className="text-[var(--ink-muted)]">{t('noteEditor.client')}</span>
             <select
               value=""
               onChange={e => setClientId(e.target.value || null)}
               className="border border-[var(--border)] rounded-md px-2 py-1 text-[13px] bg-white"
             >
-              <option value="">Select a client…</option>
+              <option value="">{t('noteEditor.selectClient')}</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
@@ -337,14 +348,14 @@ export function SessionNoteEditor() {
               disabled={!clientId}
               className="px-3.5 py-[7px] rounded-lg bg-[var(--sage)] text-white text-[13px] font-medium border-none cursor-pointer hover:bg-[var(--sage-deep)] disabled:opacity-50"
             >
-              Save draft
+              {t('noteEditor.saveDraft')}
             </button>
             <button
               onClick={handleLock}
               disabled={!noteId}
               className="px-4 py-[7px] rounded-lg bg-[var(--ink)] text-white text-[13px] font-medium border-none cursor-pointer hover:bg-[#333] disabled:opacity-50"
             >
-              Lock &amp; finalise
+              {t('noteEditor.lockFinalise')}
             </button>
           </>
         )}
@@ -353,9 +364,9 @@ export function SessionNoteEditor() {
       <div className="grid flex-1 min-h-0 overflow-hidden" style={{ gridTemplateColumns: '220px 1fr 280px' }}>
         {/* LEFT: format + session details */}
         <aside className="bg-white border-r border-[var(--border)] overflow-y-auto">
-          <div className="px-3.5 pt-3.5 pb-1.5 text-[10px] font-medium tracking-[0.7px] uppercase text-[var(--ink-muted)]">Note format</div>
-          <div role="radiogroup" aria-label="Note format">
-            {(Object.keys(FORMAT_LABELS) as NoteFormat[]).map(f => (
+          <div className="px-3.5 pt-3.5 pb-1.5 text-[10px] font-medium tracking-[0.7px] uppercase text-[var(--ink-muted)]">{t('noteEditor.noteFormat')}</div>
+          <div role="radiogroup" aria-label={t('noteEditor.noteFormat')}>
+            {FORMATS.map(f => (
               <button
                 key={f}
                 role="radio"
@@ -369,36 +380,36 @@ export function SessionNoteEditor() {
                   color: format === f ? 'var(--sage-deep)' : 'var(--ink-soft)',
                 }}
               >
-                {f === 'progress' ? 'Progress' : f.toUpperCase()}
+                {t(`noteEditor.formats.${f}.short`)}
               </button>
             ))}
           </div>
 
           <div className="h-px bg-[var(--border)] my-2" />
-          <div className="px-3.5 pt-3.5 pb-1.5 text-[10px] font-medium tracking-[0.7px] uppercase text-[var(--ink-muted)]">Session details</div>
+          <div className="px-3.5 pt-3.5 pb-1.5 text-[10px] font-medium tracking-[0.7px] uppercase text-[var(--ink-muted)]">{t('noteEditor.sessionDetails')}</div>
           <div className="px-3.5 pb-3 text-xs space-y-2">
             <label className="flex justify-between items-center gap-2">
-              <span className="text-[var(--ink-muted)]">Date</span>
+              <span className="text-[var(--ink-muted)]">{t('noteEditor.date')}</span>
               <input type="date" value={sessionDate} disabled={locked} onChange={e => setSessionDate(e.target.value)}
                 className="text-xs border-none bg-transparent text-right" />
             </label>
             <label className="flex justify-between items-center gap-2">
-              <span className="text-[var(--ink-muted)]">Duration</span>
+              <span className="text-[var(--ink-muted)]">{t('noteEditor.duration')}</span>
               <select value={duration} disabled={locked} onChange={e => setDuration(Number(e.target.value))} className="text-xs border-none bg-transparent">
-                {DURATIONS.map(d => <option key={d} value={d}>{d} min</option>)}
+                {DURATIONS.map(d => <option key={d} value={d}>{t('noteEditor.minutes', { n: d })}</option>)}
               </select>
             </label>
             <label className="flex justify-between items-center gap-2">
-              <span className="text-[var(--ink-muted)]">Type</span>
+              <span className="text-[var(--ink-muted)]">{t('noteEditor.type')}</span>
               <select value={sessionType} disabled={locked} onChange={e => setSessionType(e.target.value)} className="text-xs border-none bg-transparent">
-                {SESSION_TYPES.map(t => <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>)}
+                {SESSION_TYPES.map(st => <option key={st} value={st}>{t(`noteEditor.sessionTypes.${st}`)}</option>)}
               </select>
             </label>
             <div className="flex justify-between">
-              <span className="text-[var(--ink-muted)]">Session #</span>
-              <span className="font-medium">{sessionNumber ?? 'Assigned on save'}</span>
+              <span className="text-[var(--ink-muted)]">{t('noteEditor.sessionNumber')}</span>
+              <span className="font-medium">{sessionNumber ?? t('noteEditor.assignedOnSave')}</span>
             </div>
-            {aiUsed && <div className="text-[11px] text-[var(--sage-deep)]">✦ AI Assist was used for this note</div>}
+            {aiUsed && <div className="text-[11px] text-[var(--sage-deep)]">✦ {t('noteEditor.aiUsed')}</div>}
           </div>
         </aside>
 
@@ -406,7 +417,7 @@ export function SessionNoteEditor() {
         <main className="overflow-y-auto px-10 py-8">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-[11px] tracking-[1px] uppercase text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-display)' }}>
-              {FORMAT_LABELS[format]}
+              {t(`noteEditor.formats.${format}.label`)}
             </h1>
             {!locked && (
               <button
@@ -415,14 +426,14 @@ export function SessionNoteEditor() {
                 aria-busy={aiLoading}
                 className="px-2.5 py-1.5 rounded-md border border-[rgba(74,124,111,0.25)] bg-[var(--sage-pale)] text-[var(--sage-deep)] text-xs font-medium cursor-pointer hover:bg-[var(--sage)] hover:text-white disabled:opacity-60"
               >
-                {aiLoading ? 'Drafting…' : '✦ AI assist'}
+                {aiLoading ? t('noteEditor.drafting') : `✦ ${t('noteEditor.aiAssist')}`}
               </button>
             )}
           </div>
 
           {!clientId && (
             <p role="status" className="mb-6 text-sm text-[var(--ink-soft)] bg-white border border-[var(--border)] rounded-lg p-3">
-              Choose a client above to start this note. Notes are saved to that client's record.
+              {t('noteEditor.chooseClient')}
             </p>
           )}
 
@@ -444,20 +455,20 @@ export function SessionNoteEditor() {
                 readOnly={locked || !clientId}
               />
               <div className="text-[11px] text-[var(--ink-muted)] text-right pb-2">
-                {countWords(sections[i])} word{countWords(sections[i]) !== 1 ? 's' : ''}
+                {t('noteEditor.words', { count: countWords(sections[i]) })}
               </div>
             </section>
           ))}
 
           {locked && (
             <section className="mt-8" aria-labelledby="amendments-heading">
-              <h2 id="amendments-heading" className="text-sm font-medium mb-3">Amendments</h2>
-              {amendments.length === 0 && <p className="text-xs text-[var(--ink-muted)] mb-3">No amendments.</p>}
+              <h2 id="amendments-heading" className="text-sm font-medium mb-3">{t('noteEditor.amendments')}</h2>
+              {amendments.length === 0 && <p className="text-xs text-[var(--ink-muted)] mb-3">{t('noteEditor.noAmendments')}</p>}
               <ol className="space-y-3 mb-4">
                 {amendments.map(a => (
                   <li key={a.id} className="bg-white border border-[var(--border)] rounded-lg p-3 text-sm">
                     <div className="text-[11px] text-[var(--ink-muted)] mb-1">
-                      {new Date(a.createdAt).toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short' })}
+                      {formatDateTime(a.createdAt)}
                       {a.reason ? ` · ${a.reason}` : ''}
                     </div>
                     <p className="whitespace-pre-wrap">{a.body}</p>
@@ -465,14 +476,14 @@ export function SessionNoteEditor() {
                 ))}
               </ol>
               <form onSubmit={handleAmend} className="bg-white border border-[var(--border)] rounded-lg p-3 space-y-2">
-                <label htmlFor="amend-body" className="block text-xs font-medium">Add an amendment</label>
+                <label htmlFor="amend-body" className="block text-xs font-medium">{t('noteEditor.addAmendmentLabel')}</label>
                 <textarea id="amend-body" required value={amendBody} onChange={e => setAmendBody(e.target.value)} rows={3}
                   className="w-full border border-[var(--border)] rounded-md p-2 text-sm" />
-                <label htmlFor="amend-reason" className="block text-xs text-[var(--ink-muted)]">Reason (optional)</label>
+                <label htmlFor="amend-reason" className="block text-xs text-[var(--ink-muted)]">{t('noteEditor.reason')}</label>
                 <input id="amend-reason" value={amendReason} onChange={e => setAmendReason(e.target.value)} maxLength={500}
                   className="w-full border border-[var(--border)] rounded-md p-2 text-sm" />
                 <button type="submit" className="px-3 py-1.5 rounded-md bg-[var(--ink)] text-white text-xs border-none cursor-pointer">
-                  Add amendment
+                  {t('noteEditor.addAmendment')}
                 </button>
               </form>
             </section>
@@ -482,23 +493,23 @@ export function SessionNoteEditor() {
         {/* RIGHT: context */}
         <aside className="bg-white border-l border-[var(--border)] overflow-y-auto">
           <div className="px-4 py-3.5 border-b border-[var(--border)] text-xs font-medium">
-            {client ? client.name : 'No client selected'}
+            {client ? client.name : t('noteEditor.noClient')}
           </div>
-          <div className="px-4 py-3.5 text-xs font-medium">Previous notes</div>
+          <div className="px-4 py-3.5 text-xs font-medium">{t('noteEditor.previousNotes')}</div>
           <ul className="px-3.5 pb-3 space-y-2">
-            {previousNotes.length === 0 && <li className="text-xs text-[var(--ink-muted)]">No previous notes for this client.</li>}
+            {previousNotes.length === 0 && <li className="text-xs text-[var(--ink-muted)]">{t('noteEditor.noPrevious')}</li>}
             {previousNotes.map(n => (
               <li key={n.id}>
                 <Link to={`/session-note-editor?noteId=${n.id}`} reloadDocument
                   className="block bg-[var(--warm)] rounded-lg px-3 py-2.5 text-xs text-[var(--ink-soft)] no-underline hover:bg-[var(--sage-pale)]">
-                  Session {n.sessionNumber ?? '—'} · {new Date(n.sessionDate + 'T00:00').toLocaleDateString('en-CA', { dateStyle: 'medium' })} · {n.noteFormat.toUpperCase()}
-                  {n.isLocked ? ' · Locked' : ' · Draft'}
+                  {t('noteEditor.session', { n: n.sessionNumber ?? '—' })} · {formatDate(n.sessionDate)} · {(n.noteFormat ?? '').toUpperCase()}
+                  {' · '}{n.isLocked ? t('noteEditor.status.locked') : t('noteEditor.draft')}
                 </Link>
               </li>
             ))}
           </ul>
           <p className="px-4 pb-4 text-[11px] text-[var(--ink-muted)] leading-relaxed">
-            Locked notes can't be edited or deleted. Keep records for the period your College requires; corrections are added as dated amendments.
+            {t('noteEditor.lockedHelp')}
           </p>
         </aside>
       </div>
@@ -510,7 +521,7 @@ export function SessionNoteEditor() {
             const ok = await setAiAssistEnabled(true);
             setShowConsent(false);
             if (ok) runAiAssist();
-            else toast.error('Could not save your AI Assist preference.');
+            else toast.error(t('noteEditor.aiPrefFailed'));
           }}
         />
       )}
