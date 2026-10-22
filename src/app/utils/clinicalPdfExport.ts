@@ -20,6 +20,15 @@ export interface ClinicalExportData {
   isLocked?: boolean;
 }
 
+function escapeHtml(str: string): string {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export function exportClinicalRecord(data: ClinicalExportData): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
@@ -31,8 +40,8 @@ export function exportClinicalRecord(data: ClinicalExportData): void {
     .map(
       sec => `
       <div class="section-block">
-        <div class="section-title">${sec.label.toUpperCase()}</div>
-        <div class="section-content">${(sec.text || 'No entry documented for this section.').replace(/\n/g, '<br/>')}</div>
+        <div class="section-title">${escapeHtml(sec.label.toUpperCase())}</div>
+        <div class="section-content">${escapeHtml(sec.text || 'No entry documented for this section.').replace(/\n/g, '<br/>')}</div>
       </div>
     `
     )
@@ -43,7 +52,7 @@ export function exportClinicalRecord(data: ClinicalExportData): void {
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <title>Clinical Record - ${data.clientName} - ${data.sessionDate}</title>
+      <title>Clinical Record - ${escapeHtml(data.clientName)} - ${escapeHtml(data.sessionDate)}</title>
       <style>
         @page {
           size: letter;
@@ -154,9 +163,9 @@ export function exportClinicalRecord(data: ClinicalExportData): void {
     <body>
       <div class="header">
         <div class="clinic-info">
-          <h1>${data.practitionerName}</h1>
-          <p>${data.practitionerRole} ${data.collegeName ? `• ${data.collegeName}` : ''}</p>
-          ${data.registrationNumber ? `<p>Registration/License ID: <strong>${data.registrationNumber}</strong></p>` : ''}
+          <h1>${escapeHtml(data.practitionerName)}</h1>
+          <p>${escapeHtml(data.practitionerRole)} ${data.collegeName ? `• ${escapeHtml(data.collegeName)}` : ''}</p>
+          ${data.registrationNumber ? `<p>Registration/License ID: <strong>${escapeHtml(data.registrationNumber)}</strong></p>` : ''}
         </div>
         <div class="compliance-seal">
           <strong>🍁 Canadian PHIPA Compliant</strong>
@@ -167,23 +176,23 @@ export function exportClinicalRecord(data: ClinicalExportData): void {
       <div class="meta-grid">
         <div class="meta-item">
           <strong>Client Identifier</strong>
-          <span>${data.clientName}</span>
+          <span>${escapeHtml(data.clientName)}</span>
         </div>
         <div class="meta-item">
           <strong>Session Details</strong>
-          <span>Session #${data.sessionNumber} • ${data.sessionDate}</span>
+          <span>Session #${escapeHtml(data.sessionNumber)} • ${escapeHtml(data.sessionDate)}</span>
         </div>
         <div class="meta-item">
           <strong>Duration & Format</strong>
-          <span>${data.duration} • ${data.format}</span>
+          <span>${escapeHtml(data.duration)} • ${escapeHtml(data.format)}</span>
         </div>
         <div class="meta-item">
           <strong>Clinical Note Format</strong>
-          <span>${data.format.toUpperCase()} Note</span>
+          <span>${escapeHtml(data.format.toUpperCase())} Note</span>
         </div>
         <div class="meta-item">
           <strong>Presenting Diagnosis</strong>
-          <span>${data.diagnosis}</span>
+          <span>${escapeHtml(data.diagnosis)}</span>
         </div>
         <div class="meta-item">
           <strong>Record Lock Status</strong>
@@ -199,7 +208,7 @@ export function exportClinicalRecord(data: ClinicalExportData): void {
           I attest that this clinical record accurately reflects the session delivered.
         </div>
         <div class="sig-block" style="text-align: right;">
-          <strong>Date Signed:</strong> ${data.sessionDate}
+          <strong>Date Signed:</strong> ${escapeHtml(data.sessionDate)}
         </div>
       </div>
 
