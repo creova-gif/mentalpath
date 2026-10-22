@@ -1,7 +1,5 @@
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../utils/supabase/config';
 import { scrubPII, type PIIEntity } from '../utils/piiScrubber';
-
-const SUPABASE_URL = `https://${projectId}.supabase.co`;
 
 export interface AINoteRequest {
   sessionId: string;
@@ -100,7 +98,7 @@ export async function generateNoteAssist(request: AINoteRequest): Promise<AINote
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({
         session_id: request.sessionId,

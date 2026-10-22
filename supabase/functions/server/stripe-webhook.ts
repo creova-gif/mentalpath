@@ -64,11 +64,11 @@ Deno.serve(async (req: Request) => {
         const trialEnd = obj.trial_end as number | null;
 
         await supabase
-          .from("therapists")
+          .from("clinicians")
           .update({
             stripe_subscription_id: obj.id,
-            subscription_tier: tier,
-            subscription_status: status,
+            plan_type: tier,
+            is_trial: status === "trialing",
             trial_ends_at: trialEnd ? new Date(trialEnd * 1000).toISOString() : null,
             updated_at: new Date().toISOString(),
           })
@@ -84,14 +84,14 @@ Deno.serve(async (req: Request) => {
         const status = obj.status as string;
         const priceId = (obj.items as Record<string, unknown>)?.data?.[0]?.price?.id as string;
         const tier = getTierFromPrice(priceId);
-        const cancelAt = obj.cancel_at as number | null;
+        const periodEnd = obj.current_period_end as number | null;
 
         await supabase
-          .from("therapists")
+          .from("clinicians")
           .update({
-            subscription_tier: tier,
-            subscription_status: status,
-            cancel_at: cancelAt ? new Date(cancelAt * 1000).toISOString() : null,
+            plan_type: tier,
+            is_trial: status === "trialing",
+            plan_renews_at: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
             updated_at: new Date().toISOString(),
           })
           .eq("stripe_customer_id", customerId);
@@ -104,11 +104,10 @@ Deno.serve(async (req: Request) => {
       case "customer.subscription.deleted": {
         const customerId = obj.customer as string;
         await supabase
-          .from("therapists")
+          .from("clinicians")
           .update({
-            subscription_tier: "free",
-            subscription_status: "cancelled",
-            cancel_at: null,
+            plan_type: "solo",
+            is_trial: false,
             updated_at: new Date().toISOString(),
           })
           .eq("stripe_customer_id", customerId);
@@ -158,9 +157,9 @@ Deno.serve(async (req: Request) => {
         // Update subscription status to past_due after first failure
         if (attemptCount >= 1) {
           await supabase
-            .from("therapists")
+            .from("clinicians")
             .update({
-              subscription_status: "past_due",
+              is_trial: false,
               updated_at: new Date().toISOString(),
             })
             .eq("stripe_customer_id", customerId);
@@ -174,20 +173,27 @@ Deno.serve(async (req: Request) => {
       case "checkout.session.completed": {
         const customerId = obj.customer as string;
         const subscriptionId = obj.subscription as string;
-        const clientReferenceId = obj.client_reference_id as string; // therapist UUID
+        const clientReferenceId = (obj.client_reference_id as string) || (obj.metadata as Record<string, string>)?.supabase_user_id;
+        const plan = (obj.metadata as Record<string, string>)?.plan || 'solo';
+        const cycle = (obj.metadata as Record<string, string>)?.cycle || 'monthly';
 
         if (clientReferenceId && customerId) {
           await supabase
-            .from("therapists")
+            .from("clinicians")
             .update({
               stripe_customer_id: customerId,
               stripe_subscription_id: subscriptionId,
+              plan_type: plan,
+              plan_cycle: cycle,
+              is_trial: false,
+              plan_starts_at: new Date().toISOString(),
+              plan_renews_at: new Date(Date.now() + (cycle === 'annual' ? 365 : 30) * 86400000).toISOString(),
               updated_at: new Date().toISOString(),
             })
             .eq("id", clientReferenceId);
         }
 
-        console.log(`Checkout completed: therapist ${clientReferenceId} → customer ${customerId}`);
+        console.log(`Checkout completed: clinician ${clientReferenceId} → customer ${customerId}`);
         break;
       }
     }

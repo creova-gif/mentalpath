@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Lock, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { useUser } from '../../context/UserContext';
+import { stripeService } from '../../services/stripeService';
 
 const PLANS = {
   solo: { name: 'Solo Practitioner', price: 49, perLabel: 'per month after trial' },
@@ -168,13 +170,32 @@ export function Subscribe() {
   const tax = parseFloat((planPrice * 0.13).toFixed(2));
   const total = parseFloat((planPrice + tax).toFixed(2));
 
-  const handleStartTrial = () => {
+  const { user } = useUser();
+
+  const handleStartTrial = async () => {
     setIsLoading(true);
     setErrorMsg('');
-    setTimeout(() => {
+    try {
+      const res = await stripeService.startCheckout({
+        plan,
+        profession: prof,
+        userEmail: user?.email,
+        userId: user?.id,
+      });
+
+      if (res.url) {
+        if (res.url.startsWith('http')) {
+          window.location.href = res.url;
+        } else {
+          navigate(res.url);
+        }
+      }
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      setErrorMsg(err.message || 'Failed to start checkout. Please try again.');
+    } finally {
       setIsLoading(false);
-      navigate('/login');
-    }, 900);
+    }
   };
 
   return (

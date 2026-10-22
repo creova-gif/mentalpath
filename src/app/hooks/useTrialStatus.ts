@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { SERVER_URL, SUPABASE_ANON_KEY } from '../../utils/supabase/config';
 
 export interface TrialStatus {
   isActive: boolean;
@@ -13,7 +13,6 @@ export interface TrialStatus {
 }
 
 const TRIAL_DURATION_DAYS = 7;
-const SERVER_URL = `https://${projectId}.supabase.co/functions/v1/make-server-4d1a502d`;
 
 // Get userId from localStorage (in production, this would come from auth)
 function getUserId(): string {
@@ -43,7 +42,7 @@ export function useTrialStatus(): TrialStatus {
         
         const response = await fetch(`${SERVER_URL}/trial/${userId}`, {
           headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           },
         });
 
@@ -114,7 +113,7 @@ export async function startTrial(email: string): Promise<void> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({ userId, email }),
     });
@@ -146,7 +145,7 @@ export async function activatePlan(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({
         userId,
@@ -188,7 +187,7 @@ export async function getTrialInfo(): Promise<any> {
     
     const response = await fetch(`${SERVER_URL}/trial/${userId}`, {
       headers: {
-        'Authorization': `Bearer ${publicAnonKey}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
     });
 

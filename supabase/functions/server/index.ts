@@ -5,6 +5,7 @@ import * as kv from "./kv_store.ts";
 import trialManager from "./trial-manager.ts";
 import aiRoutes from "./ai-routes.ts";
 import billingRoutes from "./billing-routes.ts";
+import stripeCheckoutRoutes from "./stripe-checkout-routes.ts";
 
 const app = new Hono();
 
@@ -58,5 +59,8 @@ app.route("/", aiRoutes);
 
 // Mount billing routes
 app.route("/", billingRoutes);
+
+// Mount Stripe checkout routes
+app.route("/", stripeCheckoutRoutes);
 
 Deno.serve(app.fetch);

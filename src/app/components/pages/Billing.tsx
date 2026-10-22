@@ -4,9 +4,7 @@ import { InvoiceModal } from '../modals/InvoiceModal';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '../ui/ProgressBar';
 import { supabase } from '@/utils/supabase/client';
-import { projectId, publicAnonKey } from '/utils/supabase/info';
-
-const SUPABASE_URL = `https://${projectId}.supabase.co`;
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/utils/supabase/config';
 
 interface Invoice {
   id: string;
@@ -158,7 +156,7 @@ export function Billing() {
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/make-server-4d1a502d/tax-export/t2125/${year}`,
         {
-          headers: { Authorization: `Bearer ${publicAnonKey}` }
+          headers: { Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
         }
       );
 

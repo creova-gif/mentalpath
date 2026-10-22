@@ -103,6 +103,11 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
   },
   {
+    path: "/checkout/success",
+    element: <Suspense fallback={null}><CheckoutSuccess /></Suspense>,
+    errorElement: <ErrorBoundary />,
+  },
+  {
     path: "/faq",
     element: <Suspense fallback={null}><FAQ /></Suspense>,
     errorElement: <ErrorBoundary />,

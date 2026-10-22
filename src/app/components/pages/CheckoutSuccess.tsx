@@ -2,18 +2,34 @@ import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { CheckCircle, ArrowRight, Calendar, CreditCard } from 'lucide-react';
 import { activatePlan } from '../../hooks/useTrialStatus';
+import { useUser } from '../../context/UserContext';
+import { stripeService } from '../../services/stripeService';
 
 export function CheckoutSuccess() {
   const [searchParams] = useSearchParams();
+  const { user, setSubscription } = useUser();
   const plan = searchParams.get('plan') || 'solo'; // Get plan from URL params
 
   useEffect(() => {
     // Activate the paid plan (ends trial)
-    // In production, this would get email from authenticated user
-    const email = localStorage.getItem('user_email') || 'user@example.com';
+    const email = user?.email || localStorage.getItem('user_email') || 'dr.osei@mentalpath.ca';
     
     if (plan === 'solo' || plan === 'group') {
-      activatePlan(plan, email);
+      stripeService.activateLocalSubscription(plan, 'monthly', email);
+      activatePlan(plan, email).catch(() => {});
+      if (setSubscription) {
+        setSubscription({
+          type: plan,
+          cycle: 'monthly',
+          seats: plan === 'group' ? 3 : 1,
+          pricePerSeat: plan === 'group' ? 79 : 49,
+          trialDaysRemaining: null,
+          isTrial: false,
+          startDate: new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }),
+          renewsOn: new Date(Date.now() + 30 * 86400000).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }),
+          nextBillingAmount: plan === 'group' ? 79 : 49,
+        });
+      }
     }
 
     // Fire confetti on mount - simple inline version to avoid import issues
