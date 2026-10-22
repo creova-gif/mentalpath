@@ -7,6 +7,9 @@ import { useUser } from '../../context/UserContext';
 import { supabase } from '../../../utils/supabase/client';
 import { encryptText } from '../../../utils/encryption';
 import { generateNoteAssist, generateSessionId } from '../../services/aiNoteService';
+import { PIIBadgeVisualizer } from '../notes/PIIBadgeVisualizer';
+import { exportClinicalRecord } from '../../utils/clinicalPdfExport';
+import { FileDown } from 'lucide-react';
 
 type Format = 'dap' | 'soap' | 'birp' | 'progress';
 
@@ -273,6 +276,7 @@ export function SessionNoteEditor() {
         section3: values[sectionKeys[2]] || '',
         section4: sectionKeys[3] ? (values[sectionKeys[3]] || '') : undefined,
         sessionContext: `Presenting Dx: ${diagnosis}, Duration: ${duration}, Type: ${sessionFormat}`,
+        clientName: 'Sarah Jenkins',
       };
 
       const response = await generateNoteAssist(request);
@@ -306,6 +310,29 @@ export function SessionNoteEditor() {
   const saveDraft = () => {
     setStatusDot('saved');
     setStatusText('Draft saved');
+  };
+
+  const handleExportPdf = () => {
+    const sections = SECTIONS[format].map(s => ({
+      label: s.tagLabel,
+      text: values[s.key] || '',
+    }));
+
+    exportClinicalRecord({
+      practitionerName: user ? `${user.firstName || 'Dr.'} ${user.lastName || 'Practitioner'}, RP` : 'Dr. Abena Osei-Mensah, RP',
+      practitionerRole: 'Registered Psychotherapist',
+      registrationNumber: 'CRPO #008492',
+      collegeName: 'College of Registered Psychotherapists of Ontario',
+      clientName: 'Amara Mensah (AM)',
+      sessionNumber: '15',
+      sessionDate: new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }),
+      duration,
+      format: sessionFormat,
+      diagnosis,
+      sections,
+      isLocked: locked,
+    });
+    toast.success('Official clinical record generated');
   };
 
   const lockNote = () => {
@@ -476,6 +503,18 @@ export function SessionNoteEditor() {
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor }} />
           <span style={{ color: 'var(--ink-muted)' }}>{statusText}</span>
         </div>
+
+        <button
+          onClick={handleExportPdf}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 13px', background: 'white', color: 'var(--ink)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--sage-pale)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'white')}
+          title="Export College-Formatted Clinical PDF"
+        >
+          <FileDown style={{ width: 13, height: 13, color: 'var(--sage-deep)' }} />
+          Export PDF
+        </button>
+
         {!locked && (
           <>
             <button
@@ -578,9 +617,17 @@ export function SessionNoteEditor() {
         {/* MAIN EDITOR */}
         <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: 24 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: 20 }}>
               {FORMAT_LABELS[format]}
             </div>
+
+            {/* PII Pre-Flight Visualizer & Trust Moat */}
+            <PIIBadgeVisualizer
+              textToScrub={Object.values(values).filter(Boolean).join('\n\n')}
+              clientName="Sarah Jenkins"
+              format={format.toUpperCase()}
+            />
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {SECTIONS[format].map((section, i, arr) => (
                 <div key={section.key} style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>

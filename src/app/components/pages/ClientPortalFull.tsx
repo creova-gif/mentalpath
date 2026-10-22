@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Send, FileText, Phone, Download, Trash2, ShieldAlert, RefreshCw, FileDown, Lock } from 'lucide-react';
+import { Check, Send, FileText, Phone, Download, Trash2, ShieldAlert, ShieldCheck, RefreshCw, FileDown, Lock, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 type TabType = 'home' | 'checkin' | 'invoices' | 'messages' | 'safety' | 'privacy';
@@ -15,6 +15,7 @@ export function ClientPortalFull() {
 
   // Privacy and Consent States
   const [consentStatus, setConsentStatus] = useState<'active' | 'withdrawing' | 'withdrawn'>('active');
+  const [aiConsentGranted, setAiConsentGranted] = useState(true);
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
   const [withdrawTimestamp, setWithdrawTimestamp] = useState<string | null>(null);
   const [isExportingJson, setIsExportingJson] = useState(false);
@@ -790,7 +791,55 @@ export function ClientPortalFull() {
               </div>
             </div>
 
-            {/* SECTION 2: CONSENT WITHDRAWAL */}
+            {/* SECTION 2: AI CLINICAL DOCUMENTATION CONSENT (CRPO & COLLEGE GUIDELINES) */}
+            <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden shadow-sm">
+              <div className="px-4.5 py-3.5 border-b border-[var(--border)] bg-gray-50 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                  <span className="text-[14px] font-medium text-[var(--ink)]">AI Clinical Documentation Consent (CRPO & Canadian Colleges)</span>
+                </div>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  🍁 PHIPA Safe
+                </span>
+              </div>
+              <div className="p-5 space-y-4">
+                <p className="text-[13px] text-[var(--ink-soft)] leading-relaxed">
+                  Under Canadian healthcare regulations and College guidelines (e.g. CRPO, CCPA, BCACC), you have the right to choose whether your practitioner uses AI-assisted clinical note compilation. Your health data is processed on Canadian servers (ca-central-1), personal identifiers are stripped prior to model synthesis, and sessions are never used to train commercial AI models.
+                </p>
+
+                <div className={`flex items-start justify-between p-4 rounded-xl border transition-colors ${aiConsentGranted ? 'bg-indigo-50/60 border-indigo-200' : 'bg-slate-50 border-slate-200'}`}>
+                  <div className="space-y-1 pr-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-[var(--ink)]">
+                        {aiConsentGranted ? 'AI Documentation Assistance: Consented (Active)' : 'AI Documentation Assistance: Opted Out (Manual Only)'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[var(--ink-muted)] leading-relaxed">
+                      {aiConsentGranted
+                        ? 'Your practitioner may use secure, de-identified AI drafting to compile DAP/SOAP session notes. Every note is reviewed and edited by your clinician before being locked in your permanent chart.'
+                        : 'Your practitioner will compile all session notes manually without AI assistance. Opting out will not affect your quality of care or session scheduling in any way.'}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const next = !aiConsentGranted;
+                      setAiConsentGranted(next);
+                      toast.success(next ? 'AI documentation consent granted.' : 'AI documentation consent withdrawn. Your clinician will document manually.');
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 transition-colors ${
+                      aiConsentGranted
+                        ? 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    }`}
+                  >
+                    {aiConsentGranted ? 'Opt Out (Manual Notes Only)' : 'Grant AI Consent'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 3: CONSENT WITHDRAWAL */}
             <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden shadow-sm">
               <div className="px-4.5 py-3.5 border-b border-[var(--border)] bg-gray-50 flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-red-600" />

@@ -1,4 +1,5 @@
 import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { scrubPII, type PIIEntity } from '../utils/piiScrubber';
 
 const SUPABASE_URL = `https://${projectId}.supabase.co`;
 
@@ -10,6 +11,7 @@ export interface AINoteRequest {
   section3: string;
   section4?: string;
   sessionContext?: string;
+  clientName?: string;
 }
 
 export interface AINoteResponse {
@@ -25,6 +27,7 @@ export interface AINoteResponse {
   sections?: {
     [key: string]: string;
   };
+  scrubbedEntities?: PIIEntity[];
 }
 
 /**
@@ -78,6 +81,21 @@ function parseNoteSections(draft: string, format: string): { [key: string]: stri
  */
 export async function generateNoteAssist(request: AINoteRequest): Promise<AINoteResponse> {
   try {
+    // 1. Client-Side PHIPA Pre-Flight Scrubbing
+    const s1 = scrubPII(request.section1, request.clientName);
+    const s2 = scrubPII(request.section2, request.clientName);
+    const s3 = scrubPII(request.section3, request.clientName);
+    const s4 = request.section4 ? scrubPII(request.section4, request.clientName) : { scrubbedText: undefined, detectedEntities: [] };
+    const sCtx = scrubPII(request.sessionContext || 'Individual therapy session, 50 minutes', request.clientName);
+
+    const allScrubbedEntities = [
+      ...s1.detectedEntities,
+      ...s2.detectedEntities,
+      ...s3.detectedEntities,
+      ...s4.detectedEntities,
+      ...sCtx.detectedEntities,
+    ];
+
     const response = await fetch(`${SUPABASE_URL}/functions/v1/make-server-4d1a502d/ai-note-assist`, {
       method: 'POST',
       headers: {
@@ -87,11 +105,11 @@ export async function generateNoteAssist(request: AINoteRequest): Promise<AINote
       body: JSON.stringify({
         session_id: request.sessionId,
         note_format: request.noteFormat,
-        section_1: request.section1,
-        section_2: request.section2,
-        section_3: request.section3,
-        section_4: request.section4,
-        session_context: request.sessionContext || 'Individual therapy session, 50 minutes',
+        section_1: s1.scrubbedText,
+        section_2: s2.scrubbedText,
+        section_3: s3.scrubbedText,
+        section_4: s4.scrubbedText,
+        session_context: sCtx.scrubbedText,
       }),
     });
 
@@ -112,6 +130,7 @@ export async function generateNoteAssist(request: AINoteRequest): Promise<AINote
       disclaimer: data.disclaimer,
       usage: data.usage,
       sections,
+      scrubbedEntities: allScrubbedEntities,
     };
   } catch (error) {
     console.error('AI Note Assist Error:', error);

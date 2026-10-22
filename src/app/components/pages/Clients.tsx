@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Search } from 'lucide-react';
+import { Search, Sparkles, Trash2, ArrowRight } from 'lucide-react';
 import { ClientDetailPanel } from '../modals/ClientDetailPanel';
 import { NoteModal } from '../modals/NoteModal';
 import { NewClientModal } from '../modals/NewClientModal';
@@ -81,6 +81,30 @@ export function Clients() {
         };
       });
 
+      const isDemoPurged = localStorage.getItem('mentalpath_demo_purged') === 'true';
+      if (formattedClients.length === 0 && !isDemoPurged) {
+        formattedClients.push({
+          id: 'demo-jane-doe',
+          initials: 'JD',
+          name: 'Jane Doe (Demo Client)',
+          since: `${t('clients.since')} Mar 2026 · Demo Client`,
+          status: 'active',
+          nextSession: 'Tomorrow, 2:00 PM',
+          sessions: '3 completed',
+          tags: ['Demo', 'She/Her', 'Anxiety (GAD-7)', 'CBT'],
+          rate: `$${user.sessionRate || 150}/hr`,
+          color: 'c-av-c',
+          dbClient: {
+            id: 'demo-jane-doe',
+            first_name: 'Jane',
+            last_name: 'Doe (Demo)',
+            email: 'jane.demo@mentalpath.internal',
+            status: 'active',
+            is_demo: true,
+          },
+        });
+      }
+
       setClients(formattedClients);
       setIsLoading(false);
     }
@@ -89,6 +113,13 @@ export function Clients() {
   }, [user, refreshKey]);
 
   const allTags = Array.from(new Set(clients.flatMap(c => c.tags))).filter(Boolean);
+  const hasDemoClient = clients.some(c => c.id === 'demo-jane-doe');
+
+  const handlePurgeDemo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    localStorage.setItem('mentalpath_demo_purged', 'true');
+    setClients(prev => prev.filter(c => c.id !== 'demo-jane-doe'));
+  };
 
   const filteredClients = clients.filter((client) => {
     const matchesFilter = filter === 'all' || client.status === filter;
@@ -174,6 +205,43 @@ export function Clients() {
           </div>
         </div>
       </div>
+
+      {/* Onboarding Interactive Sandbox Banner */}
+      {hasDemoClient && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 p-4 mb-5 bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50 border border-emerald-200/80 rounded-xl text-xs shadow-2xs">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-emerald-600 text-white rounded-lg flex-shrink-0 mt-0.5">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-semibold text-emerald-950 text-sm flex items-center gap-2">
+                <span>Interactive Clinical Sandbox Active</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-200/70 text-emerald-800">
+                  🍁 PHIPA Safe Demo
+                </span>
+              </div>
+              <p className="text-emerald-800 mt-1 leading-relaxed">
+                We pre-loaded <strong>Jane Doe (Demo Client)</strong> so you can test AI DAP/SOAP note generation, pre-flight PII sanitization badges, and Canadian billing without using real client data.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+            <button
+              onClick={() => navigate('/notes/editor/demo-session-1?format=dap')}
+              className="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs transition-colors shadow-2xs"
+            >
+              Test AI Note Assist <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+            </button>
+            <button
+              onClick={handlePurgeDemo}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors"
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1 text-slate-400" />
+              Remove Demo
+            </button>
+          </div>
+        </div>
+      )}
       
       <div className="sm:hidden mb-4">
         <button 
