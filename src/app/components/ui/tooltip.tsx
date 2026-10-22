@@ -1,29 +1,29 @@
-import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
-import { cn } from "./utils"
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 
-const TooltipProvider = TooltipPrimitive.Provider
+interface TooltipProps {
+  children: React.ReactNode;
+  content: string;
+  side?: 'top' | 'right' | 'bottom' | 'left';
+}
 
-const Tooltip = TooltipPrimitive.Root
-
-const TooltipTrigger = TooltipPrimitive.Trigger
-
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "bg-[var(--ink)] text-white text-xs px-3 py-1.5 rounded-lg shadow-lg max-w-[200px] z-50 animate-in fade-in-0 zoom-in-95",
-        className
-      )}
-      {...props}
-    />
-  </TooltipPrimitive.Portal>
-))
-TooltipContent.displayName = TooltipPrimitive.Content.displayName
-
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+export function Tooltip({ children, content, side = 'top' }: TooltipProps) {
+  return (
+    <TooltipPrimitive.Provider delayDuration={200}>
+      <TooltipPrimitive.Root>
+        <TooltipPrimitive.Trigger asChild>
+          {children}
+        </TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            side={side}
+            className="bg-[var(--ink)] text-white text-xs px-3 py-1.5 rounded-lg shadow-lg max-w-[200px] z-50 animate-in fade-in-0 zoom-in-95"
+            sideOffset={5}
+          >
+            {content}
+            <TooltipPrimitive.Arrow className="fill-[var(--ink)]" />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
+  );
+}
