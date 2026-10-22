@@ -213,9 +213,31 @@ function buildSubscriptionFromClinicianRow(
 const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    try {
+      const cached = localStorage.getItem('mentalpath_demo_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return parsed.profile ?? null;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+  const [subscription, setSubscriptionState] = useState<SubscriptionPlan | null>(() => {
+    try {
+      const cached = localStorage.getItem('mentalpath_demo_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return parsed.subscription ?? null;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Inactivity Timeout Listener
   useEffect(() => {
@@ -302,7 +324,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Get the current session immediately
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) await loadProfile(session);
+      if (session) {
+        await loadProfile(session);
+      } else {
+        try {
+          const cached = localStorage.getItem('mentalpath_demo_session');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed.profile) setUser(parsed.profile);
+            if (parsed.subscription) setSubscriptionState(parsed.subscription);
+          }
+        } catch {
+          // ignore
+        }
+      }
       setIsLoading(false);
     });
 
@@ -312,6 +347,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         if (event === 'SIGNED_IN' && session) {
           await loadProfile(session);
         } else if (event === 'SIGNED_OUT') {
+          try {
+            localStorage.removeItem('mentalpath_demo_session');
+          } catch {
+            // ignore
+          }
           setUser(null);
           setSubscriptionState(null);
         }
@@ -342,8 +382,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
       ).toString(16).padStart(8, '0') + '-d000-4000-8000-' + Date.now().toString(16).padStart(12, '0');
 
       const profile = buildProfileFromDemoAndAuth(fakeId, email);
+      const sub = buildSubscriptionFromClinicianRow(null, email);
       if (profile) setUser(profile);
-      setSubscriptionState(buildSubscriptionFromClinicianRow(null, email));
+      setSubscriptionState(sub);
+      try {
+        localStorage.setItem('mentalpath_demo_session', JSON.stringify({ profile, subscription: sub }));
+      } catch {
+        // ignore
+      }
       return 'ok';
     }
 
@@ -352,6 +398,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    try {
+      localStorage.removeItem('mentalpath_demo_session');
+    } catch {
+      // ignore
+    }
+    setUser(null);
+    setSubscriptionState(null);
     await supabase.auth.signOut();
   };
 

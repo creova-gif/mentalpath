@@ -52,34 +52,33 @@ export function Clients() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching clients:', error);
-        setIsLoading(false);
-        return;
+      let formattedClients: Client[] = [];
+      if (data && !error) {
+        formattedClients = data.map((row: any, i: number) => {
+          const firstName = row.first_name || '';
+          const lastName = row.last_name || '';
+          const initials = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+          
+          const createdDate = new Date(row.created_at);
+          const sinceStr = `${t('clients.since')} ${createdDate.toLocaleString('default', { month: 'short' })} ${createdDate.getFullYear()} · ${t('clients.rp')}: ${user.lastName}`;
+
+          return {
+            id: row.id,
+            initials: initials || '?',
+            name: `${firstName} ${lastName}`.trim(),
+            since: sinceStr,
+            status: row.status as any,
+            nextSession: '—', // Need additional tables (e.g. sessions) to populate
+            sessions: '—',    
+            tags: row.pronouns ? [row.pronouns] : [], 
+            rate: `$${user.sessionRate}/hr`,
+            color: AVATAR_COLORS[i % AVATAR_COLORS.length],
+            dbClient: row,
+          };
+        });
+      } else if (error) {
+        console.warn('Clients query note (fallback to demo sandbox):', error);
       }
-
-      const formattedClients: Client[] = data.map((row: any, i: number) => {
-        const firstName = row.first_name || '';
-        const lastName = row.last_name || '';
-        const initials = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
-        
-        const createdDate = new Date(row.created_at);
-        const sinceStr = `${t('clients.since')} ${createdDate.toLocaleString('default', { month: 'short' })} ${createdDate.getFullYear()} · ${t('clients.rp')}: ${user.lastName}`;
-
-        return {
-          id: row.id,
-          initials: initials || '?',
-          name: `${firstName} ${lastName}`.trim(),
-          since: sinceStr,
-          status: row.status as any,
-          nextSession: '—', // Need additional tables (e.g. sessions) to populate
-          sessions: '—',    
-          tags: row.pronouns ? [row.pronouns] : [], 
-          rate: `$${user.sessionRate}/hr`,
-          color: AVATAR_COLORS[i % AVATAR_COLORS.length],
-          dbClient: row,
-        };
-      });
 
       const isDemoPurged = localStorage.getItem('mentalpath_demo_purged') === 'true';
       if (formattedClients.length === 0 && !isDemoPurged) {

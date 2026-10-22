@@ -47,7 +47,8 @@ const Subscribe = lazy(() => import("./components/pages/Subscribe").then(m => ({
 
 // Auth guard — redirects unauthenticated users to /login
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
+  if (isLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
@@ -146,6 +147,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/session-note-editor",
+    element: <RequireAuth><Suspense fallback={null}><SessionNoteEditor /></Suspense></RequireAuth>,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/notes/editor/:id?",
     element: <RequireAuth><Suspense fallback={null}><SessionNoteEditor /></Suspense></RequireAuth>,
     errorElement: <ErrorBoundary />,
   },
